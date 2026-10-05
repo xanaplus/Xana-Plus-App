@@ -1,0 +1,1507 @@
+{
+ "id": "32:12434",
+ "name": "08d · Pharmacy — Ask a Pharmacist",
+ "slug": "08d-pharmacy-ask-a-pharmacist",
+ "size": {
+  "w": 390,
+  "h": 1163
+ },
+ "bg": "#ffffff|#fcf9f8",
+ "tree": [
+  {
+   "name": "Main",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 1161
+   },
+   "layout": "VERTICAL pad=56,0,24,0",
+   "fill": "#fcf9f8",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 56,
+      "w": 390,
+      "h": 1081
+     },
+     "layout": "VERTICAL pad=16,20,0,20 gap=24",
+     "children": [
+      {
+       "name": "Background+Shadow",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 72,
+        "w": 350,
+        "h": 130
+       },
+       "layout": "VERTICAL pad=16,16,16,16 gap=8",
+       "fill": "#ffffff",
+       "radius": 12,
+       "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 36,
+          "y": 88,
+          "w": 318,
+          "h": 60
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=16",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 90,
+            "w": 56,
+            "h": 56
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Dr. Wanjiru Kamau, Clinical Pharmacist",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 90,
+              "w": 56,
+              "h": 56
+             },
+             "fill": "image",
+             "radius": 9999,
+             "shadow": "DROP_SHADOW #000000@5% 0/1 blur2"
+            },
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 78,
+              "y": 132,
+              "w": 14,
+              "h": 14
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#004f28",
+             "radius": 9999,
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 108,
+            "y": 88,
+            "w": 246,
+            "h": 60
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 108,
+              "y": 88,
+              "w": 246,
+              "h": 24
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=4",
+             "childCount": 2
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 108,
+              "y": 112,
+              "w": 246,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 108,
+              "y": 130,
+              "w": 246,
+              "h": 18
+             },
+             "layout": "HORIZONTAL pad=2,0,0,0 cross=CENTER gap=4",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Background",
+         "type": "FRAME",
+         "box": {
+          "x": 36,
+          "y": 156,
+          "w": 318,
+          "h": 30
+         },
+         "layout": "HORIZONTAL pad=6,8,6,8 cross=CENTER gap=4",
+         "fill": "#f6f3f2",
+         "radius": 8,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 44,
+            "y": 164,
+            "w": 11,
+            "h": 13
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 44,
+              "y": 164,
+              "w": 11,
+              "h": 13
+             },
+             "fill": "#004f28"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 59,
+            "y": 162,
+            "w": 208,
+            "h": 18
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 59,
+              "y": 162,
+              "w": 208,
+              "h": 18
+             },
+             "fill": "#3f4940",
+             "text": "Usually replies in under 3 minutes",
+             "style": "Inter 400 13px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Background",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 226,
+        "w": 350,
+        "h": 86
+       },
+       "layout": "HORIZONTAL pad=16,16,16,16 gap=8",
+       "fill": "#f6f3f2",
+       "radius": 8,
+       "children": [
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 36,
+          "y": 242,
+          "w": 13,
+          "h": 20
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 36,
+            "y": 244,
+            "w": 13,
+            "h": 18
+           },
+           "fill": "#004f28"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 57,
+          "y": 242,
+          "w": 290,
+          "h": 54
+         },
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 57,
+            "y": 241,
+            "w": 285,
+            "h": 54
+           },
+           "fill": "#3f4940",
+           "text": "This conversation is private. It is not shared\nwith your household, and it does not appear in\nyour order history.",
+           "style": "Inter 400 13px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 336,
+        "w": 350,
+        "h": 214
+       },
+       "layout": "VERTICAL pad=0,0,0,0 gap=8",
+       "children": [
+        {
+         "name": "Label",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 336,
+          "w": 350,
+          "h": 24
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "What would you like to ask about?",
+           "type": "TEXT",
+           "box": {
+            "x": 20,
+            "y": 336,
+            "w": 350,
+            "h": 24
+           },
+           "fill": "#1c1b1b",
+           "text": "What would you like to ask about?",
+           "style": "Inter 600 18px ls=-0.18000000715255737"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 368,
+          "w": 350,
+          "h": 182
+         },
+         "children": [
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 368,
+            "w": 105,
+            "h": 30
+           },
+           "layout": "VERTICAL pad=6,12,6,12 main=CENTER cross=CENTER",
+           "fill": "#ffffff",
+           "radius": 9999,
+           "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 32,
+              "y": 374,
+              "w": 81,
+              "h": 18
+             },
+             "fill": "#1c1b1b",
+             "text": "Side effects",
+             "style": "Inter 600 14px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 133,
+            "y": 368,
+            "w": 134,
+            "h": 30
+           },
+           "layout": "VERTICAL pad=6,12,6,12 main=CENTER cross=CENTER",
+           "fill": "#004f28",
+           "radius": 9999,
+           "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 145,
+              "y": 374,
+              "w": 110,
+              "h": 18
+             },
+             "fill": "#ffffff",
+             "text": "Dosage & timing",
+             "style": "Inter 600 14px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 406,
+            "w": 141,
+            "h": 30
+           },
+           "layout": "VERTICAL pad=6,12,6,12 main=CENTER cross=CENTER",
+           "fill": "#ffffff",
+           "radius": 9999,
+           "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 32,
+              "y": 412,
+              "w": 117,
+              "h": 18
+             },
+             "fill": "#1c1b1b",
+             "text": "Drug interactions",
+             "style": "Inter 600 14px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 444,
+            "w": 207,
+            "h": 30
+           },
+           "layout": "VERTICAL pad=6,12,6,12 main=CENTER cross=CENTER",
+           "fill": "#ffffff",
+           "radius": 9999,
+           "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 32,
+              "y": 450,
+              "w": 183,
+              "h": 18
+             },
+             "fill": "#1c1b1b",
+             "text": "Pregnancy & breastfeeding",
+             "style": "Inter 600 14px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 482,
+            "w": 137,
+            "h": 30
+           },
+           "layout": "VERTICAL pad=6,12,6,12 main=CENTER cross=CENTER",
+           "fill": "#ffffff",
+           "radius": 9999,
+           "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 32,
+              "y": 488,
+              "w": 113,
+              "h": 18
+             },
+             "fill": "#1c1b1b",
+             "text": "Children's doses",
+             "style": "Inter 600 14px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 165,
+            "y": 482,
+            "w": 156,
+            "h": 30
+           },
+           "layout": "VERTICAL pad=6,12,6,12 main=CENTER cross=CENTER",
+           "fill": "#ffffff",
+           "radius": 9999,
+           "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 177,
+              "y": 488,
+              "w": 132,
+              "h": 18
+             },
+             "fill": "#1c1b1b",
+             "text": "Chronic medication",
+             "style": "Inter 600 14px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 520,
+            "w": 128,
+            "h": 30
+           },
+           "layout": "VERTICAL pad=6,12,6,12 main=CENTER cross=CENTER",
+           "fill": "#ffffff",
+           "radius": 9999,
+           "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 32,
+              "y": 526,
+              "w": 104,
+              "h": 18
+             },
+             "fill": "#1c1b1b",
+             "text": "Something else",
+             "style": "Inter 600 14px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Background+Shadow",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 574,
+        "w": 350,
+        "h": 178
+       },
+       "layout": "VERTICAL pad=16,16,16,16 gap=8",
+       "fill": "#ffffff",
+       "radius": 12,
+       "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 36,
+          "y": 590,
+          "w": 318,
+          "h": 36
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=8",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 590,
+            "w": 266,
+            "h": 36
+           },
+           "layout": "VERTICAL pad=0,5.269999980926514,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 36,
+              "y": 590,
+              "w": 261,
+              "h": 36
+             },
+             "fill": "#1c1b1b",
+             "text": "Share my current medications with the\npharmacist",
+             "style": "Inter 600 14px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Switch",
+           "type": "FRAME",
+           "box": {
+            "x": 310,
+            "y": 596,
+            "w": 44,
+            "h": 24
+           },
+           "layout": "VERTICAL pad=2,2,2,22",
+           "fill": "#004f28",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Background",
+             "type": "RECTANGLE",
+             "box": {
+              "x": 332,
+              "y": 598,
+              "w": 20,
+              "h": 20
+             },
+             "fill": "#ffffff",
+             "radius": 9999
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 36,
+          "y": 634,
+          "w": 318,
+          "h": 58
+         },
+         "children": [
+          {
+           "name": "Background",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 638,
+            "w": 137,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=3.5,10,4.5,10 cross=CENTER gap=4",
+           "fill": "#f6f3f2",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 46,
+              "y": 644,
+              "w": 8,
+              "h": 11
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 58,
+              "y": 641,
+              "w": 104,
+              "h": 16
+             },
+             "fill": "#004f28",
+             "text": "Metformin 500mg",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Background",
+           "type": "FRAME",
+           "box": {
+            "x": 184,
+            "y": 638,
+            "w": 127,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=3.5,10,4.5,10 cross=CENTER gap=3.990000009536743",
+           "fill": "#f6f3f2",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 194,
+              "y": 644,
+              "w": 8,
+              "h": 11
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 207,
+              "y": 641,
+              "w": 94,
+              "h": 16
+             },
+             "fill": "#004f28",
+             "text": "Amlodipine 5mg",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Background",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 668,
+            "w": 133,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=3.5,10,4.5,10 cross=CENTER gap=4",
+           "fill": "#f6f3f2",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 46,
+              "y": 674,
+              "w": 8,
+              "h": 11
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 58,
+              "y": 671,
+              "w": 101,
+              "h": 16
+             },
+             "fill": "#004f28",
+             "text": "Ventolin Evohaler",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 36,
+          "y": 700,
+          "w": 318,
+          "h": 36
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Allows Dr. Kamau to cross-reference known interactions.",
+           "type": "TEXT",
+           "box": {
+            "x": 36,
+            "y": 700,
+            "w": 318,
+            "h": 36
+           },
+           "fill": "#3f4940",
+           "text": "Allows Dr. Kamau to cross-reference known\ninteractions.",
+           "style": "Inter 400 13px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Background+Shadow",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 776,
+        "w": 350,
+        "h": 144
+       },
+       "layout": "VERTICAL pad=16,16,16,16 gap=8",
+       "fill": "#ffffff",
+       "radius": 12,
+       "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+       "children": [
+        {
+         "name": "Textarea",
+         "type": "FRAME",
+         "box": {
+          "x": 36,
+          "y": 792,
+          "w": 318,
+          "h": 80
+         },
+         "layout": "VERTICAL pad=0,0,40,0",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 792,
+            "w": 318,
+            "h": 40
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Describe your question. Do not include your ID or payment details.",
+             "type": "TEXT",
+             "box": {
+              "x": 36,
+              "y": 792,
+              "w": 318,
+              "h": 40
+             },
+             "fill": "#6f7a70",
+             "text": "Describe your question. Do not include your \nID or payment details.",
+             "style": "Inter 400 15px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 36,
+          "y": 880,
+          "w": 318,
+          "h": 24
+         },
+         "layout": "HORIZONTAL pad=8,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=91.41999816894531",
+         "children": [
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 888,
+            "w": 182,
+            "h": 16
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=6",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 888,
+              "w": 9,
+              "h": 15
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 51,
+              "y": 888,
+              "w": 167,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 318,
+            "y": 888,
+            "w": 36,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 318,
+              "y": 888,
+              "w": 36,
+              "h": 16
+             },
+             "fill": "#3f4940",
+             "text": "0/500",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Overlay",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 944,
+        "w": 350,
+        "h": 86
+       },
+       "layout": "HORIZONTAL pad=16,16,16,16 gap=8",
+       "fill": "#ffdcc0@40%",
+       "radius": 8,
+       "children": [
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 36,
+          "y": 960,
+          "w": 18,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 36,
+            "y": 962,
+            "w": 18,
+            "h": 16
+           },
+           "fill": "#8d4f00"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 62,
+          "y": 960,
+          "w": 290,
+          "h": 54
+         },
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 62,
+            "y": 959,
+            "w": 286,
+            "h": 54
+           },
+           "fill": "#6b3b00",
+           "text": "This service is not for emergencies. For urgent\nsymptoms call 999 or go to your nearest\nfacility.",
+           "style": "Inter 400 13px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 1053,
+        "w": 350,
+        "h": 84
+       },
+       "layout": "VERTICAL pad=8,0,0,0 gap=8",
+       "children": [
+        {
+         "name": "Button",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 1061,
+          "w": 350,
+          "h": 48
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER gap=8",
+         "fill": "#004f28",
+         "radius": 12,
+         "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 121,
+            "y": 1076,
+            "w": 123,
+            "h": 18
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 121,
+              "y": 1076,
+              "w": 123,
+              "h": 18
+             },
+             "fill": "#ffffff",
+             "text": "Start Consultation",
+             "style": "Inter 600 14px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 252,
+            "y": 1077,
+            "w": 17,
+            "h": 17
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 252,
+              "y": 1077,
+              "w": 17,
+              "h": 17
+             },
+             "fill": "#ffffff"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 1117,
+          "w": 350,
+          "h": 20
+         },
+         "layout": "HORIZONTAL pad=4,0,0,0 main=CENTER cross=CENTER gap=16",
+         "children": [
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 53,
+            "y": 1121,
+            "w": 126,
+            "h": 16
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=4",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 53,
+              "y": 1123,
+              "w": 13,
+              "h": 13
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 70,
+              "y": 1121,
+              "w": 109,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Background",
+           "type": "RECTANGLE",
+           "box": {
+            "x": 195,
+            "y": 1127,
+            "w": 4,
+            "h": 4
+           },
+           "fill": "#bec9be",
+           "radius": 9999
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 215,
+            "y": 1121,
+            "w": 122,
+            "h": 16
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=4",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 215,
+              "y": 1123,
+              "w": 12,
+              "h": 13
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 231,
+              "y": 1121,
+              "w": 106,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Header",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 56
+   },
+   "layout": "VERTICAL pad=0,0,0,0",
+   "fill": "#fcf9f8@80%",
+   "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+   "blur": "BACKGROUND_BLUR 24",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 56
+     },
+     "layout": "HORIZONTAL pad=0,20,0,20 main=SPACE_BETWEEN cross=CENTER gap=123.33000183105469",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 6,
+        "w": 195,
+        "h": 44
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+       "children": [
+        {
+         "name": "Button - Go back:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 6,
+          "w": 36,
+          "h": 44
+         },
+         "children": [
+          {
+           "name": "Button - Go back",
+           "type": "FRAME",
+           "box": {
+            "x": 12,
+            "y": 6,
+            "w": 44,
+            "h": 44
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 28,
+              "y": 18,
+              "w": 12,
+              "h": 20
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Heading 1",
+         "type": "FRAME",
+         "box": {
+          "x": 64,
+          "y": 16,
+          "w": 151,
+          "h": 24
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 64,
+            "y": 16,
+            "w": 151,
+            "h": 24
+           },
+           "fill": "#1c1b1b",
+           "text": "Ask A Pharmacist",
+           "style": "Inter 600 18px ls=-0.18000000715255737"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Background",
+       "type": "FRAME",
+       "box": {
+        "x": 338,
+        "y": 12,
+        "w": 32,
+        "h": 32
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+       "fill": "#004f28",
+       "radius": 9999,
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 348,
+          "y": 22,
+          "w": 12,
+          "h": 12
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 348,
+            "y": 22,
+            "w": 12,
+            "h": 12
+           },
+           "fill": "#ffffff"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "texts": [
+  {
+   "text": "Dr. Wanjiru Kamau",
+   "style": "Inter 600 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 108,
+    "y": 88
+   }
+  },
+  {
+   "text": "Pharmacist · PPB Reg. No. 12345",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 108,
+    "y": 112
+   }
+  },
+  {
+   "text": "Online now",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 120,
+    "y": 132
+   }
+  },
+  {
+   "text": "Usually replies in under 3 minutes",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 59,
+    "y": 162
+   }
+  },
+  {
+   "text": "This conversation is private. It is not shared\nwith your household, and it does not appear in\nyour order history.",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 57,
+    "y": 241
+   }
+  },
+  {
+   "text": "What would you like to ask about?",
+   "style": "Inter 600 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 20,
+    "y": 336
+   }
+  },
+  {
+   "text": "Side effects",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 32,
+    "y": 374
+   }
+  },
+  {
+   "text": "Dosage & timing",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 145,
+    "y": 374
+   }
+  },
+  {
+   "text": "Drug interactions",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 32,
+    "y": 412
+   }
+  },
+  {
+   "text": "Pregnancy & breastfeeding",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 32,
+    "y": 450
+   }
+  },
+  {
+   "text": "Children's doses",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 32,
+    "y": 488
+   }
+  },
+  {
+   "text": "Chronic medication",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 177,
+    "y": 488
+   }
+  },
+  {
+   "text": "Something else",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 32,
+    "y": 526
+   }
+  },
+  {
+   "text": "Share my current medications with the\npharmacist",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 36,
+    "y": 590
+   }
+  },
+  {
+   "text": "Metformin 500mg",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 58,
+    "y": 641
+   }
+  },
+  {
+   "text": "Amlodipine 5mg",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 207,
+    "y": 641
+   }
+  },
+  {
+   "text": "Ventolin Evohaler",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 58,
+    "y": 671
+   }
+  },
+  {
+   "text": "Allows Dr. Kamau to cross-reference known\ninteractions.",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 36,
+    "y": 700
+   }
+  },
+  {
+   "text": "Describe your question. Do not include your \nID or payment details.",
+   "style": "Inter 400 15px ls=0",
+   "box": {
+    "x": 36,
+    "y": 792
+   }
+  },
+  {
+   "text": "Attach photo of pack or label",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 51,
+    "y": 888
+   }
+  },
+  {
+   "text": "0/500",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 318,
+    "y": 888
+   }
+  },
+  {
+   "text": "This service is not for emergencies. For urgent\nsymptoms call 999 or go to your nearest\nfacility.",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 62,
+    "y": 959
+   }
+  },
+  {
+   "text": "Start Consultation",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 121,
+    "y": 1076
+   }
+  },
+  {
+   "text": "Chat on WhatsApp",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 70,
+    "y": 1121
+   }
+  },
+  {
+   "text": "Book face-to-face",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 231,
+    "y": 1121
+   }
+  },
+  {
+   "text": "Ask A Pharmacist",
+   "style": "Inter 600 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 64,
+    "y": 16
+   }
+  }
+ ]
+}

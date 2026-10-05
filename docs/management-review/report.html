@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Xana Plus — What the App Does</title>
+<style>
+  @page { size: A4; margin: 14mm 16mm 16mm; }
+  :root { --green: #046938; --ink: #1d2320; --muted: #5b6660; --rule: #dfe5e1; --tint: #f3f7f4; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; color: var(--ink); font-size: 10.5pt; line-height: 1.5; }
+  h1 { font-size: 24pt; line-height: 1.2; margin: 0 0 6mm; color: var(--green); font-weight: 600; }
+  h2 { font-size: 15pt; color: var(--green); margin: 9mm 0 3mm; font-weight: 600; }
+  h3 { break-after: avoid; font-size: 12pt; margin: 7mm 0 3mm; font-weight: 600; }
+  p { margin: 0 0 3mm; }
+  .cover { height: 250mm; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
+  .cover img { width: 42mm; }
+  .cover .title { margin-top: 55mm; }
+  .cover .sub { font-size: 12pt; color: var(--muted); }
+  .cover .meta { border-top: 2px solid var(--green); padding-top: 4mm; color: var(--muted); font-size: 10pt; }
+  .lead p { font-size: 11pt; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 2mm; margin: 4mm 0; }
+  .flow span { white-space: nowrap;  border: 1px solid var(--green); color: var(--green); border-radius: 3mm; padding: 1.5mm 3mm; font-size: 9.5pt; }
+  .flow b { color: var(--muted); font-weight: 400; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4mm 5mm; }
+  .screen { break-inside: avoid; }
+  .screen img { width: 100%; border: 1px solid var(--rule); border-radius: 2mm; display: block; }
+  .screen h4 { font-size: 9.5pt; margin: 2mm 0 0.5mm; }
+  .screen p { font-size: 8.5pt; color: var(--muted); line-height: 1.4; margin: 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin: 3mm 0 4mm; break-inside: avoid; }
+  th { text-align: left; background: var(--tint); color: var(--green); font-weight: 600; }
+  th, td { padding: 2mm 2.5mm; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  .note { background: var(--tint); border-left: 3px solid var(--green); padding: 3mm 4mm; margin: 4mm 0; }
+  ul { margin: 0 0 3mm; padding-left: 5mm; } li { margin-bottom: 1.5mm; }
+  td:first-child { white-space: nowrap; }
+  .newpage { break-before: page; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <img src="logo.svg" alt="Xana">
+  <div class="title">
+    <h1>Xana Plus<br>What the App Does</h1>
+    <p class="sub">A screen-by-screen review of the customer app, for management</p>
+  </div>
+  <div class="meta">23 September 2026</div>
+</section>
+
+<h2 style="margin-top:0">Summary</h2>
+<div class="lead">
+<p>Xana Plus lets a Xana customer order groceries and pharmacy items from their phone, pay by M-Pesa, and follow the order to their door. Every customer-facing screen is now designed and wired: all 53 required screens run on a phone with sample data built in.</p>
+<p>There is no system behind the screens yet. Products, stock, payments and orders are placeholders, so nothing a customer does is saved or reaches a store. The backend is the next phase of work.</p>
+<p>We ask management for feedback on the screens shown here.</p>
+</div>
+
+<h2>How to read this document</h2>
+<p>Each picture below is a real screen from the app, captured on 23 September 2026 at phone size. The customer in every picture is Amina Odhiambo, a sample Gold member. The prices, stock and orders are sample data, not live figures.</p>
+<div class="note">When this document says a screen is <b>built</b>, it means the screen works on a phone with sample data. It does not mean the screen is connected to a store, a payment system or a pharmacist. Those connections are the backend, covered in “What is not done yet”.</div>
+
+<h2>The customer journey at a glance</h2>
+<p>A customer can browse without an account and signs in only to place an order. From there the journey splits into shopping and pharmacy, and meets again at delivery.</p>
+<div class="flow">
+  <span>Browse &amp; search</span><b>→</b><span>Basket</span><b>→</b><span>Checkout</span><b>→</b><span>Sign in (phone + SMS code)</span></div><div class="flow"><b>→</b><span>Pay by M-Pesa</span><b>→</b><span>Track order</span><b>→</b><span>Delivered or return</span>
+</div>
+<div class="flow">
+  <span>Pharmacy</span><b>→</b><span>Same basket</span><b>·</b><span>Prescription → pharmacist review</span>
+</div>
+<p>The pharmacy shares the same basket as groceries. One order can hold avocados and prescription medicine, with a pharmacist checking anything that needs one before it ships.</p>
+
+<h2>Screen by screen</h2>
+<p>The screens are grouped in the order a customer meets them: shopping, paying, receiving the order, the pharmacy, and their account.</p>
+
+<h3 class="newpage" style="margin-top:0">1. Shopping</h3>
+<p>No account is needed to shop. A customer can open the app, browse every department, search and fill a basket before giving any details.</p>
+<div class="grid">
+  <div class="screen"><img src="shots/01-home.png"><h4>Home</h4><p>The week’s deals, the customer’s branch (Syokimau) and the main categories. Search and the barcode scanner sit at the top.</p></div>
+  <div class="screen"><img src="shots/02-categories.png"><h4>Categories</h4><p>Six departments one tap apart: Retail, Wholesale, Deli, Pharmacy, Groceries and Liquor. Wholesale shows bulk carton pricing.</p></div>
+  <div class="screen"><img src="shots/03-search.png"><h4>Search</h4><p>One search covers every department, with filters for price, stock and express delivery. The basket total stays visible.</p></div>
+  <div class="screen"><img src="shots/04-product.png"><h4>Product</h4><p>Price, stock, delivery speed and details, with a quantity selector and an add-to-basket button.</p></div>
+  <div class="screen"><img src="shots/05-scan.png"><h4>Barcode scan</h4><p>Point the camera at a packaged product to open its page or compare prices. In this version the scan is simulated; it does not use the camera yet.</p></div>
+</div>
+
+<h3>2. Basket and payment</h3>
+<div class="grid">
+  <div class="screen"><img src="shots/06-cart.png"><h4>Basket</h4><p>Items, slot and total. Bulk pricing applies on its own and the saving is shown (here, KES 240). The customer also sets what happens if an item is out of stock.</p></div>
+  <div class="screen"><img src="shots/07-checkout.png"><h4>Checkout</h4><p>Address, delivery slot and payment method: M-Pesa, cash on delivery or card. Signed-in members can also spend Xana Club points, at 10 points to KES 1.</p></div>
+  <div class="screen"><img src="shots/00-login.png"><h4>Sign in, at checkout</h4><p>Asked for only at Place Order: a mobile number and a six-digit SMS or WhatsApp code, no password. Today any number works and the code is 123456.</p></div>
+  <div class="screen"><img src="shots/08-mpesa.png"><h4>M-Pesa prompt</h4><p>A payment prompt goes to the customer’s phone, where they enter their M-Pesa PIN. Xana Plus never sees the PIN. In this version the prompt is a timer; no money moves.</p></div>
+  <div class="screen"><img src="shots/09-failed.png"><h4>Payment not completed</h4><p>Says why the payment failed and that nothing was charged. The customer can resend, pay on delivery or switch method. Most shopping apps leave this screen out.</p></div>
+</div>
+
+<h3>3. Orders and delivery</h3>
+<div class="grid">
+  <div class="screen"><img src="shots/10-orders.png"><h4>My orders</h4><p>Every order with its status, branch, items and total. Active orders can be tracked; delivered ones reordered in one tap.</p></div>
+  <div class="screen"><img src="shots/11-tracking.png"><h4>Live tracking and substitutions</h4><p>Four stages: Received, Shopping, Out for delivery, Delivered. If an item is out of stock, the customer is asked in the moment to choose a replacement, a refund or a call. The “Advance status (demo)” button exists only for presentations.</p></div>
+  <div class="screen"><img src="shots/11b-hold.png"><h4>Item on hold</h4><p>If the shopper cannot reach the customer, the item is held. Nothing is replaced or removed until the customer chooses, so they are never charged for something they did not pick.</p></div>
+  <div class="screen"><img src="shots/12-return.png"><h4>Return and refund</h4><p>From a delivered order, pick the items, give a reason and choose a refund to M-Pesa or as Xana Club credit.</p></div>
+</div>
+
+<h3 class="newpage" style="margin-top:0">4. Pharmacy</h3>
+<p>The pharmacy is what sets Xana Plus apart from a plain grocery app. Every pharmacy screen shows the Pharmacy and Poisons Board licence. Medicine names never appear on shared or summary screens.</p>
+<div class="grid">
+  <div class="screen"><img src="shots/13-pharmacy.png"><h4>Pharmacy home</h4><p>Upload a prescription, consult a doctor, view prescriptions, ask a pharmacist. “Rx Required” items need a pharmacist’s approval before they ship. Prescriptions and pharmacist chat need sign-in.</p></div>
+  <div class="screen"><img src="shots/14-upload.png"><h4>Upload a prescription</h4><p>Photograph it, say who it is for and confirm it is valid. A licensed pharmacist reviews it, typically within 30 minutes, 7am to 10pm.</p></div>
+  <div class="screen"><img src="shots/15-prescriptions.png"><h4>My prescriptions</h4><p>Received, With pharmacist, Dispensed, Ready. Regular medicines are kept on file with refill dates; expired ones are flagged.</p></div>
+  <div class="screen"><img src="shots/16-repeat.png"><h4>Order a repeat</h4><p>Tick the medicines to reorder and send them to the pharmacist. Expired prescriptions are blocked until renewed. Refill reminders can be switched on.</p></div>
+  <div class="screen"><img src="shots/18-consult.png"><h4>Ask a pharmacist</h4><p>A free, private consultation with a named, registered pharmacist. The customer may share current medicines so interactions can be checked.</p></div>
+  <div class="screen"><img src="shots/17-chat.png"><h4>Pharmacist chat</h4><p>By WhatsApp or in the app, and always marked “not for emergencies, call 999”. The replies shown are sample text; no pharmacist is connected yet.</p></div>
+  <div class="screen"><img src="shots/19-clinical.png"><h4>Clinical services</h4><p>Six in-branch services with prices upfront, including a blood pressure check (KES 150), blood glucose screening (KES 350) and vaccinations.</p></div>
+  <div class="screen"><img src="shots/20-clinical-book.png"><h4>Book a service</h4><p>Pick a branch, a date and a time, then confirm. Cancellation is free up to one hour before.</p></div>
+</div>
+
+<h3 class="newpage" style="margin-top:0">5. Account and rewards</h3>
+<div class="grid">
+  <div class="screen"><img src="shots/21-profile.png"><h4>Profile</h4><p>Xana Club tier and points with progress to the next tier; orders, prescriptions, addresses, notifications and privacy below.</p></div>
+  <div class="screen"><img src="shots/23-address.png"><h4>Add an address</h4><p>Drag a pin to the gate and see at once whether it is inside the delivery zone. The map is a placeholder drawing, not a live map.</p></div>
+</div>
+
+<h3 class="newpage" style="margin-top:0">Savings and spending habits</h3>
+<p>Opened from the Savings figure on Profile. It shows how much Xana has saved the customer and where their money goes, over 3 months, 6 months or all time. In the sample, Amina saved KES 1,010 on KES 6,090 spent across 3 orders, or 14% of her basket value.</p>
+<div class="grid" style="grid-template-columns: repeat(3, 1fr); align-items: start;">
+  <div class="screen"><img src="shots/22a-spending.png"></div>
+  <div class="screen"><img src="shots/22b-spending.png"></div>
+  <div class="screen"><img src="shots/22c-spending.png"></div>
+</div>
+<ul style="margin-top:5mm">
+  <li><b>How you saved:</b> savings by source: bulk pricing (KES 240), promotions (KES 320) and free delivery (KES 450).</li>
+  <li><b>Where it went:</b> spending by department, with each one's share of the total.</li>
+  <li><b>Pharmacy shown as a total:</b> medicines are never itemised here, so a shared phone does not reveal them.</li>
+  <li><b>Month by month:</b> a simple bar chart of spending per month.</li>
+  <li><b>Xana Club:</b> points balance, points earned in the period and distance to the next tier.</li>
+  <li><b>Your regulars:</b> the items the customer buys most, each with a one-tap Reorder.</li>
+</ul>
+
+<h2 class="newpage" style="margin-top:0">What is not done yet</h2>
+<p>The screens are close to complete. What the screens need behind them has not been started.</p>
+<table>
+  <tr><th>Area</th><th>Today</th><th>Needed before launch</th></tr>
+  <tr><td>Sign-in</td><td>Any number works; code is always 123456</td><td>Real SMS codes</td></tr>
+  <tr><td>Products, prices, stock</td><td>A fixed sample list inside the app</td><td>Live catalogue from our stores (Business Central)</td></tr>
+  <tr><td>M-Pesa</td><td>A countdown timer; no money moves</td><td>Live Safaricom payments and refunds</td></tr>
+  <tr><td>Orders</td><td>Held on the phone only</td><td>A central order system shoppers and riders can see</td></tr>
+  <tr><td>Pharmacist review and chat</td><td>Sample replies</td><td>A pharmacist-side tool and real review queue</td></tr>
+  <tr><td>App stores</td><td>Not packaged</td><td>Google Play and Apple App Store listings</td></tr>
+</table>
+<p>Every required screen is now in place. The last one, for a customer who cannot be reached about an out-of-stock item, is shown in section 3.</p>
+
+</body>
+</html>

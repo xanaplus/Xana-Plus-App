@@ -1,0 +1,1675 @@
+{
+ "id": "14:6424",
+ "name": "06b · Checkout — Login Sheet",
+ "slug": "06b-checkout-login-sheet",
+ "size": {
+  "w": 411,
+  "h": 1099
+ },
+ "bg": "#ffffff|#f3f4f6",
+ "tree": [
+  {
+   "name": "Mobile Device Frame (390px iOS Viewport)",
+   "type": "FRAME",
+   "box": {
+    "x": 11,
+    "y": 0,
+    "w": 390,
+    "h": 1099
+   },
+   "layout": "VERTICAL pad=0,0,0,0",
+   "fill": "#f8faf9",
+   "stroke": "#0f172a",
+   "radius": 44,
+   "shadow": "DROP_SHADOW #000000@25% 0/25 blur50",
+   "children": [
+    {
+     "name": "Semi-transparent dark overlay (rgba(0,0,0,0.5)) with backdrop blur",
+     "type": "FRAME",
+     "box": {
+      "x": 17,
+      "y": 6,
+      "w": 378,
+      "h": 1087
+     },
+     "layout": "VERTICAL pad=0,0,0,0 main=MAX",
+     "fill": "#000000@50%",
+     "blur": "BACKGROUND_BLUR 4",
+     "children": [
+      {
+       "name": "Bottom Sheet Modal (Slide-up sheet)",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 619,
+        "w": 378,
+        "h": 474
+       },
+       "layout": "VERTICAL pad=12,24,32,24 cross=CENTER gap=19",
+       "fill": "#ffffff",
+       "stroke": "#f3f4f6",
+       "radius": "28,28,0,0",
+       "children": [
+        {
+         "name": "Bottom Sheet Modal (Slide-up sheet):shadow",
+         "type": "RECTANGLE",
+         "box": {
+          "x": 17,
+          "y": 619,
+          "w": 378,
+          "h": 474
+         },
+         "fill": "#ffffff@0%",
+         "shadow": "DROP_SHADOW #000000@25% 0/25 blur50"
+        },
+        {
+         "name": "Grab Handle Bar",
+         "type": "FRAME",
+         "box": {
+          "x": 41,
+          "y": 632,
+          "w": 330,
+          "h": 4
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER",
+         "children": [
+          {
+           "name": "Background",
+           "type": "RECTANGLE",
+           "box": {
+            "x": 186,
+            "y": 632,
+            "w": 40,
+            "h": 4
+           },
+           "fill": "#d1d5db",
+           "radius": 9999
+          }
+         ]
+        },
+        {
+         "name": "Headline & Subtitle",
+         "type": "FRAME",
+         "box": {
+          "x": 41,
+          "y": 655,
+          "w": 330,
+          "h": 73
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=5.25",
+         "children": [
+          {
+           "name": "Heading 2",
+           "type": "FRAME",
+           "box": {
+            "x": 41,
+            "y": 655,
+            "w": 330,
+            "h": 28
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Log in to complete your order",
+             "type": "TEXT",
+             "box": {
+              "x": 41,
+              "y": 655,
+              "w": 330,
+              "h": 28
+             },
+             "fill": "#0f172a",
+             "text": "Log in to complete your order",
+             "style": "Liberation Sans 700 20px ls=-0.5"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 41,
+            "y": 688,
+            "w": 330,
+            "h": 40
+           },
+           "layout": "VERTICAL pad=0,0,0.75,0",
+           "children": [
+            {
+             "name": "Enter your phone number to receive a one-time verification code. No password needed.",
+             "type": "TEXT",
+             "box": {
+              "x": 41,
+              "y": 688,
+              "w": 330,
+              "h": 39
+             },
+             "fill": "#64748b",
+             "text": "Enter your phone number to receive a one-time verification\ncode. No password needed.",
+             "style": "Liberation Sans 400 12px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Form: Phone Number Input Section",
+         "type": "FRAME",
+         "box": {
+          "x": 41,
+          "y": 747,
+          "w": 330,
+          "h": 291
+         },
+         "layout": "VERTICAL pad=1,0,5,0 gap=16",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 41,
+            "y": 748,
+            "w": 330,
+            "h": 83
+           },
+           "layout": "VERTICAL pad=0,0,0,0 gap=5.5",
+           "children": [
+            {
+             "name": "Label",
+             "type": "FRAME",
+             "box": {
+              "x": 41,
+              "y": 748,
+              "w": 330,
+              "h": 17
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Phone Input Combined Container with focus-ring styling",
+             "type": "FRAME",
+             "box": {
+              "x": 41,
+              "y": 771,
+              "w": 330,
+              "h": 38
+             },
+             "layout": "HORIZONTAL pad=4,4,4,4 cross=CENTER gap=-1.4210854715202004e-14",
+             "fill": "#f9fafb@50%",
+             "stroke": "#d1d5db",
+             "radius": 12,
+             "childCount": 2
+            },
+            {
+             "name": "Helper Text",
+             "type": "FRAME",
+             "box": {
+              "x": 41,
+              "y": 814,
+              "w": 330,
+              "h": 17
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=4",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Primary CTA Button in Xana Life Green (#046938)",
+           "type": "FRAME",
+           "box": {
+            "x": 41,
+            "y": 847,
+            "w": 330,
+            "h": 65
+           },
+           "layout": "VERTICAL pad=0,0,0,0 gap=8",
+           "children": [
+            {
+             "name": "Label",
+             "type": "FRAME",
+             "box": {
+              "x": 41,
+              "y": 847,
+              "w": 330,
+              "h": 17
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 41,
+              "y": 872,
+              "w": 330,
+              "h": 40
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER gap=8",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 41,
+            "y": 928,
+            "w": 330,
+            "h": 52
+           },
+           "layout": "HORIZONTAL pad=18,0,14,0 main=CENTER cross=CENTER gap=7.989999771118164",
+           "fill": "#046938",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Button:shadow",
+             "type": "RECTANGLE",
+             "box": {
+              "x": 41,
+              "y": 932,
+              "w": 330,
+              "h": 48
+             },
+             "fill": "#ffffff@0%",
+             "radius": 12,
+             "shadow": "DROP_SHADOW #046938@20% 0/2 blur4 + DROP_SHADOW #046938@20% 0/4 blur6"
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 162,
+              "y": 946,
+              "w": 63,
+              "h": 20
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            },
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 233,
+              "y": 948,
+              "w": 16,
+              "h": 16
+             },
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Terms & Conditions Note",
+           "type": "FRAME",
+           "box": {
+            "x": 41,
+            "y": 996,
+            "w": 330,
+            "h": 37
+           },
+           "layout": "VERTICAL pad=4,8,0,8 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 63,
+              "y": 1000,
+              "w": 286,
+              "h": 33
+             },
+             "fill": "#94a3b8",
+             "text": "By continuing, you agree to Xana Life's Terms of Service & \nPrivacy Policy.",
+             "style": "Liberation Sans 400 11px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Home Bar Indicator Indicator",
+         "type": "RECTANGLE",
+         "box": {
+          "x": 142,
+          "y": 1057,
+          "w": 128,
+          "h": 4
+         },
+         "fill": "#cbd5e1",
+         "radius": 9999
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "iOS Status Bar",
+     "type": "FRAME",
+     "box": {
+      "x": 17,
+      "y": 6,
+      "w": 378,
+      "h": 44
+     },
+     "layout": "HORIZONTAL pad=0,28,6,28 main=SPACE_BETWEEN cross=MAX gap=239.1699981689453",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 45,
+        "y": 28,
+        "w": 23,
+        "h": 16
+       },
+       "layout": "VERTICAL pad=0,0,0,0",
+       "children": [
+        {
+         "name": "Text",
+         "type": "TEXT",
+         "box": {
+          "x": 45,
+          "y": 28,
+          "w": 23,
+          "h": 16
+         },
+         "fill": "#0f172a",
+         "text": "9:41",
+         "style": "Liberation Sans 600 12px ls=-0.30000001192092896"
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 307,
+        "y": 30,
+        "w": 60,
+        "h": 14
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER",
+       "children": [
+        {
+         "name": "SVG - Cellular Icon",
+         "type": "FRAME",
+         "box": {
+          "x": 307,
+          "y": 30,
+          "w": 14,
+          "h": 14
+         },
+         "children": [
+          {
+           "name": "Vector",
+           "type": "VECTOR",
+           "box": {
+            "x": 308,
+            "y": 31,
+            "w": 11,
+            "h": 11
+           },
+           "fill": "#0f172a"
+          }
+         ]
+        },
+        {
+         "name": "SVG - Wi-Fi Icon:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 321,
+          "y": 30,
+          "w": 20,
+          "h": 14
+         },
+         "layout": "VERTICAL pad=0,0,0,6",
+         "children": [
+          {
+           "name": "SVG - Wi-Fi Icon",
+           "type": "FRAME",
+           "box": {
+            "x": 327,
+            "y": 30,
+            "w": 14,
+            "h": 14
+           },
+           "layout": "VERTICAL pad=0,0,0,0 main=CENTER",
+           "children": [
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 327,
+              "y": 30,
+              "w": 14,
+              "h": 14
+             },
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Battery Icon:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 341,
+          "y": 32,
+          "w": 26,
+          "h": 10
+         },
+         "layout": "VERTICAL pad=0,0,0,6",
+         "children": [
+          {
+           "name": "Battery Icon",
+           "type": "FRAME",
+           "box": {
+            "x": 347,
+            "y": 32,
+            "w": 20,
+            "h": 10
+           },
+           "layout": "HORIZONTAL pad=2,2,2,2 main=CENTER cross=CENTER",
+           "stroke": "#0f172a",
+           "radius": 2,
+           "children": [
+            {
+             "name": "Background",
+             "type": "RECTANGLE",
+             "box": {
+              "x": 350,
+              "y": 35,
+              "w": 14,
+              "h": 4
+             },
+             "fill": "#0f172a"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Background Checkout Content (Base Layer)",
+     "type": "FRAME",
+     "box": {
+      "x": 17,
+      "y": 50,
+      "w": 378,
+      "h": 1043
+     },
+     "layout": "VERTICAL pad=0,0,0,0",
+     "children": [
+      {
+       "name": "Checkout Header",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 50,
+        "w": 378,
+        "h": 61
+       },
+       "layout": "HORIZONTAL pad=12,16,12,16 main=SPACE_BETWEEN cross=CENTER gap=84.69999694824219",
+       "fill": "#ffffff",
+       "stroke": "#f3f4f6",
+       "children": [
+        {
+         "name": "Button - Go back",
+         "type": "FRAME",
+         "box": {
+          "x": 33,
+          "y": 62,
+          "w": 36,
+          "h": 36
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 41,
+            "y": 70,
+            "w": 20,
+            "h": 20
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 47,
+              "y": 74,
+              "w": 6,
+              "h": 12
+             },
+             "stroke": "#334155"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Heading 1",
+         "type": "FRAME",
+         "box": {
+          "x": 153,
+          "y": 68,
+          "w": 70,
+          "h": 24
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 153,
+            "y": 68,
+            "w": 70,
+            "h": 24
+           },
+           "fill": "#0f172a",
+           "text": "Checkout",
+           "style": "Liberation Sans 700 16px ls=-0.4000000059604645"
+          }
+         ]
+        },
+        {
+         "name": "Background",
+         "type": "FRAME",
+         "box": {
+          "x": 308,
+          "y": 68,
+          "w": 71,
+          "h": 25
+         },
+         "layout": "HORIZONTAL pad=4,10,4,10 cross=CENTER gap=4",
+         "fill": "#ecfdf5",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 318,
+            "y": 74,
+            "w": 12,
+            "h": 12
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 319,
+              "y": 75,
+              "w": 8,
+              "h": 10
+             },
+             "fill": "#046938"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 334,
+            "y": 72,
+            "w": 35,
+            "h": 17
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 334,
+              "y": 72,
+              "w": 35,
+              "h": 17
+             },
+             "fill": "#046938",
+             "text": "Secure",
+             "style": "Liberation Sans 500 11px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Main Scrollable Section of Screen 6",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 111,
+        "w": 378,
+        "h": 863
+       },
+       "layout": "VERTICAL pad=14,14,128,14 gap=12",
+       "children": [
+        {
+         "name": "Section - Delivery Address Card",
+         "type": "FRAME",
+         "box": {
+          "x": 31,
+          "y": 125,
+          "w": 350,
+          "h": 128
+         },
+         "layout": "VERTICAL pad=16,16,16,16 gap=10",
+         "fill": "#ffffff",
+         "stroke": "#f3f4f6",
+         "radius": 16,
+         "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 48,
+            "y": 142,
+            "w": 316,
+            "h": 28
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=105.45999908447266",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 48,
+              "y": 142,
+              "w": 167,
+              "h": 28
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+             "childCount": 2
+            },
+            {
+             "name": "Button",
+             "type": "FRAME",
+             "box": {
+              "x": 319,
+              "y": 148,
+              "w": 44,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 48,
+            "y": 180,
+            "w": 316,
+            "h": 56
+           },
+           "layout": "VERTICAL pad=0,0,0,36 gap=2",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 84,
+              "y": 180,
+              "w": 280,
+              "h": 20
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+             "childCount": 2
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 84,
+              "y": 202,
+              "w": 280,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 84,
+              "y": 220,
+              "w": 280,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Section - Delivery Slot Card",
+         "type": "FRAME",
+         "box": {
+          "x": 31,
+          "y": 265,
+          "w": 350,
+          "h": 117
+         },
+         "layout": "VERTICAL pad=16,16,16,16 gap=8",
+         "fill": "#ffffff",
+         "stroke": "#f3f4f6",
+         "radius": 16,
+         "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 48,
+            "y": 282,
+            "w": 316,
+            "h": 28
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=133.5",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 48,
+              "y": 282,
+              "w": 138,
+              "h": 28
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+             "childCount": 2
+            },
+            {
+             "name": "Button",
+             "type": "FRAME",
+             "box": {
+              "x": 319,
+              "y": 288,
+              "w": 44,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 48,
+            "y": 318,
+            "w": 316,
+            "h": 47
+           },
+           "layout": "VERTICAL pad=0,0,0,36 gap=6",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 84,
+              "y": 318,
+              "w": 280,
+              "h": 20
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 84,
+              "y": 344,
+              "w": 188,
+              "h": 21
+             },
+             "layout": "HORIZONTAL pad=2,10,2,10 cross=CENTER gap=6",
+             "fill": "#ecfdf5",
+             "radius": 9999,
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Section - Payment Method Card",
+         "type": "FRAME",
+         "box": {
+          "x": 31,
+          "y": 394,
+          "w": 350,
+          "h": 208
+         },
+         "layout": "VERTICAL pad=16,16,26,16 gap=12",
+         "fill": "#ffffff",
+         "stroke": "#f3f4f6",
+         "radius": 16,
+         "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+         "children": [
+          {
+           "name": "Heading 2",
+           "type": "FRAME",
+           "box": {
+            "x": 48,
+            "y": 411,
+            "w": 316,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "PAYMENT METHOD",
+             "type": "TEXT",
+             "box": {
+              "x": 48,
+              "y": 411,
+              "w": 316,
+              "h": 16
+             },
+             "fill": "#0f172a",
+             "text": "PAYMENT METHOD",
+             "style": "Liberation Sans 700 12px ls=0.6000000238418579"
+            }
+           ]
+          },
+          {
+           "name": "M-PESA Selected Option",
+           "type": "FRAME",
+           "box": {
+            "x": 48,
+            "y": 439,
+            "w": 316,
+            "h": 136
+           },
+           "layout": "VERTICAL pad=12,12,12,12 gap=8",
+           "fill": "#ecfdf5@20%",
+           "stroke": "#046938",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 62,
+              "y": 453,
+              "w": 288,
+              "h": 19
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            },
+            {
+             "name": "Background+Border",
+             "type": "FRAME",
+             "box": {
+              "x": 62,
+              "y": 480,
+              "w": 288,
+              "h": 58
+             },
+             "layout": "HORIZONTAL pad=10,8,8,8 main=SPACE_BETWEEN cross=CENTER gap=132.8300018310547",
+             "fill": "#ffffff",
+             "stroke": "#e5e7eb",
+             "radius": 8,
+             "childCount": 2
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 62,
+              "y": 546,
+              "w": 288,
+              "h": 15
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=4",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Section - Order Summary Card",
+         "type": "FRAME",
+         "box": {
+          "x": 31,
+          "y": 614,
+          "w": 350,
+          "h": 232
+         },
+         "layout": "VERTICAL pad=16,16,16,16 gap=12",
+         "fill": "#ffffff",
+         "stroke": "#f3f4f6",
+         "radius": 16,
+         "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 48,
+            "y": 631,
+            "w": 316,
+            "h": 16
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=128.1699981689453",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 48,
+              "y": 631,
+              "w": 172,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 348,
+              "y": 631,
+              "w": 16,
+              "h": 16
+             },
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 48,
+            "y": 659,
+            "w": 316,
+            "h": 170
+           },
+           "layout": "VERTICAL pad=0,0,0,0 gap=6",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 48,
+              "y": 659,
+              "w": 316,
+              "h": 16
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN gap=72.73999786376953",
+             "childCount": 2
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 48,
+              "y": 681,
+              "w": 316,
+              "h": 16
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN gap=128.10000610351562",
+             "childCount": 2
+            },
+            {
+             "name": "HorizontalBorder",
+             "type": "FRAME",
+             "box": {
+              "x": 48,
+              "y": 703,
+              "w": 316,
+              "h": 85
+             },
+             "layout": "VERTICAL pad=8,0,0,0 gap=4",
+             "stroke": "#e5e7eb",
+             "childCount": 4
+            },
+            {
+             "name": "Paragraph+HorizontalBorder",
+             "type": "FRAME",
+             "box": {
+              "x": 48,
+              "y": 794,
+              "w": 316,
+              "h": 35
+             },
+             "layout": "HORIZONTAL pad=10,0,0,0 main=SPACE_BETWEEN cross=BASELINE gap=173.63999938964844",
+             "stroke": "#f3f4f6",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Bottom Order CTA visible in background",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 974,
+        "w": 378,
+        "h": 120
+       },
+       "layout": "VERTICAL pad=16,16,28,16 gap=8",
+       "fill": "#ffffff",
+       "stroke": "#e5e7eb",
+       "children": [
+        {
+         "name": "Button",
+         "type": "FRAME",
+         "box": {
+          "x": 33,
+          "y": 991,
+          "w": 346,
+          "h": 52
+         },
+         "layout": "HORIZONTAL pad=14,0,14,0 main=CENTER cross=CENTER gap=8",
+         "fill": "#046938",
+         "radius": 12,
+         "children": [
+          {
+           "name": "Button:shadow",
+           "type": "RECTANGLE",
+           "box": {
+            "x": 33,
+            "y": 991,
+            "w": 346,
+            "h": 52
+           },
+           "fill": "#ffffff@0%",
+           "radius": 12,
+           "shadow": "DROP_SHADOW #000000@10% 0/2 blur4 + DROP_SHADOW #000000@10% 0/4 blur6"
+          },
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 93,
+            "y": 1009,
+            "w": 16,
+            "h": 16
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 96,
+              "y": 1011,
+              "w": 11,
+              "h": 12
+             },
+             "stroke": "#ffffff"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 117,
+            "y": 1005,
+            "w": 201,
+            "h": 24
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 117,
+              "y": 1005,
+              "w": 201,
+              "h": 24
+             },
+             "fill": "#ffffff",
+             "text": "Place Order — KES 370.00",
+             "style": "Liberation Sans 700 16px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 33,
+          "y": 1051,
+          "w": 346,
+          "h": 15
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER gap=4",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 105,
+            "y": 1051,
+            "w": 86,
+            "h": 15
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 105,
+              "y": 1051,
+              "w": 86,
+              "h": 15
+             },
+             "fill": "#94a3b8",
+             "text": "🔒 256-bit Encrypted",
+             "style": "Liberation Sans 500 10px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 196,
+            "y": 1051,
+            "w": 3,
+            "h": 15
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 196,
+              "y": 1051,
+              "w": 3,
+              "h": 15
+             },
+             "fill": "#94a3b8",
+             "text": "·",
+             "style": "Liberation Sans 500 10px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 203,
+            "y": 1051,
+            "w": 102,
+            "h": 15
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 203,
+              "y": 1051,
+              "w": 102,
+              "h": 15
+             },
+             "fill": "#94a3b8",
+             "text": "Instant M-Pesa Prompt",
+             "style": "Liberation Sans 500 10px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "texts": [
+  {
+   "text": "Log in to complete your order",
+   "style": "Liberation Sans 700 20px ls=-0.5",
+   "box": {
+    "x": 41,
+    "y": 655
+   }
+  },
+  {
+   "text": "Enter your phone number to receive a one-time verification\ncode. No password needed.",
+   "style": "Liberation Sans 400 12px ls=0",
+   "box": {
+    "x": 41,
+    "y": 688
+   }
+  },
+  {
+   "text": "PHONE NUMBER",
+   "style": "Liberation Sans 700 11px ls=0.550000011920929",
+   "box": {
+    "x": 41,
+    "y": 748
+   }
+  },
+  {
+   "text": "🇰🇪",
+   "style": "FreeSans 400 16px ls=0",
+   "box": {
+    "x": 56,
+    "y": 782
+   }
+  },
+  {
+   "text": "+254",
+   "style": "Liberation Sans 600 12px ls=-0.30000001192092896",
+   "box": {
+    "x": 90,
+    "y": 782
+   }
+  },
+  {
+   "text": "712 345 678",
+   "style": "Liberation Sans 600 14px ls=0.3499999940395355",
+   "box": {
+    "x": 155,
+    "y": 780
+   }
+  },
+  {
+   "text": "We'll send a 6-digit SMS verification code.",
+   "style": "Liberation Sans 400 11px ls=0",
+   "box": {
+    "x": 57,
+    "y": 814
+   }
+  },
+  {
+   "text": "SEND CODE VIA",
+   "style": "Liberation Sans 700 11px ls=0.550000011920929",
+   "box": {
+    "x": 41,
+    "y": 847
+   }
+  },
+  {
+   "text": "SMS",
+   "style": "Liberation Sans 700 12px ls=-0.30000001192092896",
+   "box": {
+    "x": 97,
+    "y": 884
+   }
+  },
+  {
+   "text": "WhatsApp",
+   "style": "Liberation Sans 600 12px ls=-0.30000001192092896",
+   "box": {
+    "x": 265,
+    "y": 884
+   }
+  },
+  {
+   "text": "Continue",
+   "style": "Liberation Sans 700 14px ls=0.3499999940395355",
+   "box": {
+    "x": 162,
+    "y": 946
+   }
+  },
+  {
+   "text": "By continuing, you agree to Xana Life's Terms of Service & \nPrivacy Policy.",
+   "style": "Liberation Sans 400 11px ls=0",
+   "box": {
+    "x": 63,
+    "y": 1000
+   }
+  },
+  {
+   "text": "9:41",
+   "style": "Liberation Sans 600 12px ls=-0.30000001192092896",
+   "box": {
+    "x": 45,
+    "y": 28
+   }
+  },
+  {
+   "text": "Checkout",
+   "style": "Liberation Sans 700 16px ls=-0.4000000059604645",
+   "box": {
+    "x": 153,
+    "y": 68
+   }
+  },
+  {
+   "text": "Secure",
+   "style": "Liberation Sans 500 11px ls=0",
+   "box": {
+    "x": 334,
+    "y": 72
+   }
+  },
+  {
+   "text": "DELIVERY ADDRESS",
+   "style": "Liberation Sans 700 12px ls=0.6000000238418579",
+   "box": {
+    "x": 84,
+    "y": 148
+   }
+  },
+  {
+   "text": "Change",
+   "style": "Liberation Sans 600 12px ls=0",
+   "box": {
+    "x": 319,
+    "y": 148
+   }
+  },
+  {
+   "text": "Amina Odhiambo",
+   "style": "Liberation Sans 600 14px ls=0",
+   "box": {
+    "x": 84,
+    "y": 180
+   }
+  },
+  {
+   "text": "DEFAULT · HOME",
+   "style": "Liberation Sans 700 10px ls=0",
+   "box": {
+    "x": 213,
+    "y": 183
+   }
+  },
+  {
+   "text": "Apt 4B, Karura Springs, 2nd Parklands Ave, Nairobi",
+   "style": "Liberation Sans 400 12px ls=0",
+   "box": {
+    "x": 84,
+    "y": 202
+   }
+  },
+  {
+   "text": "+254 712 345 678",
+   "style": "Liberation Mono 400 12px ls=0",
+   "box": {
+    "x": 84,
+    "y": 220
+   }
+  },
+  {
+   "text": "DELIVERY SLOT",
+   "style": "Liberation Sans 700 12px ls=0.6000000238418579",
+   "box": {
+    "x": 84,
+    "y": 288
+   }
+  },
+  {
+   "text": "Change",
+   "style": "Liberation Sans 600 12px ls=0",
+   "box": {
+    "x": 319,
+    "y": 288
+   }
+  },
+  {
+   "text": "Tomorrow, 9:00 AM – 11:00 AM",
+   "style": "Liberation Sans 600 14px ls=0",
+   "box": {
+    "x": 84,
+    "y": 318
+   }
+  },
+  {
+   "text": "Standard Express (Within 2 hrs)",
+   "style": "Liberation Sans 500 11px ls=0",
+   "box": {
+    "x": 106,
+    "y": 346
+   }
+  },
+  {
+   "text": "PAYMENT METHOD",
+   "style": "Liberation Sans 700 12px ls=0.6000000238418579",
+   "box": {
+    "x": 48,
+    "y": 411
+   }
+  },
+  {
+   "text": "M-PESA",
+   "style": "Liberation Sans 700 10px ls=0",
+   "box": {
+    "x": 92,
+    "y": 455
+   }
+  },
+  {
+   "text": "Safaricom M-Pesa",
+   "style": "Liberation Sans 700 12px ls=0",
+   "box": {
+    "x": 144,
+    "y": 455
+   }
+  },
+  {
+   "text": "M-PESA MOBILE NUMBER",
+   "style": "Liberation Sans 600 9px ls=0.44999998807907104",
+   "box": {
+    "x": 71,
+    "y": 491
+   }
+  },
+  {
+   "text": "+254 712 345 678",
+   "style": "Liberation Sans 700 12px ls=0.30000001192092896",
+   "box": {
+    "x": 71,
+    "y": 510
+   }
+  },
+  {
+   "text": "STK Push prompt will be sent to this line",
+   "style": "Liberation Sans 400 10px ls=0",
+   "box": {
+    "x": 78,
+    "y": 546
+   }
+  },
+  {
+   "text": "ORDER SUMMARY (2 ITEMS)",
+   "style": "Liberation Sans 700 12px ls=0.6000000238418579",
+   "box": {
+    "x": 48,
+    "y": 631
+   }
+  },
+  {
+   "text": "Kenyan Organic Hass Avocados (x1)",
+   "style": "Liberation Sans 400 12px ls=0",
+   "box": {
+    "x": 48,
+    "y": 659
+   }
+  },
+  {
+   "text": "KES 180",
+   "style": "Liberation Sans 500 12px ls=0",
+   "box": {
+    "x": 316,
+    "y": 659
+   }
+  },
+  {
+   "text": "Panadol Extra Tablets (x1)",
+   "style": "Liberation Sans 400 12px ls=0",
+   "box": {
+    "x": 48,
+    "y": 681
+   }
+  },
+  {
+   "text": "KES 210",
+   "style": "Liberation Sans 500 12px ls=0",
+   "box": {
+    "x": 316,
+    "y": 681
+   }
+  },
+  {
+   "text": "Items Subtotal",
+   "style": "Liberation Sans 400 11px ls=0",
+   "box": {
+    "x": 48,
+    "y": 712
+   }
+  },
+  {
+   "text": "KES 390",
+   "style": "Liberation Sans 400 11px ls=0",
+   "box": {
+    "x": 320,
+    "y": 712
+   }
+  },
+  {
+   "text": "Delivery Fee (Westlands / Parklands)",
+   "style": "Liberation Sans 400 11px ls=0",
+   "box": {
+    "x": 48,
+    "y": 732
+   }
+  },
+  {
+   "text": "Free",
+   "style": "Liberation Sans 600 11px ls=0",
+   "box": {
+    "x": 340,
+    "y": 732
+   }
+  },
+  {
+   "text": "Packaging & Platform Fee",
+   "style": "Liberation Sans 400 11px ls=0",
+   "box": {
+    "x": 48,
+    "y": 752
+   }
+  },
+  {
+   "text": "KES 20",
+   "style": "Liberation Sans 400 11px ls=0",
+   "box": {
+    "x": 326,
+    "y": 752
+   }
+  },
+  {
+   "text": "🎁",
+   "style": "Liberation Sans 500 11px ls=0",
+   "box": {
+    "x": 48,
+    "y": 772
+   }
+  },
+  {
+   "text": "Club Member Savings",
+   "style": "Liberation Sans 500 11px ls=0",
+   "box": {
+    "x": 60,
+    "y": 772
+   }
+  },
+  {
+   "text": "- KES 40",
+   "style": "Liberation Sans 500 11px ls=0",
+   "box": {
+    "x": 319,
+    "y": 772
+   }
+  },
+  {
+   "text": "Total to Pay",
+   "style": "Liberation Sans 700 14px ls=0",
+   "box": {
+    "x": 48,
+    "y": 807
+   }
+  },
+  {
+   "text": "KES 370",
+   "style": "Liberation Sans 700 16px ls=0",
+   "box": {
+    "x": 299,
+    "y": 805
+   }
+  },
+  {
+   "text": "Place Order — KES 370.00",
+   "style": "Liberation Sans 700 16px ls=0",
+   "box": {
+    "x": 117,
+    "y": 1005
+   }
+  },
+  {
+   "text": "🔒 256-bit Encrypted",
+   "style": "Liberation Sans 500 10px ls=0",
+   "box": {
+    "x": 105,
+    "y": 1051
+   }
+  },
+  {
+   "text": "·",
+   "style": "Liberation Sans 500 10px ls=0",
+   "box": {
+    "x": 196,
+    "y": 1051
+   }
+  },
+  {
+   "text": "Instant M-Pesa Prompt",
+   "style": "Liberation Sans 500 10px ls=0",
+   "box": {
+    "x": 203,
+    "y": 1051
+   }
+  }
+ ]
+}

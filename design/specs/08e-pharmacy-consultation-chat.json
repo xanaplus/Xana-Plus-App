@@ -1,0 +1,1208 @@
+{
+ "id": "32:12552",
+ "name": "08e · Pharmacy — Consultation Chat",
+ "slug": "08e-pharmacy-consultation-chat",
+ "size": {
+  "w": 390,
+  "h": 1314
+ },
+ "bg": "#ffffff|#fcf9f8",
+ "tree": [
+  {
+   "name": "Main",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 1314
+   },
+   "layout": "VERTICAL pad=56,0,0,0",
+   "fill": "#fcf9f8",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 56,
+      "w": 390,
+      "h": 1258
+     },
+     "children": [
+      {
+       "name": "Section - Consultation Chat Thread",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 114,
+        "w": 390,
+        "h": 1098
+       },
+       "layout": "VERTICAL pad=16,20,28,20",
+       "children": [
+        {
+         "name": "Privacy Reassurance Banner",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 130,
+          "w": 350,
+          "h": 28
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER",
+         "children": [
+          {
+           "name": "Background+Shadow",
+           "type": "FRAME",
+           "box": {
+            "x": 43,
+            "y": 130,
+            "w": 303,
+            "h": 28
+           },
+           "layout": "HORIZONTAL pad=6,16,6,16 cross=CENTER gap=6",
+           "fill": "#f6f3f2",
+           "radius": 9999,
+           "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 59,
+              "y": 137,
+              "w": 10,
+              "h": 13
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 75,
+              "y": 136,
+              "w": 255,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Shared Medication Context Card:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 158,
+          "w": 350,
+          "h": 122
+         },
+         "layout": "VERTICAL pad=16,0,0,0",
+         "children": [
+          {
+           "name": "Shared Medication Context Card",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 174,
+            "w": 350,
+            "h": 106
+           },
+           "layout": "VERTICAL pad=16,16,16,16",
+           "fill": "#f6f3f2",
+           "radius": 12,
+           "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 190,
+              "w": 318,
+              "h": 74
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 gap=8",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Timestamp Divider:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 280,
+          "w": 350,
+          "h": 40
+         },
+         "layout": "VERTICAL pad=16,0,0,0",
+         "children": [
+          {
+           "name": "Timestamp Divider",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 296,
+            "w": 350,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "children": [
+            {
+             "name": "Background+Shadow",
+             "type": "FRAME",
+             "box": {
+              "x": 135,
+              "y": 296,
+              "w": 121,
+              "h": 24
+             },
+             "layout": "VERTICAL pad=4,12,4,12",
+             "fill": "#ffffff",
+             "radius": 9999,
+             "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Message 1: User Message (Right Aligned):margin",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 320,
+          "w": 350,
+          "h": 176
+         },
+         "layout": "VERTICAL pad=16,0,0,0",
+         "children": [
+          {
+           "name": "Message 1: User Message (Right Aligned)",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 336,
+            "w": 350,
+            "h": 160
+           },
+           "layout": "VERTICAL pad=0,0,0,40 cross=MAX",
+           "children": [
+            {
+             "name": "Background+Shadow",
+             "type": "FRAME",
+             "box": {
+              "x": 85,
+              "y": 336,
+              "w": 285,
+              "h": 138
+             },
+             "layout": "VERTICAL pad=8,20.389999389648438,8,16",
+             "fill": "#004f28",
+             "radius": 16,
+             "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+             "childCount": 1
+            },
+            {
+             "name": "Margin",
+             "type": "FRAME",
+             "box": {
+              "x": 222,
+              "y": 474,
+              "w": 148,
+              "h": 22
+             },
+             "layout": "VERTICAL pad=4,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Message 2: Pharmacist Response (Left Aligned):margin",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 496,
+          "w": 350,
+          "h": 249
+         },
+         "layout": "VERTICAL pad=16,0,0,0",
+         "children": [
+          {
+           "name": "Message 2: Pharmacist Response (Left Aligned)",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 512,
+            "w": 350,
+            "h": 233
+           },
+           "layout": "HORIZONTAL pad=0,40,0,0 gap=8",
+           "children": [
+            {
+             "name": "Img - Dr. Wanjiru Kamau:margin",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 512,
+              "w": 32,
+              "h": 36
+             },
+             "layout": "VERTICAL pad=4,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 60,
+              "y": 512,
+              "w": 270,
+              "h": 233
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Message 3: Pharmacist Recommendation with Embedded Product Card:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 745,
+          "w": 350,
+          "h": 389
+         },
+         "layout": "VERTICAL pad=16,0,0,0",
+         "children": [
+          {
+           "name": "Message 3: Pharmacist Recommendation with Embedded Product Card",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 761,
+            "w": 354,
+            "h": 373
+           },
+           "layout": "HORIZONTAL pad=0,16,0,0 gap=8",
+           "children": [
+            {
+             "name": "Img - Dr. Wanjiru Kamau:margin",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 761,
+              "w": 32,
+              "h": 36
+             },
+             "layout": "VERTICAL pad=4,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 60,
+              "y": 761,
+              "w": 314,
+              "h": 373
+             },
+             "layout": "VERTICAL pad=0,0,0,0 gap=1.1368683772161603e-13",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Live Typing Indicator:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 1134,
+          "w": 350,
+          "h": 50
+         },
+         "layout": "VERTICAL pad=16,0,0,0",
+         "children": [
+          {
+           "name": "Live Typing Indicator",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 1150,
+            "w": 350,
+            "h": 34
+           },
+           "layout": "HORIZONTAL pad=0,40,0,0 cross=CENTER gap=8",
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 1151,
+              "w": 32,
+              "h": 32
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#f0eded",
+             "radius": 9999,
+             "childCount": 1
+            },
+            {
+             "name": "Background+Shadow",
+             "type": "FRAME",
+             "box": {
+              "x": 60,
+              "y": 1150,
+              "w": 252,
+              "h": 34
+             },
+             "layout": "HORIZONTAL pad=8,16,8,16 cross=CENTER gap=8",
+             "fill": "#ffffff",
+             "radius": 16,
+             "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Aside - Consultation contact details",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 56,
+        "w": 390,
+        "h": 58
+       },
+       "layout": "HORIZONTAL pad=8,20,8,20 main=SPACE_BETWEEN cross=CENTER gap=46.72999954223633",
+       "fill": "#fcf9f8@95%",
+       "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+       "blur": "BACKGROUND_BLUR 4",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 64,
+          "w": 226,
+          "h": 42
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 65,
+            "w": 40,
+            "h": 40
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Dr. Wanjiru Kamau",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 65,
+              "w": 40,
+              "h": 40
+             },
+             "fill": "image",
+             "radius": 9999,
+             "shadow": "DROP_SHADOW #000000@5% 0/1 blur2"
+            },
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 48,
+              "y": 93,
+              "w": 12,
+              "h": 12
+             },
+             "layout": "VERTICAL pad=0,0,0,0 main=MAX cross=MAX",
+             "fill": "#004f28",
+             "radius": 9999,
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 68,
+            "y": 64,
+            "w": 178,
+            "h": 42
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 68,
+              "y": 64,
+              "w": 178,
+              "h": 24
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=6",
+             "childCount": 2
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 68,
+              "y": 88,
+              "w": 178,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 294,
+          "y": 67,
+          "w": 76,
+          "h": 36
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=4",
+         "children": [
+          {
+           "name": "Button - Start voice consultation",
+           "type": "FRAME",
+           "box": {
+            "x": 294,
+            "y": 67,
+            "w": 36,
+            "h": 36
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "fill": "#f0eded",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 305,
+              "y": 78,
+              "w": 15,
+              "h": 15
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Button - Pharmacist clinical profile & credentials",
+           "type": "FRAME",
+           "box": {
+            "x": 334,
+            "y": 67,
+            "w": 36,
+            "h": 36
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "fill": "#f0eded",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 344,
+              "y": 77,
+              "w": 17,
+              "h": 17
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Footer - Pinned Clinical Composer Deck",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 636,
+        "w": 390,
+        "h": 144
+       },
+       "layout": "VERTICAL pad=8,20,16,20 gap=8",
+       "fill": "#fcf9f8@95%",
+       "shadow": "DROP_SHADOW #000000@5% 0/-2 blur12",
+       "blur": "BACKGROUND_BLUR 12",
+       "children": [
+        {
+         "name": "Quick Response Pill Carousel",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 644,
+          "w": 350,
+          "h": 28
+         },
+         "children": [
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 646,
+            "w": 134,
+            "h": 24
+           },
+           "layout": "VERTICAL pad=4,12,4,12 main=CENTER cross=CENTER",
+           "fill": "#f0eded",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 32,
+              "y": 650,
+              "w": 110,
+              "h": 16
+             },
+             "fill": "#1c1b1b",
+             "text": "Take it with meals?",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 162,
+            "y": 646,
+            "w": 163,
+            "h": 24
+           },
+           "layout": "VERTICAL pad=4,12,4,12 main=CENTER cross=CENTER",
+           "fill": "#f0eded",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 174,
+              "y": 650,
+              "w": 139,
+              "h": 16
+             },
+             "fill": "#1c1b1b",
+             "text": "Check drug interactions",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 333,
+            "y": 646,
+            "w": 174,
+            "h": 24
+           },
+           "layout": "VERTICAL pad=4,12,4,12 main=CENTER cross=CENTER",
+           "fill": "#f0eded",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 345,
+              "y": 650,
+              "w": 150,
+              "h": 16
+             },
+             "fill": "#1c1b1b",
+             "text": "Request prescription refill",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Input Bar",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 680,
+          "w": 350,
+          "h": 44
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+         "children": [
+          {
+           "name": "Button - Attach prescription or lab photo",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 680,
+            "w": 44,
+            "h": 44
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "fill": "#f0eded",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 693,
+              "w": 11,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 72,
+            "y": 680,
+            "w": 246,
+            "h": 44
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Input",
+             "type": "FRAME",
+             "box": {
+              "x": 72,
+              "y": 680,
+              "w": 246,
+              "h": 44
+             },
+             "layout": "HORIZONTAL pad=12.5,40,12.5,16 main=CENTER",
+             "fill": "#f0eded",
+             "radius": 9999,
+             "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+             "childCount": 1
+            },
+            {
+             "name": "Button - Send photo prescription",
+             "type": "FRAME",
+             "box": {
+              "x": 282,
+              "y": 688,
+              "w": 28,
+              "h": 28
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "radius": 9999,
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Button - Send confidential message",
+           "type": "FRAME",
+           "box": {
+            "x": 326,
+            "y": 680,
+            "w": 44,
+            "h": 44
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "fill": "#004f28",
+           "radius": 9999,
+           "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 341,
+              "y": 695,
+              "w": 13,
+              "h": 13
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Kenyan Clinical Safety Micro-note",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 732,
+          "w": 350,
+          "h": 32
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 25,
+            "y": 732,
+            "w": 340,
+            "h": 32
+           },
+           "fill": "#6f7a70",
+           "text": "Not for emergencies. In acute crisis or severe reaction, call\n999 or visit Nairobi Hospital ER.",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Header",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 56
+   },
+   "layout": "VERTICAL pad=0,0,0,0",
+   "fill": "#fcf9f8@80%",
+   "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+   "blur": "BACKGROUND_BLUR 24",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 56
+     },
+     "layout": "HORIZONTAL pad=0,20,0,20 main=SPACE_BETWEEN cross=CENTER gap=120.61000061035156",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 6,
+        "w": 197,
+        "h": 44
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+       "children": [
+        {
+         "name": "Button - Go back:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 6,
+          "w": 36,
+          "h": 44
+         },
+         "children": [
+          {
+           "name": "Button - Go back",
+           "type": "FRAME",
+           "box": {
+            "x": 12,
+            "y": 6,
+            "w": 44,
+            "h": 44
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 28,
+              "y": 18,
+              "w": 12,
+              "h": 20
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Heading 1",
+         "type": "FRAME",
+         "box": {
+          "x": 64,
+          "y": 16,
+          "w": 153,
+          "h": 24
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 64,
+            "y": 16,
+            "w": 153,
+            "h": 24
+           },
+           "fill": "#1c1b1b",
+           "text": "Consultation Chat",
+           "style": "Inter 600 18px ls=-0.18000000715255737"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Background",
+       "type": "FRAME",
+       "box": {
+        "x": 338,
+        "y": 12,
+        "w": 32,
+        "h": 32
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+       "fill": "#004f28",
+       "radius": 9999,
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 348,
+          "y": 22,
+          "w": 12,
+          "h": 12
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 348,
+            "y": 22,
+            "w": 12,
+            "h": 12
+           },
+           "fill": "#ffffff"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "texts": [
+  {
+   "text": "End-to-end encrypted · Private consultation",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 75,
+    "y": 136
+   }
+  },
+  {
+   "text": "ACTIVE PATIENT CONTEXT",
+   "style": "Inter 600 12px ls=0.6000000238418579",
+   "box": {
+    "x": 76,
+    "y": 191
+   }
+  },
+  {
+   "text": "Verified EHR",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 276,
+    "y": 192
+   }
+  },
+  {
+   "text": "Shared 3 active medications: ",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 76,
+    "y": 210
+   }
+  },
+  {
+   "text": "Metformin",
+   "style": "Inter 600 13px ls=0",
+   "box": {
+    "x": 257,
+    "y": 210
+   }
+  },
+  {
+   "text": "(500mg)",
+   "style": "Inter 600 13px ls=0",
+   "box": {
+    "x": 76,
+    "y": 228
+   }
+  },
+  {
+   "text": ", Amlodipine (5mg), ",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 131,
+    "y": 228
+   }
+  },
+  {
+   "text": "Ventolin",
+   "style": "Inter 600 13px ls=0",
+   "box": {
+    "x": 257,
+    "y": 228
+   }
+  },
+  {
+   "text": "Inhaler",
+   "style": "Inter 600 13px ls=0",
+   "box": {
+    "x": 76,
+    "y": 246
+   }
+  },
+  {
+   "text": "Today, 10:24 AM",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 147,
+    "y": 300
+   }
+  },
+  {
+   "text": "Hello Dr. Kamau, I've been\nexperiencing mild nausea about 30\nminutes after taking my morning\nMetformin dose. Should I take it\nwith food or change the timing?",
+   "style": "Inter 400 15px ls=0",
+   "box": {
+    "x": 101,
+    "y": 344
+   }
+  },
+  {
+   "text": "10:24 AM · Delivered",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 222,
+    "y": 478
+   }
+  },
+  {
+   "text": "Hello! Yes, gastrointestinal side\neffects like mild nausea are quite\ncommon when starting or\nadjusting Metformin. Taking your\n500mg tablet right in the middle\nof your breakfast or largest meal\nsignificantly reduces stomach\nupset.",
+   "style": "Inter 400 15px ls=0",
+   "box": {
+    "x": 76,
+    "y": 519
+   }
+  },
+  {
+   "text": "10:26 AM",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 64,
+    "y": 727
+   }
+  },
+  {
+   "text": "If the nausea persists for more than a\nfew days, an oral rehydration or gentle\ndigestive aid can help settle your\nstomach in the meantime:",
+   "style": "Inter 400 15px ls=0",
+   "box": {
+    "x": 76,
+    "y": 776
+   }
+  },
+  {
+   "text": "Pharmacist\nRecommended",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 192,
+    "y": 892
+   }
+  },
+  {
+   "text": "Phillips' Milk of Magnesia (Mint)",
+   "style": "Inter 600 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 172,
+    "y": 928
+   }
+  },
+  {
+   "text": "200ml · Liquid antacid & gentle relief",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 172,
+    "y": 976
+   }
+  },
+  {
+   "text": "KES 480",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 172,
+    "y": 1016
+   }
+  },
+  {
+   "text": "In Nairobi stock",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 246,
+    "y": 1020
+   }
+  },
+  {
+   "text": "Add to pharmacy order · KES 480",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 114,
+    "y": 1057
+   }
+  },
+  {
+   "text": "10:27 AM",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 64,
+    "y": 1116
+   }
+  },
+  {
+   "text": "Dr. Wanjiru Kamau is typing...",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 116,
+    "y": 1158
+   }
+  },
+  {
+   "text": "Dr. Wanjiru Kamau",
+   "style": "Inter 600 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 68,
+    "y": 64
+   }
+  },
+  {
+   "text": "Pharmacist · PPB Reg. 12345",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 68,
+    "y": 88
+   }
+  },
+  {
+   "text": "Take it with meals?",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 650
+   }
+  },
+  {
+   "text": "Check drug interactions",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 174,
+    "y": 650
+   }
+  },
+  {
+   "text": "Request prescription refill",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 345,
+    "y": 650
+   }
+  },
+  {
+   "text": "Type a confidential message...",
+   "style": "Inter 400 15px ls=0",
+   "box": {
+    "x": 88,
+    "y": 693
+   }
+  },
+  {
+   "text": "Not for emergencies. In acute crisis or severe reaction, call\n999 or visit Nairobi Hospital ER.",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 25,
+    "y": 732
+   }
+  },
+  {
+   "text": "Consultation Chat",
+   "style": "Inter 600 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 64,
+    "y": 16
+   }
+  }
+ ]
+}

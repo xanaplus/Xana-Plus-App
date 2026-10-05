@@ -1,0 +1,138 @@
+{
+ "id": "1:2",
+ "name": "01 · Splash",
+ "slug": "01-splash",
+ "size": {
+  "w": 390,
+  "h": 852
+ },
+ "bg": "#ffffff",
+ "tree": [
+  {
+   "name": "Container",
+   "type": "FRAME",
+   "box": {
+    "x": 24,
+    "y": 32,
+    "w": 342,
+    "h": 754
+   },
+   "layout": "VERTICAL pad=0,16,0,16 main=CENTER cross=CENTER",
+   "children": [
+    {
+     "name": "SVG",
+     "type": "FRAME",
+     "box": {
+      "x": 83,
+      "y": 321,
+      "w": 224,
+      "h": 176
+     },
+     "layout": "VERTICAL pad=0,0,0,0 main=CENTER cross=CENTER",
+     "shadow": "DROP_SHADOW #000000@5% 0/1 blur1",
+     "children": [
+      {
+       "name": "SVG",
+       "type": "FRAME",
+       "box": {
+        "x": 83,
+        "y": 321,
+        "w": 224,
+        "h": 176
+       },
+       "children": [
+        {
+         "name": "Group",
+         "type": "GROUP",
+         "box": {
+          "x": 83,
+          "y": 321,
+          "w": 224,
+          "h": 176
+         },
+         "childCount": 24
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Container",
+   "type": "FRAME",
+   "box": {
+    "x": 172,
+    "y": 786,
+    "w": 46,
+    "h": 34
+   },
+   "layout": "HORIZONTAL pad=0,0,24,0 main=CENTER cross=CENTER",
+   "children": [
+    {
+     "name": "Background",
+     "type": "RECTANGLE",
+     "box": {
+      "x": 172,
+      "y": 786,
+      "w": 10,
+      "h": 10
+     },
+     "fill": "#a7f3d0",
+     "radius": 9999
+    },
+    {
+     "name": "Margin",
+     "type": "FRAME",
+     "box": {
+      "x": 182,
+      "y": 786,
+      "w": 18,
+      "h": 10
+     },
+     "layout": "VERTICAL pad=0,0,0,8",
+     "children": [
+      {
+       "name": "Background",
+       "type": "RECTANGLE",
+       "box": {
+        "x": 190,
+        "y": 786,
+        "w": 10,
+        "h": 10
+       },
+       "fill": "#34d399",
+       "radius": 9999
+      }
+     ]
+    },
+    {
+     "name": "Margin",
+     "type": "FRAME",
+     "box": {
+      "x": 200,
+      "y": 786,
+      "w": 18,
+      "h": 10
+     },
+     "layout": "VERTICAL pad=0,0,0,8",
+     "children": [
+      {
+       "name": "Background",
+       "type": "RECTANGLE",
+       "box": {
+        "x": 208,
+        "y": 786,
+        "w": 10,
+        "h": 10
+       },
+       "fill": "#047857",
+       "radius": 9999
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "texts": []
+}

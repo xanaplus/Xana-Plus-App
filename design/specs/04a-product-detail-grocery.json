@@ -1,0 +1,1687 @@
+{
+ "id": "14:4418",
+ "name": "04a · Product Detail — Grocery",
+ "slug": "04a-product-detail-grocery",
+ "size": {
+  "w": 411,
+  "h": 1651
+ },
+ "bg": "#ffffff|#fcf9f8",
+ "tree": [
+  {
+   "name": "Main - Mobile App Frame (390px max-width)",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 411,
+    "h": 1651
+   },
+   "layout": "VERTICAL pad=0,0,112,0",
+   "fill": "#ffffff",
+   "stroke": "#f3f4f6",
+   "children": [
+    {
+     "name": "Top Sticky Header",
+     "type": "FRAME",
+     "box": {
+      "x": 1,
+      "y": 0,
+      "w": 409,
+      "h": 61
+     },
+     "layout": "HORIZONTAL pad=12,16,12,16 main=SPACE_BETWEEN cross=CENTER gap=55.97999954223633",
+     "fill": "#ffffff@95%",
+     "stroke": "#f3f4f6",
+     "blur": "BACKGROUND_BLUR 12",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 12,
+        "w": 224,
+        "h": 36
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=12",
+       "children": [
+        {
+         "name": "Button - Go back:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 17,
+          "y": 12,
+          "w": 32,
+          "h": 36
+         },
+         "children": [
+          {
+           "name": "Button - Go back",
+           "type": "FRAME",
+           "box": {
+            "x": 13,
+            "y": 12,
+            "w": 36,
+            "h": 36
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 23,
+              "y": 22,
+              "w": 16,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 61,
+          "y": 22,
+          "w": 180,
+          "h": 16
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=6",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 61,
+            "y": 22,
+            "w": 34,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 61,
+              "y": 22,
+              "w": 34,
+              "h": 16
+             },
+             "fill": "#6b7280",
+             "text": "Home",
+             "style": "Inter 500 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 101,
+            "y": 22,
+            "w": 4,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 101,
+              "y": 22,
+              "w": 4,
+              "h": 16
+             },
+             "fill": "#9ca3af",
+             "text": "/",
+             "style": "Inter 500 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 111,
+            "y": 22,
+            "w": 62,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 111,
+              "y": 22,
+              "w": 62,
+              "h": 16
+             },
+             "fill": "#6b7280",
+             "text": "Household",
+             "style": "Inter 500 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 179,
+            "y": 22,
+            "w": 4,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 179,
+              "y": 22,
+              "w": 4,
+              "h": 16
+             },
+             "fill": "#9ca3af",
+             "text": "/",
+             "style": "Inter 500 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 190,
+            "y": 22,
+            "w": 51,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 190,
+              "y": 22,
+              "w": 51,
+              "h": 16
+             },
+             "fill": "#111827",
+             "text": "Cleaning",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 318,
+        "y": 12,
+        "w": 76,
+        "h": 36
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=4",
+       "children": [
+        {
+         "name": "Button - Share product",
+         "type": "FRAME",
+         "box": {
+          "x": 318,
+          "y": 12,
+          "w": 36,
+          "h": 36
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 328,
+            "y": 21,
+            "w": 16,
+            "h": 18
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 328,
+              "y": 21,
+              "w": 16,
+              "h": 18
+             },
+             "fill": "#374151"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Button - Add to wishlist",
+         "type": "FRAME",
+         "box": {
+          "x": 358,
+          "y": 12,
+          "w": 36,
+          "h": 36
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 367,
+            "y": 22,
+            "w": 18,
+            "h": 17
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 367,
+              "y": 22,
+              "w": 18,
+              "h": 17
+             },
+             "fill": "#374151"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Main Scrollable Content",
+     "type": "FRAME",
+     "box": {
+      "x": 1,
+      "y": 61,
+      "w": 409,
+      "h": 1478
+     },
+     "layout": "VERTICAL pad=0,0,0,0",
+     "children": [
+      {
+       "name": "Product Image Section (Large Square + Indicators)",
+       "type": "FRAME",
+       "box": {
+        "x": 1,
+        "y": 61,
+        "w": 409,
+        "h": 410
+       },
+       "layout": "VERTICAL pad=0,0,0,0",
+       "fill": "#f8f9fa",
+       "stroke": "#f3f4f6",
+       "children": [
+        {
+         "name": "Carousel / Main Photo Container (Square 1:1)",
+         "type": "FRAME",
+         "box": {
+          "x": 1,
+          "y": 61,
+          "w": 409,
+          "h": 409
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "children": [
+          {
+           "name": "Harpic Detergent 1kg",
+           "type": "FRAME",
+           "box": {
+            "x": 1,
+            "y": 61,
+            "w": 409,
+            "h": 409
+           },
+           "fill": "image",
+           "radius": 12
+          }
+         ]
+        },
+        {
+         "name": "Badge top-left",
+         "type": "FRAME",
+         "box": {
+          "x": 17,
+          "y": 77,
+          "w": 126,
+          "h": 54
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=6",
+         "children": [
+          {
+           "name": "Background+Shadow",
+           "type": "FRAME",
+           "box": {
+            "x": 17,
+            "y": 77,
+            "w": 108,
+            "h": 25
+           },
+           "layout": "VERTICAL pad=4,10,4,10",
+           "fill": "#f69320",
+           "radius": 9999,
+           "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 27,
+              "y": 81,
+              "w": 88,
+              "h": 17
+             },
+             "fill": "#ffffff",
+             "text": "BULK SAVINGS",
+             "style": "Inter 700 11px ls=0.550000011920929"
+            }
+           ]
+          },
+          {
+           "name": "Background+Border",
+           "type": "FRAME",
+           "box": {
+            "x": 17,
+            "y": 108,
+            "w": 126,
+            "h": 23
+           },
+           "layout": "VERTICAL pad=2,8,2,8",
+           "fill": "#e8f3ec",
+           "stroke": "#046938@20%",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 26,
+              "y": 111,
+              "w": 108,
+              "h": 17
+             },
+             "fill": "#046938",
+             "text": "Household Essential",
+             "style": "Inter 600 11px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Pagination Dots Indicator",
+         "type": "FRAME",
+         "box": {
+          "x": 1,
+          "y": 452,
+          "w": 409,
+          "h": 6
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER gap=6",
+         "children": [
+          {
+           "name": "Background",
+           "type": "RECTANGLE",
+           "box": {
+            "x": 178,
+            "y": 452,
+            "w": 20,
+            "h": 6
+           },
+           "fill": "#046938",
+           "radius": 9999
+          },
+          {
+           "name": "Background",
+           "type": "RECTANGLE",
+           "box": {
+            "x": 204,
+            "y": 452,
+            "w": 6,
+            "h": 6
+           },
+           "fill": "#d1d5db",
+           "radius": 9999
+          },
+          {
+           "name": "Background",
+           "type": "RECTANGLE",
+           "box": {
+            "x": 216,
+            "y": 452,
+            "w": 6,
+            "h": 6
+           },
+           "fill": "#d1d5db",
+           "radius": 9999
+          },
+          {
+           "name": "Background",
+           "type": "RECTANGLE",
+           "box": {
+            "x": 228,
+            "y": 452,
+            "w": 6,
+            "h": 6
+           },
+           "fill": "#d1d5db",
+           "radius": 9999
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Product Details Info Body",
+       "type": "FRAME",
+       "box": {
+        "x": 1,
+        "y": 471,
+        "w": 409,
+        "h": 1075
+       },
+       "layout": "VERTICAL pad=16,20,8,20 gap=16",
+       "children": [
+        {
+         "name": "Title, Pack size and Reviews Row",
+         "type": "FRAME",
+         "box": {
+          "x": 21,
+          "y": 487,
+          "w": 369,
+          "h": 76
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=4",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 21,
+            "y": 487,
+            "w": 369,
+            "h": 28
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Heading 1 → Harpic Detergent 1kg",
+             "type": "TEXT",
+             "box": {
+              "x": 21,
+              "y": 487,
+              "w": 204,
+              "h": 28
+             },
+             "fill": "#111827",
+             "text": "Harpic Detergent 1kg",
+             "style": "Inter 700 20px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 21,
+            "y": 519,
+            "w": 369,
+            "h": 20
+           },
+           "layout": "HORIZONTAL pad=0,0,1,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 21,
+              "y": 518,
+              "w": 369,
+              "h": 20
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 21,
+            "y": 543,
+            "w": 369,
+            "h": 20
+           },
+           "layout": "HORIZONTAL pad=4,0,0,0 cross=CENTER gap=8",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 21,
+              "y": 547,
+              "w": 75,
+              "h": 14
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 5
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 104,
+              "y": 547,
+              "w": 19,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 131,
+              "y": 547,
+              "w": 3,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 143,
+              "y": 547,
+              "w": 120,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Price Block",
+         "type": "FRAME",
+         "box": {
+          "x": 21,
+          "y": 579,
+          "w": 369,
+          "h": 158
+         },
+         "layout": "VERTICAL pad=12,0,0,0 gap=12",
+         "stroke": "#f3f4f6",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 21,
+            "y": 592,
+            "w": 369,
+            "h": 54
+           },
+           "layout": "VERTICAL pad=0,0,0,0 gap=6",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 21,
+              "y": 592,
+              "w": 369,
+              "h": 32
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=10",
+             "childCount": 3
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 21,
+              "y": 630,
+              "w": 369,
+              "h": 16
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=6",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Background+Border",
+           "type": "FRAME",
+           "box": {
+            "x": 21,
+            "y": 658,
+            "w": 369,
+            "h": 79
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "fill": "#ffffff",
+           "stroke": "#e5e7eb",
+           "radius": 12,
+           "children": [
+            {
+             "name": "HorizontalBorder",
+             "type": "FRAME",
+             "box": {
+              "x": 22,
+              "y": 659,
+              "w": 367,
+              "h": 37
+             },
+             "layout": "HORIZONTAL pad=10,10,10,10 main=SPACE_BETWEEN cross=CENTER gap=195.9199981689453",
+             "stroke": "#f3f4f6",
+             "childCount": 2
+            },
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 22,
+              "y": 696,
+              "w": 367,
+              "h": 40
+             },
+             "layout": "HORIZONTAL pad=10,10,10,10 main=SPACE_BETWEEN cross=CENTER gap=17.809999465942383",
+             "fill": "#d1fae5",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Fulfilment / Speed Guarantee Micro-Banner",
+         "type": "FRAME",
+         "box": {
+          "x": 21,
+          "y": 753,
+          "w": 369,
+          "h": 58
+         },
+         "layout": "HORIZONTAL pad=12,12,12,12 cross=CENTER gap=12",
+         "fill": "#f9fafb",
+         "stroke": "#f3f4f6",
+         "radius": 12,
+         "children": [
+          {
+           "name": "Background",
+           "type": "FRAME",
+           "box": {
+            "x": 34,
+            "y": 766,
+            "w": 32,
+            "h": 32
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "fill": "#d1fae5",
+           "radius": 8,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 43,
+              "y": 773,
+              "w": 13,
+              "h": 17
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 78,
+            "y": 766,
+            "w": 259,
+            "h": 32
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 78,
+              "y": 766,
+              "w": 259,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 78,
+              "y": 782,
+              "w": 259,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Expandable Sections (Accordion)",
+         "type": "FRAME",
+         "box": {
+          "x": 21,
+          "y": 827,
+          "w": 369,
+          "h": 401
+         },
+         "layout": "VERTICAL pad=8,0,0,0",
+         "stroke": "#f3f4f6",
+         "children": [
+          {
+           "name": "Details - Accordion 1: Description (Expanded for clear context)",
+           "type": "FRAME",
+           "box": {
+            "x": 21,
+            "y": 836,
+            "w": 369,
+            "h": 302
+           },
+           "layout": "VERTICAL pad=12,0,12,0 gap=9.25",
+           "children": [
+            {
+             "name": "Slot → Summary",
+             "type": "FRAME",
+             "box": {
+              "x": 21,
+              "y": 848,
+              "w": 369,
+              "h": 20
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=246",
+             "childCount": 2
+            },
+            {
+             "name": "Slot",
+             "type": "FRAME",
+             "box": {
+              "x": 21,
+              "y": 877,
+              "w": 369,
+              "h": 249
+             },
+             "layout": "VERTICAL pad=0,0,0,0 gap=8",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Details - Accordion 2: Ingredients / Nutritional Info",
+           "type": "FRAME",
+           "box": {
+            "x": 21,
+            "y": 1138,
+            "w": 369,
+            "h": 45
+           },
+           "layout": "VERTICAL pad=12,0,12,0",
+           "stroke": "#f3f4f6",
+           "children": [
+            {
+             "name": "Slot → Summary",
+             "type": "FRAME",
+             "box": {
+              "x": 21,
+              "y": 1151,
+              "w": 369,
+              "h": 20
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=111",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Details - Accordion 3: Delivery & Returns",
+           "type": "FRAME",
+           "box": {
+            "x": 21,
+            "y": 1183,
+            "w": 369,
+            "h": 45
+           },
+           "layout": "VERTICAL pad=12,0,12,0",
+           "stroke": "#f3f4f6",
+           "children": [
+            {
+             "name": "Slot → Summary",
+             "type": "FRAME",
+             "box": {
+              "x": 21,
+              "y": 1196,
+              "w": 369,
+              "h": 20
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=198.97999572753906",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Section - You May Also Like\" Product Row",
+         "type": "FRAME",
+         "box": {
+          "x": 21,
+          "y": 1244,
+          "w": 369,
+          "h": 294
+         },
+         "layout": "VERTICAL pad=20,0,0,0 cross=CENTER gap=12",
+         "stroke": "#f3f4f6",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 21,
+            "y": 1265,
+            "w": 369,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=158.08999633789062",
+           "children": [
+            {
+             "name": "Heading 2",
+             "type": "FRAME",
+             "box": {
+              "x": 21,
+              "y": 1265,
+              "w": 134,
+              "h": 24
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 344,
+              "y": 1269,
+              "w": 46,
+              "h": 16
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=2",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Horizontally scrolling product tiles (30% peek)",
+           "type": "FRAME",
+           "box": {
+            "x": 12,
+            "y": 1301,
+            "w": 388,
+            "h": 237
+           },
+           "children": [
+            {
+             "name": "Article - Related Card 1: Fresh Produce",
+             "type": "FRAME",
+             "box": {
+              "x": 32,
+              "y": 1301,
+              "w": 140,
+              "h": 229
+             },
+             "layout": "VERTICAL pad=10,10,10,10 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "stroke": "#e5e7eb",
+             "radius": 18,
+             "childCount": 2
+            },
+            {
+             "name": "Article - Related Card 2: Brookside Milk",
+             "type": "FRAME",
+             "box": {
+              "x": 184,
+              "y": 1301,
+              "w": 140,
+              "h": 229
+             },
+             "layout": "VERTICAL pad=10,10,10,10 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "stroke": "#e5e7eb",
+             "radius": 18,
+             "childCount": 2
+            },
+            {
+             "name": "Article - Related Card 3: Wellness Vitamin C",
+             "type": "FRAME",
+             "box": {
+              "x": 336,
+              "y": 1301,
+              "w": 140,
+              "h": 229
+             },
+             "layout": "VERTICAL pad=10,10,10,10 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "stroke": "#e5e7eb",
+             "radius": 18,
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Main - Mobile App Frame (390px max-width):shadow",
+     "type": "RECTANGLE",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 411,
+      "h": 1651
+     },
+     "fill": "#ffffff@0%",
+     "shadow": "DROP_SHADOW #000000@10% 0/8 blur10 + DROP_SHADOW #000000@10% 0/20 blur25"
+    }
+   ]
+  },
+  {
+   "name": "Sticky Bottom Bar: Quantity Stepper + Add to Cart",
+   "type": "FRAME",
+   "box": {
+    "x": 1,
+    "y": 1582,
+    "w": 411,
+    "h": 69
+   },
+   "layout": "VERTICAL pad=12,16,12,16",
+   "fill": "#ffffff@95%",
+   "stroke": "#e5e7eb",
+   "shadow": "DROP_SHADOW #000000@6% 0/-4 blur12",
+   "blur": "BACKGROUND_BLUR 12",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 17,
+      "y": 1595,
+      "w": 379,
+      "h": 44
+     },
+     "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=12",
+     "children": [
+      {
+       "name": "Quantity Stepper",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 1596,
+        "w": 110,
+        "h": 42
+       },
+       "layout": "HORIZONTAL pad=4,4,4,4 main=SPACE_BETWEEN cross=CENTER gap=15",
+       "fill": "#f5f6f8",
+       "stroke": "#e5e7eb",
+       "radius": 9999,
+       "children": [
+        {
+         "name": "Button - Decrease quantity",
+         "type": "FRAME",
+         "box": {
+          "x": 22,
+          "y": 1601,
+          "w": 32,
+          "h": 32
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "fill": "#ffffff",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 33,
+            "y": 1617,
+            "w": 9,
+            "h": 1
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 33,
+              "y": 1617,
+              "w": 9,
+              "h": 1
+             },
+             "fill": "#4b5563"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 69,
+          "y": 1607,
+          "w": 6,
+          "h": 20
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 69,
+            "y": 1607,
+            "w": 6,
+            "h": 20
+           },
+           "fill": "#1f2937",
+           "text": "1",
+           "style": "Inter 700 14px ls=0"
+          }
+         ]
+        },
+        {
+         "name": "Button - Increase quantity",
+         "type": "FRAME",
+         "box": {
+          "x": 90,
+          "y": 1601,
+          "w": 32,
+          "h": 32
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "fill": "#046938",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 101,
+            "y": 1613,
+            "w": 9,
+            "h": 9
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 101,
+              "y": 1613,
+              "w": 9,
+              "h": 9
+             },
+             "fill": "#ffffff"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Add to Cart Full-width Button",
+       "type": "FRAME",
+       "box": {
+        "x": 139,
+        "y": 1595,
+        "w": 257,
+        "h": 44
+       },
+       "layout": "HORIZONTAL pad=12,16,12,16 main=CENTER cross=CENTER gap=8",
+       "fill": "#046938",
+       "radius": 9999,
+       "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 184,
+          "y": 1609,
+          "w": 13,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 184,
+            "y": 1609,
+            "w": 13,
+            "h": 16
+           },
+           "fill": "#ffffff"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 205,
+          "y": 1607,
+          "w": 146,
+          "h": 20
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 205,
+            "y": 1607,
+            "w": 146,
+            "h": 20
+           },
+           "fill": "#ffffff",
+           "text": "Add to Cart · KES 250",
+           "style": "Inter 600 14px ls=0"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "texts": [
+  {
+   "text": "Home",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 61,
+    "y": 22
+   }
+  },
+  {
+   "text": "/",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 101,
+    "y": 22
+   }
+  },
+  {
+   "text": "Household",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 111,
+    "y": 22
+   }
+  },
+  {
+   "text": "/",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 179,
+    "y": 22
+   }
+  },
+  {
+   "text": "Cleaning",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 190,
+    "y": 22
+   }
+  },
+  {
+   "text": "BULK SAVINGS",
+   "style": "Inter 700 11px ls=0.550000011920929",
+   "box": {
+    "x": 27,
+    "y": 81
+   }
+  },
+  {
+   "text": "Household Essential",
+   "style": "Inter 600 11px ls=0",
+   "box": {
+    "x": 26,
+    "y": 111
+   }
+  },
+  {
+   "text": "Harpic Detergent 1kg",
+   "style": "Inter 700 20px ls=0",
+   "box": {
+    "x": 21,
+    "y": 487
+   }
+  },
+  {
+   "text": "1kg Bottle · Bleach & Power Clean · Fresh Citrus",
+   "style": "Inter 500 13px ls=0",
+   "box": {
+    "x": 21,
+    "y": 518
+   }
+  },
+  {
+   "text": "4.8",
+   "style": "Inter 700 12px ls=0",
+   "box": {
+    "x": 104,
+    "y": 547
+   }
+  },
+  {
+   "text": "·",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 131,
+    "y": 547
+   }
+  },
+  {
+   "text": "94 customer reviews",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 143,
+    "y": 547
+   }
+  },
+  {
+   "text": "KES 250",
+   "style": "Inter 700 24px ls=-0.6000000238418579",
+   "box": {
+    "x": 21,
+    "y": 592
+   }
+  },
+  {
+   "text": "KES 290",
+   "style": "Inter 400 14px ls=0",
+   "box": {
+    "x": 126,
+    "y": 598
+   }
+  },
+  {
+   "text": "Save KES 40",
+   "style": "Inter 700 12px ls=0",
+   "box": {
+    "x": 202,
+    "y": 600
+   }
+  },
+  {
+   "text": "In Stock · Available for 30-min Nairobi delivery",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 35,
+    "y": 630
+   }
+  },
+  {
+   "text": "1–5 units",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 669
+   }
+  },
+  {
+   "text": "KES 250 each",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 298,
+    "y": 669
+   }
+  },
+  {
+   "text": "6+ units",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 708
+   }
+  },
+  {
+   "text": "— Wholesale price",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 87,
+    "y": 708
+   }
+  },
+  {
+   "text": "Save 16%",
+   "style": "Inter 700 10px ls=0",
+   "box": {
+    "x": 239,
+    "y": 708
+   }
+  },
+  {
+   "text": "KES 210 each",
+   "style": "Inter 700 12px ls=0",
+   "box": {
+    "x": 300,
+    "y": 708
+   }
+  },
+  {
+   "text": "30-Min Nairobi Express",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 78,
+    "y": 766
+   }
+  },
+  {
+   "text": "Fulfilled fresh from Kilimani & Westlands hubs",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 78,
+    "y": 782
+   }
+  },
+  {
+   "text": "Description",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 21,
+    "y": 848
+   }
+  },
+  {
+   "text": "Harpic Power Bleach & Detergent delivers multi-action\ndeep sanitisation and stain removal. Formulated with\nactive cleaning power that kills 99.9% of bacteria,\nviruses, and germs while leaving a long-lasting fresh\ncitrus scent.",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 21,
+    "y": 877
+   }
+  },
+  {
+   "text": " ",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 25,
+    "y": 990
+   }
+  },
+  {
+   "text": "Kills 99.9% of disease-causing germs and eliminates",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 43,
+    "y": 990
+   }
+  },
+  {
+   "text": "tough grime",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 25,
+    "y": 1011
+   }
+  },
+  {
+   "text": " ",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 25,
+    "y": 1036
+   }
+  },
+  {
+   "text": "Suitable for household bathrooms, tiles, and",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 43,
+    "y": 1036
+   }
+  },
+  {
+   "text": "commercial sanitisation in bulk",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 25,
+    "y": 1057
+   }
+  },
+  {
+   "text": " ",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 25,
+    "y": 1082
+   }
+  },
+  {
+   "text": "Heavy-duty bleach formulation ideal for deep",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 43,
+    "y": 1082
+   }
+  },
+  {
+   "text": "disinfecting routines",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 25,
+    "y": 1103
+   }
+  },
+  {
+   "text": "Product Specifications & Usage",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 21,
+    "y": 1151
+   }
+  },
+  {
+   "text": "Delivery & Returns",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 21,
+    "y": 1196
+   }
+  },
+  {
+   "text": "You may also like",
+   "style": "Inter 700 16px ls=0",
+   "box": {
+    "x": 21,
+    "y": 1265
+   }
+  },
+  {
+   "text": "See All",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 344,
+    "y": 1269
+   }
+  },
+  {
+   "text": "Bundle",
+   "style": "Inter 500 10px ls=0",
+   "box": {
+    "x": 43,
+    "y": 1438
+   }
+  },
+  {
+   "text": "Vibrant Farm\nGreens & Spinach",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 43,
+    "y": 1453
+   }
+  },
+  {
+   "text": "Local",
+   "style": "Inter 700 9px ls=0",
+   "box": {
+    "x": 55,
+    "y": 1320
+   }
+  },
+  {
+   "text": "KES 120",
+   "style": "Inter 700 12px ls=0",
+   "box": {
+    "x": 43,
+    "y": 1500
+   }
+  },
+  {
+   "text": "500ml Pouch",
+   "style": "Inter 500 10px ls=0",
+   "box": {
+    "x": 195,
+    "y": 1438
+   }
+  },
+  {
+   "text": "Brookside Whole\nFresh Milk",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 195,
+    "y": 1453
+   }
+  },
+  {
+   "text": "Fresh",
+   "style": "Inter 700 9px ls=0",
+   "box": {
+    "x": 207,
+    "y": 1320
+   }
+  },
+  {
+   "text": "KES 75",
+   "style": "Inter 700 12px ls=0",
+   "box": {
+    "x": 195,
+    "y": 1500
+   }
+  },
+  {
+   "text": "60 Tablets",
+   "style": "Inter 500 10px ls=0",
+   "box": {
+    "x": 347,
+    "y": 1438
+   }
+  },
+  {
+   "text": "Organic Vitamin C +\nZinc Immunity",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 347,
+    "y": 1453
+   }
+  },
+  {
+   "text": "Wellness",
+   "style": "Inter 700 9px ls=0",
+   "box": {
+    "x": 359,
+    "y": 1320
+   }
+  },
+  {
+   "text": "KES 950",
+   "style": "Inter 700 12px ls=0",
+   "box": {
+    "x": 347,
+    "y": 1500
+   }
+  },
+  {
+   "text": "1",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 69,
+    "y": 1607
+   }
+  },
+  {
+   "text": "Add to Cart · KES 250",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 205,
+    "y": 1607
+   }
+  }
+ ]
+}

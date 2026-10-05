@@ -1,0 +1,1527 @@
+{
+ "id": "26:12000",
+ "name": "08c · Pharmacy — Order a Repeat",
+ "slug": "08c-pharmacy-order-a-repeat",
+ "size": {
+  "w": 390,
+  "h": 1542
+ },
+ "bg": "#fcf9f8",
+ "tree": [
+  {
+   "name": "Main",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 1542
+   },
+   "layout": "VERTICAL pad=56,0,0,0",
+   "fill": "#fcf9f8",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 56,
+      "w": 390,
+      "h": 1486
+     },
+     "layout": "VERTICAL pad=0,0,128,0",
+     "children": [
+      {
+       "name": "Top Trust & Clinical Verification Banner",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 56,
+        "w": 390,
+        "h": 152
+       },
+       "layout": "VERTICAL pad=16,20,0,20",
+       "children": [
+        {
+         "name": "Background+Shadow",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 72,
+          "w": 350,
+          "h": 136
+         },
+         "layout": "VERTICAL pad=16,16,16,16",
+         "fill": "#ffffff",
+         "radius": 12,
+         "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 88,
+            "w": 318,
+            "h": 104
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 gap=8",
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 88,
+              "w": 40,
+              "h": 40
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#9ff5b6",
+             "radius": 9999,
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 84,
+              "y": 88,
+              "w": 270,
+              "h": 104
+             },
+             "layout": "VERTICAL pad=0,0,0,0 gap=4",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section: Available on Repeat:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 208,
+        "w": 390,
+        "h": 646
+       },
+       "layout": "VERTICAL pad=28,0,0,0",
+       "children": [
+        {
+         "name": "Section: Available on Repeat",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 236,
+          "w": 390,
+          "h": 618
+         },
+         "layout": "VERTICAL pad=0,20,0,20 gap=16",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 236,
+            "w": 350,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=39.02000045776367",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 236,
+              "w": 258,
+              "h": 24
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+             "childCount": 2
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 317,
+              "y": 240,
+              "w": 53,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Card 1: Metformin (Pre-selected)",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 276,
+            "w": 350,
+            "h": 182
+           },
+           "layout": "VERTICAL pad=16,16,16,16 gap=8",
+           "fill": "#ffffff",
+           "radius": 12,
+           "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 292,
+              "w": 318,
+              "h": 60
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 360,
+              "w": 318,
+              "h": 30
+             },
+             "layout": "HORIZONTAL pad=6,8,6,8 cross=CENTER gap=6",
+             "fill": "#f6f3f2",
+             "radius": 8,
+             "childCount": 2
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 398,
+              "w": 318,
+              "h": 44
+             },
+             "layout": "HORIZONTAL pad=4,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=145.4499969482422",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Card 2: Amlodipine (Pre-selected)",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 474,
+            "w": 350,
+            "h": 160
+           },
+           "layout": "VERTICAL pad=16,16,16,16 gap=8",
+           "fill": "#ffffff",
+           "radius": 12,
+           "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 490,
+              "w": 318,
+              "h": 38
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 536,
+              "w": 318,
+              "h": 30
+             },
+             "layout": "HORIZONTAL pad=6,8,6,8 cross=CENTER gap=6",
+             "fill": "#f6f3f2",
+             "radius": 8,
+             "childCount": 2
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 574,
+              "w": 318,
+              "h": 44
+             },
+             "layout": "HORIZONTAL pad=4,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=145.47000122070312",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Card 3: Ventolin (Amber Expired Warning)",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 650,
+            "w": 350,
+            "h": 204
+           },
+           "layout": "VERTICAL pad=16,16,16,16 gap=8",
+           "fill": "#ffffff|linear(#ffdcc0,#ffffff,#ffffff)",
+           "radius": 12,
+           "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 666,
+              "w": 318,
+              "h": 60
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 gap=8",
+             "childCount": 2
+            },
+            {
+             "name": "Overlay",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 734,
+              "w": 318,
+              "h": 52
+             },
+             "layout": "HORIZONTAL pad=8,8,8,8 cross=CENTER gap=8",
+             "fill": "#ffdcc0@25%",
+             "radius": 8,
+             "childCount": 2
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 794,
+              "w": 318,
+              "h": 44
+             },
+             "layout": "HORIZONTAL pad=4,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=116.18000030517578",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section: Make this regular:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 854,
+        "w": 390,
+        "h": 216
+       },
+       "layout": "VERTICAL pad=28,20,0,20",
+       "children": [
+        {
+         "name": "Section: Make this regular",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 882,
+          "w": 350,
+          "h": 188
+         },
+         "layout": "VERTICAL pad=16,16,16,16 gap=16",
+         "fill": "#ffffff",
+         "radius": 12,
+         "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 898,
+            "w": 318,
+            "h": 36
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN gap=50.83000183105469",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 898,
+              "w": 219,
+              "h": 36
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+             "childCount": 2
+            },
+            {
+             "name": "Button - Toggle recurring dispatch",
+             "type": "FRAME",
+             "box": {
+              "x": 306,
+              "y": 898,
+              "w": 48,
+              "h": 24
+             },
+             "layout": "VERTICAL pad=2,2,2,2",
+             "fill": "#e5e2e1",
+             "radius": 9999,
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Frequency Chips",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 950,
+            "w": 318,
+            "h": 36
+           },
+           "children": [
+            {
+             "name": "Button",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 950,
+              "w": 107,
+              "h": 32
+             },
+             "layout": "VERTICAL pad=7.5,12,8.5,12 main=CENTER cross=CENTER",
+             "fill": "#004f28",
+             "radius": 9999,
+             "childCount": 1
+            },
+            {
+             "name": "Button",
+             "type": "FRAME",
+             "box": {
+              "x": 147,
+              "y": 950,
+              "w": 107,
+              "h": 32
+             },
+             "layout": "VERTICAL pad=7.5,12,8.5,12 main=CENTER cross=CENTER",
+             "fill": "#f0eded",
+             "radius": 9999,
+             "childCount": 1
+            },
+            {
+             "name": "Button",
+             "type": "FRAME",
+             "box": {
+              "x": 257,
+              "y": 950,
+              "w": 107,
+              "h": 32
+             },
+             "layout": "VERTICAL pad=7.5,12,8.5,12 main=CENTER cross=CENTER",
+             "fill": "#f0eded",
+             "radius": 9999,
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Background",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 1002,
+            "w": 318,
+            "h": 52
+           },
+           "layout": "HORIZONTAL pad=8,8,8,8 cross=CENTER gap=8",
+           "fill": "#f6f3f2",
+           "radius": 8,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 44,
+              "y": 1021,
+              "w": 13,
+              "h": 13
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 65,
+              "y": 1010,
+              "w": 278,
+              "h": 36
+             },
+             "layout": "VERTICAL pad=0,20.34000015258789,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section: Collection or delivery (Nairobi Express):margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 1070,
+        "w": 390,
+        "h": 246
+       },
+       "layout": "VERTICAL pad=28,0,0,0",
+       "children": [
+        {
+         "name": "Section: Collection or delivery (Nairobi Express)",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 1098,
+          "w": 390,
+          "h": 218
+         },
+         "layout": "VERTICAL pad=0,20,0,20 gap=8",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 1098,
+            "w": 350,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=63.38999938964844",
+           "children": [
+            {
+             "name": "Heading 3",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 1098,
+              "w": 183,
+              "h": 24
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 266,
+              "y": 1101,
+              "w": 104,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=2,8,2,8",
+             "fill": "#9ff5b6",
+             "radius": 9999,
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 1130,
+            "w": 350,
+            "h": 186
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER gap=8",
+           "children": [
+            {
+             "name": "Card A: Deliver to me (Selected)",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 1130,
+              "w": 171,
+              "h": 186
+             },
+             "layout": "VERTICAL pad=16,16,16,16 main=SPACE_BETWEEN",
+             "fill": "#ffffff|linear(#9ff5b6,#ffffff)",
+             "radius": 12,
+             "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+             "childCount": 2
+            },
+            {
+             "name": "Card B: Collect in branch (Unselected)",
+             "type": "FRAME",
+             "box": {
+              "x": 199,
+              "y": 1130,
+              "w": 171,
+              "h": 168
+             },
+             "layout": "VERTICAL pad=16,16,16,16 main=SPACE_BETWEEN gap=18",
+             "fill": "#ffffff",
+             "radius": 12,
+             "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Trust & Safety Footer Badge:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 1316,
+        "w": 390,
+        "h": 98
+       },
+       "layout": "VERTICAL pad=28,20,0,20",
+       "children": [
+        {
+         "name": "Trust & Safety Footer Badge",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 1344,
+          "w": 350,
+          "h": 70
+         },
+         "layout": "HORIZONTAL pad=8,8,8,8 cross=CENTER gap=8",
+         "fill": "#f6f3f2",
+         "radius": 12,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 28,
+            "y": 1370,
+            "w": 15,
+            "h": 18
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 28,
+              "y": 1370,
+              "w": 15,
+              "h": 18
+             },
+             "fill": "#004f28"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 51,
+            "y": 1352,
+            "w": 304,
+            "h": 54
+           },
+           "layout": "VERTICAL pad=0,37.529998779296875,0,0",
+           "children": [
+            {
+             "name": "Strong → Kenyan PPB Certified Handling",
+             "type": "TEXT",
+             "box": {
+              "x": 51,
+              "y": 1352,
+              "w": 266,
+              "h": 54
+             },
+             "fill": "#1c1b1b",
+             "text": "Kenyan PPB Certified Handling · Serialised\npackaging & batch track validation prior to\ndispatch.",
+             "style": "Inter 700 13px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Sticky Bottom Action Bar",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 1430,
+    "w": 390,
+    "h": 112
+   },
+   "layout": "VERTICAL pad=0,0,0,0",
+   "fill": "#ffffff",
+   "shadow": "DROP_SHADOW #000000@6% 0/-4 blur16",
+   "children": [
+    {
+     "name": "Background",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 1430,
+      "w": 390,
+      "h": 48
+     },
+     "layout": "HORIZONTAL pad=6,20,6,20 main=CENTER cross=CENTER gap=4",
+     "fill": "#f6f3f2",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 22,
+        "y": 1448,
+        "w": 9,
+        "h": 12
+       },
+       "layout": "VERTICAL pad=0,0,0,0",
+       "children": [
+        {
+         "name": "Icon",
+         "type": "VECTOR",
+         "box": {
+          "x": 22,
+          "y": 1448,
+          "w": 9,
+          "h": 12
+         },
+         "fill": "#6f7a70"
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 36,
+        "y": 1436,
+        "w": 332,
+        "h": 36
+       },
+       "layout": "VERTICAL pad=0,12.109999656677246,0,0",
+       "children": [
+        {
+         "name": "Text",
+         "type": "TEXT",
+         "box": {
+          "x": 36,
+          "y": 1436,
+          "w": 320,
+          "h": 36
+         },
+         "fill": "#3f4940",
+         "text": "You won't be charged until the pharmacist approves\nyour repeat.",
+         "style": "Inter 400 13px ls=0"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 1478,
+      "w": 390,
+      "h": 64
+     },
+     "layout": "HORIZONTAL pad=8,20,8,20 main=SPACE_BETWEEN cross=CENTER gap=43.869998931884766",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 1489,
+        "w": 101,
+        "h": 42
+       },
+       "layout": "VERTICAL pad=0,0,0,0",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 1489,
+          "w": 101,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 20,
+            "y": 1489,
+            "w": 101,
+            "h": 18
+           },
+           "fill": "#6f7a70",
+           "text": "2 items selected",
+           "style": "Inter 400 13px ls=0"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 1507,
+          "w": 101,
+          "h": 24
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 20,
+            "y": 1507,
+            "w": 96,
+            "h": 24
+           },
+           "fill": "#1c1b1b",
+           "text": "KES 1,450",
+           "style": "Inter 700 20px ls=-0.4000000059604645"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Button",
+       "type": "FRAME",
+       "box": {
+        "x": 170,
+        "y": 1486,
+        "w": 200,
+        "h": 48
+       },
+       "layout": "HORIZONTAL pad=0,24,0,24 cross=CENTER gap=8",
+       "fill": "#004f28",
+       "radius": 12,
+       "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 194,
+          "y": 1501,
+          "w": 132,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 194,
+            "y": 1501,
+            "w": 132,
+            "h": 18
+           },
+           "fill": "#ffffff",
+           "text": "Send to Pharmacist",
+           "style": "Inter 600 14px ls=0"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 334,
+          "y": 1504,
+          "w": 12,
+          "h": 12
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 334,
+            "y": 1504,
+            "w": 12,
+            "h": 12
+           },
+           "fill": "#ffffff"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Header",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 56
+   },
+   "layout": "VERTICAL pad=0,0,0,0",
+   "fill": "#fcf9f8@80%",
+   "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+   "blur": "BACKGROUND_BLUR 24",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 56
+     },
+     "layout": "HORIZONTAL pad=0,19.989999771118164,0,20 main=SPACE_BETWEEN cross=CENTER gap=35.25",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 6,
+        "w": 170,
+        "h": 44
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+       "children": [
+        {
+         "name": "Button - Go back:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 6,
+          "w": 36,
+          "h": 44
+         },
+         "children": [
+          {
+           "name": "Button - Go back",
+           "type": "FRAME",
+           "box": {
+            "x": 12,
+            "y": 6,
+            "w": 44,
+            "h": 44
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 28,
+              "y": 18,
+              "w": 12,
+              "h": 20
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Heading 1",
+         "type": "FRAME",
+         "box": {
+          "x": 64,
+          "y": 16,
+          "w": 126,
+          "h": 24
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 64,
+            "y": 16,
+            "w": 126,
+            "h": 24
+           },
+           "fill": "#1c1b1b",
+           "text": "Order A Repeat",
+           "style": "Inter 600 18px ls=-0.44999998807907104"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 227,
+        "y": 12,
+        "w": 143,
+        "h": 32
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=3.990000009536743",
+       "children": [
+        {
+         "name": "Overlay",
+         "type": "FRAME",
+         "box": {
+          "x": 227,
+          "y": 17,
+          "w": 107,
+          "h": 22
+         },
+         "layout": "HORIZONTAL pad=4,10,4,10 cross=CENTER gap=3.990000009536743",
+         "fill": "#004f28@10%",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 237,
+            "y": 22,
+            "w": 13,
+            "h": 12
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 237,
+              "y": 22,
+              "w": 13,
+              "h": 12
+             },
+             "fill": "#004f28"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 254,
+            "y": 21,
+            "w": 70,
+            "h": 14
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 254,
+              "y": 21,
+              "w": 70,
+              "h": 14
+             },
+             "fill": "#004f28",
+             "text": "VERIFIED RX",
+             "style": "Inter 700 11px ls=0.2750000059604645"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Background",
+         "type": "FRAME",
+         "box": {
+          "x": 338,
+          "y": 12,
+          "w": 32,
+          "h": 32
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "fill": "#004f28",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 348,
+            "y": 22,
+            "w": 12,
+            "h": 12
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 348,
+              "y": 22,
+              "w": 12,
+              "h": 12
+             },
+             "fill": "#ffffff"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "texts": [
+  {
+   "text": "Licensed Dispensary Review",
+   "style": "Inter 600 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 84,
+    "y": 88
+   }
+  },
+  {
+   "text": "PPB-KE",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 92,
+    "y": 118
+   }
+  },
+  {
+   "text": "Select the medications you need. A PPB-\nlicensed pharmacist checks every repeat\nbefore it is dispensed in Nairobi.",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 84,
+    "y": 138
+   }
+  },
+  {
+   "text": "Available on Repeat",
+   "style": "Inter 600 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 20,
+    "y": 236
+   }
+  },
+  {
+   "text": "Refill Active",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 204,
+    "y": 241
+   }
+  },
+  {
+   "text": "Select all",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 317,
+    "y": 240
+   }
+  },
+  {
+   "text": "Metformin Hydrochloride",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 64,
+    "y": 292
+   }
+  },
+  {
+   "text": "Refill due in 5 days",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 82,
+    "y": 316
+   }
+  },
+  {
+   "text": "500mg · 60 Tablets (Film coated)",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 64,
+    "y": 334
+   }
+  },
+  {
+   "text": "Last dispensed 12 May 2024 · Dr. K. Omondi",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 63,
+    "y": 366
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 36,
+    "y": 405
+   }
+  },
+  {
+   "text": "KES 720",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 36,
+    "y": 422
+   }
+  },
+  {
+   "text": "1",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 297,
+    "y": 413
+   }
+  },
+  {
+   "text": "Amlodipine Besylate",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 64,
+    "y": 490
+   }
+  },
+  {
+   "text": "Routine refill",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 214,
+    "y": 492
+   }
+  },
+  {
+   "text": "5mg · 30 Tablets",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 64,
+    "y": 510
+   }
+  },
+  {
+   "text": "Last dispensed 28 Apr 2024 · Dr. A. Patel",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 63,
+    "y": 542
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 36,
+    "y": 581
+   }
+  },
+  {
+   "text": "KES 730",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 36,
+    "y": 598
+   }
+  },
+  {
+   "text": "1",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 297,
+    "y": 589
+   }
+  },
+  {
+   "text": "Ventolin (Salbutamol) Evohaler",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 66,
+    "y": 666
+   }
+  },
+  {
+   "text": "Prescription expired",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 88,
+    "y": 690
+   }
+  },
+  {
+   "text": "100mcg/dose · 200 Actuations",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 66,
+    "y": 708
+   }
+  },
+  {
+   "text": "Last dispensed 15 Mar 2024 · 6-month limit\npassed",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 65,
+    "y": 742
+   }
+  },
+  {
+   "text": "Est. price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 36,
+    "y": 801
+   }
+  },
+  {
+   "text": "KES 950",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 36,
+    "y": 818
+   }
+  },
+  {
+   "text": "Upload new Rx",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 254,
+    "y": 810
+   }
+  },
+  {
+   "text": "Make this regular",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 80,
+    "y": 898
+   }
+  },
+  {
+   "text": "Automate recurring dispatch",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 80,
+    "y": 916
+   }
+  },
+  {
+   "text": "Every 30 days",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 48,
+    "y": 958
+   }
+  },
+  {
+   "text": "Every 60 days",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 159,
+    "y": 958
+   }
+  },
+  {
+   "text": "Every 90 days",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 269,
+    "y": 958
+   }
+  },
+  {
+   "text": "We'll remind you 5 days before each refill.\nCancel anytime.",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 65,
+    "y": 1010
+   }
+  },
+  {
+   "text": "Collection or Delivery",
+   "style": "Inter 600 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 20,
+    "y": 1098
+   }
+  },
+  {
+   "text": "Nairobi Express",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 274,
+    "y": 1103
+   }
+  },
+  {
+   "text": "Deliver to me",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 36,
+    "y": 1190
+   }
+  },
+  {
+   "text": "Green Park, Block C",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 36,
+    "y": 1208
+   }
+  },
+  {
+   "text": "Tomorrow, 9–11 AM",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 42,
+    "y": 1242
+   }
+  },
+  {
+   "text": "KES 150 (Free >\n1.5k)",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 42,
+    "y": 1258
+   }
+  },
+  {
+   "text": "Collect in branch",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 215,
+    "y": 1190
+   }
+  },
+  {
+   "text": "Syokimau Desk",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 215,
+    "y": 1208
+   }
+  },
+  {
+   "text": "Ready 4:30 PM",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 221,
+    "y": 1242
+   }
+  },
+  {
+   "text": "Always Free",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 221,
+    "y": 1258
+   }
+  },
+  {
+   "text": "Kenyan PPB Certified Handling · Serialised\npackaging & batch track validation prior to\ndispatch.",
+   "style": "Inter 700 13px ls=0",
+   "box": {
+    "x": 51,
+    "y": 1352
+   }
+  },
+  {
+   "text": "You won't be charged until the pharmacist approves\nyour repeat.",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 36,
+    "y": 1436
+   }
+  },
+  {
+   "text": "2 items selected",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 20,
+    "y": 1489
+   }
+  },
+  {
+   "text": "KES 1,450",
+   "style": "Inter 700 20px ls=-0.4000000059604645",
+   "box": {
+    "x": 20,
+    "y": 1507
+   }
+  },
+  {
+   "text": "Send to Pharmacist",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 194,
+    "y": 1501
+   }
+  },
+  {
+   "text": "Order A Repeat",
+   "style": "Inter 600 18px ls=-0.44999998807907104",
+   "box": {
+    "x": 64,
+    "y": 16
+   }
+  },
+  {
+   "text": "VERIFIED RX",
+   "style": "Inter 700 11px ls=0.2750000059604645",
+   "box": {
+    "x": 254,
+    "y": 21
+   }
+  }
+ ]
+}

@@ -1,0 +1,2681 @@
+{
+ "id": "1:421",
+ "name": "03c · Category — Deli",
+ "slug": "03c-category-deli",
+ "size": {
+  "w": 390,
+  "h": 2493
+ },
+ "bg": "#ffffff|#fcf9f8",
+ "tree": [
+  {
+   "name": "Main",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 2493
+   },
+   "layout": "VERTICAL pad=128,0,96,0",
+   "fill": "#fcf9f8",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 128,
+      "w": 390,
+      "h": 2269
+     },
+     "layout": "VERTICAL pad=0,0,0,0",
+     "children": [
+      {
+       "name": "Section - Horizontal Category Chips Filter Bar",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 128,
+        "w": 390,
+        "h": 128
+       },
+       "layout": "VERTICAL pad=12,0,8,0",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 140,
+          "w": 390,
+          "h": 108
+         },
+         "children": [
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 140,
+            "w": 66,
+            "h": 30
+           },
+           "layout": "VERTICAL pad=6,14,6,14 main=CENTER cross=CENTER",
+           "fill": "#ffffff",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 34,
+              "y": 146,
+              "w": 38,
+              "h": 18
+             },
+             "fill": "#1c1b1b",
+             "text": "Retail",
+             "style": "Inter 600 14px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 94,
+            "y": 140,
+            "w": 99,
+            "h": 30
+           },
+           "layout": "VERTICAL pad=6,14,6,14 main=CENTER cross=CENTER",
+           "fill": "#ffffff",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 108,
+              "y": 146,
+              "w": 71,
+              "h": 18
+             },
+             "fill": "#1c1b1b",
+             "text": "Wholesale",
+             "style": "Inter 600 14px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 201,
+            "y": 140,
+            "w": 53,
+            "h": 30
+           },
+           "layout": "VERTICAL pad=6,14,6,14 main=CENTER cross=CENTER",
+           "fill": "#004f28",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 215,
+              "y": 146,
+              "w": 25,
+              "h": 18
+             },
+             "fill": "#ffffff",
+             "text": "Deli",
+             "style": "Inter 500 14px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 178,
+            "w": 112,
+            "h": 32
+           },
+           "layout": "HORIZONTAL pad=6,12,6,12 cross=CENTER gap=6",
+           "fill": "#e8f5e9",
+           "stroke": "#046938@30%",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 33,
+              "y": 187,
+              "w": 14,
+              "h": 15
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            },
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 53,
+              "y": 185,
+              "w": 66,
+              "h": 18
+             },
+             "fill": "#046938",
+             "text": "Pharmacy",
+             "style": "Inter 500 14px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 144,
+            "y": 179,
+            "w": 71,
+            "h": 30
+           },
+           "layout": "VERTICAL pad=6,14,6,14 main=CENTER cross=CENTER",
+           "fill": "#ffffff",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 158,
+              "y": 185,
+              "w": 43,
+              "h": 18
+             },
+             "fill": "#1c1b1b",
+             "text": "Liquor",
+             "style": "Inter 600 14px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 223,
+            "y": 179,
+            "w": 94,
+            "h": 30
+           },
+           "layout": "VERTICAL pad=6,14,6,14 main=CENTER cross=CENTER",
+           "fill": "#ffffff",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 237,
+              "y": 185,
+              "w": 66,
+              "h": 18
+             },
+             "fill": "#1c1b1b",
+             "text": "Groceries",
+             "style": "Inter 600 14px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 218,
+            "w": 101,
+            "h": 30
+           },
+           "layout": "VERTICAL pad=6,14,6,14 main=CENTER cross=CENTER",
+           "fill": "#ffffff",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 34,
+              "y": 224,
+              "w": 73,
+              "h": 18
+             },
+             "fill": "#1c1b1b",
+             "text": "Household",
+             "style": "Inter 600 14px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 129,
+            "y": 218,
+            "w": 76,
+            "h": 30
+           },
+           "layout": "VERTICAL pad=6,14,6,14 main=CENTER cross=CENTER",
+           "fill": "#ffffff",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 143,
+              "y": 224,
+              "w": 48,
+              "h": 18
+             },
+             "fill": "#1c1b1b",
+             "text": "Beauty",
+             "style": "Inter 600 14px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 256,
+        "w": 390,
+        "h": 82
+       },
+       "layout": "VERTICAL pad=10,20,10,20",
+       "children": [
+        {
+         "name": "Background+Border+Shadow",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 266,
+          "w": 350,
+          "h": 62
+         },
+         "layout": "HORIZONTAL pad=12,12,12,12 main=SPACE_BETWEEN cross=CENTER gap=36.97999954223633",
+         "fill": "linear(#e8f5e9,#f1f8f3,#ffffff)",
+         "stroke": "#046938@20%",
+         "radius": 12,
+         "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 33,
+            "y": 279,
+            "w": 258,
+            "h": 36
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=12",
+           "children": [
+            {
+             "name": "Background+Shadow",
+             "type": "FRAME",
+             "box": {
+              "x": 33,
+              "y": 279,
+              "w": 36,
+              "h": 36
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#046938",
+             "radius": 9999,
+             "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 81,
+              "y": 281,
+              "w": 210,
+              "h": 33
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 343,
+            "y": 292,
+            "w": 14,
+            "h": 10
+           },
+           "layout": "VERTICAL pad=0,0,0,8",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 351,
+              "y": 292,
+              "w": 6,
+              "h": 10
+             },
+             "fill": "#046938"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 338,
+        "w": 390,
+        "h": 301
+       },
+       "layout": "VERTICAL pad=12,0,8,0",
+       "children": [
+        {
+         "name": "Section",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 350,
+          "w": 390,
+          "h": 281
+         },
+         "layout": "VERTICAL pad=0,20,0,20 gap=12",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 350,
+            "w": 350,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=102.69999694824219",
+           "children": [
+            {
+             "name": "Heading 2",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 350,
+              "w": 188,
+              "h": 24
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 311,
+              "y": 353,
+              "w": 60,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 386,
+            "w": 350,
+            "h": 245
+           },
+           "layout": "GRID pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 386,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 111,
+              "y": 386,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 201,
+              "y": 386,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 292,
+              "y": 386,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 515,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Sort & Filter Bar:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 639,
+        "w": 390,
+        "h": 44
+       },
+       "layout": "VERTICAL pad=16,0,0,0",
+       "children": [
+        {
+         "name": "Sort & Filter Bar",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 655,
+          "w": 390,
+          "h": 28
+         },
+         "layout": "HORIZONTAL pad=0,20,0,20 main=SPACE_BETWEEN cross=CENTER",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 655,
+            "w": 268,
+            "h": 28
+           },
+           "children": [
+            {
+             "name": "Button",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 655,
+              "w": 102,
+              "h": 28
+             },
+             "layout": "VERTICAL pad=6,14,6,14 main=CENTER cross=CENTER",
+             "fill": "#004f28",
+             "radius": 9999,
+             "childCount": 1
+            },
+            {
+             "name": "Button",
+             "type": "FRAME",
+             "box": {
+              "x": 130,
+              "y": 655,
+              "w": 103,
+              "h": 28
+             },
+             "layout": "VERTICAL pad=6,14,6,14 main=CENTER cross=CENTER",
+             "fill": "#ffffff",
+             "radius": 9999,
+             "childCount": 1
+            },
+            {
+             "name": "Button",
+             "type": "FRAME",
+             "box": {
+              "x": 241,
+              "y": 655,
+              "w": 54,
+              "h": 28
+             },
+             "layout": "VERTICAL pad=6,14,6,14 main=CENTER cross=CENTER",
+             "fill": "#ffffff",
+             "radius": 9999,
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 292,
+            "y": 655,
+            "w": 78,
+            "h": 28
+           },
+           "layout": "HORIZONTAL pad=6,12,6,12 cross=CENTER gap=4",
+           "fill": "#ffffff",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 304,
+              "y": 662,
+              "w": 14,
+              "h": 14
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 322,
+              "y": 661,
+              "w": 36,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section 1: Rotisserie & Hot Counter:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 683,
+        "w": 390,
+        "h": 421
+       },
+       "layout": "VERTICAL pad=28,0,0,0",
+       "children": [
+        {
+         "name": "Section 1: Rotisserie & Hot Counter",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 711,
+          "w": 390,
+          "h": 393
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 711,
+            "w": 390,
+            "h": 40
+           },
+           "layout": "VERTICAL pad=0,0,14,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 0,
+              "y": 711,
+              "w": 390,
+              "h": 26
+             },
+             "layout": "HORIZONTAL pad=0,20,0,20 main=SPACE_BETWEEN cross=CENTER gap=13.9399995803833",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 751,
+            "w": 390,
+            "h": 353
+           },
+           "children": [
+            {
+             "name": "Card 1",
+             "type": "FRAME",
+             "box": {
+              "x": 0,
+              "y": 751,
+              "w": 263,
+              "h": 345
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "fill": "#ffffff",
+             "stroke": "#f0eded@50%",
+             "radius": 18,
+             "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+             "childCount": 2
+            },
+            {
+             "name": "Card 2",
+             "type": "FRAME",
+             "box": {
+              "x": 275,
+              "y": 751,
+              "w": 263,
+              "h": 345
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "fill": "#ffffff",
+             "stroke": "#f0eded@50%",
+             "radius": 18,
+             "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+             "childCount": 2
+            },
+            {
+             "name": "Card 3",
+             "type": "FRAME",
+             "box": {
+              "x": 549,
+              "y": 751,
+              "w": 263,
+              "h": 345
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "fill": "#ffffff",
+             "stroke": "#f0eded@50%",
+             "radius": 18,
+             "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section 2: Cold Cuts & Artisan Slices:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 1104,
+        "w": 390,
+        "h": 421
+       },
+       "layout": "VERTICAL pad=28,0,0,0",
+       "children": [
+        {
+         "name": "Section 2: Cold Cuts & Artisan Slices",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 1132,
+          "w": 390,
+          "h": 393
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 1132,
+            "w": 390,
+            "h": 40
+           },
+           "layout": "VERTICAL pad=0,0,14,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 0,
+              "y": 1132,
+              "w": 390,
+              "h": 26
+             },
+             "layout": "HORIZONTAL pad=0,20,0,20 main=SPACE_BETWEEN cross=CENTER gap=0.7699999809265137",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 1172,
+            "w": 390,
+            "h": 353
+           },
+           "children": [
+            {
+             "name": "Card 1",
+             "type": "FRAME",
+             "box": {
+              "x": 0,
+              "y": 1172,
+              "w": 263,
+              "h": 345
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "fill": "#ffffff",
+             "stroke": "#f0eded@50%",
+             "radius": 18,
+             "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+             "childCount": 2
+            },
+            {
+             "name": "Card 2",
+             "type": "FRAME",
+             "box": {
+              "x": 275,
+              "y": 1172,
+              "w": 263,
+              "h": 345
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "fill": "#ffffff",
+             "stroke": "#f0eded@50%",
+             "radius": 18,
+             "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+             "childCount": 2
+            },
+            {
+             "name": "Card 3",
+             "type": "FRAME",
+             "box": {
+              "x": 549,
+              "y": 1172,
+              "w": 263,
+              "h": 345
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "fill": "#ffffff",
+             "stroke": "#f0eded@50%",
+             "radius": 18,
+             "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section 3: Artisan Cheese Counter:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 1524,
+        "w": 390,
+        "h": 421
+       },
+       "layout": "VERTICAL pad=28,0,0,0",
+       "children": [
+        {
+         "name": "Section 3: Artisan Cheese Counter",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 1552,
+          "w": 390,
+          "h": 393
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 1552,
+            "w": 390,
+            "h": 40
+           },
+           "layout": "VERTICAL pad=0,0,14,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 0,
+              "y": 1552,
+              "w": 390,
+              "h": 26
+             },
+             "layout": "HORIZONTAL pad=0,20,0,20 main=SPACE_BETWEEN cross=CENTER gap=17.739999771118164",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 1592,
+            "w": 390,
+            "h": 353
+           },
+           "children": [
+            {
+             "name": "Card 1",
+             "type": "FRAME",
+             "box": {
+              "x": 0,
+              "y": 1592,
+              "w": 263,
+              "h": 345
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "fill": "#ffffff",
+             "stroke": "#f0eded@50%",
+             "radius": 18,
+             "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+             "childCount": 2
+            },
+            {
+             "name": "Card 2",
+             "type": "FRAME",
+             "box": {
+              "x": 275,
+              "y": 1592,
+              "w": 263,
+              "h": 345
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "fill": "#ffffff",
+             "stroke": "#f0eded@50%",
+             "radius": 18,
+             "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+             "childCount": 2
+            },
+            {
+             "name": "Card 3",
+             "type": "FRAME",
+             "box": {
+              "x": 549,
+              "y": 1592,
+              "w": 263,
+              "h": 345
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "fill": "#ffffff",
+             "stroke": "#f0eded@50%",
+             "radius": 18,
+             "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section 4: Olives, Dips & Antipasti:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 1945,
+        "w": 390,
+        "h": 453
+       },
+       "layout": "VERTICAL pad=28,0,32,0",
+       "children": [
+        {
+         "name": "Section 4: Olives, Dips & Antipasti",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 1973,
+          "w": 390,
+          "h": 393
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 1973,
+            "w": 390,
+            "h": 40
+           },
+           "layout": "VERTICAL pad=0,0,14,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 0,
+              "y": 1973,
+              "w": 390,
+              "h": 26
+             },
+             "layout": "HORIZONTAL pad=0,20,0,20 main=SPACE_BETWEEN cross=CENTER gap=26.770000457763672",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 2013,
+            "w": 390,
+            "h": 353
+           },
+           "children": [
+            {
+             "name": "Card 1",
+             "type": "FRAME",
+             "box": {
+              "x": 0,
+              "y": 2013,
+              "w": 263,
+              "h": 345
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "fill": "#ffffff",
+             "stroke": "#f0eded@50%",
+             "radius": 18,
+             "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+             "childCount": 2
+            },
+            {
+             "name": "Card 2",
+             "type": "FRAME",
+             "box": {
+              "x": 275,
+              "y": 2013,
+              "w": 263,
+              "h": 345
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "fill": "#ffffff",
+             "stroke": "#f0eded@50%",
+             "radius": 18,
+             "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+             "childCount": 2
+            },
+            {
+             "name": "Card 3",
+             "type": "FRAME",
+             "box": {
+              "x": 549,
+              "y": 2013,
+              "w": 263,
+              "h": 345
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "fill": "#ffffff",
+             "stroke": "#f0eded@50%",
+             "radius": 18,
+             "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Header",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 128
+   },
+   "layout": "VERTICAL pad=0,0,0,0",
+   "fill": "#fcf9f8@95%",
+   "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+   "blur": "BACKGROUND_BLUR 24",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 128
+     },
+     "layout": "VERTICAL pad=8,20,8,20 main=SPACE_BETWEEN gap=16",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 8,
+        "w": 350,
+        "h": 44
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=21.389999389648438",
+       "children": [
+        {
+         "name": "Heading 1",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 19,
+          "w": 95,
+          "h": 23
+         },
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 20,
+            "y": 18,
+            "w": 95,
+            "h": 23
+           },
+           "fill": "#1c1b1b",
+           "text": "Categories",
+           "style": "Inter 700 18px ls=-0.18000000715255737"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 143,
+          "y": 8,
+          "w": 227,
+          "h": 44
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=6",
+         "children": [
+          {
+           "name": "Button - Delivery Location",
+           "type": "FRAME",
+           "box": {
+            "x": 143,
+            "y": 15,
+            "w": 135,
+            "h": 30
+           },
+           "layout": "HORIZONTAL pad=6,10,6,10 cross=CENTER gap=4",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 153,
+              "y": 22,
+              "w": 13,
+              "h": 17
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 170,
+              "y": 21,
+              "w": 98,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Button - Notifications",
+           "type": "FRAME",
+           "box": {
+            "x": 284,
+            "y": 8,
+            "w": 44,
+            "h": 44
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 299,
+              "y": 21,
+              "w": 15,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            },
+            {
+             "name": "Background",
+             "type": "RECTANGLE",
+             "box": {
+              "x": 310,
+              "y": 18,
+              "w": 8,
+              "h": 8
+             },
+             "fill": "#fd9926",
+             "radius": 9999
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 334,
+            "y": 14,
+            "w": 36,
+            "h": 32
+           },
+           "layout": "VERTICAL pad=0,0,0,4",
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 338,
+              "y": 14,
+              "w": 32,
+              "h": 32
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#004f28",
+             "radius": 9999,
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 68,
+        "w": 350,
+        "h": 52
+       },
+       "layout": "VERTICAL pad=4,0,4,0",
+       "children": [
+        {
+         "name": "Background",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 72,
+          "w": 350,
+          "h": 44
+         },
+         "layout": "HORIZONTAL pad=0,16,0,16 main=SPACE_BETWEEN cross=CENTER",
+         "fill": "#f6f3f2",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 85,
+            "w": 286,
+            "h": 18
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=10",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 87,
+              "w": 15,
+              "h": 15
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Input",
+             "type": "FRAME",
+             "box": {
+              "x": 61,
+              "y": 85,
+              "w": 261,
+              "h": 18
+             },
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Button - Barcode Scanner",
+           "type": "FRAME",
+           "box": {
+            "x": 322,
+            "y": 78,
+            "w": 32,
+            "h": 32
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 329,
+              "y": 87,
+              "w": 18,
+              "h": 15
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Nav",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 2429,
+    "w": 390,
+    "h": 64
+   },
+   "layout": "VERTICAL pad=0,0,0,0",
+   "fill": "#ffffff@95%",
+   "shadow": "DROP_SHADOW #000000@3% 0/-2 blur10",
+   "blur": "BACKGROUND_BLUR 24",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 2429,
+      "w": 390,
+      "h": 64
+     },
+     "layout": "HORIZONTAL pad=0,12,0,12 main=SPACE_AROUND cross=CENTER gap=16.600000381469727",
+     "children": [
+      {
+       "name": "Link",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 2433,
+        "w": 56,
+        "h": 56
+       },
+       "layout": "VERTICAL pad=0,12.59000015258789,0,12.579999923706055 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 40,
+          "y": 2444,
+          "w": 16,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 40,
+            "y": 2444,
+            "w": 16,
+            "h": 18
+           },
+           "fill": "#3f4940"
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 33,
+          "y": 2462,
+          "w": 31,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 33,
+            "y": 2464,
+            "w": 31,
+            "h": 14
+           },
+           "fill": "#3f4940",
+           "text": "Home",
+           "style": "Inter 400 11px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Link",
+       "type": "FRAME",
+       "box": {
+        "x": 93,
+        "y": 2433,
+        "w": 59,
+        "h": 56
+       },
+       "layout": "VERTICAL pad=0,0,0,0 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 113,
+          "y": 2444,
+          "w": 18,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 113,
+            "y": 2444,
+            "w": 18,
+            "h": 18
+           },
+           "fill": "#046938"
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 93,
+          "y": 2462,
+          "w": 59,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 93,
+            "y": 2464,
+            "w": 59,
+            "h": 14
+           },
+           "fill": "#046938",
+           "text": "Categories",
+           "style": "Inter 700 11px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Link:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 168,
+        "y": 2438,
+        "w": 56,
+        "h": 46
+       },
+       "children": [
+        {
+         "name": "Link",
+         "type": "FRAME",
+         "box": {
+          "x": 168,
+          "y": 2418,
+          "w": 56,
+          "h": 66
+         },
+         "layout": "VERTICAL pad=0,1.2300000190734863,0,1.2400000095367432 main=CENTER cross=CENTER",
+         "children": [
+          {
+           "name": "Background+Shadow",
+           "type": "FRAME",
+           "box": {
+            "x": 172,
+            "y": 2418,
+            "w": 48,
+            "h": 48
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "fill": "#046938",
+           "radius": 9999,
+           "shadow": "DROP_SHADOW #046938@25% 0/2 blur8",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 187,
+              "y": 2431,
+              "w": 20,
+              "h": 22
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 170,
+            "y": 2466,
+            "w": 54,
+            "h": 18
+           },
+           "layout": "VERTICAL pad=4,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 170,
+              "y": 2470,
+              "w": 54,
+              "h": 14
+             },
+             "fill": "#1c1b1b",
+             "text": "Pharmacy",
+             "style": "Inter 600 11px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Link",
+       "type": "FRAME",
+       "box": {
+        "x": 241,
+        "y": 2433,
+        "w": 56,
+        "h": 56
+       },
+       "layout": "VERTICAL pad=0,11.289999961853027,0,11.300000190734863 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 261,
+          "y": 2445,
+          "w": 16,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 261,
+            "y": 2445,
+            "w": 16,
+            "h": 16
+           },
+           "fill": "#3f4940"
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 252,
+          "y": 2461,
+          "w": 33,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 252,
+            "y": 2463,
+            "w": 33,
+            "h": 14
+           },
+           "fill": "#3f4940",
+           "text": "Profile",
+           "style": "Inter 400 11px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Link",
+       "type": "FRAME",
+       "box": {
+        "x": 314,
+        "y": 2433,
+        "w": 56,
+        "h": 56
+       },
+       "layout": "VERTICAL pad=0,16,0,15.979999542236328 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 334,
+          "y": 2443,
+          "w": 16,
+          "h": 20
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 334,
+            "y": 2443,
+            "w": 16,
+            "h": 20
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 334,
+              "y": 2443,
+              "w": 16,
+              "h": 20
+             },
+             "fill": "#3f4940"
+            }
+           ]
+          },
+          {
+           "name": "Background",
+           "type": "FRAME",
+           "box": {
+            "x": 342,
+            "y": 2437,
+            "w": 16,
+            "h": 16
+           },
+           "layout": "HORIZONTAL pad=0,0,1,0 main=CENTER cross=CENTER",
+           "fill": "#fd9926",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 347,
+              "y": 2437,
+              "w": 6,
+              "h": 15
+             },
+             "fill": "#ffffff",
+             "text": "2",
+             "style": "Inter 700 10px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 331,
+          "y": 2463,
+          "w": 22,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 331,
+            "y": 2465,
+            "w": 22,
+            "h": 14
+           },
+           "fill": "#3f4940",
+           "text": "Cart",
+           "style": "Inter 400 11px ls=0"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "texts": [
+  {
+   "text": "Retail",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 34,
+    "y": 146
+   }
+  },
+  {
+   "text": "Wholesale",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 108,
+    "y": 146
+   }
+  },
+  {
+   "text": "Deli",
+   "style": "Inter 500 14px ls=0",
+   "box": {
+    "x": 215,
+    "y": 146
+   }
+  },
+  {
+   "text": "Pharmacy",
+   "style": "Inter 500 14px ls=0",
+   "box": {
+    "x": 53,
+    "y": 185
+   }
+  },
+  {
+   "text": "Liquor",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 158,
+    "y": 185
+   }
+  },
+  {
+   "text": "Groceries",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 237,
+    "y": 185
+   }
+  },
+  {
+   "text": "Household",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 34,
+    "y": 224
+   }
+  },
+  {
+   "text": "Beauty",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 143,
+    "y": 224
+   }
+  },
+  {
+   "text": "Need medicine or health advice?",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 81,
+    "y": 281
+   }
+  },
+  {
+   "text": "Pharmacy · PPB Verified Pharmacists",
+   "style": "Inter 500 11px ls=0",
+   "box": {
+    "x": 98,
+    "y": 297
+   }
+  },
+  {
+   "text": "Deli Counter & Kitchen",
+   "style": "Inter 700 18px ls=-0.44999998807907104",
+   "box": {
+    "x": 20,
+    "y": 350
+   }
+  },
+  {
+   "text": "Browse all",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 311,
+    "y": 353
+   }
+  },
+  {
+   "text": "Cold Cuts &\nCured Meats",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 22,
+    "y": 473
+   }
+  },
+  {
+   "text": "Cheese\nCounter",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 126,
+    "y": 473
+   }
+  },
+  {
+   "text": "Rotisserie &\nHot Foods",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 206,
+    "y": 473
+   }
+  },
+  {
+   "text": "Olives &\nAntipasti",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 305,
+    "y": 473
+   }
+  },
+  {
+   "text": "Ready Meals\n& Prepared..",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 22,
+    "y": 601
+   }
+  },
+  {
+   "text": "Best savings",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 34,
+    "y": 661
+   }
+  },
+  {
+   "text": "Most popular",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 144,
+    "y": 661
+   }
+  },
+  {
+   "text": "New",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 255,
+    "y": 661
+   }
+  },
+  {
+   "text": "Filters",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 322,
+    "y": 661
+   }
+  },
+  {
+   "text": "Rotisserie & Hot Counter",
+   "style": "Inter 600 20px ls=-0.5",
+   "box": {
+    "x": 20,
+    "y": 711
+   }
+  },
+  {
+   "text": "12+",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 261,
+    "y": 716
+   }
+  },
+  {
+   "text": "See All",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 316,
+    "y": 715
+   }
+  },
+  {
+   "text": "Hot & Fresh",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 17,
+    "y": 762
+   }
+  },
+  {
+   "text": "Herb Roasted Whole Rotisserie\nChicken (1.2kg)",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 13,
+    "y": 908
+   }
+  },
+  {
+   "text": "Slow roasted with rosemary & thyme",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 13,
+    "y": 945
+   }
+  },
+  {
+   "text": "KES 1,150",
+   "style": "Inter 700 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 13,
+    "y": 978
+   }
+  },
+  {
+   "text": "Save KES 150",
+   "style": "Inter 600 11px ls=0",
+   "box": {
+    "x": 21,
+    "y": 1008
+   }
+  },
+  {
+   "text": "1 pack",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 110,
+    "y": 1060
+   }
+  },
+  {
+   "text": "Combo Meal",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 292,
+    "y": 762
+   }
+  },
+  {
+   "text": "Crispy Glazed Chicken Quarter &\nWedges",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 288,
+    "y": 908
+   }
+  },
+  {
+   "text": "Served hot with garlic herb dipping\nsauce",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 288,
+    "y": 945
+   }
+  },
+  {
+   "text": "KES 620",
+   "style": "Inter 700 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 288,
+    "y": 987
+   }
+  },
+  {
+   "text": "Deli Special",
+   "style": "Inter 600 11px ls=0",
+   "box": {
+    "x": 296,
+    "y": 1017
+   }
+  },
+  {
+   "text": "1 pack",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 384,
+    "y": 1060
+   }
+  },
+  {
+   "text": "Tray (150g)",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 566,
+    "y": 762
+   }
+  },
+  {
+   "text": "Italian Style Prosciutto & Salami\nPlatter (150g)",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 562,
+    "y": 908
+   }
+  },
+  {
+   "text": "Finest cured assortment with grissini",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 562,
+    "y": 945
+   }
+  },
+  {
+   "text": "KES 820",
+   "style": "Inter 700 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 562,
+    "y": 978
+   }
+  },
+  {
+   "text": "Save KES 90",
+   "style": "Inter 600 11px ls=0",
+   "box": {
+    "x": 570,
+    "y": 1008
+   }
+  },
+  {
+   "text": "1 pack",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 659,
+    "y": 1060
+   }
+  },
+  {
+   "text": "Cold Cuts & Artisan Slices",
+   "style": "Inter 600 20px ls=-0.5",
+   "box": {
+    "x": 20,
+    "y": 1132
+   }
+  },
+  {
+   "text": "16+",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 274,
+    "y": 1137
+   }
+  },
+  {
+   "text": "See All",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 316,
+    "y": 1136
+   }
+  },
+  {
+   "text": "Pack (200g)",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 17,
+    "y": 1183
+   }
+  },
+  {
+   "text": "Smoked Peppered Beef Pastrami\nSlices (200g)",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 13,
+    "y": 1329
+   }
+  },
+  {
+   "text": "Wood-smoked prime cut, deli sliced",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 13,
+    "y": 1366
+   }
+  },
+  {
+   "text": "KES 740",
+   "style": "Inter 700 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 13,
+    "y": 1398
+   }
+  },
+  {
+   "text": "Deli Selected",
+   "style": "Inter 600 11px ls=0",
+   "box": {
+    "x": 21,
+    "y": 1428
+   }
+  },
+  {
+   "text": "1 pack",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 110,
+    "y": 1480
+   }
+  },
+  {
+   "text": "Aged 16M",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 292,
+    "y": 1183
+   }
+  },
+  {
+   "text": "Spanish Jamón Serrano Gran\nReserva (100g)",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 288,
+    "y": 1329
+   }
+  },
+  {
+   "text": "Thinly shaved dry-cured ham",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 288,
+    "y": 1366
+   }
+  },
+  {
+   "text": "KES 890",
+   "style": "Inter 700 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 288,
+    "y": 1398
+   }
+  },
+  {
+   "text": "Artisan Blend",
+   "style": "Inter 600 11px ls=0",
+   "box": {
+    "x": 296,
+    "y": 1428
+   }
+  },
+  {
+   "text": "1 pack",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 384,
+    "y": 1480
+   }
+  },
+  {
+   "text": "Authentic",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 566,
+    "y": 1183
+   }
+  },
+  {
+   "text": "Italian Mortadella with Pistachio\n(200g)",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 562,
+    "y": 1329
+   }
+  },
+  {
+   "text": "Classic Bologna recipe with Sicilian\npistachio",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 562,
+    "y": 1366
+   }
+  },
+  {
+   "text": "KES 680",
+   "style": "Inter 700 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 562,
+    "y": 1407
+   }
+  },
+  {
+   "text": "Save KES 60",
+   "style": "Inter 600 11px ls=0",
+   "box": {
+    "x": 570,
+    "y": 1437
+   }
+  },
+  {
+   "text": "1 pack",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 659,
+    "y": 1480
+   }
+  },
+  {
+   "text": "Artisan Cheese Counter",
+   "style": "Inter 600 20px ls=-0.5",
+   "box": {
+    "x": 20,
+    "y": 1552
+   }
+  },
+  {
+   "text": "14+",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 256,
+    "y": 1557
+   }
+  },
+  {
+   "text": "See All",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 316,
+    "y": 1556
+   }
+  },
+  {
+   "text": "Wedge (250g)",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 17,
+    "y": 1603
+   }
+  },
+  {
+   "text": "Dutch Aged Gouda & Sharp\nCheddar Wedge (250g)",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 13,
+    "y": 1749
+   }
+  },
+  {
+   "text": "Pair with crackers, honey & grapes",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 13,
+    "y": 1786
+   }
+  },
+  {
+   "text": "KES 980",
+   "style": "Inter 700 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 13,
+    "y": 1819
+   }
+  },
+  {
+   "text": "Save KES 120",
+   "style": "Inter 600 11px ls=0",
+   "box": {
+    "x": 21,
+    "y": 1849
+   }
+  },
+  {
+   "text": "1 pack",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 110,
+    "y": 1901
+   }
+  },
+  {
+   "text": "Wheel & Roll",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 292,
+    "y": 1603
+   }
+  },
+  {
+   "text": "French Brie de Meaux & Herb\nChèvre Roll (200g)",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 288,
+    "y": 1749
+   }
+  },
+  {
+   "text": "Creamy bloomy rind with mild goat\ncheese",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 288,
+    "y": 1786
+   }
+  },
+  {
+   "text": "KES 890",
+   "style": "Inter 700 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 288,
+    "y": 1828
+   }
+  },
+  {
+   "text": "Artisan Blend",
+   "style": "Inter 600 11px ls=0",
+   "box": {
+    "x": 296,
+    "y": 1858
+   }
+  },
+  {
+   "text": "1 pack",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 384,
+    "y": 1901
+   }
+  },
+  {
+   "text": "DOP Certified",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 566,
+    "y": 1603
+   }
+  },
+  {
+   "text": "Parmigiano Reggiano 24-Month\nWedge (200g)",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 562,
+    "y": 1749
+   }
+  },
+  {
+   "text": "Rich crystalline nutty Italian hard\ncheese",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 562,
+    "y": 1786
+   }
+  },
+  {
+   "text": "KES 1,050",
+   "style": "Inter 700 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 562,
+    "y": 1828
+   }
+  },
+  {
+   "text": "Top Rated",
+   "style": "Inter 600 11px ls=0",
+   "box": {
+    "x": 570,
+    "y": 1858
+   }
+  },
+  {
+   "text": "1 pack",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 659,
+    "y": 1901
+   }
+  },
+  {
+   "text": "Olives, Dips & Antipasti",
+   "style": "Inter 600 20px ls=-0.5",
+   "box": {
+    "x": 20,
+    "y": 1973
+   }
+  },
+  {
+   "text": "15+",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 248,
+    "y": 1978
+   }
+  },
+  {
+   "text": "See All",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 316,
+    "y": 1977
+   }
+  },
+  {
+   "text": "Tub (250g)",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 17,
+    "y": 2024
+   }
+  },
+  {
+   "text": "Mediterranean Marinated Mixed\nOlives & Feta (250g)",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 13,
+    "y": 2170
+   }
+  },
+  {
+   "text": "Kalamata & green olives in oregano oil",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 13,
+    "y": 2207
+   }
+  },
+  {
+   "text": "KES 580",
+   "style": "Inter 700 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 13,
+    "y": 2239
+   }
+  },
+  {
+   "text": "Fresh Deli Tub",
+   "style": "Inter 600 11px ls=0",
+   "box": {
+    "x": 21,
+    "y": 2269
+   }
+  },
+  {
+   "text": "1 pack",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 110,
+    "y": 2321
+   }
+  },
+  {
+   "text": "Tapas Tub",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 292,
+    "y": 2024
+   }
+  },
+  {
+   "text": "Sun-Dried Tomatoes & Marinated\nArtichoke Tapas (200g)",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 288,
+    "y": 2170
+   }
+  },
+  {
+   "text": "Deli marinated in Italian herb olive oil",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 288,
+    "y": 2207
+   }
+  },
+  {
+   "text": "KES 620",
+   "style": "Inter 700 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 288,
+    "y": 2239
+   }
+  },
+  {
+   "text": "Antipasti Pack",
+   "style": "Inter 600 11px ls=0",
+   "box": {
+    "x": 296,
+    "y": 2269
+   }
+  },
+  {
+   "text": "1 pack",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 384,
+    "y": 2321
+   }
+  },
+  {
+   "text": "Fresh Dip",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 566,
+    "y": 2024
+   }
+  },
+  {
+   "text": "Creamy Garlic & Herb Hummus\nDeli Dip (220g)",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 562,
+    "y": 2170
+   }
+  },
+  {
+   "text": "With extra virgin olive oil and pine\nnuts",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 562,
+    "y": 2207
+   }
+  },
+  {
+   "text": "KES 450",
+   "style": "Inter 700 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 562,
+    "y": 2248
+   }
+  },
+  {
+   "text": "Popular Dip",
+   "style": "Inter 600 11px ls=0",
+   "box": {
+    "x": 570,
+    "y": 2278
+   }
+  },
+  {
+   "text": "1 pack",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 659,
+    "y": 2321
+   }
+  },
+  {
+   "text": "Categories",
+   "style": "Inter 700 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 20,
+    "y": 18
+   }
+  },
+  {
+   "text": "Syokimau / Ruiru",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 170,
+    "y": 21
+   }
+  },
+  {
+   "text": "Search bulk packs, groceries & drinks...",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 61,
+    "y": 86
+   }
+  },
+  {
+   "text": "Home",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 33,
+    "y": 2464
+   }
+  },
+  {
+   "text": "Categories",
+   "style": "Inter 700 11px ls=0",
+   "box": {
+    "x": 93,
+    "y": 2464
+   }
+  },
+  {
+   "text": "Pharmacy",
+   "style": "Inter 600 11px ls=0",
+   "box": {
+    "x": 170,
+    "y": 2470
+   }
+  },
+  {
+   "text": "Profile",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 252,
+    "y": 2463
+   }
+  },
+  {
+   "text": "2",
+   "style": "Inter 700 10px ls=0",
+   "box": {
+    "x": 347,
+    "y": 2437
+   }
+  },
+  {
+   "text": "Cart",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 331,
+    "y": 2465
+   }
+  }
+ ]
+}

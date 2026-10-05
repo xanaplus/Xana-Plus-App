@@ -1,0 +1,290 @@
+[
+ {
+  "id": "1:2",
+  "name": "01 · Splash",
+  "slug": "01-splash",
+  "w": 390,
+  "h": 852,
+  "sections": 2
+ },
+ {
+  "id": "1:37",
+  "name": "02 · Home",
+  "slug": "02-home",
+  "w": 390,
+  "h": 1843,
+  "sections": 3
+ },
+ {
+  "id": "1:1422",
+  "name": "03a · Category — Groceries",
+  "slug": "03a-category-groceries",
+  "w": 390,
+  "h": 2547,
+  "sections": 3
+ },
+ {
+  "id": "1:1882",
+  "name": "03b · Category — Pharmacy",
+  "slug": "03b-category-pharmacy",
+  "w": 390,
+  "h": 2017,
+  "sections": 3
+ },
+ {
+  "id": "1:421",
+  "name": "03c · Category — Deli",
+  "slug": "03c-category-deli",
+  "w": 390,
+  "h": 2493,
+  "sections": 3
+ },
+ {
+  "id": "1:949",
+  "name": "03d · Category — Retail",
+  "slug": "03d-category-retail",
+  "w": 390,
+  "h": 2724,
+  "sections": 3
+ },
+ {
+  "id": "1:2560",
+  "name": "03e · Category — Wholesale",
+  "slug": "03e-category-wholesale",
+  "w": 407,
+  "h": 2976,
+  "sections": 3
+ },
+ {
+  "id": "1:2227",
+  "name": "03f · Category — Liquor",
+  "slug": "03f-category-liquor",
+  "w": 390,
+  "h": 1462,
+  "sections": 3
+ },
+ {
+  "id": "14:4418",
+  "name": "04a · Product Detail — Grocery",
+  "slug": "04a-product-detail-grocery",
+  "w": 411,
+  "h": 1651,
+  "sections": 2
+ },
+ {
+  "id": "14:5512",
+  "name": "04b · Product Detail — Pharmacy (Rx)",
+  "slug": "04b-product-detail-pharmacy-rx",
+  "w": 411,
+  "h": 1915,
+  "sections": 2
+ },
+ {
+  "id": "29:12231",
+  "name": "05a · Cart — Empty",
+  "slug": "05a-cart-empty",
+  "w": 390,
+  "h": 1177,
+  "sections": 3
+ },
+ {
+  "id": "14:5104",
+  "name": "05b · Cart — Default",
+  "slug": "05b-cart-default",
+  "w": 414,
+  "h": 1418,
+  "sections": 4
+ },
+ {
+  "id": "14:6626",
+  "name": "05c · Cart — Substitution Preference Sheet",
+  "slug": "05c-cart-substitution-preference-sheet",
+  "w": 390,
+  "h": 1333,
+  "sections": 5
+ },
+ {
+  "id": "14:4930",
+  "name": "06a · Checkout — Default",
+  "slug": "06a-checkout-default",
+  "w": 411,
+  "h": 1192,
+  "sections": 2
+ },
+ {
+  "id": "14:6424",
+  "name": "06b · Checkout — Login Sheet",
+  "slug": "06b-checkout-login-sheet",
+  "w": 411,
+  "h": 1099,
+  "sections": 1
+ },
+ {
+  "id": "14:6262",
+  "name": "06c · Checkout — Card Payment",
+  "slug": "06c-checkout-card-payment",
+  "w": 411,
+  "h": 1107,
+  "sections": 2
+ },
+ {
+  "id": "14:6094",
+  "name": "06d · Checkout — Cash on Delivery",
+  "slug": "06d-checkout-cash-on-delivery",
+  "w": 411,
+  "h": 1195,
+  "sections": 2
+ },
+ {
+  "id": "14:6923",
+  "name": "06e · Checkout — M-Pesa STK Pending",
+  "slug": "06e-checkout-m-pesa-stk-pending",
+  "w": 390,
+  "h": 892,
+  "sections": 1
+ },
+ {
+  "id": "21:9379",
+  "name": "06f · Checkout — Rx Blocked",
+  "slug": "06f-checkout-rx-blocked",
+  "w": 390,
+  "h": 1489,
+  "sections": 2
+ },
+ {
+  "id": "21:10525",
+  "name": "07a · Profile",
+  "slug": "07a-profile",
+  "w": 390,
+  "h": 1453,
+  "sections": 3
+ },
+ {
+  "id": "24:11620",
+  "name": "07b · Address — Add (In Zone)",
+  "slug": "07b-address-add-in-zone",
+  "w": 390,
+  "h": 1632,
+  "sections": 2
+ },
+ {
+  "id": "24:11824",
+  "name": "07c · Address — Add (Out of Zone)",
+  "slug": "07c-address-add-out-of-zone",
+  "w": 390,
+  "h": 1173,
+  "sections": 2
+ },
+ {
+  "id": "21:8825",
+  "name": "08a · Pharmacy — Storefront",
+  "slug": "08a-pharmacy-storefront",
+  "w": 390,
+  "h": 3168,
+  "sections": 3
+ },
+ {
+  "id": "21:9853",
+  "name": "08b · Pharmacy — My Prescriptions",
+  "slug": "08b-pharmacy-my-prescriptions",
+  "w": 390,
+  "h": 1178,
+  "sections": 2
+ },
+ {
+  "id": "26:12000",
+  "name": "08c · Pharmacy — Order a Repeat",
+  "slug": "08c-pharmacy-order-a-repeat",
+  "w": 390,
+  "h": 1542,
+  "sections": 3
+ },
+ {
+  "id": "32:12434",
+  "name": "08d · Pharmacy — Ask a Pharmacist",
+  "slug": "08d-pharmacy-ask-a-pharmacist",
+  "w": 390,
+  "h": 1163,
+  "sections": 2
+ },
+ {
+  "id": "32:12552",
+  "name": "08e · Pharmacy — Consultation Chat",
+  "slug": "08e-pharmacy-consultation-chat",
+  "w": 390,
+  "h": 1314,
+  "sections": 2
+ },
+ {
+  "id": "21:9599",
+  "name": "09a · Order Status — Shopping",
+  "slug": "09a-order-status-shopping",
+  "w": 396,
+  "h": 1309,
+  "sections": 2
+ },
+ {
+  "id": "21:11344",
+  "name": "09b · Order Status — Out for Delivery",
+  "slug": "09b-order-status-out-for-delivery",
+  "w": 390,
+  "h": 1393,
+  "sections": 2
+ },
+ {
+  "id": "21:10752",
+  "name": "09c · Substitution Resolution — Replace Selected",
+  "slug": "09c-substitution-resolution-replace-selected",
+  "w": 390,
+  "h": 1325,
+  "sections": 2
+ },
+ {
+  "id": "21:10015",
+  "name": "09d · Substitution Resolution — Refund Selected",
+  "slug": "09d-substitution-resolution-refund-selected",
+  "w": 390,
+  "h": 1325,
+  "sections": 2
+ },
+ {
+  "id": "21:11048",
+  "name": "09e · Substitution Resolution — Call Me First Selected",
+  "slug": "09e-substitution-resolution-call-me-first-selected",
+  "w": 390,
+  "h": 1325,
+  "sections": 2
+ },
+ {
+  "id": "21:10305",
+  "name": "10 · Order History",
+  "slug": "10-order-history",
+  "w": 390,
+  "h": 1283,
+  "sections": 4
+ },
+ {
+  "id": "14:5949",
+  "name": "11 · Login — OTP Verification",
+  "slug": "11-login-otp-verification",
+  "w": 411,
+  "h": 845,
+  "sections": 3
+ },
+ {
+  "id": "14:5722",
+  "name": "12a · Search — Results",
+  "slug": "12a-search-results",
+  "w": 424,
+  "h": 1407,
+  "sections": 4
+ },
+ {
+  "id": "14:5365",
+  "name": "12b · Search — No Results",
+  "slug": "12b-search-no-results",
+  "w": 411,
+  "h": 884,
+  "sections": 1
+ }
+]

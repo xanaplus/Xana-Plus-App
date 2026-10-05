@@ -1,0 +1,2943 @@
+{
+ "id": "21:10305",
+ "name": "10 · Order History",
+ "slug": "10-order-history",
+ "size": {
+  "w": 390,
+  "h": 1283
+ },
+ "bg": "#ffffff|#f6f3f2|#fcf9f8",
+ "tree": [
+  {
+   "name": "Mobile Container (Max 430px):shadow",
+   "type": "RECTANGLE",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 1283
+   },
+   "fill": "#ffffff@0%",
+   "shadow": "DROP_SHADOW #000000@10% 0/8 blur10 + DROP_SHADOW #000000@10% 0/20 blur25"
+  },
+  {
+   "name": "Main - Orders List Content",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 115,
+    "w": 390,
+    "h": 1103
+   },
+   "layout": "VERTICAL pad=16,16,16,16 gap=16",
+   "children": [
+    {
+     "name": "Order Card 1: ACTIVE ORDER",
+     "type": "FRAME",
+     "box": {
+      "x": 16,
+      "y": 131,
+      "w": 358,
+      "h": 272
+     },
+     "fill": "#ffffff",
+     "stroke": "#fde68a",
+     "radius": 16,
+     "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+     "children": [
+      {
+       "name": "Card Top Meta",
+       "type": "FRAME",
+       "box": {
+        "x": 33,
+        "y": 148,
+        "w": 324,
+        "h": 71
+       },
+       "layout": "HORIZONTAL pad=0,0,12,0 main=SPACE_BETWEEN gap=8",
+       "stroke": "#f1f5f9",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 33,
+          "y": 148,
+          "w": 246,
+          "h": 58
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=2",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 33,
+            "y": 148,
+            "w": 246,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 33,
+              "y": 148,
+              "w": 73,
+              "h": 24
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Background+Border",
+             "type": "FRAME",
+             "box": {
+              "x": 114,
+              "y": 149,
+              "w": 141,
+              "h": 23
+             },
+             "layout": "HORIZONTAL pad=2,8,2,8 cross=CENTER gap=4",
+             "fill": "#fffbeb",
+             "stroke": "#fde68a",
+             "radius": 6,
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 33,
+            "y": 174,
+            "w": 246,
+            "h": 32
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=6",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 33,
+              "y": 174,
+              "w": 123,
+              "h": 32
+             },
+             "layout": "VERTICAL pad=0,12.40999984741211,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 162,
+              "y": 182,
+              "w": 7,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 175,
+              "y": 174,
+              "w": 104,
+              "h": 32
+             },
+             "layout": "VERTICAL pad=0,47.66999816894531,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 287,
+          "y": 148,
+          "w": 70,
+          "h": 32
+         },
+         "layout": "VERTICAL pad=0,24.049999237060547,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 287,
+            "y": 148,
+            "w": 46,
+            "h": 32
+           },
+           "fill": "#94a3b8",
+           "text": "Express\n30m",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Live Status Sub-callout",
+       "type": "FRAME",
+       "box": {
+        "x": 33,
+        "y": 298,
+        "w": 324,
+        "h": 34
+       },
+       "layout": "HORIZONTAL pad=8,12,8,12 main=SPACE_BETWEEN cross=CENTER gap=48",
+       "fill": "#fffbeb@80%",
+       "stroke": "#fef3c7",
+       "radius": 12,
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 46,
+          "y": 307,
+          "w": 200,
+          "h": 16
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+         "children": [
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 46,
+            "y": 307,
+            "w": 16,
+            "h": 16
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 48,
+              "y": 309,
+              "w": 12,
+              "h": 12
+             },
+             "stroke": "#d97706"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 70,
+            "y": 307,
+            "w": 176,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 70,
+              "y": 307,
+              "w": 176,
+              "h": 16
+             },
+             "fill": "#78350f",
+             "text": "Estimated delivery by 11:15 AM",
+             "style": "Inter 500 12px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 294,
+          "y": 307,
+          "w": 50,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 294,
+            "y": 307,
+            "w": 50,
+            "h": 16
+           },
+           "fill": "#b45309",
+           "text": "~25 mins",
+           "style": "Inter 700 11px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Card Action: Track Order",
+       "type": "FRAME",
+       "box": {
+        "x": 33,
+        "y": 344,
+        "w": 324,
+        "h": 42
+       },
+       "layout": "HORIZONTAL pad=4,0,0,0 cross=CENTER gap=8",
+       "children": [
+        {
+         "name": "Link",
+         "type": "FRAME",
+         "box": {
+          "x": 33,
+          "y": 349,
+          "w": 274,
+          "h": 36
+         },
+         "layout": "HORIZONTAL pad=10,16,10,16 main=CENTER cross=CENTER gap=8",
+         "fill": "#046938",
+         "radius": 12,
+         "shadow": "DROP_SHADOW #046938@20% 0/1 blur2",
+         "children": [
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 124,
+            "y": 359,
+            "w": 16,
+            "h": 16
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 126,
+              "y": 362,
+              "w": 12,
+              "h": 11
+             },
+             "stroke": "#ffffff"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 148,
+            "y": 359,
+            "w": 69,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 148,
+              "y": 359,
+              "w": 69,
+              "h": 16
+             },
+             "fill": "#ffffff",
+             "text": "Track Order",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Button",
+         "type": "FRAME",
+         "box": {
+          "x": 315,
+          "y": 348,
+          "w": 42,
+          "h": 38
+         },
+         "layout": "HORIZONTAL pad=10,12,10,12 main=CENTER cross=CENTER",
+         "stroke": "#e2e8f0",
+         "radius": 12,
+         "children": [
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 328,
+            "y": 359,
+            "w": 16,
+            "h": 16
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 330,
+              "y": 361,
+              "w": 12,
+              "h": 12
+             },
+             "stroke": "#64748b"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Gradient",
+       "type": "RECTANGLE",
+       "box": {
+        "x": 17,
+        "y": 132,
+        "w": 356,
+        "h": 4
+       },
+       "fill": "linear(#fbbf24,#f59e0b)"
+      },
+      {
+       "name": "Middle: Thumbnails & Item Count",
+       "type": "FRAME",
+       "box": {
+        "x": 33,
+        "y": 219,
+        "w": 324,
+        "h": 79
+       },
+       "layout": "HORIZONTAL pad=12,0,12,0 main=SPACE_BETWEEN cross=CENTER gap=53.970001220703125",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 33,
+          "y": 232,
+          "w": 178,
+          "h": 54
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+         "children": [
+          {
+           "name": "Background+Border",
+           "type": "FRAME",
+           "box": {
+            "x": 33,
+            "y": 232,
+            "w": 54,
+            "h": 54
+           },
+           "layout": "HORIZONTAL pad=4,4,4,4 main=CENTER cross=CENTER",
+           "fill": "#f8fafc",
+           "stroke": "#f1f5f9",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Hass Avocados",
+             "type": "FRAME",
+             "box": {
+              "x": 38,
+              "y": 237,
+              "w": 44,
+              "h": 44
+             },
+             "fill": "image",
+             "radius": 8
+            }
+           ]
+          },
+          {
+           "name": "Background+Border",
+           "type": "FRAME",
+           "box": {
+            "x": 95,
+            "y": 232,
+            "w": 54,
+            "h": 54
+           },
+           "layout": "HORIZONTAL pad=4,4,4,4 main=CENTER cross=CENTER",
+           "fill": "#f8fafc",
+           "stroke": "#f1f5f9",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Panadol Extra",
+             "type": "FRAME",
+             "box": {
+              "x": 100,
+              "y": 237,
+              "w": 44,
+              "h": 44
+             },
+             "fill": "image",
+             "radius": 8
+            }
+           ]
+          },
+          {
+           "name": "Background+Border",
+           "type": "FRAME",
+           "box": {
+            "x": 157,
+            "y": 232,
+            "w": 54,
+            "h": 54
+           },
+           "layout": "HORIZONTAL pad=4,4,4,4 main=CENTER cross=CENTER",
+           "fill": "#f8fafc",
+           "stroke": "#f1f5f9",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Freshfields Milk",
+             "type": "FRAME",
+             "box": {
+              "x": 162,
+              "y": 237,
+              "w": 44,
+              "h": 44
+             },
+             "fill": "image",
+             "radius": 8
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 265,
+          "y": 231,
+          "w": 92,
+          "h": 55
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=1.5",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 265,
+            "y": 231,
+            "w": 92,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=MAX",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 315,
+              "y": 231,
+              "w": 42,
+              "h": 16
+             },
+             "fill": "#64748b",
+             "text": "3 items",
+             "style": "Inter 500 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 265,
+            "y": 249,
+            "w": 92,
+            "h": 21
+           },
+           "fill": "#0f172a",
+           "text": "KES 1,240.00",
+           "style": "Inter 700 14px ls=0"
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 265,
+            "y": 271,
+            "w": 92,
+            "h": 15
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=MAX",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 280,
+              "y": 271,
+              "w": 77,
+              "h": 15
+             },
+             "fill": "#047857",
+             "text": "Paid via M-Pesa",
+             "style": "Inter 500 10px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Order Card 2: DELIVERED ORDER",
+     "type": "FRAME",
+     "box": {
+      "x": 16,
+      "y": 419,
+      "w": 358,
+      "h": 226
+     },
+     "layout": "VERTICAL pad=16,16,16,16",
+     "fill": "#ffffff",
+     "stroke": "#f1f5f9",
+     "radius": 16,
+     "children": [
+      {
+       "name": "Card Top Meta",
+       "type": "FRAME",
+       "box": {
+        "x": 33,
+        "y": 436,
+        "w": 324,
+        "h": 71
+       },
+       "layout": "HORIZONTAL pad=0,0,12,0 main=SPACE_BETWEEN gap=8",
+       "stroke": "#f1f5f9",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 33,
+          "y": 436,
+          "w": 234,
+          "h": 58
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=2",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 33,
+            "y": 436,
+            "w": 234,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 33,
+              "y": 436,
+              "w": 77,
+              "h": 24
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Background+Border",
+             "type": "FRAME",
+             "box": {
+              "x": 118,
+              "y": 437,
+              "w": 97,
+              "h": 23
+             },
+             "layout": "HORIZONTAL pad=2,8,2,8 cross=CENTER gap=4",
+             "fill": "#ecfdf5",
+             "stroke": "#a7f3d0",
+             "radius": 6,
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 33,
+            "y": 462,
+            "w": 234,
+            "h": 32
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=6",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 33,
+              "y": 462,
+              "w": 105,
+              "h": 32
+             },
+             "layout": "VERTICAL pad=0,19.309999465942383,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 144,
+              "y": 470,
+              "w": 7,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 157,
+              "y": 462,
+              "w": 110,
+              "h": 32
+             },
+             "layout": "VERTICAL pad=0,53.5,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 275,
+          "y": 436,
+          "w": 82,
+          "h": 32
+         },
+         "layout": "VERTICAL pad=0,39.689998626708984,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 275,
+            "y": 436,
+            "w": 42,
+            "h": 32
+           },
+           "fill": "#94a3b8",
+           "text": "Apt 4B,\nKarura",
+           "style": "Inter 500 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Middle: Thumbnails & Item Count",
+       "type": "FRAME",
+       "box": {
+        "x": 33,
+        "y": 507,
+        "w": 324,
+        "h": 79
+       },
+       "layout": "HORIZONTAL pad=12,0,12,0 main=SPACE_BETWEEN cross=CENTER gap=74.73999786376953",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 33,
+          "y": 519,
+          "w": 154,
+          "h": 54
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+         "children": [
+          {
+           "name": "Background+Border",
+           "type": "FRAME",
+           "box": {
+            "x": 33,
+            "y": 519,
+            "w": 54,
+            "h": 54
+           },
+           "layout": "HORIZONTAL pad=4,4,4,4 main=CENTER cross=CENTER",
+           "fill": "#f8fafc",
+           "stroke": "#f1f5f9",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Bio Organic Milk",
+             "type": "FRAME",
+             "box": {
+              "x": 38,
+              "y": 524,
+              "w": 44,
+              "h": 44
+             },
+             "fill": "image",
+             "radius": 8
+            }
+           ]
+          },
+          {
+           "name": "Background+Border",
+           "type": "FRAME",
+           "box": {
+            "x": 95,
+            "y": 519,
+            "w": 54,
+            "h": 54
+           },
+           "layout": "HORIZONTAL pad=4,4,4,4 main=CENTER cross=CENTER",
+           "fill": "#f8fafc",
+           "stroke": "#f1f5f9",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Kenyan Sukuma Wiki",
+             "type": "FRAME",
+             "box": {
+              "x": 100,
+              "y": 524,
+              "w": 44,
+              "h": 44
+             },
+             "fill": "image",
+             "radius": 8
+            }
+           ]
+          },
+          {
+           "name": "Background+Border",
+           "type": "FRAME",
+           "box": {
+            "x": 157,
+            "y": 530,
+            "w": 30,
+            "h": 32
+           },
+           "layout": "VERTICAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "fill": "#f1f5f9",
+           "stroke": "#e2e8f0@80%",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 164,
+              "y": 531,
+              "w": 15,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 158,
+              "y": 547,
+              "w": 28,
+              "h": 14
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 262,
+          "y": 519,
+          "w": 95,
+          "h": 55
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=1",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 262,
+            "y": 519,
+            "w": 95,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=MAX",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 315,
+              "y": 519,
+              "w": 42,
+              "h": 16
+             },
+             "fill": "#64748b",
+             "text": "4 items",
+             "style": "Inter 500 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 262,
+            "y": 536,
+            "w": 95,
+            "h": 22
+           },
+           "fill": "#0f172a",
+           "text": "KES 2,450.00",
+           "style": "Inter 700 14px ls=0"
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 262,
+            "y": 559,
+            "w": 95,
+            "h": 15
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=MAX cross=CENTER gap=4",
+           "children": [
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 304,
+              "y": 560,
+              "w": 12,
+              "h": 12
+             },
+             "childCount": 1
+            },
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 320,
+              "y": 559,
+              "w": 37,
+              "h": 15
+             },
+             "fill": "#d97706",
+             "text": "+24 pts",
+             "style": "Inter 600 10px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Card Actions: Reorder & View Summary",
+       "type": "FRAME",
+       "box": {
+        "x": 33,
+        "y": 586,
+        "w": 324,
+        "h": 42
+       },
+       "layout": "HORIZONTAL pad=4,0,0,0 cross=CENTER gap=8",
+       "children": [
+        {
+         "name": "Button",
+         "type": "FRAME",
+         "box": {
+          "x": 33,
+          "y": 590,
+          "w": 192,
+          "h": 38
+         },
+         "layout": "HORIZONTAL pad=10,16,10,16 main=CENTER cross=CENTER gap=6",
+         "fill": "#ffffff",
+         "stroke": "#046938@30%",
+         "radius": 12,
+         "children": [
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 95,
+            "y": 601,
+            "w": 16,
+            "h": 16
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 98,
+              "y": 603,
+              "w": 11,
+              "h": 11
+             },
+             "stroke": "#03522c"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 117,
+            "y": 601,
+            "w": 46,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 117,
+              "y": 601,
+              "w": 46,
+              "h": 16
+             },
+             "fill": "#03522c",
+             "text": "Reorder",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Link",
+         "type": "FRAME",
+         "box": {
+          "x": 233,
+          "y": 590,
+          "w": 124,
+          "h": 38
+         },
+         "layout": "HORIZONTAL pad=10,16,10,16 main=CENTER cross=CENTER gap=4",
+         "stroke": "#e2e8f0",
+         "radius": 12,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 250,
+            "y": 601,
+            "w": 72,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 250,
+              "y": 601,
+              "w": 72,
+              "h": 16
+             },
+             "fill": "#334155",
+             "text": "View Details",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 326,
+            "y": 602,
+            "w": 14,
+            "h": 14
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 331,
+              "y": 604,
+              "w": 4,
+              "h": 8
+             },
+             "stroke": "#94a3b8"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Order Card 3: DELIVERED ORDER (Ruiru branch)",
+     "type": "FRAME",
+     "box": {
+      "x": 16,
+      "y": 661,
+      "w": 358,
+      "h": 226
+     },
+     "layout": "VERTICAL pad=16,16,16,16",
+     "fill": "#ffffff",
+     "stroke": "#f1f5f9",
+     "radius": 16,
+     "children": [
+      {
+       "name": "Card Top Meta",
+       "type": "FRAME",
+       "box": {
+        "x": 33,
+        "y": 678,
+        "w": 324,
+        "h": 71
+       },
+       "layout": "HORIZONTAL pad=0,0,12,0 main=SPACE_BETWEEN gap=8",
+       "stroke": "#f1f5f9",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 33,
+          "y": 678,
+          "w": 208,
+          "h": 58
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=2",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 33,
+            "y": 678,
+            "w": 208,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 33,
+              "y": 678,
+              "w": 72,
+              "h": 24
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Background+Border",
+             "type": "FRAME",
+             "box": {
+              "x": 113,
+              "y": 678,
+              "w": 97,
+              "h": 23
+             },
+             "layout": "HORIZONTAL pad=2,8,2,8 cross=CENTER gap=4",
+             "fill": "#ecfdf5",
+             "stroke": "#a7f3d0",
+             "radius": 6,
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 33,
+            "y": 704,
+            "w": 208,
+            "h": 32
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=6",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 33,
+              "y": 704,
+              "w": 115,
+              "h": 32
+             },
+             "layout": "VERTICAL pad=0,2.9200000762939453,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 154,
+              "y": 712,
+              "w": 7,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 167,
+              "y": 704,
+              "w": 74,
+              "h": 32
+             },
+             "layout": "VERTICAL pad=0,20.93000030517578,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 249,
+          "y": 678,
+          "w": 108,
+          "h": 32
+         },
+         "layout": "VERTICAL pad=0,25.979999542236328,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 249,
+            "y": 678,
+            "w": 82,
+            "h": 32
+           },
+           "fill": "#94a3b8",
+           "text": "Village Market\nPickup",
+           "style": "Inter 500 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Middle: Thumbnails & Item Count",
+       "type": "FRAME",
+       "box": {
+        "x": 33,
+        "y": 749,
+        "w": 324,
+        "h": 79
+       },
+       "layout": "HORIZONTAL pad=12,0,12,0 main=SPACE_BETWEEN cross=CENTER gap=126.55000305175781",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 33,
+          "y": 761,
+          "w": 116,
+          "h": 54
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+         "children": [
+          {
+           "name": "Background+Border",
+           "type": "FRAME",
+           "box": {
+            "x": 33,
+            "y": 761,
+            "w": 54,
+            "h": 54
+           },
+           "layout": "HORIZONTAL pad=4,4,4,4 main=CENTER cross=CENTER",
+           "fill": "#f8fafc",
+           "stroke": "#f1f5f9",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Kenyan Acacia Honey",
+             "type": "FRAME",
+             "box": {
+              "x": 38,
+              "y": 766,
+              "w": 44,
+              "h": 44
+             },
+             "fill": "image",
+             "radius": 8
+            }
+           ]
+          },
+          {
+           "name": "Background+Border",
+           "type": "FRAME",
+           "box": {
+            "x": 95,
+            "y": 761,
+            "w": 54,
+            "h": 54
+           },
+           "layout": "HORIZONTAL pad=4,4,4,4 main=CENTER cross=CENTER",
+           "fill": "#f8fafc",
+           "stroke": "#f1f5f9",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Packaged snacks",
+             "type": "FRAME",
+             "box": {
+              "x": 100,
+              "y": 766,
+              "w": 44,
+              "h": 44
+             },
+             "fill": "image",
+             "radius": 8
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 276,
+          "y": 761,
+          "w": 81,
+          "h": 55
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=1.5",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 276,
+            "y": 761,
+            "w": 81,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=MAX",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 315,
+              "y": 761,
+              "w": 42,
+              "h": 16
+             },
+             "fill": "#64748b",
+             "text": "2 items",
+             "style": "Inter 500 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 276,
+            "y": 778,
+            "w": 81,
+            "h": 21
+           },
+           "fill": "#0f172a",
+           "text": "KES 890.00",
+           "style": "Inter 700 14px ls=0"
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 276,
+            "y": 801,
+            "w": 81,
+            "h": 15
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=MAX",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 294,
+              "y": 801,
+              "w": 63,
+              "h": 15
+             },
+             "fill": "#94a3b8",
+             "text": "Paid via Card",
+             "style": "Inter 500 10px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Card Actions: Reorder & View Summary",
+       "type": "FRAME",
+       "box": {
+        "x": 33,
+        "y": 828,
+        "w": 324,
+        "h": 42
+       },
+       "layout": "HORIZONTAL pad=4,0,0,0 cross=CENTER gap=8",
+       "children": [
+        {
+         "name": "Button",
+         "type": "FRAME",
+         "box": {
+          "x": 33,
+          "y": 832,
+          "w": 192,
+          "h": 38
+         },
+         "layout": "HORIZONTAL pad=10,16,10,16 main=CENTER cross=CENTER gap=6",
+         "fill": "#ffffff",
+         "stroke": "#046938@30%",
+         "radius": 12,
+         "children": [
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 95,
+            "y": 843,
+            "w": 16,
+            "h": 16
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 98,
+              "y": 845,
+              "w": 11,
+              "h": 11
+             },
+             "stroke": "#03522c"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 117,
+            "y": 843,
+            "w": 46,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 117,
+              "y": 843,
+              "w": 46,
+              "h": 16
+             },
+             "fill": "#03522c",
+             "text": "Reorder",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Link",
+         "type": "FRAME",
+         "box": {
+          "x": 233,
+          "y": 832,
+          "w": 124,
+          "h": 38
+         },
+         "layout": "HORIZONTAL pad=10,16,10,16 main=CENTER cross=CENTER gap=4",
+         "stroke": "#e2e8f0",
+         "radius": 12,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 250,
+            "y": 843,
+            "w": 72,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 250,
+              "y": 843,
+              "w": 72,
+              "h": 16
+             },
+             "fill": "#334155",
+             "text": "View Details",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 326,
+            "y": 844,
+            "w": 14,
+            "h": 14
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 331,
+              "y": 846,
+              "w": 4,
+              "h": 8
+             },
+             "stroke": "#94a3b8"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Order Card 4: CANCELLED ORDER",
+     "type": "FRAME",
+     "box": {
+      "x": 16,
+      "y": 903,
+      "w": 358,
+      "h": 220
+     },
+     "layout": "VERTICAL pad=16,16,16,16",
+     "fill": "#ffffff@80%",
+     "stroke": "#e2e8f0@80%",
+     "radius": 16,
+     "children": [
+      {
+       "name": "Card Top Meta",
+       "type": "FRAME",
+       "box": {
+        "x": 33,
+        "y": 920,
+        "w": 324,
+        "h": 71
+       },
+       "layout": "HORIZONTAL pad=0,0,12,0 main=SPACE_BETWEEN gap=8",
+       "stroke": "#f1f5f9",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 33,
+          "y": 920,
+          "w": 218,
+          "h": 58
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=2",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 33,
+            "y": 920,
+            "w": 218,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 33,
+              "y": 920,
+              "w": 77,
+              "h": 24
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Background+Border",
+             "type": "FRAME",
+             "box": {
+              "x": 118,
+              "y": 920,
+              "w": 103,
+              "h": 23
+             },
+             "layout": "HORIZONTAL pad=2,8,2,8 cross=CENTER gap=4",
+             "fill": "#f1f5f9",
+             "stroke": "#e2e8f0",
+             "radius": 6,
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 33,
+            "y": 946,
+            "w": 218,
+            "h": 32
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=6",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 33,
+              "y": 946,
+              "w": 108,
+              "h": 32
+             },
+             "layout": "VERTICAL pad=0,32.27000045776367,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 147,
+              "y": 954,
+              "w": 7,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 160,
+              "y": 946,
+              "w": 92,
+              "h": 32
+             },
+             "layout": "VERTICAL pad=0,35.58000183105469,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 259,
+          "y": 920,
+          "w": 98,
+          "h": 32
+         },
+         "layout": "VERTICAL pad=0,7.909999847412109,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 259,
+            "y": 920,
+            "w": 90,
+            "h": 32
+           },
+           "fill": "#94a3b8",
+           "text": "Refunded to M-\nPesa",
+           "style": "Inter 500 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Middle: Thumbnails & Item Count",
+       "type": "FRAME",
+       "box": {
+        "x": 33,
+        "y": 991,
+        "w": 324,
+        "h": 79
+       },
+       "layout": "HORIZONTAL pad=12,0,12,0 main=SPACE_BETWEEN cross=CENTER gap=188.66000366210938",
+       "children": [
+        {
+         "name": "Background+Border",
+         "type": "FRAME",
+         "box": {
+          "x": 33,
+          "y": 1003,
+          "w": 54,
+          "h": 54
+         },
+         "layout": "HORIZONTAL pad=4,4,4,4 main=CENTER cross=CENTER",
+         "fill": "#f8fafc|#ffffff",
+         "stroke": "#f1f5f9",
+         "radius": 12,
+         "children": [
+          {
+           "name": "Harpic Cleaner Bottle",
+           "type": "FRAME",
+           "box": {
+            "x": 38,
+            "y": 1008,
+            "w": 44,
+            "h": 44
+           },
+           "fill": "image",
+           "radius": 8
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 276,
+          "y": 1003,
+          "w": 81,
+          "h": 55
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=MAX gap=1.5",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 276,
+            "y": 1003,
+            "w": 81,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=MAX",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 324,
+              "y": 1003,
+              "w": 33,
+              "h": 16
+             },
+             "fill": "#94a3b8",
+             "text": "1 item",
+             "style": "Inter 500 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 277,
+            "y": 1020,
+            "w": 80,
+            "h": 21
+           },
+           "fill": "#475569",
+           "text": "KES 350.00",
+           "style": "Inter 600 14px ls=0"
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 276,
+            "y": 1043,
+            "w": 81,
+            "h": 15
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=MAX",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 276,
+              "y": 1043,
+              "w": 81,
+              "h": 15
+             },
+             "fill": "#047857",
+             "text": "Refund complete",
+             "style": "Inter 500 10px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Card Actions: Reorder & Reason note",
+       "type": "FRAME",
+       "box": {
+        "x": 33,
+        "y": 1070,
+        "w": 324,
+        "h": 36
+       },
+       "layout": "HORIZONTAL pad=4,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=38.86000061035156",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 33,
+          "y": 1082,
+          "w": 161,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 33,
+            "y": 1082,
+            "w": 161,
+            "h": 16
+           },
+           "fill": "#94a3b8",
+           "text": "Reason: Out of stock at branch",
+           "style": "Inter 400 11px ls=0"
+          }
+         ]
+        },
+        {
+         "name": "Button",
+         "type": "FRAME",
+         "box": {
+          "x": 233,
+          "y": 1074,
+          "w": 124,
+          "h": 32
+         },
+         "layout": "HORIZONTAL pad=8,16,8,16 cross=CENTER gap=4",
+         "fill": "#f1f5f9",
+         "radius": 12,
+         "children": [
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 249,
+            "y": 1083,
+            "w": 14,
+            "h": 14
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 251,
+              "y": 1085,
+              "w": 9,
+              "h": 9
+             },
+             "stroke": "#334155"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 267,
+            "y": 1082,
+            "w": 74,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 267,
+              "y": 1082,
+              "w": 74,
+              "h": 16
+             },
+             "fill": "#334155",
+             "text": "Reorder Item",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Demonstration: Empty State Preview Toggle Section",
+     "type": "FRAME",
+     "box": {
+      "x": 16,
+      "y": 1139,
+      "w": 358,
+      "h": 63
+     },
+     "layout": "VERTICAL pad=16,0,0,0",
+     "stroke": "#e2e8f0@60%",
+     "children": [
+      {
+       "name": "Details",
+       "type": "FRAME",
+       "box": {
+        "x": 16,
+        "y": 1156,
+        "w": 358,
+        "h": 46
+       },
+       "layout": "VERTICAL pad=14,14,14,14",
+       "fill": "#f8fafc",
+       "stroke": "#e2e8f0",
+       "radius": 16,
+       "children": [
+        {
+         "name": "Slot → Summary",
+         "type": "FRAME",
+         "box": {
+          "x": 31,
+          "y": 1171,
+          "w": 328,
+          "h": 16
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=41.83000183105469",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 31,
+            "y": 1171,
+            "w": 274,
+            "h": 16
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+           "children": [
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 31,
+              "y": 1171,
+              "w": 16,
+              "h": 16
+             },
+             "childCount": 1
+            },
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 55,
+              "y": 1171,
+              "w": 250,
+              "h": 16
+             },
+             "fill": "#334155",
+             "text": "View Empty State Pattern (\"No orders yet\")",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 347,
+            "y": 1171,
+            "w": 12,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 347,
+              "y": 1171,
+              "w": 12,
+              "h": 16
+             },
+             "fill": "#046938",
+             "text": "▼",
+             "style": "Liberation Sans 600 12px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Support Help Footer Note:margin",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 1218,
+    "w": 390,
+    "h": 25
+   },
+   "layout": "VERTICAL pad=8,16,0,16",
+   "children": [
+    {
+     "name": "Support Help Footer Note",
+     "type": "FRAME",
+     "box": {
+      "x": 16,
+      "y": 1226,
+      "w": 358,
+      "h": 17
+     },
+     "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+     "children": [
+      {
+       "name": "Text",
+       "type": "TEXT",
+       "box": {
+        "x": 81,
+        "y": 1226,
+        "w": 228,
+        "h": 17
+       },
+       "fill": "#94a3b8",
+       "text": "Questions about an order? Contact Support",
+       "style": "Inter 400 11px ls=0"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Top Sticky Header",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 115
+   },
+   "layout": "VERTICAL pad=12,16,12,16 gap=12",
+   "fill": "#fcf9f8@95%",
+   "stroke": "#f1f5f9",
+   "blur": "BACKGROUND_BLUR 12",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 16,
+      "y": 12,
+      "w": 358,
+      "h": 44
+     },
+     "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=72.13999938964844",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 16,
+        "y": 12,
+        "w": 207,
+        "h": 44
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=12",
+       "children": [
+        {
+         "name": "Link - Back to Profile:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 16,
+          "y": 14,
+          "w": 36,
+          "h": 40
+         },
+         "children": [
+          {
+           "name": "Link - Back to Profile",
+           "type": "FRAME",
+           "box": {
+            "x": 12,
+            "y": 14,
+            "w": 40,
+            "h": 40
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 22,
+              "y": 24,
+              "w": 20,
+              "h": 20
+             },
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 64,
+          "y": 12,
+          "w": 159,
+          "h": 44
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Heading 1",
+           "type": "FRAME",
+           "box": {
+            "x": 64,
+            "y": 12,
+            "w": 159,
+            "h": 28
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 64,
+              "y": 12,
+              "w": 98,
+              "h": 28
+             },
+             "fill": "#0f172a",
+             "text": "My Orders",
+             "style": "Inter 700 20px ls=-0.5"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 64,
+            "y": 40,
+            "w": 159,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 64,
+              "y": 40,
+              "w": 159,
+              "h": 16
+             },
+             "fill": "#64748b",
+             "text": "Syokimau & Ruiru deliveries",
+             "style": "Inter 500 12px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Background+Border",
+       "type": "FRAME",
+       "box": {
+        "x": 295,
+        "y": 21,
+        "w": 79,
+        "h": 26
+       },
+       "layout": "HORIZONTAL pad=4,10,4,10 cross=CENTER gap=6",
+       "fill": "#ecfdf5",
+       "stroke": "#d1fae5",
+       "radius": 9999,
+       "children": [
+        {
+         "name": "Background",
+         "type": "RECTANGLE",
+         "box": {
+          "x": 306,
+          "y": 31,
+          "w": 6,
+          "h": 6
+         },
+         "fill": "#059669",
+         "radius": 9999
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 318,
+          "y": 26,
+          "w": 45,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 318,
+            "y": 26,
+            "w": 45,
+            "h": 16
+           },
+           "fill": "#03522c",
+           "text": "1 Active",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Filter Tabs",
+     "type": "FRAME",
+     "box": {
+      "x": 16,
+      "y": 68,
+      "w": 358,
+      "h": 34
+     },
+     "children": [
+      {
+       "name": "Button",
+       "type": "FRAME",
+       "box": {
+        "x": 16,
+        "y": 71,
+        "w": 67,
+        "h": 28
+       },
+       "layout": "VERTICAL pad=6,16,6,16 main=CENTER cross=CENTER",
+       "fill": "#046938",
+       "radius": 9999,
+       "shadow": "DROP_SHADOW #046938@20% 0/1 blur2",
+       "children": [
+        {
+         "name": "Text",
+         "type": "TEXT",
+         "box": {
+          "x": 32,
+          "y": 77,
+          "w": 35,
+          "h": 16
+         },
+         "fill": "#ffffff",
+         "text": "All (4)",
+         "style": "Inter 600 12px ls=0"
+        }
+       ]
+      },
+      {
+       "name": "Button",
+       "type": "FRAME",
+       "box": {
+        "x": 91,
+        "y": 70,
+        "w": 93,
+        "h": 30
+       },
+       "layout": "HORIZONTAL pad=6,16,6,16 cross=CENTER gap=6.010000228881836",
+       "fill": "#ffffff",
+       "stroke": "#e2e8f0",
+       "radius": 9999,
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 108,
+          "y": 77,
+          "w": 37,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 108,
+            "y": 77,
+            "w": 37,
+            "h": 16
+           },
+           "fill": "#475569",
+           "text": "Active",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        },
+        {
+         "name": "Background",
+         "type": "FRAME",
+         "box": {
+          "x": 151,
+          "y": 77,
+          "w": 16,
+          "h": 16
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "fill": "#fef3c7",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 157,
+            "y": 77,
+            "w": 4,
+            "h": 16
+           },
+           "fill": "#92400e",
+           "text": "1",
+           "style": "Inter 700 10px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Button",
+       "type": "FRAME",
+       "box": {
+        "x": 192,
+        "y": 70,
+        "w": 109,
+        "h": 30
+       },
+       "layout": "VERTICAL pad=6,16,6,16 main=CENTER cross=CENTER",
+       "fill": "#ffffff",
+       "stroke": "#e2e8f0",
+       "radius": 9999,
+       "children": [
+        {
+         "name": "Text",
+         "type": "TEXT",
+         "box": {
+          "x": 209,
+          "y": 77,
+          "w": 75,
+          "h": 16
+         },
+         "fill": "#475569",
+         "text": "Delivered (2)",
+         "style": "Inter 600 12px ls=0"
+        }
+       ]
+      },
+      {
+       "name": "Button",
+       "type": "FRAME",
+       "box": {
+        "x": 308,
+        "y": 70,
+        "w": 109,
+        "h": 30
+       },
+       "layout": "VERTICAL pad=6,16,6,16 main=CENTER cross=CENTER",
+       "fill": "#ffffff",
+       "stroke": "#e2e8f0",
+       "radius": 9999,
+       "children": [
+        {
+         "name": "Text",
+         "type": "TEXT",
+         "box": {
+          "x": 325,
+          "y": 77,
+          "w": 75,
+          "h": 16
+         },
+         "fill": "#475569",
+         "text": "Cancelled (1)",
+         "style": "Inter 600 12px ls=0"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "texts": [
+  {
+   "text": "#XL-4821",
+   "style": "Inter 700 16px ls=-0.4000000059604645",
+   "box": {
+    "x": 33,
+    "y": 148
+   }
+  },
+  {
+   "text": "ACTIVE · SHOPPING",
+   "style": "Inter 700 11px ls=0.2750000059604645",
+   "box": {
+    "x": 133,
+    "y": 152
+   }
+  },
+  {
+   "text": "Placed today, 10:24\nAM",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 33,
+    "y": 174
+   }
+  },
+  {
+   "text": "•",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 162,
+    "y": 182
+   }
+  },
+  {
+   "text": "Syokimau\nXanaPlus",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 175,
+    "y": 174
+   }
+  },
+  {
+   "text": "Express\n30m",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 287,
+    "y": 148
+   }
+  },
+  {
+   "text": "Estimated delivery by 11:15 AM",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 70,
+    "y": 307
+   }
+  },
+  {
+   "text": "~25 mins",
+   "style": "Inter 700 11px ls=0",
+   "box": {
+    "x": 294,
+    "y": 307
+   }
+  },
+  {
+   "text": "Track Order",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 148,
+    "y": 359
+   }
+  },
+  {
+   "text": "3 items",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 315,
+    "y": 231
+   }
+  },
+  {
+   "text": "KES 1,240.00",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 265,
+    "y": 249
+   }
+  },
+  {
+   "text": "Paid via M-Pesa",
+   "style": "Inter 500 10px ls=0",
+   "box": {
+    "x": 280,
+    "y": 271
+   }
+  },
+  {
+   "text": "#XL-4690",
+   "style": "Inter 700 16px ls=-0.4000000059604645",
+   "box": {
+    "x": 33,
+    "y": 436
+   }
+  },
+  {
+   "text": "DELIVERED",
+   "style": "Inter 700 11px ls=0.2750000059604645",
+   "box": {
+    "x": 143,
+    "y": 440
+   }
+  },
+  {
+   "text": "Yesterday, 4:18\nPM",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 33,
+    "y": 462
+   }
+  },
+  {
+   "text": "•",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 144,
+    "y": 470
+   }
+  },
+  {
+   "text": "Syokimau\nXanaPlus",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 157,
+    "y": 462
+   }
+  },
+  {
+   "text": "Apt 4B,\nKarura",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 275,
+    "y": 436
+   }
+  },
+  {
+   "text": "+2",
+   "style": "Inter 700 12px ls=0",
+   "box": {
+    "x": 164,
+    "y": 531
+   }
+  },
+  {
+   "text": "MORE",
+   "style": "Inter 600 9px ls=0.44999998807907104",
+   "box": {
+    "x": 158,
+    "y": 547
+   }
+  },
+  {
+   "text": "4 items",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 315,
+    "y": 519
+   }
+  },
+  {
+   "text": "KES 2,450.00",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 262,
+    "y": 536
+   }
+  },
+  {
+   "text": "+24 pts",
+   "style": "Inter 600 10px ls=0",
+   "box": {
+    "x": 320,
+    "y": 559
+   }
+  },
+  {
+   "text": "Reorder",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 117,
+    "y": 601
+   }
+  },
+  {
+   "text": "View Details",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 250,
+    "y": 601
+   }
+  },
+  {
+   "text": "#XL-4512",
+   "style": "Inter 700 16px ls=-0.4000000059604645",
+   "box": {
+    "x": 33,
+    "y": 678
+   }
+  },
+  {
+   "text": "DELIVERED",
+   "style": "Inter 700 11px ls=0.2750000059604645",
+   "box": {
+    "x": 138,
+    "y": 681
+   }
+  },
+  {
+   "text": "28 May 2024, 12:05\nPM",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 33,
+    "y": 704
+   }
+  },
+  {
+   "text": "•",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 154,
+    "y": 712
+   }
+  },
+  {
+   "text": "Ruiru\nXanaPlus",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 167,
+    "y": 704
+   }
+  },
+  {
+   "text": "Village Market\nPickup",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 249,
+    "y": 678
+   }
+  },
+  {
+   "text": "2 items",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 315,
+    "y": 761
+   }
+  },
+  {
+   "text": "KES 890.00",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 276,
+    "y": 778
+   }
+  },
+  {
+   "text": "Paid via Card",
+   "style": "Inter 500 10px ls=0",
+   "box": {
+    "x": 294,
+    "y": 801
+   }
+  },
+  {
+   "text": "Reorder",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 117,
+    "y": 843
+   }
+  },
+  {
+   "text": "View Details",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 250,
+    "y": 843
+   }
+  },
+  {
+   "text": "#XL-4380",
+   "style": "Inter 700 16px ls=-0.4000000059604645",
+   "box": {
+    "x": 33,
+    "y": 920
+   }
+  },
+  {
+   "text": "CANCELLED",
+   "style": "Inter 700 11px ls=0.2750000059604645",
+   "box": {
+    "x": 143,
+    "y": 923
+   }
+  },
+  {
+   "text": "15 May 2024,\n09:12 AM",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 33,
+    "y": 946
+   }
+  },
+  {
+   "text": "•",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 147,
+    "y": 954
+   }
+  },
+  {
+   "text": "Syokimau\nXanaPlus",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 160,
+    "y": 946
+   }
+  },
+  {
+   "text": "Refunded to M-\nPesa",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 259,
+    "y": 920
+   }
+  },
+  {
+   "text": "1 item",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 324,
+    "y": 1003
+   }
+  },
+  {
+   "text": "KES 350.00",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 277,
+    "y": 1020
+   }
+  },
+  {
+   "text": "Refund complete",
+   "style": "Inter 500 10px ls=0",
+   "box": {
+    "x": 276,
+    "y": 1043
+   }
+  },
+  {
+   "text": "Reason: Out of stock at branch",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 33,
+    "y": 1082
+   }
+  },
+  {
+   "text": "Reorder Item",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 267,
+    "y": 1082
+   }
+  },
+  {
+   "text": "View Empty State Pattern (\"No orders yet\")",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 55,
+    "y": 1171
+   }
+  },
+  {
+   "text": "▼",
+   "style": "Liberation Sans 600 12px ls=0",
+   "box": {
+    "x": 347,
+    "y": 1171
+   }
+  },
+  {
+   "text": "Questions about an order? Contact Support",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 81,
+    "y": 1226
+   }
+  },
+  {
+   "text": "My Orders",
+   "style": "Inter 700 20px ls=-0.5",
+   "box": {
+    "x": 64,
+    "y": 12
+   }
+  },
+  {
+   "text": "Syokimau & Ruiru deliveries",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 64,
+    "y": 40
+   }
+  },
+  {
+   "text": "1 Active",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 318,
+    "y": 26
+   }
+  },
+  {
+   "text": "All (4)",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 77
+   }
+  },
+  {
+   "text": "Active",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 108,
+    "y": 77
+   }
+  },
+  {
+   "text": "1",
+   "style": "Inter 700 10px ls=0",
+   "box": {
+    "x": 157,
+    "y": 77
+   }
+  },
+  {
+   "text": "Delivered (2)",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 209,
+    "y": 77
+   }
+  },
+  {
+   "text": "Cancelled (1)",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 325,
+    "y": 77
+   }
+  }
+ ]
+}

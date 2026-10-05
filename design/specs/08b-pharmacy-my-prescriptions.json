@@ -1,0 +1,2041 @@
+{
+ "id": "21:9853",
+ "name": "08b · Pharmacy — My Prescriptions",
+ "slug": "08b-pharmacy-my-prescriptions",
+ "size": {
+  "w": 390,
+  "h": 1178
+ },
+ "bg": "#ffffff|#f8faf9|#f8faf9",
+ "tree": [
+  {
+   "name": "Main Content Area",
+   "type": "FRAME",
+   "box": {
+    "x": 1,
+    "y": 0,
+    "w": 388,
+    "h": 1071
+   },
+   "layout": "VERTICAL pad=16,16,0,16 gap=16",
+   "children": [
+    {
+     "name": "Section - Action CTAs: Upload & Repeat",
+     "type": "FRAME",
+     "box": {
+      "x": 17,
+      "y": 16,
+      "w": 356,
+      "h": 96
+     },
+     "layout": "VERTICAL pad=0,0,0,0 gap=10",
+     "children": [
+      {
+       "name": "Button",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 16,
+        "w": 356,
+        "h": 44
+       },
+       "layout": "HORIZONTAL pad=12,16,12,16 main=CENTER cross=CENTER gap=10",
+       "fill": "#046938",
+       "radius": 12,
+       "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+       "children": [
+        {
+         "name": "SVG",
+         "type": "FRAME",
+         "box": {
+          "x": 108,
+          "y": 28,
+          "w": 20,
+          "h": 20
+         },
+         "children": [
+          {
+           "name": "Vector",
+           "type": "VECTOR",
+           "box": {
+            "x": 110,
+            "y": 31,
+            "w": 15,
+            "h": 13
+           },
+           "stroke": "#ffffff"
+          },
+          {
+           "name": "Vector",
+           "type": "VECTOR",
+           "box": {
+            "x": 115,
+            "y": 36,
+            "w": 5,
+            "h": 5
+           },
+           "stroke": "#ffffff"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 138,
+          "y": 28,
+          "w": 144,
+          "h": 20
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 138,
+            "y": 28,
+            "w": 144,
+            "h": 20
+           },
+           "fill": "#ffffff",
+           "text": "Upload a Prescription",
+           "style": "Inter 500 14px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Button",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 70,
+        "w": 356,
+        "h": 42
+       },
+       "layout": "HORIZONTAL pad=10,16,10,16 main=CENTER cross=CENTER gap=8",
+       "fill": "#ffffff",
+       "stroke": "#046938",
+       "radius": 12,
+       "children": [
+        {
+         "name": "SVG",
+         "type": "FRAME",
+         "box": {
+          "x": 133,
+          "y": 83,
+          "w": 16,
+          "h": 16
+         },
+         "children": [
+          {
+           "name": "Vector",
+           "type": "VECTOR",
+           "box": {
+            "x": 135,
+            "y": 86,
+            "w": 11,
+            "h": 11
+           },
+           "stroke": "#046938"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 157,
+          "y": 81,
+          "w": 100,
+          "h": 20
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 157,
+            "y": 81,
+            "w": 100,
+            "h": 20
+           },
+           "fill": "#046938",
+           "text": "Order a Repeat",
+           "style": "Inter 500 14px ls=0"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Section - Active Order Card: Horizontal Status Stepper",
+     "type": "FRAME",
+     "box": {
+      "x": 17,
+      "y": 128,
+      "w": 356,
+      "h": 228
+     },
+     "layout": "VERTICAL pad=16,16,16,16 gap=16",
+     "fill": "#ffffff",
+     "stroke": "#e2eae4",
+     "radius": 16,
+     "children": [
+      {
+       "name": "HorizontalBorder",
+       "type": "FRAME",
+       "box": {
+        "x": 34,
+        "y": 145,
+        "w": 322,
+        "h": 34
+       },
+       "layout": "HORIZONTAL pad=0,0,12,0 main=SPACE_BETWEEN cross=CENTER gap=76.4800033569336",
+       "stroke": "#f0f4f1",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 34,
+          "y": 148,
+          "w": 171,
+          "h": 16
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+         "children": [
+          {
+           "name": "Background",
+           "type": "RECTANGLE",
+           "box": {
+            "x": 34,
+            "y": 152,
+            "w": 8,
+            "h": 8
+           },
+           "fill": "#046938",
+           "radius": 9999
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 50,
+            "y": 148,
+            "w": 155,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 50,
+              "y": 148,
+              "w": 155,
+              "h": 16
+             },
+             "fill": "#192b20",
+             "text": "ACTIVE ORDER #RX-8841",
+             "style": "Inter 600 12px ls=0.30000001192092896"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Background",
+         "type": "FRAME",
+         "box": {
+          "x": 281,
+          "y": 145,
+          "w": 75,
+          "h": 21
+         },
+         "layout": "VERTICAL pad=2,8,2,8",
+         "fill": "#eaf4ee",
+         "radius": 6,
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 289,
+            "y": 147,
+            "w": 59,
+            "h": 17
+           },
+           "fill": "#046938",
+           "text": "Dispensing",
+           "style": "Inter 500 11px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Stepper Component → Step Indicators & Connecting Bars",
+       "type": "FRAME",
+       "box": {
+        "x": 34,
+        "y": 195,
+        "w": 322,
+        "h": 45
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=39.599998474121094",
+       "children": [
+        {
+         "name": "Background connecting line",
+         "type": "RECTANGLE",
+         "box": {
+          "x": 46,
+          "y": 207,
+          "w": 298,
+          "h": 2
+         },
+         "fill": "#e3eae5"
+        },
+        {
+         "name": "Active completed progress line (up to step 3)",
+         "type": "RECTANGLE",
+         "box": {
+          "x": 46,
+          "y": 207,
+          "w": 213,
+          "h": 2
+         },
+         "fill": "#046938"
+        },
+        {
+         "name": "Step 1: Received (Completed)",
+         "type": "FRAME",
+         "box": {
+          "x": 34,
+          "y": 195,
+          "w": 44,
+          "h": 45
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Background",
+           "type": "FRAME",
+           "box": {
+            "x": 44,
+            "y": 195,
+            "w": 24,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "fill": "#046938",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 49,
+              "y": 200,
+              "w": 14,
+              "h": 14
+             },
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 34,
+            "y": 219,
+            "w": 44,
+            "h": 21
+           },
+           "layout": "VERTICAL pad=6,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 34,
+              "y": 225,
+              "w": 44,
+              "h": 15
+             },
+             "fill": "#192b20",
+             "text": "Received",
+             "style": "Inter 500 10px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Step 2: With Pharmacist (Completed)",
+         "type": "FRAME",
+         "box": {
+          "x": 118,
+          "y": 196,
+          "w": 78,
+          "h": 43
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Background",
+           "type": "FRAME",
+           "box": {
+            "x": 145,
+            "y": 196,
+            "w": 24,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "fill": "#046938",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 150,
+              "y": 201,
+              "w": 14,
+              "h": 14
+             },
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 118,
+            "y": 220,
+            "w": 78,
+            "h": 19
+           },
+           "layout": "VERTICAL pad=6,0,0,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 118,
+              "y": 226,
+              "w": 78,
+              "h": 13
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Step 3: Dispensed (Current Active Step - Filled Green)",
+         "type": "FRAME",
+         "box": {
+          "x": 236,
+          "y": 195,
+          "w": 51,
+          "h": 45
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Background",
+           "type": "FRAME",
+           "box": {
+            "x": 249,
+            "y": 195,
+            "w": 24,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "fill": "#046938",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Overlay+Shadow",
+             "type": "RECTANGLE",
+             "box": {
+              "x": 249,
+              "y": 195,
+              "w": 24,
+              "h": 24
+             },
+             "fill": "#ffffff@0%",
+             "radius": 9999,
+             "shadow": "DROP_SHADOW #046938@15% 0/0 blur0"
+            },
+            {
+             "name": "Background",
+             "type": "RECTANGLE",
+             "box": {
+              "x": 257,
+              "y": 203,
+              "w": 8,
+              "h": 8
+             },
+             "fill": "#ffffff",
+             "radius": 9999
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 236,
+            "y": 219,
+            "w": 51,
+            "h": 21
+           },
+           "layout": "VERTICAL pad=6,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 236,
+              "y": 225,
+              "w": 51,
+              "h": 15
+             },
+             "fill": "#046938",
+             "text": "Dispensed",
+             "style": "Inter 600 10px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Step 4: Ready for Collection (Future - Grey Outline)",
+         "type": "FRAME",
+         "box": {
+          "x": 326,
+          "y": 196,
+          "w": 30,
+          "h": 43
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Background+Border",
+           "type": "FRAME",
+           "box": {
+            "x": 329,
+            "y": 196,
+            "w": 24,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "fill": "#ffffff",
+           "stroke": "#cbd8d0",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Background",
+             "type": "RECTANGLE",
+             "box": {
+              "x": 338,
+              "y": 205,
+              "w": 6,
+              "h": 6
+             },
+             "fill": "#cbd8d0",
+             "radius": 9999
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 326,
+            "y": 220,
+            "w": 30,
+            "h": 19
+           },
+           "layout": "VERTICAL pad=6,0,0,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 326,
+              "y": 226,
+              "w": 30,
+              "h": 13
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Collection Location & Time banner",
+       "type": "FRAME",
+       "box": {
+        "x": 34,
+        "y": 256,
+        "w": 322,
+        "h": 83
+       },
+       "layout": "HORIZONTAL pad=18,12,12,12 gap=10",
+       "fill": "#f3f8f5",
+       "stroke": "#e1ece4",
+       "radius": 12,
+       "children": [
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 47,
+          "y": 275,
+          "w": 28,
+          "h": 30
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Background+Border",
+           "type": "FRAME",
+           "box": {
+            "x": 47,
+            "y": 277,
+            "w": 28,
+            "h": 28
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "fill": "#ffffff",
+           "stroke": "#cfe0d6",
+           "radius": 8,
+           "children": [
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 53,
+              "y": 283,
+              "w": 16,
+              "h": 16
+             },
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 85,
+          "y": 275,
+          "w": 216,
+          "h": 51
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=2",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 85,
+            "y": 275,
+            "w": 216,
+            "h": 32
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 85,
+              "y": 275,
+              "w": 216,
+              "h": 32
+             },
+             "fill": "#192b20",
+             "text": "Ready by 4:30 PM today at Syokimau\nXanaPlus",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 85,
+            "y": 309,
+            "w": 216,
+            "h": 17
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 85,
+              "y": 309,
+              "w": 192,
+              "h": 17
+             },
+             "fill": "#55695c",
+             "text": "Xana Life Pharmacy Desk · Syokimau",
+             "style": "Inter 400 11px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Repeat / Regular Medications Section",
+     "type": "FRAME",
+     "box": {
+      "x": 17,
+      "y": 372,
+      "w": 356,
+      "h": 427
+     },
+     "layout": "VERTICAL pad=4,0,0,0 gap=12",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 376,
+        "w": 356,
+        "h": 17
+       },
+       "layout": "HORIZONTAL pad=0,2,0,2 main=SPACE_BETWEEN cross=CENTER gap=85.97000122070312",
+       "children": [
+        {
+         "name": "Heading 2",
+         "type": "FRAME",
+         "box": {
+          "x": 19,
+          "y": 377,
+          "w": 220,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 19,
+            "y": 377,
+            "w": 220,
+            "h": 16
+           },
+           "fill": "#55695c",
+           "text": "REPEAT & REGULAR MEDICATIONS",
+           "style": "Inter 600 12px ls=0.6000000238418579"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 325,
+          "y": 376,
+          "w": 46,
+          "h": 17
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 325,
+            "y": 376,
+            "w": 46,
+            "h": 17
+           },
+           "fill": "#55695c",
+           "text": "3 On File",
+           "style": "Inter 500 11px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Medication Card 1: Due in 5 days",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 405,
+        "w": 356,
+        "h": 124
+       },
+       "layout": "VERTICAL pad=16,16,16,16 gap=12",
+       "fill": "#ffffff",
+       "stroke": "#e2eae4",
+       "radius": 16,
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 34,
+          "y": 422,
+          "w": 322,
+          "h": 39
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 34,
+            "y": 422,
+            "w": 286,
+            "h": 39
+           },
+           "layout": "VERTICAL pad=0,0,0,0 gap=2",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 34,
+              "y": 422,
+              "w": 286,
+              "h": 21
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+             "childCount": 2
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 34,
+              "y": 445,
+              "w": 286,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "HorizontalBorder",
+         "type": "FRAME",
+         "box": {
+          "x": 34,
+          "y": 473,
+          "w": 322,
+          "h": 39
+         },
+         "layout": "HORIZONTAL pad=8,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=74.79000091552734",
+         "stroke": "#f2f6f3",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 34,
+            "y": 489,
+            "w": 152,
+            "h": 17
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 34,
+              "y": 489,
+              "w": 152,
+              "h": 17
+             },
+             "fill": "#8ba092",
+             "text": "Last dispensed: 12 May 2024",
+             "style": "Inter 400 11px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 261,
+            "y": 482,
+            "w": 95,
+            "h": 30
+           },
+           "layout": "HORIZONTAL pad=6,14,6,14 cross=CENTER gap=6",
+           "stroke": "#046938",
+           "radius": 8,
+           "children": [
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 276,
+              "y": 490,
+              "w": 14,
+              "h": 14
+             },
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 296,
+              "y": 489,
+              "w": 45,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Medication Card 2: Amlodipine Besylate",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 541,
+        "w": 356,
+        "h": 123
+       },
+       "layout": "VERTICAL pad=16,16,16,16 gap=12",
+       "fill": "#ffffff",
+       "stroke": "#e2eae4",
+       "radius": 16,
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 34,
+          "y": 558,
+          "w": 322,
+          "h": 38
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 34,
+            "y": 558,
+            "w": 138,
+            "h": 38
+           },
+           "layout": "VERTICAL pad=0,0,0,0 gap=2",
+           "children": [
+            {
+             "name": "Heading 3",
+             "type": "FRAME",
+             "box": {
+              "x": 34,
+              "y": 558,
+              "w": 138,
+              "h": 20
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 34,
+              "y": 580,
+              "w": 138,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "HorizontalBorder",
+         "type": "FRAME",
+         "box": {
+          "x": 34,
+          "y": 608,
+          "w": 322,
+          "h": 39
+         },
+         "layout": "HORIZONTAL pad=8,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=76.12000274658203",
+         "stroke": "#f2f6f3",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 34,
+            "y": 624,
+            "w": 150,
+            "h": 17
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 34,
+              "y": 624,
+              "w": 150,
+              "h": 17
+             },
+             "fill": "#8ba092",
+             "text": "Last dispensed: 28 Apr 2024",
+             "style": "Inter 400 11px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 261,
+            "y": 617,
+            "w": 95,
+            "h": 30
+           },
+           "layout": "HORIZONTAL pad=6,14,6,14 cross=CENTER gap=6",
+           "stroke": "#046938",
+           "radius": 8,
+           "children": [
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 276,
+              "y": 625,
+              "w": 14,
+              "h": 14
+             },
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 296,
+              "y": 624,
+              "w": 45,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Medication Card 3: Salbutamol Inhaler",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 676,
+        "w": 356,
+        "h": 123
+       },
+       "layout": "VERTICAL pad=16,16,16,16 gap=12",
+       "fill": "#ffffff",
+       "stroke": "#e2eae4",
+       "radius": 16,
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 34,
+          "y": 693,
+          "w": 322,
+          "h": 38
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 34,
+            "y": 693,
+            "w": 208,
+            "h": 38
+           },
+           "layout": "VERTICAL pad=0,0,0,0 gap=2",
+           "children": [
+            {
+             "name": "Heading 3",
+             "type": "FRAME",
+             "box": {
+              "x": 34,
+              "y": 693,
+              "w": 208,
+              "h": 20
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 34,
+              "y": 715,
+              "w": 208,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "HorizontalBorder",
+         "type": "FRAME",
+         "box": {
+          "x": 34,
+          "y": 743,
+          "w": 322,
+          "h": 39
+         },
+         "layout": "HORIZONTAL pad=8,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=76.86000061035156",
+         "stroke": "#f2f6f3",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 34,
+            "y": 759,
+            "w": 150,
+            "h": 17
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 34,
+              "y": 759,
+              "w": 150,
+              "h": 17
+             },
+             "fill": "#8ba092",
+             "text": "Last dispensed: 15 Mar 2024",
+             "style": "Inter 400 11px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 261,
+            "y": 752,
+            "w": 95,
+            "h": 30
+           },
+           "layout": "HORIZONTAL pad=6,14,6,14 cross=CENTER gap=6",
+           "stroke": "#046938",
+           "radius": 8,
+           "children": [
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 276,
+              "y": 760,
+              "w": 14,
+              "h": 14
+             },
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 296,
+              "y": 759,
+              "w": 45,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Secondary Services Section",
+     "type": "FRAME",
+     "box": {
+      "x": 17,
+      "y": 815,
+      "w": 356,
+      "h": 192
+     },
+     "layout": "VERTICAL pad=8,0,0,0 gap=10",
+     "children": [
+      {
+       "name": "Heading 2",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 823,
+        "w": 356,
+        "h": 16
+       },
+       "layout": "VERTICAL pad=0,2,0,2",
+       "children": [
+        {
+         "name": "CLINICAL SERVICES",
+         "type": "TEXT",
+         "box": {
+          "x": 19,
+          "y": 823,
+          "w": 352,
+          "h": 16
+         },
+         "fill": "#55695c",
+         "text": "CLINICAL SERVICES",
+         "style": "Inter 600 12px ls=0.6000000238418579"
+        }
+       ]
+      },
+      {
+       "name": "Book a Service Card",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 849,
+        "w": 356,
+        "h": 70
+       },
+       "layout": "HORIZONTAL pad=14,14,14,14 main=SPACE_BETWEEN cross=CENTER gap=51.029998779296875",
+       "fill": "#ffffff",
+       "stroke": "#e2eae4",
+       "radius": 16,
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 32,
+          "y": 864,
+          "w": 255,
+          "h": 40
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=12",
+         "children": [
+          {
+           "name": "Background",
+           "type": "FRAME",
+           "box": {
+            "x": 32,
+            "y": 864,
+            "w": 40,
+            "h": 40
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "fill": "#eaf4ee",
+           "radius": 12,
+           "children": [
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 42,
+              "y": 874,
+              "w": 20,
+              "h": 20
+             },
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 84,
+            "y": 867,
+            "w": 203,
+            "h": 35
+           },
+           "layout": "VERTICAL pad=0,0,0,0 gap=2",
+           "children": [
+            {
+             "name": "Heading 3",
+             "type": "FRAME",
+             "box": {
+              "x": 84,
+              "y": 867,
+              "w": 203,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 84,
+              "y": 885,
+              "w": 203,
+              "h": 17
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 338,
+          "y": 876,
+          "w": 20,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,4,0,0",
+         "children": [
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 338,
+            "y": 876,
+            "w": 16,
+            "h": 16
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 344,
+              "y": 879,
+              "w": 5,
+              "h": 9
+             },
+             "stroke": "#8ba092"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Ask a Pharmacist Card",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 929,
+        "w": 356,
+        "h": 78
+       },
+       "layout": "HORIZONTAL pad=14,14,14,14 main=SPACE_BETWEEN cross=CENTER",
+       "fill": "#ffffff",
+       "stroke": "#e2eae4",
+       "radius": 16,
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 32,
+          "y": 944,
+          "w": 306,
+          "h": 48
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=12",
+         "children": [
+          {
+           "name": "Background",
+           "type": "FRAME",
+           "box": {
+            "x": 32,
+            "y": 948,
+            "w": 40,
+            "h": 40
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "fill": "#eaf4ee",
+           "radius": 12,
+           "children": [
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 42,
+              "y": 958,
+              "w": 20,
+              "h": 20
+             },
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 84,
+            "y": 944,
+            "w": 254,
+            "h": 48
+           },
+           "layout": "VERTICAL pad=0,8,0,0 gap=1.065000057220459",
+           "children": [
+            {
+             "name": "Heading 3",
+             "type": "FRAME",
+             "box": {
+              "x": 84,
+              "y": 944,
+              "w": 246,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 84,
+              "y": 961,
+              "w": 246,
+              "h": 31
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 338,
+          "y": 960,
+          "w": 20,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,4,0,0",
+         "children": [
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 338,
+            "y": 960,
+            "w": 16,
+            "h": 16
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 344,
+              "y": 963,
+              "w": 5,
+              "h": 9
+             },
+             "stroke": "#8ba092"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Footer - Trust and Compliance Disclaimer",
+     "type": "FRAME",
+     "box": {
+      "x": 17,
+      "y": 1023,
+      "w": 356,
+      "h": 50
+     },
+     "layout": "VERTICAL pad=16,0,0,0 gap=2",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 1039,
+        "w": 356,
+        "h": 17
+       },
+       "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+       "children": [
+        {
+         "name": "Text",
+         "type": "TEXT",
+         "box": {
+          "x": 48,
+          "y": 1039,
+          "w": 293,
+          "h": 17
+         },
+         "fill": "#788e80",
+         "text": "Licensed by the Kenya Pharmacy & Poisons Board (PPB)",
+         "style": "Inter 400 11px ls=0"
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 1058,
+        "w": 356,
+        "h": 15
+       },
+       "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+       "children": [
+        {
+         "name": "Text",
+         "type": "TEXT",
+         "box": {
+          "x": 47,
+          "y": 1058,
+          "w": 296,
+          "h": 15
+         },
+         "fill": "#97ac9e",
+         "text": "Xana Life Care Services · Syokimau XanaPlus & Ruiru XanaPlus",
+         "style": "Inter 400 10px ls=0"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Sticky Header",
+   "type": "FRAME",
+   "box": {
+    "x": 1,
+    "y": 1071,
+    "w": 388,
+    "h": 67
+   },
+   "layout": "HORIZONTAL pad=14,16,14,16 main=SPACE_BETWEEN cross=CENTER gap=100.1500015258789",
+   "fill": "#ffffff@95%",
+   "stroke": "#e6ece8",
+   "blur": "BACKGROUND_BLUR 12",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 17,
+      "y": 1085,
+      "w": 173,
+      "h": 38
+     },
+     "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=12",
+     "children": [
+      {
+       "name": "Button - Back to Profile",
+       "type": "FRAME",
+       "box": {
+        "x": 17,
+        "y": 1086,
+        "w": 36,
+        "h": 36
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+       "radius": 9999,
+       "children": [
+        {
+         "name": "SVG",
+         "type": "FRAME",
+         "box": {
+          "x": 25,
+          "y": 1094,
+          "w": 20,
+          "h": 20
+         },
+         "children": [
+          {
+           "name": "Vector",
+           "type": "VECTOR",
+           "box": {
+            "x": 32,
+            "y": 1098,
+            "w": 6,
+            "h": 12
+           },
+           "stroke": "#192b20"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 65,
+        "y": 1085,
+        "w": 125,
+        "h": 38
+       },
+       "layout": "VERTICAL pad=0,0,0,0 gap=-1",
+       "children": [
+        {
+         "name": "Heading 1",
+         "type": "FRAME",
+         "box": {
+          "x": 65,
+          "y": 1085,
+          "w": 125,
+          "h": 24
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 65,
+            "y": 1085,
+            "w": 125,
+            "h": 24
+           },
+           "fill": "#192b20",
+           "text": "My Prescriptions",
+           "style": "Inter 600 16px ls=-0.4000000059604645"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 65,
+          "y": 1108,
+          "w": 125,
+          "h": 15
+         },
+         "layout": "VERTICAL pad=0,0,0.75,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 65,
+            "y": 1108,
+            "w": 123,
+            "h": 14
+           },
+           "fill": "#55695c",
+           "text": "Pharmacy & Care Portal",
+           "style": "Inter 400 11px ls=0"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Background",
+     "type": "FRAME",
+     "box": {
+      "x": 290,
+      "y": 1094,
+      "w": 83,
+      "h": 21
+     },
+     "layout": "HORIZONTAL pad=2,8,2,8 cross=CENTER gap=4",
+     "fill": "#eaf4ee",
+     "radius": 9999,
+     "children": [
+      {
+       "name": "Background",
+       "type": "RECTANGLE",
+       "box": {
+        "x": 298,
+        "y": 1101,
+        "w": 6,
+        "h": 6
+       },
+       "fill": "#046938",
+       "radius": 9999
+      },
+      {
+       "name": "Text",
+       "type": "TEXT",
+       "box": {
+        "x": 308,
+        "y": 1096,
+        "w": 57,
+        "h": 17
+       },
+       "fill": "#046938",
+       "text": "Verified Rx",
+       "style": "Inter 500 11px ls=0"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "texts": [
+  {
+   "text": "Upload a Prescription",
+   "style": "Inter 500 14px ls=0",
+   "box": {
+    "x": 138,
+    "y": 28
+   }
+  },
+  {
+   "text": "Order a Repeat",
+   "style": "Inter 500 14px ls=0",
+   "box": {
+    "x": 157,
+    "y": 81
+   }
+  },
+  {
+   "text": "ACTIVE ORDER #RX-8841",
+   "style": "Inter 600 12px ls=0.30000001192092896",
+   "box": {
+    "x": 50,
+    "y": 148
+   }
+  },
+  {
+   "text": "Dispensing",
+   "style": "Inter 500 11px ls=0",
+   "box": {
+    "x": 289,
+    "y": 147
+   }
+  },
+  {
+   "text": "Received",
+   "style": "Inter 500 10px ls=0",
+   "box": {
+    "x": 34,
+    "y": 225
+   }
+  },
+  {
+   "text": "With Pharmacist",
+   "style": "Inter 500 10px ls=0",
+   "box": {
+    "x": 118,
+    "y": 226
+   }
+  },
+  {
+   "text": "Dispensed",
+   "style": "Inter 600 10px ls=0",
+   "box": {
+    "x": 236,
+    "y": 225
+   }
+  },
+  {
+   "text": "Ready",
+   "style": "Inter 400 10px ls=0",
+   "box": {
+    "x": 326,
+    "y": 226
+   }
+  },
+  {
+   "text": "Ready by 4:30 PM today at Syokimau\nXanaPlus",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 85,
+    "y": 275
+   }
+  },
+  {
+   "text": "Xana Life Pharmacy Desk · Syokimau",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 85,
+    "y": 309
+   }
+  },
+  {
+   "text": "REPEAT & REGULAR MEDICATIONS",
+   "style": "Inter 600 12px ls=0.6000000238418579",
+   "box": {
+    "x": 19,
+    "y": 377
+   }
+  },
+  {
+   "text": "3 On File",
+   "style": "Inter 500 11px ls=0",
+   "box": {
+    "x": 325,
+    "y": 376
+   }
+  },
+  {
+   "text": "Metformin Hydrochloride",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 34,
+    "y": 423
+   }
+  },
+  {
+   "text": "Refill due in 5 days",
+   "style": "Inter 600 10px ls=0",
+   "box": {
+    "x": 221,
+    "y": 425
+   }
+  },
+  {
+   "text": "500mg · 60 Tablets (Film-coated)",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 34,
+    "y": 445
+   }
+  },
+  {
+   "text": "Last dispensed: 12 May 2024",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 34,
+    "y": 489
+   }
+  },
+  {
+   "text": "Reorder",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 296,
+    "y": 489
+   }
+  },
+  {
+   "text": "Amlodipine Besylate",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 34,
+    "y": 558
+   }
+  },
+  {
+   "text": "5mg · 30 Tablets",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 34,
+    "y": 580
+   }
+  },
+  {
+   "text": "Last dispensed: 28 Apr 2024",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 34,
+    "y": 624
+   }
+  },
+  {
+   "text": "Reorder",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 296,
+    "y": 624
+   }
+  },
+  {
+   "text": "Ventolin (Salbutamol) Evohaler",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 34,
+    "y": 693
+   }
+  },
+  {
+   "text": "100mcg/dose · 200 Actuations",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 34,
+    "y": 715
+   }
+  },
+  {
+   "text": "Last dispensed: 15 Mar 2024",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 34,
+    "y": 759
+   }
+  },
+  {
+   "text": "Reorder",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 296,
+    "y": 759
+   }
+  },
+  {
+   "text": "CLINICAL SERVICES",
+   "style": "Inter 600 12px ls=0.6000000238418579",
+   "box": {
+    "x": 19,
+    "y": 823
+   }
+  },
+  {
+   "text": "Book a Service",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 84,
+    "y": 867
+   }
+  },
+  {
+   "text": "Vaccinations, BP checks, consultations",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 84,
+    "y": 885
+   }
+  },
+  {
+   "text": "Ask a Pharmacist",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 84,
+    "y": 944
+   }
+  },
+  {
+   "text": "Free, confidential consultation via WhatsApp or\nin-app chat",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 84,
+    "y": 961
+   }
+  },
+  {
+   "text": "Licensed by the Kenya Pharmacy & Poisons Board (PPB)",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 48,
+    "y": 1039
+   }
+  },
+  {
+   "text": "Xana Life Care Services · Syokimau XanaPlus & Ruiru XanaPlus",
+   "style": "Inter 400 10px ls=0",
+   "box": {
+    "x": 47,
+    "y": 1058
+   }
+  },
+  {
+   "text": "My Prescriptions",
+   "style": "Inter 600 16px ls=-0.4000000059604645",
+   "box": {
+    "x": 65,
+    "y": 1085
+   }
+  },
+  {
+   "text": "Pharmacy & Care Portal",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 65,
+    "y": 1108
+   }
+  },
+  {
+   "text": "Verified Rx",
+   "style": "Inter 500 11px ls=0",
+   "box": {
+    "x": 308,
+    "y": 1096
+   }
+  }
+ ]
+}

@@ -1,0 +1,2070 @@
+{
+ "id": "1:37",
+ "name": "02 · Home",
+ "slug": "02-home",
+ "size": {
+  "w": 390,
+  "h": 1843
+ },
+ "bg": "#ffffff|#fcf9f8",
+ "tree": [
+  {
+   "name": "Main",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 1843
+   },
+   "layout": "VERTICAL pad=64,0,96,0",
+   "fill": "#fcf9f8",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 64,
+      "w": 390,
+      "h": 1683
+     },
+     "layout": "VERTICAL pad=0,0,32,0",
+     "children": [
+      {
+       "name": "Section - 2. Search Bar:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 64,
+        "w": 390,
+        "h": 64
+       },
+       "layout": "VERTICAL pad=16,20,0,20",
+       "children": [
+        {
+         "name": "Section - 2. Search Bar",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 80,
+          "w": 350,
+          "h": 48
+         },
+         "layout": "HORIZONTAL pad=0,16,0,16 cross=CENTER gap=8",
+         "fill": "#f6f3f2",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 97,
+            "w": 15,
+            "h": 15
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 36,
+              "y": 97,
+              "w": 15,
+              "h": 15
+             },
+             "fill": "#6f7a70"
+            }
+           ]
+          },
+          {
+           "name": "Input",
+           "type": "FRAME",
+           "box": {
+            "x": 59,
+            "y": 94,
+            "w": 261,
+            "h": 20
+           },
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 59,
+              "y": 94,
+              "w": 247,
+              "h": 19
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 59,
+              "y": 94,
+              "w": 261,
+              "h": 20
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=2.842170943040401e-14",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Button - Scan barcode",
+           "type": "FRAME",
+           "box": {
+            "x": 328,
+            "y": 88,
+            "w": 26,
+            "h": 32
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 332,
+              "y": 97,
+              "w": 18,
+              "h": 15
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section - 3. Promotional Hero Banner:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 128,
+        "w": 390,
+        "h": 228
+       },
+       "layout": "VERTICAL pad=28,20,0,20",
+       "children": [
+        {
+         "name": "Section - 3. Promotional Hero Banner",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 156,
+          "w": 350,
+          "h": 200
+         },
+         "layout": "VERTICAL pad=16,16,16,16 gap=8",
+         "fill": "linear(#fff8f0,#fef3e2,#fde8ce)",
+         "stroke": "#fd9926@40%",
+         "radius": 18,
+         "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+         "children": [
+          {
+           "name": "Gradient",
+           "type": "RECTANGLE",
+           "box": {
+            "x": -153,
+            "y": 58,
+            "w": 696,
+            "h": 396
+           },
+           "fill": "linear(#ffffff,#ffffff,#ffffff)"
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 37,
+            "y": 173,
+            "w": 316,
+            "h": 30
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=34.41999816894531",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 37,
+              "y": 179,
+              "w": 191,
+              "h": 18
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=4",
+             "childCount": 2
+            },
+            {
+             "name": "Overlay+Border",
+             "type": "FRAME",
+             "box": {
+              "x": 265,
+              "y": 173,
+              "w": 88,
+              "h": 30
+             },
+             "layout": "HORIZONTAL pad=4,8,4,8 cross=CENTER gap=4",
+             "fill": "#8d4f00@10%",
+             "stroke": "#fd9926@30%",
+             "radius": 6,
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 37,
+            "y": 211,
+            "w": 316,
+            "h": 92
+           },
+           "layout": "VERTICAL pad=4,0,0,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 37,
+              "y": 215,
+              "w": 316,
+              "h": 88
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=8",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 37,
+            "y": 311,
+            "w": 316,
+            "h": 28
+           },
+           "layout": "HORIZONTAL pad=4,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=40.47999954223633",
+           "children": [
+            {
+             "name": "Overlay",
+             "type": "FRAME",
+             "box": {
+              "x": 37,
+              "y": 315,
+              "w": 198,
+              "h": 24
+             },
+             "layout": "HORIZONTAL pad=4,8,4,8 cross=CENTER gap=6",
+             "fill": "#004f28@10%",
+             "radius": 9999,
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 282,
+              "y": 318,
+              "w": 71,
+              "h": 18
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=2",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section - 4. Category Pills:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 356,
+        "w": 390,
+        "h": 691
+       },
+       "layout": "VERTICAL pad=28,0,0,0",
+       "children": [
+        {
+         "name": "Section - 4. Category Pills",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 384,
+          "w": 390,
+          "h": 663
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=8",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 384,
+            "w": 390,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=0,20,0,20 main=SPACE_BETWEEN cross=CENTER gap=178.80999755859375",
+           "children": [
+            {
+             "name": "Heading 3",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 384,
+              "w": 131,
+              "h": 24
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 330,
+              "y": 388,
+              "w": 40,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 416,
+            "w": 390,
+            "h": 631
+           },
+           "layout": "GRID pad=0,20,0,20",
+           "children": [
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 416,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 111,
+              "y": 416,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 201,
+              "y": 416,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 292,
+              "y": 416,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 545,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 111,
+              "y": 545,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 201,
+              "y": 545,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 292,
+              "y": 545,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 673,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 111,
+              "y": 673,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 201,
+              "y": 673,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 292,
+              "y": 673,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 802,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 111,
+              "y": 802,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 201,
+              "y": 802,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 292,
+              "y": 802,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 930,
+              "w": 79,
+              "h": 117
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section - 5. Xana Club Rewards Card:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 1047,
+        "w": 390,
+        "h": 192
+       },
+       "layout": "VERTICAL pad=28,0,0,0",
+       "children": [
+        {
+         "name": "Section - 5. Xana Club Rewards Card",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 1075,
+          "w": 390,
+          "h": 164
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=8",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 1075,
+            "w": 390,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=0,20,0,20 main=SPACE_BETWEEN cross=CENTER gap=149.4199981689453",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 1075,
+              "w": 147,
+              "h": 24
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=4",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 323,
+              "y": 1079,
+              "w": 47,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 1107,
+            "w": 390,
+            "h": 132
+           },
+           "children": [
+            {
+             "name": "Promo Card 1: Fresh Farm Picks",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 1111,
+              "w": 260,
+              "h": 124
+             },
+             "layout": "VERTICAL pad=8,8,8,8 main=SPACE_BETWEEN",
+             "fill": "#ecfdf5",
+             "stroke": "#004f28@20%",
+             "radius": 18,
+             "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+             "childCount": 2
+            },
+            {
+             "name": "Promo Card 2: Pharmacy Health Days",
+             "type": "FRAME",
+             "box": {
+              "x": 292,
+              "y": 1111,
+              "w": 260,
+              "h": 124
+             },
+             "layout": "VERTICAL pad=8,8,8,8 main=SPACE_BETWEEN",
+             "fill": "#f0f9f8",
+             "stroke": "#bec9be@40%",
+             "radius": 18,
+             "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+             "childCount": 2
+            },
+            {
+             "name": "Promo Card 3: Dairy & Breakfast",
+             "type": "FRAME",
+             "box": {
+              "x": 564,
+              "y": 1111,
+              "w": 260,
+              "h": 124
+             },
+             "layout": "VERTICAL pad=8,8,8,8 main=SPACE_BETWEEN",
+             "fill": "#fffaf2",
+             "stroke": "#fd9926@20%",
+             "radius": 18,
+             "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section - 6. Popular / Fresh Everyday Carousel (30% peek of next card):margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 1238,
+        "w": 390,
+        "h": 363
+       },
+       "layout": "VERTICAL pad=28,0,0,0",
+       "children": [
+        {
+         "name": "Section - 6. Popular / Fresh Everyday Carousel (30% peek of next card)",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 1266,
+          "w": 390,
+          "h": 335
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=8",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 1266,
+            "w": 390,
+            "h": 26
+           },
+           "layout": "HORIZONTAL pad=0,20,0,20 main=SPACE_BETWEEN cross=CENTER gap=83.30000305175781",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 1266,
+              "w": 158,
+              "h": 26
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=4",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 274,
+              "y": 1270,
+              "w": 96,
+              "h": 18
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=2",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Bleed container with 20px initial margin and 30% peek on 3rd tile",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 1300,
+            "w": 390,
+            "h": 301
+           },
+           "children": [
+            {
+             "name": "Article - Product Card 1",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 1304,
+              "w": 180,
+              "h": 293
+             },
+             "fill": "#ffffff",
+             "radius": 18,
+             "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+             "childCount": 4
+            },
+            {
+             "name": "Article - Product Card 2",
+             "type": "FRAME",
+             "box": {
+              "x": 212,
+              "y": 1304,
+              "w": 180,
+              "h": 293
+             },
+             "fill": "#ffffff",
+             "radius": 18,
+             "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+             "childCount": 4
+            },
+            {
+             "name": "Article - Product Card 3 (30% Peek)",
+             "type": "FRAME",
+             "box": {
+              "x": 404,
+              "y": 1304,
+              "w": 180,
+              "h": 293
+             },
+             "fill": "#ffffff",
+             "radius": 18,
+             "childCount": 4
+            },
+            {
+             "name": "Article - Product Card 4 (Trailing Peek)",
+             "type": "FRAME",
+             "box": {
+              "x": 596,
+              "y": 1304,
+              "w": 180,
+              "h": 293
+             },
+             "fill": "#ffffff",
+             "radius": 18,
+             "childCount": 3
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section - 7. M-Pesa Instant Pay & Delight Micro-Banner:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 1601,
+        "w": 390,
+        "h": 114
+       },
+       "layout": "VERTICAL pad=28,20,0,20",
+       "children": [
+        {
+         "name": "Section - 7. M-Pesa Instant Pay & Delight Micro-Banner",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 1629,
+          "w": 350,
+          "h": 86
+         },
+         "layout": "HORIZONTAL pad=16,16,16,16 main=SPACE_BETWEEN cross=CENTER gap=8",
+         "fill": "#f6f3f2",
+         "radius": 18,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 1645,
+            "w": 216,
+            "h": 54
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 1652,
+              "w": 40,
+              "h": 40
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#e5e2e1",
+             "radius": 9999,
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 84,
+              "y": 1645,
+              "w": 168,
+              "h": 54
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 348,
+            "y": 1667,
+            "w": 6,
+            "h": 10
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 348,
+              "y": 1667,
+              "w": 6,
+              "h": 10
+             },
+             "fill": "#6f7a70"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Header",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 64
+   },
+   "layout": "VERTICAL pad=0,0,0,0",
+   "fill": "#ffffff",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 64
+     },
+     "layout": "HORIZONTAL pad=0,20,0,20 main=SPACE_BETWEEN cross=CENTER gap=181.0800018310547",
+     "children": [
+      {
+       "name": "Heading 1",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 20,
+        "w": 51,
+        "h": 24
+       },
+       "layout": "VERTICAL pad=0,0,0,0",
+       "children": [
+        {
+         "name": "Text",
+         "type": "TEXT",
+         "box": {
+          "x": 20,
+          "y": 20,
+          "w": 51,
+          "h": 24
+         },
+         "fill": "#1c1b1b",
+         "text": "Home",
+         "style": "Inter 700 18px ls=-0.18000000715255737"
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 258,
+        "y": 10,
+        "w": 112,
+        "h": 44
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=4",
+       "children": [
+        {
+         "name": "Button",
+         "type": "FRAME",
+         "box": {
+          "x": 258,
+          "y": 10,
+          "w": 28,
+          "h": 44
+         },
+         "layout": "HORIZONTAL pad=13,8,13,8 cross=CENTER",
+         "fill": "#f6f3f2",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 266,
+            "y": 25,
+            "w": 12,
+            "h": 15
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 266,
+              "y": 25,
+              "w": 12,
+              "h": 15
+             },
+             "fill": "#046938"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Button - Notifications",
+         "type": "FRAME",
+         "box": {
+          "x": 290,
+          "y": 10,
+          "w": 44,
+          "h": 44
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 304,
+            "y": 22,
+            "w": 16,
+            "h": 20
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 304,
+              "y": 22,
+              "w": 16,
+              "h": 20
+             },
+             "fill": "#3f4940"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Link - Log in or sign up",
+         "type": "FRAME",
+         "box": {
+          "x": 338,
+          "y": 16,
+          "w": 32,
+          "h": 32
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "fill": "#eae7e7",
+         "stroke": "#bec9be@50%",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 348,
+            "y": 26,
+            "w": 12,
+            "h": 12
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 348,
+              "y": 26,
+              "w": 12,
+              "h": 12
+             },
+             "fill": "#3f4940"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Nav",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 1779,
+    "w": 390,
+    "h": 64
+   },
+   "layout": "VERTICAL pad=0,0,0,0",
+   "fill": "#ffffff",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 1779,
+      "w": 390,
+      "h": 64
+     },
+     "children": [
+      {
+       "name": "Link",
+       "type": "FRAME",
+       "box": {
+        "x": 4,
+        "y": 1779,
+        "w": 76,
+        "h": 64
+       },
+       "layout": "VERTICAL pad=0,0,0,0 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 34,
+          "y": 1793,
+          "w": 16,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 34,
+            "y": 1793,
+            "w": 16,
+            "h": 18
+           },
+           "fill": "#046938"
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 25,
+          "y": 1811,
+          "w": 34,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 25,
+            "y": 1813,
+            "w": 34,
+            "h": 16
+           },
+           "fill": "#046938",
+           "text": "Home",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Link",
+       "type": "FRAME",
+       "box": {
+        "x": 80,
+        "y": 1779,
+        "w": 76,
+        "h": 64
+       },
+       "layout": "VERTICAL pad=0,0,0,0 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 110,
+          "y": 1793,
+          "w": 18,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 110,
+            "y": 1793,
+            "w": 18,
+            "h": 18
+           },
+           "fill": "#3f4940"
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 87,
+          "y": 1811,
+          "w": 63,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 87,
+            "y": 1813,
+            "w": 63,
+            "h": 16
+           },
+           "fill": "#3f4940",
+           "text": "Categories",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Link",
+       "type": "FRAME",
+       "box": {
+        "x": 233,
+        "y": 1779,
+        "w": 76,
+        "h": 64
+       },
+       "layout": "VERTICAL pad=0,0,0,0 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 263,
+          "y": 1794,
+          "w": 16,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 263,
+            "y": 1794,
+            "w": 16,
+            "h": 16
+           },
+           "fill": "#3f4940"
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 253,
+          "y": 1810,
+          "w": 38,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 253,
+            "y": 1812,
+            "w": 38,
+            "h": 16
+           },
+           "fill": "#3f4940",
+           "text": "Profile",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Link",
+       "type": "FRAME",
+       "box": {
+        "x": 157,
+        "y": 1767,
+        "w": 76,
+        "h": 64
+       },
+       "layout": "VERTICAL pad=0,0,0,0 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Background",
+         "type": "FRAME",
+         "box": {
+          "x": 167,
+          "y": 1767,
+          "w": 56,
+          "h": 44
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "fill": "#046938",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 187,
+            "y": 1779,
+            "w": 16,
+            "h": 21
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 187,
+              "y": 1779,
+              "w": 16,
+              "h": 21
+             },
+             "fill": "#ffffff"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 166,
+          "y": 1811,
+          "w": 58,
+          "h": 20
+         },
+         "layout": "VERTICAL pad=4,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 166,
+            "y": 1815,
+            "w": 58,
+            "h": 16
+           },
+           "fill": "#046938",
+           "text": "Pharmacy",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Link",
+       "type": "FRAME",
+       "box": {
+        "x": 310,
+        "y": 1779,
+        "w": 76,
+        "h": 64
+       },
+       "layout": "VERTICAL pad=0,0,0,0 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 340,
+          "y": 1792,
+          "w": 16,
+          "h": 20
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 340,
+            "y": 1792,
+            "w": 16,
+            "h": 20
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 340,
+              "y": 1792,
+              "w": 16,
+              "h": 20
+             },
+             "fill": "#3f4940"
+            }
+           ]
+          },
+          {
+           "name": "Background",
+           "type": "FRAME",
+           "box": {
+            "x": 348,
+            "y": 1788,
+            "w": 16,
+            "h": 16
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "fill": "#fd9926",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 353,
+              "y": 1791,
+              "w": 6,
+              "h": 10
+             },
+             "fill": "#ffffff",
+             "text": "2",
+             "style": "Inter 400 10px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 335,
+          "y": 1812,
+          "w": 25,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 335,
+            "y": 1814,
+            "w": 25,
+            "h": 16
+           },
+           "fill": "#3f4940",
+           "text": "Cart",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "texts": [
+  {
+   "text": "Search groceries, meds & more",
+   "style": "Inter 400 15px ls=0",
+   "box": {
+    "x": 59,
+    "y": 94
+   }
+  },
+  {
+   "text": "UP TO 35% OFF",
+   "style": "Inter 700 11px ls=0.550000011920929",
+   "box": {
+    "x": 47,
+    "y": 181
+   }
+  },
+  {
+   "text": "Flash Drop",
+   "style": "Inter 600 11px ls=0.2199999988079071",
+   "box": {
+    "x": 161,
+    "y": 181
+   }
+  },
+  {
+   "text": "04:22:15",
+   "style": "Inter 700 12px ls=0.30000001192092896",
+   "box": {
+    "x": 290,
+    "y": 178
+   }
+  },
+  {
+   "text": "Supa Deals This Week",
+   "style": "Inter 700 20px ls=-0.20000000298023224",
+   "box": {
+    "x": 37,
+    "y": 226
+   }
+  },
+  {
+   "text": "Save big on fresh produce, pantry\nstaples & everyday household…",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 37,
+    "y": 256
+   }
+  },
+  {
+   "text": "M-Pesa: KES 200 cashback",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 66,
+    "y": 319
+   }
+  },
+  {
+   "text": "Shop All",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 282,
+    "y": 318
+   }
+  },
+  {
+   "text": "Top Categories",
+   "style": "Inter 700 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 20,
+    "y": 384
+   }
+  },
+  {
+   "text": "See All",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 330,
+    "y": 388
+   }
+  },
+  {
+   "text": "Meat &\nPoultry",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 39,
+    "y": 502
+   }
+  },
+  {
+   "text": "Bakery (Xana\nBread)",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 112,
+    "y": 502
+   }
+  },
+  {
+   "text": "Deli & Cold\nCuts",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 209,
+    "y": 502
+   }
+  },
+  {
+   "text": "Pharmacy",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 302,
+    "y": 509
+   }
+  },
+  {
+   "text": "Cooking Oil",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 27,
+    "y": 638
+   }
+  },
+  {
+   "text": "Beverages",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 120,
+    "y": 638
+   }
+  },
+  {
+   "text": "Liquor",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 222,
+    "y": 638
+   }
+  },
+  {
+   "text": "Frozen Foods",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 292,
+    "y": 638
+   }
+  },
+  {
+   "text": "Fresh\nProduce",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 36,
+    "y": 759
+   }
+  },
+  {
+   "text": "Dairy & Eggs",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 114,
+    "y": 766
+   }
+  },
+  {
+   "text": "Cleaning &\nHousehold",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 210,
+    "y": 759
+   }
+  },
+  {
+   "text": "Beauty &\nPersonal\nCare",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 305,
+    "y": 751
+   }
+  },
+  {
+   "text": "Books &\nStationery",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 30,
+    "y": 887
+   }
+  },
+  {
+   "text": "Baby\nProducts",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 124,
+    "y": 887
+   }
+  },
+  {
+   "text": "Retail &\nWholesale",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 211,
+    "y": 887
+   }
+  },
+  {
+   "text": "Snacks",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 310,
+    "y": 895
+   }
+  },
+  {
+   "text": "Pet Care",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 35,
+    "y": 1023
+   }
+  },
+  {
+   "text": "Trending Deals",
+   "style": "Inter 700 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 37,
+    "y": 1075
+   }
+  },
+  {
+   "text": "View All",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 323,
+    "y": 1079
+   }
+  },
+  {
+   "text": "UP TO 25% OFF",
+   "style": "Inter 700 10px ls=0.25",
+   "box": {
+    "x": 37,
+    "y": 1122
+   }
+  },
+  {
+   "text": "Fresh Farm Picks",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 29,
+    "y": 1150
+   }
+  },
+  {
+   "text": "Sweet mangoes, spinach &\ncrisp greens direct from…",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 29,
+    "y": 1172
+   }
+  },
+  {
+   "text": "Shop Harvest",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 29,
+    "y": 1210
+   }
+  },
+  {
+   "text": "HEALTH ESSENTIALS",
+   "style": "Inter 700 10px ls=0.25",
+   "box": {
+    "x": 309,
+    "y": 1122
+   }
+  },
+  {
+   "text": "Wellness & Immunity",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 301,
+    "y": 1150
+   }
+  },
+  {
+   "text": "Vitamins, pain relief & daily\nhealthcare essentials",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 301,
+    "y": 1172
+   }
+  },
+  {
+   "text": "Explore Pharmacy",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 301,
+    "y": 1210
+   }
+  },
+  {
+   "text": "BREAKFAST COMBO",
+   "style": "Inter 700 10px ls=0.25",
+   "box": {
+    "x": 581,
+    "y": 1122
+   }
+  },
+  {
+   "text": "Dairy & Bakery",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 573,
+    "y": 1150
+   }
+  },
+  {
+   "text": "Fresh milk, artisan bread &\nrich cheddar",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 573,
+    "y": 1172
+   }
+  },
+  {
+   "text": "View Combos",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 573,
+    "y": 1210
+   }
+  },
+  {
+   "text": "Fresh Everyday",
+   "style": "Inter 600 20px ls=-0.20000000298023224",
+   "box": {
+    "x": 20,
+    "y": 1266
+   }
+  },
+  {
+   "text": "See 42 Items",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 274,
+    "y": 1270
+   }
+  },
+  {
+   "text": "Pack of 3 pcs",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 32,
+    "y": 1492
+   }
+  },
+  {
+   "text": "Fresh Hass Avocados",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 32,
+    "y": 1512
+   }
+  },
+  {
+   "text": "KES 180",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 32,
+    "y": 1551
+   }
+  },
+  {
+   "text": "KES 220",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 32,
+    "y": 1571
+   }
+  },
+  {
+   "text": "SAVE 18%",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 40,
+    "y": 1318
+   }
+  },
+  {
+   "text": "500ml Pouch",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 224,
+    "y": 1492
+   }
+  },
+  {
+   "text": "Brookside Whole Fresh\nMilk",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 224,
+    "y": 1512
+   }
+  },
+  {
+   "text": "KES 75",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 224,
+    "y": 1551
+   }
+  },
+  {
+   "text": "Std Price",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 224,
+    "y": 1571
+   }
+  },
+  {
+   "text": "FRESH",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 232,
+    "y": 1318
+   }
+  },
+  {
+   "text": "400g Chilled",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 412,
+    "y": 1480
+   }
+  },
+  {
+   "text": "Farmers Choice Beef\nSausages",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 412,
+    "y": 1500
+   }
+  },
+  {
+   "text": "KES 340",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 412,
+    "y": 1551
+   }
+  },
+  {
+   "text": "KES 375",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 412,
+    "y": 1571
+   }
+  },
+  {
+   "text": "NEW",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 420,
+    "y": 1314
+   }
+  },
+  {
+   "text": "2 pcs pack",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 604,
+    "y": 1480
+   }
+  },
+  {
+   "text": "Crisp English\nCucumbers",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 604,
+    "y": 1500
+   }
+  },
+  {
+   "text": "KES 110",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 604,
+    "y": 1551
+   }
+  },
+  {
+   "text": "Organic",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 604,
+    "y": 1571
+   }
+  },
+  {
+   "text": "1-Tap M-Pesa Checkout",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 84,
+    "y": 1645
+   }
+  },
+  {
+   "text": "No delays, prompt direct to\nSTK push",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 84,
+    "y": 1663
+   }
+  },
+  {
+   "text": "Home",
+   "style": "Inter 700 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 20,
+    "y": 20
+   }
+  },
+  {
+   "text": "Home",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 25,
+    "y": 1813
+   }
+  },
+  {
+   "text": "Categories",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 87,
+    "y": 1813
+   }
+  },
+  {
+   "text": "Profile",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 253,
+    "y": 1812
+   }
+  },
+  {
+   "text": "Pharmacy",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 166,
+    "y": 1815
+   }
+  },
+  {
+   "text": "2",
+   "style": "Inter 400 10px ls=0",
+   "box": {
+    "x": 353,
+    "y": 1791
+   }
+  },
+  {
+   "text": "Cart",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 335,
+    "y": 1814
+   }
+  }
+ ]
+}

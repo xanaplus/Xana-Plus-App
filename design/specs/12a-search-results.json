@@ -1,0 +1,2524 @@
+{
+ "id": "14:5722",
+ "name": "12a · Search — Results",
+ "slug": "12a-search-results",
+ "size": {
+  "w": 424,
+  "h": 1407
+ },
+ "bg": "#ffffff|#f6f3f2|#fcf9f8",
+ "tree": [
+  {
+   "name": "Mobile App Frame (Device: Mobile 390px preview):shadow",
+   "type": "RECTANGLE",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 424,
+    "h": 1407
+   },
+   "fill": "#ffffff@0%",
+   "shadow": "DROP_SHADOW #000000@25% 0/25 blur50"
+  },
+  {
+   "name": "Main Results Feed",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 182,
+    "w": 424,
+    "h": 1115
+   },
+   "layout": "VERTICAL pad=12,16,0,16 gap=24",
+   "children": [
+    {
+     "name": "Section - SECTION 1: GROCERIES SECTION",
+     "type": "FRAME",
+     "box": {
+      "x": 16,
+      "y": 194,
+      "w": 392,
+      "h": 675
+     },
+     "layout": "VERTICAL pad=0,0,0,0 gap=12",
+     "children": [
+      {
+       "name": "Section Divider / Group Label with non-overlap styling",
+       "type": "FRAME",
+       "box": {
+        "x": 16,
+        "y": 194,
+        "w": 392,
+        "h": 23
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=102.51000213623047",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 16,
+          "y": 198,
+          "w": 173,
+          "h": 16
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+         "children": [
+          {
+           "name": "Background",
+           "type": "RECTANGLE",
+           "box": {
+            "x": 16,
+            "y": 201,
+            "w": 10,
+            "h": 10
+           },
+           "fill": "#046938",
+           "radius": 2
+          },
+          {
+           "name": "Heading 2",
+           "type": "FRAME",
+           "box": {
+            "x": 34,
+            "y": 198,
+            "w": 155,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 34,
+              "y": 198,
+              "w": 155,
+              "h": 16
+             },
+             "fill": "#44403c",
+             "text": "GROCERIES & DAIRY (11)",
+             "style": "FreeSans 700 12px ls=0.6000000238418579"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Background+Border",
+         "type": "FRAME",
+         "box": {
+          "x": 312,
+          "y": 194,
+          "w": 96,
+          "h": 23
+         },
+         "layout": "VERTICAL pad=2,8,2,8",
+         "fill": "#ecfdf5",
+         "stroke": "#a7f3d0",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 321,
+            "y": 197,
+            "w": 78,
+            "h": 17
+           },
+           "fill": "#065f46",
+           "text": "Aisle 2 · Chilled",
+           "style": "Plus Jakarta Sans 500 11px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "2-Column Product Grid",
+       "type": "FRAME",
+       "box": {
+        "x": 16,
+        "y": 229,
+        "w": 392,
+        "h": 640
+       },
+       "layout": "GRID pad=0,0,0,0",
+       "children": [
+        {
+         "name": "Product Tile 1: Freshfields Whole Milk (Using Generated Asset https://lh3.googleusercontent.com/aida...",
+         "type": "FRAME",
+         "box": {
+          "x": 16,
+          "y": 229,
+          "w": 190,
+          "h": 311
+         },
+         "fill": "#ffffff",
+         "stroke": "#e7e5e4@80%",
+         "radius": 16,
+         "shadow": "DROP_SHADOW #000000@4% 0/4 blur16",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 29,
+            "y": 405,
+            "w": 164,
+            "h": 68
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 29,
+              "y": 405,
+              "w": 164,
+              "h": 17
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Heading 3",
+             "type": "FRAME",
+             "box": {
+              "x": 29,
+              "y": 422,
+              "w": 164,
+              "h": 33
+             },
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 29,
+              "y": 455,
+              "w": 164,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=1,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 29,
+            "y": 474,
+            "w": 164,
+            "h": 53
+           },
+           "layout": "VERTICAL pad=12,0,0,0",
+           "children": [
+            {
+             "name": "HorizontalBorder",
+             "type": "FRAME",
+             "box": {
+              "x": 29,
+              "y": 486,
+              "w": 164,
+              "h": 41
+             },
+             "layout": "HORIZONTAL pad=8,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=54.04999923706055",
+             "stroke": "#f5f5f4",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 29,
+            "y": 242,
+            "w": 164,
+            "h": 174
+           },
+           "layout": "VERTICAL pad=0,0,10,0",
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 29,
+              "y": 242,
+              "w": 164,
+              "h": 164
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#fafaf9",
+             "radius": 12,
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Product Tile 2: Brookside Dairy Fresh Milk",
+         "type": "FRAME",
+         "box": {
+          "x": 218,
+          "y": 229,
+          "w": 190,
+          "h": 311
+         },
+         "fill": "#ffffff",
+         "stroke": "#e7e5e4@80%",
+         "radius": 16,
+         "shadow": "DROP_SHADOW #000000@4% 0/4 blur16",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 231,
+            "y": 406,
+            "w": 164,
+            "h": 68
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 231,
+              "y": 406,
+              "w": 164,
+              "h": 17
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Heading 3",
+             "type": "FRAME",
+             "box": {
+              "x": 231,
+              "y": 423,
+              "w": 164,
+              "h": 33
+             },
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 231,
+              "y": 456,
+              "w": 164,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=1,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 231,
+            "y": 476,
+            "w": 164,
+            "h": 51
+           },
+           "layout": "VERTICAL pad=12,0,0,0",
+           "children": [
+            {
+             "name": "HorizontalBorder",
+             "type": "FRAME",
+             "box": {
+              "x": 231,
+              "y": 488,
+              "w": 164,
+              "h": 39
+             },
+             "layout": "HORIZONTAL pad=8,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=12.270000457763672",
+             "stroke": "#f5f5f4",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 231,
+            "y": 242,
+            "w": 164,
+            "h": 174
+           },
+           "layout": "VERTICAL pad=0,0,10,0",
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 231,
+              "y": 242,
+              "w": 164,
+              "h": 164
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#fafaf9",
+             "radius": 12,
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Product Tile 3: Ilara Long Life ESL Milk",
+         "type": "FRAME",
+         "box": {
+          "x": 16,
+          "y": 552,
+          "w": 190,
+          "h": 318
+         },
+         "fill": "#ffffff",
+         "stroke": "#e7e5e4@80%",
+         "radius": 16,
+         "shadow": "DROP_SHADOW #000000@4% 0/4 blur16",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 29,
+            "y": 727,
+            "w": 164,
+            "h": 68
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 29,
+              "y": 727,
+              "w": 164,
+              "h": 17
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Heading 3",
+             "type": "FRAME",
+             "box": {
+              "x": 29,
+              "y": 744,
+              "w": 164,
+              "h": 33
+             },
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 29,
+              "y": 777,
+              "w": 164,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=1,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 29,
+            "y": 796,
+            "w": 164,
+            "h": 60
+           },
+           "layout": "VERTICAL pad=12,0,0,0",
+           "children": [
+            {
+             "name": "HorizontalBorder",
+             "type": "FRAME",
+             "box": {
+              "x": 29,
+              "y": 808,
+              "w": 164,
+              "h": 48
+             },
+             "layout": "HORIZONTAL pad=8,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=59.939998626708984",
+             "stroke": "#f5f5f4",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 29,
+            "y": 565,
+            "w": 164,
+            "h": 174
+           },
+           "layout": "VERTICAL pad=0,0,10,0",
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 29,
+              "y": 565,
+              "w": 164,
+              "h": 164
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#fafaf9",
+             "radius": 12,
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Product Tile 4: Daima Almond Milk Dairy Alternative",
+         "type": "FRAME",
+         "box": {
+          "x": 218,
+          "y": 552,
+          "w": 190,
+          "h": 318
+         },
+         "fill": "#ffffff",
+         "stroke": "#e7e5e4@80%",
+         "radius": 16,
+         "shadow": "DROP_SHADOW #000000@4% 0/4 blur16",
+         "children": [
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 231,
+            "y": 565,
+            "w": 164,
+            "h": 174
+           },
+           "layout": "VERTICAL pad=0,0,10,0",
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 231,
+              "y": 565,
+              "w": 164,
+              "h": 164
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#fafaf9",
+             "radius": 12,
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 231,
+            "y": 731,
+            "w": 164,
+            "h": 68
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 231,
+              "y": 731,
+              "w": 164,
+              "h": 17
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Heading 3",
+             "type": "FRAME",
+             "box": {
+              "x": 231,
+              "y": 748,
+              "w": 164,
+              "h": 33
+             },
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 231,
+              "y": 781,
+              "w": 164,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=1,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 231,
+            "y": 803,
+            "w": 164,
+            "h": 53
+           },
+           "layout": "VERTICAL pad=12,0,0,0",
+           "children": [
+            {
+             "name": "HorizontalBorder",
+             "type": "FRAME",
+             "box": {
+              "x": 231,
+              "y": 815,
+              "w": 164,
+              "h": 41
+             },
+             "layout": "HORIZONTAL pad=8,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=51.060001373291016",
+             "stroke": "#f5f5f4",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Section - Demonstrating query match across both departments (e.g., \"Milk of Magnesia\", \"Vitamin C\", or supplem...",
+     "type": "FRAME",
+     "box": {
+      "x": 16,
+      "y": 893,
+      "w": 392,
+      "h": 404
+     },
+     "layout": "VERTICAL pad=8,0,0,0 gap=12",
+     "children": [
+      {
+       "name": "Background+Border",
+       "type": "FRAME",
+       "box": {
+        "x": 16,
+        "y": 901,
+        "w": 392,
+        "h": 75
+       },
+       "layout": "HORIZONTAL pad=12,12,12,12 main=SPACE_BETWEEN cross=CENTER",
+       "fill": "linear(#ecfdf5,#f0fdfa,#ecfdf5)",
+       "stroke": "#a7f3d0@80%",
+       "radius": 16,
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 29,
+          "y": 914,
+          "w": 235,
+          "h": 49
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=10",
+         "children": [
+          {
+           "name": "Background",
+           "type": "FRAME",
+           "box": {
+            "x": 29,
+            "y": 925,
+            "w": 27,
+            "h": 28
+           },
+           "layout": "HORIZONTAL pad=5.5,0,6.5,0 main=CENTER cross=CENTER",
+           "fill": "#046938",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 35,
+              "y": 930,
+              "w": 15,
+              "h": 16
+             },
+             "fill": "#ffffff",
+             "text": "Rx",
+             "style": "FreeSans 700 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 66,
+            "y": 914,
+            "w": 198,
+            "h": 49
+           },
+           "layout": "VERTICAL pad=0,0,0,0 gap=-0.75",
+           "children": [
+            {
+             "name": "Heading 2",
+             "type": "FRAME",
+             "box": {
+              "x": 66,
+              "y": 914,
+              "w": 198,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 66,
+              "y": 929,
+              "w": 198,
+              "h": 34
+             },
+             "layout": "VERTICAL pad=0,0,0.75,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Overlay+Border",
+         "type": "FRAME",
+         "box": {
+          "x": 320,
+          "y": 921,
+          "w": 75,
+          "h": 36
+         },
+         "layout": "VERTICAL pad=2,27.700000762939453,2,8",
+         "fill": "#ffffff@90%",
+         "stroke": "#a7f3d0",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 329,
+            "y": 924,
+            "w": 37,
+            "h": 30
+           },
+           "fill": "#065f46",
+           "text": "PPB\nVerified",
+           "style": "Plus Jakarta Sans 600 10px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 16,
+        "y": 988,
+        "w": 392,
+        "h": 309
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER gap=12",
+       "children": [
+        {
+         "name": "Pharmacy Tile 1: Phillips' Milk of Magnesia (Classic dual match for \"milk\")",
+         "type": "FRAME",
+         "box": {
+          "x": 16,
+          "y": 988,
+          "w": 190,
+          "h": 309
+         },
+         "fill": "#ffffff",
+         "stroke": "#a7f3d0@90%",
+         "radius": 16,
+         "shadow": "DROP_SHADOW #000000@4% 0/4 blur16",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 29,
+            "y": 1164,
+            "w": 164,
+            "h": 67
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 29,
+              "y": 1164,
+              "w": 164,
+              "h": 17
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Heading 3",
+             "type": "FRAME",
+             "box": {
+              "x": 29,
+              "y": 1181,
+              "w": 164,
+              "h": 33
+             },
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 29,
+              "y": 1214,
+              "w": 164,
+              "h": 17
+             },
+             "layout": "VERTICAL pad=2,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 29,
+            "y": 1231,
+            "w": 164,
+            "h": 53
+           },
+           "layout": "VERTICAL pad=12,0,0,0",
+           "children": [
+            {
+             "name": "HorizontalBorder",
+             "type": "FRAME",
+             "box": {
+              "x": 29,
+              "y": 1243,
+              "w": 164,
+              "h": 41
+             },
+             "layout": "HORIZONTAL pad=8,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=51.41999816894531",
+             "stroke": "#f5f5f4",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 29,
+            "y": 1001,
+            "w": 164,
+            "h": 174
+           },
+           "layout": "VERTICAL pad=0,0,10,0",
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 29,
+              "y": 1001,
+              "w": 164,
+              "h": 164
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#fafaf9",
+             "radius": 12,
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Pharmacy Tile 2: Vitamin C / Milk Thistle Liver Support (Using Generated Asset https://lh3.googleuse...",
+         "type": "FRAME",
+         "box": {
+          "x": 218,
+          "y": 988,
+          "w": 190,
+          "h": 309
+         },
+         "fill": "#ffffff",
+         "stroke": "#a7f3d0@90%",
+         "radius": 16,
+         "shadow": "DROP_SHADOW #000000@4% 0/4 blur16",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 231,
+            "y": 1164,
+            "w": 164,
+            "h": 67
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 231,
+              "y": 1164,
+              "w": 164,
+              "h": 17
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Heading 3",
+             "type": "FRAME",
+             "box": {
+              "x": 231,
+              "y": 1181,
+              "w": 164,
+              "h": 33
+             },
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 231,
+              "y": 1214,
+              "w": 164,
+              "h": 17
+             },
+             "layout": "VERTICAL pad=2,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 231,
+            "y": 1231,
+            "w": 164,
+            "h": 53
+           },
+           "layout": "VERTICAL pad=12,0,0,0",
+           "children": [
+            {
+             "name": "HorizontalBorder",
+             "type": "FRAME",
+             "box": {
+              "x": 231,
+              "y": 1243,
+              "w": 164,
+              "h": 41
+             },
+             "layout": "HORIZONTAL pad=8,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=41.83000183105469",
+             "stroke": "#f5f5f4",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 231,
+            "y": 1001,
+            "w": 164,
+            "h": 174
+           },
+           "layout": "VERTICAL pad=0,0,10,0",
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 231,
+              "y": 1001,
+              "w": 164,
+              "h": 164
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#fafaf9",
+             "radius": 12,
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Floating Mini Cart Peek Bar (Optional helper when user adds search results to cart):margin",
+   "type": "FRAME",
+   "box": {
+    "x": -7,
+    "y": 1330,
+    "w": 424,
+    "h": 62
+   },
+   "layout": "VERTICAL pad=0,16,0,16",
+   "children": [
+    {
+     "name": "Floating Mini Cart Peek Bar (Optional helper when user adds search results to cart)",
+     "type": "FRAME",
+     "box": {
+      "x": 9,
+      "y": 1330,
+      "w": 392,
+      "h": 62
+     },
+     "layout": "HORIZONTAL pad=12,12,12,12 main=SPACE_BETWEEN cross=CENTER gap=86.55999755859375",
+     "fill": "#1c1917",
+     "stroke": "#292524",
+     "radius": 16,
+     "children": [
+      {
+       "name": "Floating Mini Cart Peek Bar (Optional helper when user adds search results to cart):shadow",
+       "type": "RECTANGLE",
+       "box": {
+        "x": 9,
+        "y": 1330,
+        "w": 392,
+        "h": 62
+       },
+       "fill": "#ffffff@0%",
+       "radius": 16,
+       "shadow": "DROP_SHADOW #000000@10% 0/8 blur10 + DROP_SHADOW #000000@10% 0/20 blur25"
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 22,
+        "y": 1343,
+        "w": 155,
+        "h": 36
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=10",
+       "children": [
+        {
+         "name": "Background",
+         "type": "FRAME",
+         "box": {
+          "x": 22,
+          "y": 1347,
+          "w": 28,
+          "h": 28
+         },
+         "layout": "HORIZONTAL pad=5.5,0,6.5,0 main=CENTER cross=CENTER",
+         "fill": "#f69320",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 32,
+            "y": 1353,
+            "w": 7,
+            "h": 16
+           },
+           "fill": "#ffffff",
+           "text": "3",
+           "style": "FreeSans 700 12px ls=0"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 60,
+          "y": 1343,
+          "w": 117,
+          "h": 36
+         },
+         "layout": "VERTICAL pad=0,0,1.5,0 gap=5.5",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 60,
+            "y": 1343,
+            "w": 117,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 60,
+              "y": 1343,
+              "w": 79,
+              "h": 16
+             },
+             "fill": "#ffffff",
+             "text": "KES 1,360.00",
+             "style": "FreeSans 700 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 60,
+            "y": 1365,
+            "w": 117,
+            "h": 13
+           },
+           "fill": "#a8a29e",
+           "text": "3 items in cart · Syokimau",
+           "style": "Plus Jakarta Sans 400 10px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Button",
+       "type": "FRAME",
+       "box": {
+        "x": 285,
+        "y": 1347,
+        "w": 103,
+        "h": 28
+       },
+       "layout": "HORIZONTAL pad=6,14,6,14 cross=CENTER gap=4",
+       "fill": "#046938",
+       "radius": 12,
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 299,
+          "y": 1353,
+          "w": 57,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 299,
+            "y": 1353,
+            "w": 57,
+            "h": 16
+           },
+           "fill": "#ffffff",
+           "text": "View Cart",
+           "style": "FreeSans 700 12px ls=0"
+          }
+         ]
+        },
+        {
+         "name": "SVG",
+         "type": "FRAME",
+         "box": {
+          "x": 360,
+          "y": 1354,
+          "w": 14,
+          "h": 14
+         },
+         "children": [
+          {
+           "name": "Vector",
+           "type": "VECTOR",
+           "box": {
+            "x": 362,
+            "y": 1357,
+            "w": 11,
+            "h": 9
+           },
+           "stroke": "#ffffff"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Pinned Top Header Container",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 424,
+    "h": 182
+   },
+   "layout": "VERTICAL pad=0,0,0,0",
+   "fill": "#fcf9f8@95%",
+   "stroke": "#e7e5e4@80%",
+   "blur": "BACKGROUND_BLUR 12",
+   "children": [
+    {
+     "name": "Status Bar Area",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 424,
+      "h": 32
+     },
+     "layout": "HORIZONTAL pad=12,20,4,20 main=SPACE_BETWEEN cross=CENTER gap=279.1600036621094",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 12,
+        "w": 24,
+        "h": 16
+       },
+       "layout": "VERTICAL pad=0,0,0,0",
+       "children": [
+        {
+         "name": "Text",
+         "type": "TEXT",
+         "box": {
+          "x": 20,
+          "y": 12,
+          "w": 24,
+          "h": 16
+         },
+         "fill": "#57534e",
+         "text": "9:41",
+         "style": "Plus Jakarta Sans 600 12px ls=0"
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 344,
+        "y": 13,
+        "w": 60,
+        "h": 14
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER",
+       "children": [
+        {
+         "name": "SVG",
+         "type": "FRAME",
+         "box": {
+          "x": 344,
+          "y": 13,
+          "w": 14,
+          "h": 14
+         },
+         "children": [
+          {
+           "name": "Vector",
+           "type": "VECTOR",
+           "box": {
+            "x": 346,
+            "y": 15,
+            "w": 11,
+            "h": 11
+           },
+           "fill": "#57534e"
+          }
+         ]
+        },
+        {
+         "name": "SVG:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 358,
+          "y": 13,
+          "w": 20,
+          "h": 14
+         },
+         "layout": "VERTICAL pad=0,0,0,6",
+         "children": [
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 364,
+            "y": 13,
+            "w": 14,
+            "h": 14
+           },
+           "layout": "VERTICAL pad=0,0,0,0 main=CENTER",
+           "children": [
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 364,
+              "y": 13,
+              "w": 14,
+              "h": 14
+             },
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 378,
+          "y": 15,
+          "w": 26,
+          "h": 10
+         },
+         "layout": "VERTICAL pad=0,0,0,6",
+         "children": [
+          {
+           "name": "Border",
+           "type": "FRAME",
+           "box": {
+            "x": 384,
+            "y": 15,
+            "w": 20,
+            "h": 10
+           },
+           "layout": "HORIZONTAL pad=2,2,2,2 cross=CENTER",
+           "stroke": "#57534e",
+           "radius": 2,
+           "children": [
+            {
+             "name": "Background",
+             "type": "RECTANGLE",
+             "box": {
+              "x": 387,
+              "y": 18,
+              "w": 12,
+              "h": 4
+             },
+             "fill": "#44403c"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Search Input Row with Back button & Barcode",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 32,
+      "w": 424,
+      "h": 64
+     },
+     "layout": "HORIZONTAL pad=10,16,10,16 cross=CENTER gap=10",
+     "children": [
+      {
+       "name": "Button - Go back",
+       "type": "FRAME",
+       "box": {
+        "x": 16,
+        "y": 46,
+        "w": 36,
+        "h": 36
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+       "fill": "#ffffff",
+       "stroke": "#e7e5e4",
+       "radius": 9999,
+       "children": [
+        {
+         "name": "SVG",
+         "type": "FRAME",
+         "box": {
+          "x": 24,
+          "y": 54,
+          "w": 20,
+          "h": 20
+         },
+         "children": [
+          {
+           "name": "Vector",
+           "type": "VECTOR",
+           "box": {
+            "x": 27,
+            "y": 58,
+            "w": 15,
+            "h": 13
+           },
+           "stroke": "#44403c"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Active Focused Search Input Field",
+       "type": "FRAME",
+       "box": {
+        "x": 62,
+        "y": 42,
+        "w": 346,
+        "h": 44
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Input",
+         "type": "FRAME",
+         "box": {
+          "x": 62,
+          "y": 42,
+          "w": 346,
+          "h": 44
+         },
+         "layout": "VERTICAL pad=10,64,10,40",
+         "fill": "#ffffff",
+         "stroke": "#046938",
+         "radius": 9999,
+         "shadow": "DROP_SHADOW #000000@5% 0/1 blur2 + DROP_SHADOW #046938@10% 0/0 blur0",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 104,
+            "y": 54,
+            "w": 238,
+            "h": 20
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "milk",
+             "type": "TEXT",
+             "box": {
+              "x": 104,
+              "y": 54,
+              "w": 238,
+              "h": 20
+             },
+             "fill": "#1c1917",
+             "text": "milk",
+             "style": "Plus Jakarta Sans 500 14px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 76,
+          "y": 56,
+          "w": 16,
+          "h": 16
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 76,
+            "y": 56,
+            "w": 16,
+            "h": 16
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 78,
+              "y": 58,
+              "w": 11,
+              "h": 11
+             },
+             "stroke": "#046938"
+            },
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 87,
+              "y": 67,
+              "w": 3,
+              "h": 3
+             },
+             "stroke": "#046938"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Clear Button ('X') & Barcode Scanner Icon",
+         "type": "FRAME",
+         "box": {
+          "x": 333,
+          "y": 50,
+          "w": 65,
+          "h": 28
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=4",
+         "children": [
+          {
+           "name": "Button - Clear query",
+           "type": "FRAME",
+           "box": {
+            "x": 333,
+            "y": 52,
+            "w": 24,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=3.5,0,4.5,0 main=CENTER cross=CENTER",
+           "fill": "#f5f5f4",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 340,
+              "y": 56,
+              "w": 9,
+              "h": 16
+             },
+             "fill": "#78716c",
+             "text": "✕",
+             "style": "FreeSans 700 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 361,
+            "y": 56,
+            "w": 5,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,2,0,2",
+           "children": [
+            {
+             "name": "Vertical Divider",
+             "type": "RECTANGLE",
+             "box": {
+              "x": 363,
+              "y": 56,
+              "w": 1,
+              "h": 16
+             },
+             "fill": "#e7e5e4"
+            }
+           ]
+          },
+          {
+           "name": "Button - Scan barcode",
+           "type": "FRAME",
+           "box": {
+            "x": 370,
+            "y": 50,
+            "w": 28,
+            "h": 28
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 376,
+              "y": 56,
+              "w": 16,
+              "h": 16
+             },
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Interactive Filter & Sort Chip Row (Horizontally scrollable)",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 96,
+      "w": 424,
+      "h": 46
+     },
+     "children": [
+      {
+       "name": "Button - Sort Chip (Dropdown indicator)",
+       "type": "FRAME",
+       "box": {
+        "x": 16,
+        "y": 101,
+        "w": 153,
+        "h": 28
+       },
+       "layout": "HORIZONTAL pad=6,12,6,12 cross=CENTER gap=6",
+       "fill": "#046938",
+       "radius": 9999,
+       "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+       "children": [
+        {
+         "name": "SVG",
+         "type": "FRAME",
+         "box": {
+          "x": 28,
+          "y": 108,
+          "w": 14,
+          "h": 14
+         },
+         "children": [
+          {
+           "name": "Vector",
+           "type": "VECTOR",
+           "box": {
+            "x": 30,
+            "y": 110,
+            "w": 11,
+            "h": 7
+           },
+           "stroke": "#ffffff"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 48,
+          "y": 107,
+          "w": 91,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 48,
+            "y": 107,
+            "w": 91,
+            "h": 16
+           },
+           "fill": "#ffffff",
+           "text": "Sort: Relevance",
+           "style": "Plus Jakarta Sans 600 12px ls=0"
+          }
+         ]
+        },
+        {
+         "name": "SVG",
+         "type": "FRAME",
+         "box": {
+          "x": 145,
+          "y": 109,
+          "w": 12,
+          "h": 12
+         },
+         "children": [
+          {
+           "name": "Vector",
+           "type": "VECTOR",
+           "box": {
+            "x": 148,
+            "y": 113,
+            "w": 6,
+            "h": 4
+           },
+           "fill": "#a7f3d0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Button - Category Filter Chip",
+       "type": "FRAME",
+       "box": {
+        "x": 177,
+        "y": 100,
+        "w": 97,
+        "h": 30
+       },
+       "layout": "HORIZONTAL pad=6,12,6,12 cross=CENTER gap=4",
+       "fill": "#ffffff",
+       "stroke": "#e7e5e4",
+       "radius": 9999,
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 190,
+          "y": 107,
+          "w": 55,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 190,
+            "y": 107,
+            "w": 55,
+            "h": 16
+           },
+           "fill": "#44403c",
+           "text": "Category",
+           "style": "Plus Jakarta Sans 500 12px ls=0"
+          }
+         ]
+        },
+        {
+         "name": "SVG",
+         "type": "FRAME",
+         "box": {
+          "x": 249,
+          "y": 109,
+          "w": 12,
+          "h": 12
+         },
+         "children": [
+          {
+           "name": "Vector",
+           "type": "VECTOR",
+           "box": {
+            "x": 252,
+            "y": 113,
+            "w": 6,
+            "h": 4
+           },
+           "fill": "#a8a29e"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Button - In Stock Only (Toggle style, active green border)",
+       "type": "FRAME",
+       "box": {
+        "x": 282,
+        "y": 100,
+        "w": 114,
+        "h": 30
+       },
+       "layout": "HORIZONTAL pad=6,12,6,12 cross=CENTER gap=6",
+       "fill": "#ecfdf5",
+       "stroke": "#6ee7b7",
+       "radius": 9999,
+       "children": [
+        {
+         "name": "Background",
+         "type": "RECTANGLE",
+         "box": {
+          "x": 295,
+          "y": 112,
+          "w": 6,
+          "h": 6
+         },
+         "fill": "#046938",
+         "radius": 9999
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 307,
+          "y": 107,
+          "w": 76,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 307,
+            "y": 107,
+            "w": 76,
+            "h": 16
+           },
+           "fill": "#046938",
+           "text": "In Stock Only",
+           "style": "Plus Jakarta Sans 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Button - Price Range Chip",
+       "type": "FRAME",
+       "box": {
+        "x": 404,
+        "y": 100,
+        "w": 118,
+        "h": 30
+       },
+       "layout": "HORIZONTAL pad=6,12,6,12 cross=CENTER",
+       "fill": "#ffffff",
+       "stroke": "#e7e5e4",
+       "radius": 9999,
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 417,
+          "y": 107,
+          "w": 92,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 417,
+            "y": 107,
+            "w": 92,
+            "h": 16
+           },
+           "fill": "#44403c",
+           "text": "Price: Low-High",
+           "style": "Plus Jakarta Sans 500 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Button - Express Delivery Filter",
+       "type": "FRAME",
+       "box": {
+        "x": 530,
+        "y": 100,
+        "w": 110,
+        "h": 30
+       },
+       "layout": "HORIZONTAL pad=6,12,6,12 cross=CENTER gap=3.990000009536743",
+       "fill": "#ffffff",
+       "stroke": "#e7e5e4",
+       "radius": 9999,
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 543,
+          "y": 107,
+          "w": 6,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 543,
+            "y": 107,
+            "w": 6,
+            "h": 16
+           },
+           "fill": "#f69320",
+           "text": "⚡",
+           "style": "FreeSans 500 12px ls=0"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 553,
+          "y": 107,
+          "w": 74,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 553,
+            "y": 107,
+            "w": 74,
+            "h": 16
+           },
+           "fill": "#44403c",
+           "text": "Express 30m",
+           "style": "Plus Jakarta Sans 500 12px ls=0"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Quick query meta count & store location context",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 142,
+      "w": 424,
+      "h": 39
+     },
+     "layout": "HORIZONTAL pad=8,16,8,16 main=SPACE_BETWEEN cross=CENTER gap=82.5999984741211",
+     "fill": "#fafaf9@80%",
+     "stroke": "#e7e5e4@60%",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 16,
+        "y": 154,
+        "w": 159,
+        "h": 16
+       },
+       "layout": "VERTICAL pad=0,0,0,0",
+       "children": [
+        {
+         "name": "Text",
+         "type": "TEXT",
+         "box": {
+          "x": 16,
+          "y": 154,
+          "w": 159,
+          "h": 16
+         },
+         "fill": "#78716c",
+         "text": "Showing 14 results for \"milk\"",
+         "style": "Plus Jakarta Sans 400 12px ls=0"
+        }
+       ]
+      },
+      {
+       "name": "Background+Border",
+       "type": "FRAME",
+       "box": {
+        "x": 279,
+        "y": 151,
+        "w": 129,
+        "h": 22
+       },
+       "layout": "HORIZONTAL pad=2,8,2,8 cross=CENTER gap=4",
+       "fill": "#ffffff",
+       "stroke": "#e7e5e4",
+       "radius": 4,
+       "children": [
+        {
+         "name": "Background",
+         "type": "RECTANGLE",
+         "box": {
+          "x": 288,
+          "y": 159,
+          "w": 6,
+          "h": 6
+         },
+         "fill": "#059669",
+         "radius": 9999
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 298,
+          "y": 154,
+          "w": 101,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 298,
+            "y": 154,
+            "w": 101,
+            "h": 16
+           },
+           "fill": "#57534e",
+           "text": "Syokimau XanaPlus",
+           "style": "Plus Jakarta Sans 500 11px ls=0"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "texts": [
+  {
+   "text": "GROCERIES & DAIRY (11)",
+   "style": "FreeSans 700 12px ls=0.6000000238418579",
+   "box": {
+    "x": 34,
+    "y": 198
+   }
+  },
+  {
+   "text": "Aisle 2 · Chilled",
+   "style": "Plus Jakarta Sans 500 11px ls=0",
+   "box": {
+    "x": 321,
+    "y": 197
+   }
+  },
+  {
+   "text": "Freshfields",
+   "style": "Plus Jakarta Sans 500 11px ls=0",
+   "box": {
+    "x": 29,
+    "y": 405
+   }
+  },
+  {
+   "text": "Fresh Kenyan Whole Milk\n1L",
+   "style": "FreeSans 700 12px ls=0",
+   "box": {
+    "x": 29,
+    "y": 421
+   }
+  },
+  {
+   "text": "Pasteurised · Fresh daily",
+   "style": "Plus Jakarta Sans 400 11px ls=0",
+   "box": {
+    "x": 29,
+    "y": 456
+   }
+  },
+  {
+   "text": "KES 120.00",
+   "style": "Plus Jakarta Sans 800 12px ls=0",
+   "box": {
+    "x": 29,
+    "y": 504
+   }
+  },
+  {
+   "text": "+",
+   "style": "FreeSans 700 16px ls=0",
+   "box": {
+    "x": 171,
+    "y": 498
+   }
+  },
+  {
+   "text": "POPULAR",
+   "style": "FreeSans 700 10px ls=0",
+   "box": {
+    "x": 43,
+    "y": 252
+   }
+  },
+  {
+   "text": "Bio Foods",
+   "style": "Plus Jakarta Sans 500 11px ls=0",
+   "box": {
+    "x": 231,
+    "y": 406
+   }
+  },
+  {
+   "text": "Bio Organic Whole Milk\n500ml",
+   "style": "FreeSans 700 12px ls=0",
+   "box": {
+    "x": 231,
+    "y": 422
+   }
+  },
+  {
+   "text": "Glass bottle refillable",
+   "style": "Plus Jakarta Sans 400 11px ls=0",
+   "box": {
+    "x": 231,
+    "y": 457
+   }
+  },
+  {
+   "text": "KES 165.00",
+   "style": "Plus Jakarta Sans 800 12px ls=0",
+   "box": {
+    "x": 231,
+    "y": 505
+   }
+  },
+  {
+   "text": "-",
+   "style": "FreeSans 700 12px ls=0",
+   "box": {
+    "x": 331,
+    "y": 503
+   }
+  },
+  {
+   "text": "1",
+   "style": "FreeSans 700 12px ls=0",
+   "box": {
+    "x": 355,
+    "y": 504
+   }
+  },
+  {
+   "text": "+",
+   "style": "FreeSans 700 12px ls=0",
+   "box": {
+    "x": 376,
+    "y": 503
+   }
+  },
+  {
+   "text": "ORGANIC",
+   "style": "FreeSans 700 10px ls=0",
+   "box": {
+    "x": 246,
+    "y": 253
+   }
+  },
+  {
+   "text": "Ilara",
+   "style": "Plus Jakarta Sans 500 11px ls=0",
+   "box": {
+    "x": 29,
+    "y": 727
+   }
+  },
+  {
+   "text": "Ilara Full Cream Milk Pouch\n500ml",
+   "style": "FreeSans 700 12px ls=0",
+   "box": {
+    "x": 29,
+    "y": 743
+   }
+  },
+  {
+   "text": "Everyday value",
+   "style": "Plus Jakarta Sans 400 11px ls=0",
+   "box": {
+    "x": 29,
+    "y": 778
+   }
+  },
+  {
+   "text": "KES 65.00",
+   "style": "Plus Jakarta Sans 800 12px ls=0",
+   "box": {
+    "x": 29,
+    "y": 823
+   }
+  },
+  {
+   "text": "KES 70.00",
+   "style": "Plus Jakarta Sans 400 10px ls=0",
+   "box": {
+    "x": 29,
+    "y": 841
+   }
+  },
+  {
+   "text": "+",
+   "style": "FreeSans 700 16px ls=0",
+   "box": {
+    "x": 171,
+    "y": 824
+   }
+  },
+  {
+   "text": "UHT Pack",
+   "style": "Plus Jakarta Sans 600 9px ls=0",
+   "box": {
+    "x": 138,
+    "y": 704
+   }
+  },
+  {
+   "text": "PLANT BASED",
+   "style": "FreeSans 700 10px ls=0",
+   "box": {
+    "x": 246,
+    "y": 576
+   }
+  },
+  {
+   "text": "Alpro / Health",
+   "style": "Plus Jakarta Sans 500 11px ls=0",
+   "box": {
+    "x": 231,
+    "y": 731
+   }
+  },
+  {
+   "text": "Almond Milk\nUnsweetened 1L",
+   "style": "FreeSans 700 12px ls=0",
+   "box": {
+    "x": 231,
+    "y": 747
+   }
+  },
+  {
+   "text": "Dairy-free alternative",
+   "style": "Plus Jakarta Sans 400 11px ls=0",
+   "box": {
+    "x": 231,
+    "y": 782
+   }
+  },
+  {
+   "text": "KES 420.00",
+   "style": "Plus Jakarta Sans 800 12px ls=0",
+   "box": {
+    "x": 231,
+    "y": 834
+   }
+  },
+  {
+   "text": "+",
+   "style": "FreeSans 700 16px ls=0",
+   "box": {
+    "x": 373,
+    "y": 828
+   }
+  },
+  {
+   "text": "Rx",
+   "style": "FreeSans 700 12px ls=0",
+   "box": {
+    "x": 35,
+    "y": 930
+   }
+  },
+  {
+   "text": "PHARMACY & WELLNESS (3)",
+   "style": "FreeSans 700 12px ls=0.6000000238418579",
+   "box": {
+    "x": 66,
+    "y": 914
+   }
+  },
+  {
+   "text": "Dispatched from Licensed Pharmacist\ncounter",
+   "style": "Plus Jakarta Sans 400 11px ls=0",
+   "box": {
+    "x": 66,
+    "y": 929
+   }
+  },
+  {
+   "text": "PPB\nVerified",
+   "style": "Plus Jakarta Sans 600 10px ls=0",
+   "box": {
+    "x": 329,
+    "y": 924
+   }
+  },
+  {
+   "text": "Digestive Health",
+   "style": "Plus Jakarta Sans 600 11px ls=0",
+   "box": {
+    "x": 29,
+    "y": 1164
+   }
+  },
+  {
+   "text": "Milk of Magnesia Mint\n200ml",
+   "style": "FreeSans 700 12px ls=0",
+   "box": {
+    "x": 29,
+    "y": 1180
+   }
+  },
+  {
+   "text": "Gentle antacid & laxative",
+   "style": "Plus Jakarta Sans 400 10px ls=0",
+   "box": {
+    "x": 29,
+    "y": 1216
+   }
+  },
+  {
+   "text": "KES 550.00",
+   "style": "Plus Jakarta Sans 800 12px ls=0",
+   "box": {
+    "x": 29,
+    "y": 1262
+   }
+  },
+  {
+   "text": "+",
+   "style": "FreeSans 700 16px ls=0",
+   "box": {
+    "x": 171,
+    "y": 1256
+   }
+  },
+  {
+   "text": "OTC MEDICINE",
+   "style": "FreeSans 700 10px ls=0",
+   "box": {
+    "x": 43,
+    "y": 1011
+   }
+  },
+  {
+   "text": "VitaHerb Nairobi",
+   "style": "Plus Jakarta Sans 600 11px ls=0",
+   "box": {
+    "x": 231,
+    "y": 1164
+   }
+  },
+  {
+   "text": "Milk Thistle & Vitamin C\n60s",
+   "style": "FreeSans 700 12px ls=0",
+   "box": {
+    "x": 231,
+    "y": 1180
+   }
+  },
+  {
+   "text": "Antioxidant & liver care",
+   "style": "Plus Jakarta Sans 400 10px ls=0",
+   "box": {
+    "x": 231,
+    "y": 1216
+   }
+  },
+  {
+   "text": "KES 1,280.00",
+   "style": "Plus Jakarta Sans 800 12px ls=0",
+   "box": {
+    "x": 231,
+    "y": 1262
+   }
+  },
+  {
+   "text": "+",
+   "style": "FreeSans 700 16px ls=0",
+   "box": {
+    "x": 373,
+    "y": 1256
+   }
+  },
+  {
+   "text": "WELLNESS",
+   "style": "FreeSans 700 10px ls=0",
+   "box": {
+    "x": 245,
+    "y": 1011
+   }
+  },
+  {
+   "text": "3",
+   "style": "FreeSans 700 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 1353
+   }
+  },
+  {
+   "text": "KES 1,360.00",
+   "style": "FreeSans 700 12px ls=0",
+   "box": {
+    "x": 60,
+    "y": 1343
+   }
+  },
+  {
+   "text": "3 items in cart · Syokimau",
+   "style": "Plus Jakarta Sans 400 10px ls=0",
+   "box": {
+    "x": 60,
+    "y": 1365
+   }
+  },
+  {
+   "text": "View Cart",
+   "style": "FreeSans 700 12px ls=0",
+   "box": {
+    "x": 299,
+    "y": 1353
+   }
+  },
+  {
+   "text": "9:41",
+   "style": "Plus Jakarta Sans 600 12px ls=0",
+   "box": {
+    "x": 20,
+    "y": 12
+   }
+  },
+  {
+   "text": "milk",
+   "style": "Plus Jakarta Sans 500 14px ls=0",
+   "box": {
+    "x": 104,
+    "y": 54
+   }
+  },
+  {
+   "text": "✕",
+   "style": "FreeSans 700 12px ls=0",
+   "box": {
+    "x": 340,
+    "y": 56
+   }
+  },
+  {
+   "text": "Sort: Relevance",
+   "style": "Plus Jakarta Sans 600 12px ls=0",
+   "box": {
+    "x": 48,
+    "y": 107
+   }
+  },
+  {
+   "text": "Category",
+   "style": "Plus Jakarta Sans 500 12px ls=0",
+   "box": {
+    "x": 190,
+    "y": 107
+   }
+  },
+  {
+   "text": "In Stock Only",
+   "style": "Plus Jakarta Sans 600 12px ls=0",
+   "box": {
+    "x": 307,
+    "y": 107
+   }
+  },
+  {
+   "text": "Price: Low-High",
+   "style": "Plus Jakarta Sans 500 12px ls=0",
+   "box": {
+    "x": 417,
+    "y": 107
+   }
+  },
+  {
+   "text": "⚡",
+   "style": "FreeSans 500 12px ls=0",
+   "box": {
+    "x": 543,
+    "y": 107
+   }
+  },
+  {
+   "text": "Express 30m",
+   "style": "Plus Jakarta Sans 500 12px ls=0",
+   "box": {
+    "x": 553,
+    "y": 107
+   }
+  },
+  {
+   "text": "Showing 14 results for \"milk\"",
+   "style": "Plus Jakarta Sans 400 12px ls=0",
+   "box": {
+    "x": 16,
+    "y": 154
+   }
+  },
+  {
+   "text": "Syokimau XanaPlus",
+   "style": "Plus Jakarta Sans 500 11px ls=0",
+   "box": {
+    "x": 298,
+    "y": 154
+   }
+  }
+ ]
+}

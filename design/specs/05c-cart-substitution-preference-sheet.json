@@ -1,0 +1,2213 @@
+{
+ "id": "14:6626",
+ "name": "05c · Cart — Substitution Preference Sheet",
+ "slug": "05c-cart-substitution-preference-sheet",
+ "size": {
+  "w": 390,
+  "h": 1333
+ },
+ "bg": "#fcf9f8",
+ "tree": [
+  {
+   "name": "Main",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 1333
+   },
+   "layout": "VERTICAL pad=64,0,224,0",
+   "fill": "#fcf9f8",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 64,
+      "w": 390,
+      "h": 1045
+     },
+     "layout": "VERTICAL pad=0,0,0,0",
+     "children": [
+      {
+       "name": "Sub-header bar for Cart with item counter and fulfillment summary",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 64,
+        "w": 390,
+        "h": 44
+       },
+       "layout": "HORIZONTAL pad=4,20,8,20 main=SPACE_BETWEEN cross=CENTER gap=114.58999633789062",
+       "children": [
+        {
+         "name": "Paragraph",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 68,
+          "w": 110,
+          "h": 32
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=BASELINE gap=4",
+         "children": [
+          {
+           "name": "Heading 1 → Cart",
+           "type": "TEXT",
+           "box": {
+            "x": 20,
+            "y": 68,
+            "w": 48,
+            "h": 32
+           },
+           "fill": "#1c1b1b",
+           "text": "Cart",
+           "style": "Inter 600 24px ls=-0.47999998927116394"
+          },
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 72,
+            "y": 79,
+            "w": 58,
+            "h": 18
+           },
+           "fill": "#3f4940",
+           "text": "(3 items)",
+           "style": "Inter 500 14px ls=0"
+          }
+         ]
+        },
+        {
+         "name": "Background",
+         "type": "FRAME",
+         "box": {
+          "x": 245,
+          "y": 72,
+          "w": 125,
+          "h": 24
+         },
+         "layout": "HORIZONTAL pad=4,10,4,10 cross=CENTER gap=6",
+         "fill": "#f6f3f2",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Background",
+           "type": "RECTANGLE",
+           "box": {
+            "x": 255,
+            "y": 80,
+            "w": 8,
+            "h": 8
+           },
+           "fill": "#004f28",
+           "radius": 9999
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 269,
+            "y": 76,
+            "w": 91,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 269,
+              "y": 76,
+              "w": 91,
+              "h": 16
+             },
+             "fill": "#004f28",
+             "text": "Nairobi Express",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Delivery Slot Card:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 108,
+        "w": 390,
+        "h": 88
+       },
+       "layout": "VERTICAL pad=0,20,16,20",
+       "children": [
+        {
+         "name": "Delivery Slot Card",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 108,
+          "w": 350,
+          "h": 72
+         },
+         "layout": "HORIZONTAL pad=16,16,16,16 main=SPACE_BETWEEN cross=CENTER",
+         "fill": "#ffffff",
+         "radius": 12,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 124,
+            "w": 280,
+            "h": 40
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=16",
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 124,
+              "w": 40,
+              "h": 40
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#f6f3f2",
+             "radius": 12,
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 92,
+              "y": 126,
+              "w": 224,
+              "h": 36
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Button - Change delivery slot",
+           "type": "FRAME",
+           "box": {
+            "x": 318,
+            "y": 126,
+            "w": 36,
+            "h": 36
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 334,
+              "y": 137,
+              "w": 3,
+              "h": 13
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Cart Line Items Container:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 196,
+        "w": 390,
+        "h": 370
+       },
+       "layout": "VERTICAL pad=0,0,16,0",
+       "children": [
+        {
+         "name": "Cart Line Items Container",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 196,
+          "w": 390,
+          "h": 354
+         },
+         "layout": "VERTICAL pad=0,20,0,20 gap=8",
+         "children": [
+          {
+           "name": "Item 1: Kenyan Organic Hass Avocados (In Stock)",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 196,
+            "w": 350,
+            "h": 112
+           },
+           "layout": "HORIZONTAL pad=16,16,16,16 cross=CENTER gap=16",
+           "fill": "#ffffff",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 212,
+              "w": 80,
+              "h": 80
+             },
+             "layout": "VERTICAL pad=0,0,0,0 main=CENTER",
+             "fill": "#f6f3f2",
+             "radius": 8,
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 132,
+              "y": 213,
+              "w": 222,
+              "h": 79
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Item 2: Panadol Extra Tablets (In Stock)",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 316,
+            "w": 350,
+            "h": 112
+           },
+           "layout": "HORIZONTAL pad=16,16,16,16 cross=CENTER gap=16",
+           "fill": "#ffffff",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 332,
+              "w": 80,
+              "h": 80
+             },
+             "layout": "VERTICAL pad=0,0,0,0 main=CENTER",
+             "fill": "#f6f3f2",
+             "radius": 8,
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 132,
+              "y": 333,
+              "w": 222,
+              "h": 79
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Item 3: Brookside Whole Fresh Milk (OUT OF STOCK)",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 436,
+            "w": 350,
+            "h": 114
+           },
+           "layout": "HORIZONTAL pad=16,16,16,16 cross=CENTER gap=16",
+           "fill": "#ffffff",
+           "stroke": "#e5e2e1",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 37,
+              "y": 453,
+              "w": 80,
+              "h": 80
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#f6f3f2",
+             "radius": 8,
+             "childCount": 2
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 133,
+              "y": 460,
+              "w": 220,
+              "h": 67
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Substitution Preference Trigger Row:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 566,
+        "w": 390,
+        "h": 92
+       },
+       "layout": "VERTICAL pad=0,20,24,20",
+       "children": [
+        {
+         "name": "Substitution Preference Trigger Row → Button",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 566,
+          "w": 350,
+          "h": 68
+         },
+         "layout": "HORIZONTAL pad=16,16,16,16 main=SPACE_BETWEEN cross=CENTER gap=112.12000274658203",
+         "fill": "#ffffff",
+         "radius": 12,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 582,
+            "w": 183,
+            "h": 36
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 593,
+              "w": 17,
+              "h": 15
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 61,
+              "y": 582,
+              "w": 158,
+              "h": 36
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 348,
+            "y": 595,
+            "w": 6,
+            "h": 10
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 348,
+              "y": 595,
+              "w": 6,
+              "h": 10
+             },
+             "fill": "#3f4940"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Buy Again Quick Carousel:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 658,
+        "w": 390,
+        "h": 268
+       },
+       "layout": "VERTICAL pad=0,0,24,0",
+       "children": [
+        {
+         "name": "Buy Again Quick Carousel",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 658,
+          "w": 390,
+          "h": 244
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=8",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 658,
+            "w": 390,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=0,20,0,20 main=SPACE_BETWEEN cross=CENTER gap=153",
+           "children": [
+            {
+             "name": "Heading 2",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 658,
+              "w": 87,
+              "h": 24
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 260,
+              "y": 662,
+              "w": 110,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 690,
+            "w": 390,
+            "h": 212
+           },
+           "children": [
+            {
+             "name": "Quick Add Item 1",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 690,
+              "w": 150,
+              "h": 204
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 12,
+             "childCount": 3
+            },
+            {
+             "name": "Quick Add Item 2",
+             "type": "FRAME",
+             "box": {
+              "x": 178,
+              "y": 690,
+              "w": 150,
+              "h": 204
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 12,
+             "childCount": 3
+            },
+            {
+             "name": "Quick Add Item 3",
+             "type": "FRAME",
+             "box": {
+              "x": 336,
+              "y": 690,
+              "w": 150,
+              "h": 204
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 12,
+             "childCount": 3
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Bill Details Summary:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 926,
+        "w": 390,
+        "h": 183
+       },
+       "layout": "VERTICAL pad=0,20,24,20",
+       "children": [
+        {
+         "name": "Bill Details Summary",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 926,
+          "w": 350,
+          "h": 159
+         },
+         "layout": "VERTICAL pad=16,16,16,16 gap=10",
+         "fill": "#ffffff",
+         "radius": 12,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 942,
+            "w": 318,
+            "h": 18
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=119.36000061035156",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 942,
+              "w": 146,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 301,
+              "y": 942,
+              "w": 53,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 970,
+            "w": 318,
+            "h": 18
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=64.87999725341797",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 970,
+              "w": 226,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 327,
+              "y": 970,
+              "w": 27,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 998,
+            "w": 318,
+            "h": 18
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=141.97999572753906",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 998,
+              "w": 131,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 309,
+              "y": 998,
+              "w": 45,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 1026,
+            "w": 318,
+            "h": 9
+           },
+           "layout": "VERTICAL pad=4,0,4,0",
+           "children": [
+            {
+             "name": "Horizontal Divider",
+             "type": "RECTANGLE",
+             "box": {
+              "x": 36,
+              "y": 1030,
+              "w": 318,
+              "h": 1
+             },
+             "fill": "#e5e2e1"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 1045,
+            "w": 318,
+            "h": 24
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=196.3800048828125",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 1048,
+              "w": 45,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 278,
+              "y": 1045,
+              "w": 76,
+              "h": 24
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Header",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 64
+   },
+   "layout": "VERTICAL pad=0,0,0,0",
+   "fill": "#fcf9f8@90%",
+   "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+   "blur": "BACKGROUND_BLUR 24",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 64
+     },
+     "layout": "HORIZONTAL pad=0,20,0,20 main=SPACE_BETWEEN cross=CENTER gap=146.77999877929688",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 20,
+        "w": 123,
+        "h": 24
+       },
+       "layout": "VERTICAL pad=0,0,0,0",
+       "children": [
+        {
+         "name": "Text",
+         "type": "TEXT",
+         "box": {
+          "x": 20,
+          "y": 20,
+          "w": 123,
+          "h": 24
+         },
+         "fill": "#1c1b1b",
+         "text": "Cart Checkout",
+         "style": "Inter 600 18px ls=-0.18000000715255737"
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 290,
+        "y": 10,
+        "w": 80,
+        "h": 44
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=4",
+       "children": [
+        {
+         "name": "Button - Search",
+         "type": "FRAME",
+         "box": {
+          "x": 290,
+          "y": 10,
+          "w": 44,
+          "h": 44
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 303,
+            "y": 23,
+            "w": 18,
+            "h": 18
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 303,
+              "y": 23,
+              "w": 18,
+              "h": 18
+             },
+             "fill": "#3f4940"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Background",
+         "type": "FRAME",
+         "box": {
+          "x": 338,
+          "y": 16,
+          "w": 32,
+          "h": 32
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "fill": "#004f28",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 348,
+            "y": 26,
+            "w": 12,
+            "h": 12
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 348,
+              "y": 26,
+              "w": 12,
+              "h": 12
+             },
+             "fill": "#ffffff"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Background+HorizontalBorder+Shadow+OverlayBlur",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 1196,
+    "w": 390,
+    "h": 73
+   },
+   "layout": "VERTICAL pad=12,20,12,20",
+   "fill": "#ffffff@95%",
+   "stroke": "#e5e2e1",
+   "shadow": "DROP_SHADOW #000000@8% 0/-4 blur16",
+   "blur": "BACKGROUND_BLUR 24",
+   "children": [
+    {
+     "name": "Button - Proceed to Checkout",
+     "type": "FRAME",
+     "box": {
+      "x": 20,
+      "y": 1209,
+      "w": 350,
+      "h": 48
+     },
+     "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER gap=8",
+     "fill": "#004f28",
+     "radius": 12,
+     "shadow": "DROP_SHADOW #004f28@25% 0/4 blur12",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 101,
+        "y": 1225,
+        "w": 17,
+        "h": 17
+       },
+       "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+       "children": [
+        {
+         "name": "Icon",
+         "type": "VECTOR",
+         "box": {
+          "x": 101,
+          "y": 1225,
+          "w": 17,
+          "h": 17
+         },
+         "fill": "#ffffff"
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 126,
+        "y": 1224,
+        "w": 163,
+        "h": 18
+       },
+       "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+       "children": [
+        {
+         "name": "Text",
+         "type": "TEXT",
+         "box": {
+          "x": 126,
+          "y": 1224,
+          "w": 163,
+          "h": 18
+         },
+         "fill": "#ffffff",
+         "text": "Checkout — KES 410.00",
+         "style": "Inter 600 14px ls=0"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Nav",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 1269,
+    "w": 390,
+    "h": 64
+   },
+   "layout": "VERTICAL pad=0,0,0,0",
+   "fill": "#fcf9f8@95%",
+   "shadow": "DROP_SHADOW #000000@4% 0/-1 blur8",
+   "blur": "BACKGROUND_BLUR 24",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 1269,
+      "w": 390,
+      "h": 64
+     },
+     "children": [
+      {
+       "name": "Link",
+       "type": "FRAME",
+       "box": {
+        "x": 13,
+        "y": 1273,
+        "w": 56,
+        "h": 56
+       },
+       "layout": "VERTICAL pad=0,10.90999984741211,0,10.930000305175781 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 31,
+          "y": 1283,
+          "w": 20,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 31,
+            "y": 1283,
+            "w": 20,
+            "h": 18
+           },
+           "fill": "#3f4940"
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 24,
+          "y": 1301,
+          "w": 34,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 24,
+            "y": 1303,
+            "w": 34,
+            "h": 16
+           },
+           "fill": "#3f4940",
+           "text": "Home",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Link",
+       "type": "FRAME",
+       "box": {
+        "x": 88,
+        "y": 1273,
+        "w": 63,
+        "h": 56
+       },
+       "layout": "VERTICAL pad=0,0,0,0 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 110,
+          "y": 1283,
+          "w": 18,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 110,
+            "y": 1283,
+            "w": 18,
+            "h": 18
+           },
+           "fill": "#3f4940"
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 88,
+          "y": 1301,
+          "w": 63,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 88,
+            "y": 1303,
+            "w": 63,
+            "h": 16
+           },
+           "fill": "#3f4940",
+           "text": "Categories",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Link",
+       "type": "FRAME",
+       "box": {
+        "x": 321,
+        "y": 1273,
+        "w": 56,
+        "h": 56
+       },
+       "layout": "VERTICAL pad=0,9.180000305175781,0,9.149999618530273 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 341,
+          "y": 1284,
+          "w": 16,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 341,
+            "y": 1284,
+            "w": 16,
+            "h": 16
+           },
+           "fill": "#3f4940"
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 330,
+          "y": 1300,
+          "w": 38,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 330,
+            "y": 1302,
+            "w": 38,
+            "h": 16
+           },
+           "fill": "#3f4940",
+           "text": "Profile",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 170,
+        "y": 1256,
+        "w": 58,
+        "h": 66
+       },
+       "layout": "VERTICAL pad=0,0,0,0 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Link - Pharmacy",
+         "type": "FRAME",
+         "box": {
+          "x": 177,
+          "y": 1256,
+          "w": 44,
+          "h": 46
+         },
+         "layout": "HORIZONTAL pad=12,12,12,12 main=CENTER cross=CENTER",
+         "fill": "#004f28",
+         "radius": 9999,
+         "shadow": "DROP_SHADOW #004f28@30% 0/4 blur12",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 189,
+            "y": 1268,
+            "w": 20,
+            "h": 22
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 189,
+              "y": 1268,
+              "w": 20,
+              "h": 22
+             },
+             "fill": "#ffffff"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 170,
+          "y": 1302,
+          "w": 58,
+          "h": 20
+         },
+         "layout": "VERTICAL pad=4,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 170,
+            "y": 1306,
+            "w": 58,
+            "h": 16
+           },
+           "fill": "#3f4940",
+           "text": "Pharmacy",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Link",
+       "type": "FRAME",
+       "box": {
+        "x": 246,
+        "y": 1273,
+        "w": 56,
+        "h": 56
+       },
+       "layout": "VERTICAL pad=0,15.539999961853027,0,15.510000228881836 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 266,
+          "y": 1282,
+          "w": 16,
+          "h": 20
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 266,
+            "y": 1282,
+            "w": 16,
+            "h": 20
+           },
+           "fill": "#004f28"
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 262,
+          "y": 1302,
+          "w": 25,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 262,
+            "y": 1304,
+            "w": 25,
+            "h": 16
+           },
+           "fill": "#004f28",
+           "text": "Cart",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        },
+        {
+         "name": "Background",
+         "type": "FRAME",
+         "box": {
+          "x": 278,
+          "y": 1277,
+          "w": 16,
+          "h": 14
+         },
+         "layout": "VERTICAL pad=0,4.340000152587891,0,4.329999923706055 cross=CENTER",
+         "fill": "#fd9926",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 283,
+            "y": 1277,
+            "w": 7,
+            "h": 14
+           },
+           "fill": "#1c1b1b",
+           "text": "3",
+           "style": "Inter 700 11px ls=0.2199999988079071"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Bottom Sheet Overlay for Substitution Preference (Shown open by default as requested)",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 1333
+   },
+   "layout": "VERTICAL pad=0,0,0,0 main=MAX",
+   "fill": "#313030@50%",
+   "children": [
+    {
+     "name": "Close modal",
+     "type": "RECTANGLE",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 824
+     }
+    },
+    {
+     "name": "Sheet Panel",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 824,
+      "w": 390,
+      "h": 510
+     },
+     "layout": "VERTICAL pad=20,20,20,20",
+     "fill": "#ffffff",
+     "radius": "24,24,0,0",
+     "children": [
+      {
+       "name": "Sheet Panel:shadow",
+       "type": "RECTANGLE",
+       "box": {
+        "x": 0,
+        "y": 824,
+        "w": 390,
+        "h": 510
+       },
+       "fill": "#ffffff@0%",
+       "shadow": "DROP_SHADOW #000000@25% 0/25 blur50"
+      },
+      {
+       "name": "Pill Grab Handle:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 844,
+        "w": 350,
+        "h": 22
+       },
+       "layout": "VERTICAL pad=0,151,16,151 cross=CENTER",
+       "children": [
+        {
+         "name": "Pill Grab Handle",
+         "type": "RECTANGLE",
+         "box": {
+          "x": 171,
+          "y": 844,
+          "w": 48,
+          "h": 6
+         },
+         "fill": "#e5e2e1",
+         "radius": 9999
+        }
+       ]
+      },
+      {
+       "name": "Header & Helper:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 866,
+        "w": 350,
+        "h": 88
+       },
+       "layout": "VERTICAL pad=0,0,16,0",
+       "children": [
+        {
+         "name": "Header & Helper",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 866,
+          "w": 350,
+          "h": 72
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=4",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 866,
+            "w": 350,
+            "h": 32
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=94.55000305175781",
+           "children": [
+            {
+             "name": "Heading 2",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 869,
+              "w": 223,
+              "h": 26
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Button",
+             "type": "FRAME",
+             "box": {
+              "x": 338,
+              "y": 866,
+              "w": 32,
+              "h": 32
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#f6f3f2",
+             "radius": 9999,
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 902,
+            "w": 350,
+            "h": 36
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Choose what happens if an item in your order is out of stock at fulfillment.",
+             "type": "TEXT",
+             "box": {
+              "x": 20,
+              "y": 902,
+              "w": 350,
+              "h": 36
+             },
+             "fill": "#3f4940",
+             "text": "Choose what happens if an item in your order is out of\nstock at fulfillment.",
+             "style": "Inter 400 13px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Radio Option Cards:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 954,
+        "w": 350,
+        "h": 312
+       },
+       "layout": "VERTICAL pad=0,0,24,0",
+       "children": [
+        {
+         "name": "Radio Option Cards",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 954,
+          "w": 350,
+          "h": 288
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=8",
+         "children": [
+          {
+           "name": "Label - Option 1: Replace with similar (Selected)",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 954,
+            "w": 350,
+            "h": 90
+           },
+           "layout": "HORIZONTAL pad=16,16,16,16 gap=16",
+           "fill": "#f6f3f2",
+           "stroke": "#000000@0%",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 37,
+              "y": 971,
+              "w": 20,
+              "h": 22
+             },
+             "layout": "VERTICAL pad=2,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 73,
+              "y": 971,
+              "w": 280,
+              "h": 56
+             },
+             "layout": "VERTICAL pad=0,0,0,0 gap=2",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Label - Option 2: Refund the item",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 1052,
+            "w": 350,
+            "h": 90
+           },
+           "layout": "HORIZONTAL pad=16,16,16,16 gap=16",
+           "fill": "#ffffff",
+           "stroke": "#000000@0%",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 37,
+              "y": 1069,
+              "w": 20,
+              "h": 22
+             },
+             "layout": "VERTICAL pad=2,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 73,
+              "y": 1069,
+              "w": 280,
+              "h": 56
+             },
+             "layout": "VERTICAL pad=0,0,0,0 gap=2",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Label - Option 3: Call me first",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 1150,
+            "w": 350,
+            "h": 92
+           },
+           "layout": "HORIZONTAL pad=16,16,16,16 gap=16",
+           "fill": "#ffffff",
+           "stroke": "#000000@0%",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 37,
+              "y": 1167,
+              "w": 20,
+              "h": 22
+             },
+             "layout": "VERTICAL pad=2,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 73,
+              "y": 1167,
+              "w": 280,
+              "h": 58
+             },
+             "layout": "VERTICAL pad=0,0,0,0 gap=3.5",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Action Confirmation Button",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 1265,
+        "w": 350,
+        "h": 48
+       },
+       "layout": "HORIZONTAL pad=14.5,0,15.5,0 main=CENTER cross=CENTER",
+       "fill": "#004f28",
+       "radius": 12,
+       "children": [
+        {
+         "name": "Text",
+         "type": "TEXT",
+         "box": {
+          "x": 129,
+          "y": 1280,
+          "w": 133,
+          "h": 18
+         },
+         "fill": "#ffffff",
+         "text": "Confirm Preference",
+         "style": "Inter 600 14px ls=0"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "texts": [
+  {
+   "text": "Cart",
+   "style": "Inter 600 24px ls=-0.47999998927116394",
+   "box": {
+    "x": 20,
+    "y": 68
+   }
+  },
+  {
+   "text": "(3 items)",
+   "style": "Inter 500 14px ls=0",
+   "box": {
+    "x": 72,
+    "y": 79
+   }
+  },
+  {
+   "text": "Nairobi Express",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 269,
+    "y": 76
+   }
+  },
+  {
+   "text": "Tomorrow, 9:00 AM - 11:00 AM",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 92,
+    "y": 126
+   }
+  },
+  {
+   "text": "Standard Home Delivery · 2 active items",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 92,
+    "y": 144
+   }
+  },
+  {
+   "text": "Kenyan Organic Hass Avocados",
+   "style": "Inter 400 15px ls=0",
+   "box": {
+    "x": 132,
+    "y": 212
+   }
+  },
+  {
+   "text": "Pack of 3 pcs · ~650g",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 132,
+    "y": 233
+   }
+  },
+  {
+   "text": "KES 180",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 132,
+    "y": 267
+   }
+  },
+  {
+   "text": "1",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 308,
+    "y": 268
+   }
+  },
+  {
+   "text": "Panadol Extra Tablets",
+   "style": "Inter 400 15px ls=0",
+   "box": {
+    "x": 132,
+    "y": 332
+   }
+  },
+  {
+   "text": "16-Tablet Blister Pack",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 132,
+    "y": 353
+   }
+  },
+  {
+   "text": "KES 210",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 132,
+    "y": 387
+   }
+  },
+  {
+   "text": "1",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 308,
+    "y": 388
+   }
+  },
+  {
+   "text": "OUT OF STOCK",
+   "style": "Inter 700 9px ls=0.44999998807907104",
+   "box": {
+    "x": 40,
+    "y": 511
+   }
+  },
+  {
+   "text": "Brookside Whole Fresh Milk",
+   "style": "Inter 400 15px ls=0",
+   "box": {
+    "x": 133,
+    "y": 459
+   }
+  },
+  {
+   "text": "500ml Pouch",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 133,
+    "y": 480
+   }
+  },
+  {
+   "text": "Currently unavailable",
+   "style": "Inter 500 13px ls=0",
+   "box": {
+    "x": 150,
+    "y": 508
+   }
+  },
+  {
+   "text": "Remove from cart",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 250,
+    "y": 509
+   }
+  },
+  {
+   "text": "If an item is unavailable",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 61,
+    "y": 582
+   }
+  },
+  {
+   "text": "Refund the item",
+   "style": "Inter 500 13px ls=0",
+   "box": {
+    "x": 61,
+    "y": 600
+   }
+  },
+  {
+   "text": "Buy Again",
+   "style": "Inter 600 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 20,
+    "y": 658
+   }
+  },
+  {
+   "text": "From recent orders",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 260,
+    "y": 662
+   }
+  },
+  {
+   "text": "Fresh Sukuma Wiki",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 32,
+    "y": 806
+   }
+  },
+  {
+   "text": "Bunch · ~400g",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 32,
+    "y": 842
+   }
+  },
+  {
+   "text": "KES 60",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 32,
+    "y": 876
+   }
+  },
+  {
+   "text": "Vitamin C 1000mg",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 190,
+    "y": 806
+   }
+  },
+  {
+   "text": "20 Effervescent",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 190,
+    "y": 824
+   }
+  },
+  {
+   "text": "KES 450",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 190,
+    "y": 858
+   }
+  },
+  {
+   "text": "Pure Acacia Honey",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 348,
+    "y": 806
+   }
+  },
+  {
+   "text": "500g Jar",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 348,
+    "y": 842
+   }
+  },
+  {
+   "text": "KES 520",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 348,
+    "y": 876
+   }
+  },
+  {
+   "text": "Items Subtotal (2 items)",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 36,
+    "y": 942
+   }
+  },
+  {
+   "text": "KES 390",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 301,
+    "y": 942
+   }
+  },
+  {
+   "text": "Delivery Fee (Westlands / Parklands)",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 36,
+    "y": 970
+   }
+  },
+  {
+   "text": "Free",
+   "style": "Inter 500 13px ls=0",
+   "box": {
+    "x": 327,
+    "y": 970
+   }
+  },
+  {
+   "text": "Platform & Packaging",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 36,
+    "y": 998
+   }
+  },
+  {
+   "text": "KES 20",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 309,
+    "y": 998
+   }
+  },
+  {
+   "text": "To Pay",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 36,
+    "y": 1048
+   }
+  },
+  {
+   "text": "KES 410",
+   "style": "Inter 700 20px ls=-0.4000000059604645",
+   "box": {
+    "x": 278,
+    "y": 1045
+   }
+  },
+  {
+   "text": "Cart Checkout",
+   "style": "Inter 600 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 20,
+    "y": 20
+   }
+  },
+  {
+   "text": "Checkout — KES 410.00",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 126,
+    "y": 1224
+   }
+  },
+  {
+   "text": "Home",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 24,
+    "y": 1303
+   }
+  },
+  {
+   "text": "Categories",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 88,
+    "y": 1303
+   }
+  },
+  {
+   "text": "Profile",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 330,
+    "y": 1302
+   }
+  },
+  {
+   "text": "Pharmacy",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 170,
+    "y": 1306
+   }
+  },
+  {
+   "text": "Cart",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 262,
+    "y": 1304
+   }
+  },
+  {
+   "text": "3",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 283,
+    "y": 1277
+   }
+  },
+  {
+   "text": "Substitution preference",
+   "style": "Inter 600 20px ls=-0.20000000298023224",
+   "box": {
+    "x": 20,
+    "y": 869
+   }
+  },
+  {
+   "text": "Choose what happens if an item in your order is out of\nstock at fulfillment.",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 20,
+    "y": 902
+   }
+  },
+  {
+   "text": "Replace with similar",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 73,
+    "y": 971
+   }
+  },
+  {
+   "text": "Recommended",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 262,
+    "y": 973
+   }
+  },
+  {
+   "text": "Our Nairobi shopper picks the closest brand,\nsize, or farm-fresh equivalent.",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 73,
+    "y": 991
+   }
+  },
+  {
+   "text": "Remove from cart",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 73,
+    "y": 1069
+   }
+  },
+  {
+   "text": "No Charge",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 286,
+    "y": 1071
+   }
+  },
+  {
+   "text": "Do not replace; simply remove unavailable\nitems from your cart before checkout.",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 73,
+    "y": 1089
+   }
+  },
+  {
+   "text": "Call me first",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 73,
+    "y": 1167
+   }
+  },
+  {
+   "text": "Your shopper calls before substituting any\nitem. If unanswered, the item is removed.",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 73,
+    "y": 1188
+   }
+  },
+  {
+   "text": "Confirm Preference",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 129,
+    "y": 1280
+   }
+  }
+ ]
+}

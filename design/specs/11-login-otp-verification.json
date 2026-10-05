@@ -1,0 +1,1953 @@
+{
+ "id": "14:5949",
+ "name": "11 · Login — OTP Verification",
+ "slug": "11-login-otp-verification",
+ "size": {
+  "w": 411,
+  "h": 845
+ },
+ "bg": "#ffffff|#0f172a|#ffffff",
+ "tree": [
+  {
+   "name": "Screen 6/6a blurred background representation",
+   "type": "FRAME",
+   "box": {
+    "x": -2,
+    "y": -4,
+    "w": 415,
+    "h": 853
+   },
+   "layout": "VERTICAL pad=0,0,0,0",
+   "blur": "LAYER_BLUR 3",
+   "children": [
+    {
+     "name": "iOS Status Bar Simulation",
+     "type": "FRAME",
+     "box": {
+      "x": -2,
+      "y": -4,
+      "w": 415,
+      "h": 36
+     },
+     "layout": "HORIZONTAL pad=12,24,8,24 main=SPACE_BETWEEN cross=CENTER gap=255.81187438964844",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 22,
+        "y": 8,
+        "w": 24,
+        "h": 16
+       },
+       "layout": "VERTICAL pad=0,0,0,0",
+       "children": [
+        {
+         "name": "Text",
+         "type": "TEXT",
+         "box": {
+          "x": 22,
+          "y": 8,
+          "w": 24,
+          "h": 16
+         },
+         "fill": "#1f2937",
+         "text": "9:41",
+         "style": "Inter 600 12px ls=0"
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 326,
+        "y": 9,
+        "w": 63,
+        "h": 14
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=0.10000000149011612",
+       "children": [
+        {
+         "name": "SVG",
+         "type": "FRAME",
+         "box": {
+          "x": 326,
+          "y": 10,
+          "w": 16,
+          "h": 12
+         },
+         "children": [
+          {
+           "name": "Vector",
+           "type": "VECTOR",
+           "box": {
+            "x": 327,
+            "y": 11,
+            "w": 14,
+            "h": 9
+           },
+           "fill": "#1f2937"
+          }
+         ]
+        },
+        {
+         "name": "SVG:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 342,
+          "y": 9,
+          "w": 20,
+          "h": 14
+         },
+         "layout": "VERTICAL pad=0,0,0,6",
+         "children": [
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 348,
+            "y": 9,
+            "w": 14,
+            "h": 14
+           },
+           "layout": "VERTICAL pad=0,0,0,0 main=CENTER",
+           "children": [
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 348,
+              "y": 9,
+              "w": 14,
+              "h": 14
+             },
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "SVG:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 363,
+          "y": 11,
+          "w": 26,
+          "h": 10
+         },
+         "layout": "VERTICAL pad=0,0,0,6",
+         "children": [
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 369,
+            "y": 11,
+            "w": 20,
+            "h": 10
+           },
+           "layout": "VERTICAL pad=0,0,0,0 main=CENTER",
+           "children": [
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 369,
+              "y": 11,
+              "w": 20,
+              "h": 10
+             },
+             "childCount": 3
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Checkout Header",
+     "type": "FRAME",
+     "box": {
+      "x": -2,
+      "y": 32,
+      "w": 415,
+      "h": 54
+     },
+     "layout": "HORIZONTAL pad=12,20,12,20 main=SPACE_BETWEEN cross=CENTER gap=154.43563842773438",
+     "stroke": "#f3f4f6",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 18,
+        "y": 44,
+        "w": 118,
+        "h": 28
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=0.11881188303232193",
+       "children": [
+        {
+         "name": "SVG",
+         "type": "FRAME",
+         "box": {
+          "x": 18,
+          "y": 48,
+          "w": 20,
+          "h": 20
+         },
+         "children": [
+          {
+           "name": "Vector",
+           "type": "VECTOR",
+           "box": {
+            "x": 25,
+            "y": 53,
+            "w": 6,
+            "h": 12
+           },
+           "stroke": "#1f2937"
+          }
+         ]
+        },
+        {
+         "name": "Heading 1:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 39,
+          "y": 44,
+          "w": 98,
+          "h": 28
+         },
+         "layout": "VERTICAL pad=0,0,0,12",
+         "children": [
+          {
+           "name": "Heading 1 → Checkout",
+           "type": "TEXT",
+           "box": {
+            "x": 51,
+            "y": 44,
+            "w": 86,
+            "h": 28
+           },
+           "fill": "#111827",
+           "text": "Checkout",
+           "style": "Inter 700 18px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Background",
+       "type": "FRAME",
+       "box": {
+        "x": 313,
+        "y": 46,
+        "w": 80,
+        "h": 24
+       },
+       "layout": "HORIZONTAL pad=4,10,4,10 cross=CENTER gap=4",
+       "fill": "#f0fdf4",
+       "radius": 9999,
+       "children": [
+        {
+         "name": "SVG",
+         "type": "FRAME",
+         "box": {
+          "x": 323,
+          "y": 51,
+          "w": 14,
+          "h": 14
+         },
+         "children": [
+          {
+           "name": "Vector",
+           "type": "VECTOR",
+           "box": {
+            "x": 325,
+            "y": 53,
+            "w": 10,
+            "h": 11
+           },
+           "fill": "#046938"
+          }
+         ]
+        },
+        {
+         "name": "Text",
+         "type": "TEXT",
+         "box": {
+          "x": 341,
+          "y": 50,
+          "w": 41,
+          "h": 16
+         },
+         "fill": "#046938",
+         "text": "Secure",
+         "style": "Inter 600 12px ls=0"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Checkout Background Content (Blurred)",
+     "type": "FRAME",
+     "box": {
+      "x": -2,
+      "y": 86,
+      "w": 415,
+      "h": 508
+     },
+     "layout": "VERTICAL pad=16,16,16,16 gap=16",
+     "children": [
+      {
+       "name": "Delivery Address Card",
+       "type": "FRAME",
+       "box": {
+        "x": 14,
+        "y": 102,
+        "w": 383,
+        "h": 119
+       },
+       "layout": "VERTICAL pad=16,16,16,16 gap=2",
+       "fill": "#ffffff",
+       "stroke": "#e5e7eb",
+       "radius": 16,
+       "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 31,
+          "y": 119,
+          "w": 348,
+          "h": 16
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=150.6930694580078",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 31,
+            "y": 119,
+            "w": 130,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 31,
+              "y": 119,
+              "w": 130,
+              "h": 16
+             },
+             "fill": "#6b7280",
+             "text": "DELIVERY ADDRESS",
+             "style": "Inter 700 12px ls=0.6000000238418579"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 334,
+            "y": 119,
+            "w": 45,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 334,
+              "y": 119,
+              "w": 45,
+              "h": 16
+             },
+             "fill": "#046938",
+             "text": "Change",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 31,
+          "y": 137,
+          "w": 348,
+          "h": 28
+         },
+         "layout": "HORIZONTAL pad=6,0,1.5,0 cross=MAX gap=4",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 31,
+            "y": 143,
+            "w": 122,
+            "h": 20
+           },
+           "fill": "#111827",
+           "text": "Amina Odhiambo ",
+           "style": "Inter 700 14px ls=0"
+          },
+          {
+           "name": "Background",
+           "type": "FRAME",
+           "box": {
+            "x": 158,
+            "y": 147,
+            "w": 96,
+            "h": 16
+           },
+           "fill": "#f3f4f6",
+           "radius": 4,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 164,
+              "y": 145,
+              "w": 84,
+              "h": 20
+             },
+             "fill": "#4b5563",
+             "text": "DEFAULT · HOME",
+             "style": "Inter 700 10px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 31,
+          "y": 167,
+          "w": 348,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Apt 4B, Karura Springs, 2nd Parklands Ave, Nairobi",
+           "type": "TEXT",
+           "box": {
+            "x": 31,
+            "y": 169,
+            "w": 348,
+            "h": 16
+           },
+           "fill": "#6b7280",
+           "text": "Apt 4B, Karura Springs, 2nd Parklands Ave, Nairobi",
+           "style": "Inter 400 12px ls=0"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 31,
+          "y": 187,
+          "w": 348,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "+254 712 345 678",
+           "type": "TEXT",
+           "box": {
+            "x": 31,
+            "y": 187,
+            "w": 348,
+            "h": 16
+           },
+           "fill": "#6b7280",
+           "text": "+254 712 345 678",
+           "style": "Inter 400 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Delivery Slot Card",
+       "type": "FRAME",
+       "box": {
+        "x": 14,
+        "y": 237,
+        "w": 383,
+        "h": 103
+       },
+       "layout": "VERTICAL pad=16,16,16,16 gap=4",
+       "fill": "#ffffff",
+       "stroke": "#e5e7eb",
+       "radius": 16,
+       "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 31,
+          "y": 254,
+          "w": 348,
+          "h": 16
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=178.4851531982422",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 31,
+            "y": 254,
+            "w": 101,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 31,
+              "y": 254,
+              "w": 101,
+              "h": 16
+             },
+             "fill": "#6b7280",
+             "text": "DELIVERY SLOT",
+             "style": "Inter 700 12px ls=0.6000000238418579"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 334,
+            "y": 254,
+            "w": 45,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 334,
+              "y": 254,
+              "w": 45,
+              "h": 16
+             },
+             "fill": "#046938",
+             "text": "Change",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 31,
+          "y": 274,
+          "w": 348,
+          "h": 24
+         },
+         "layout": "VERTICAL pad=0,0,4,0",
+         "children": [
+          {
+           "name": "Tomorrow, 9:00 AM – 11:00 AM",
+           "type": "TEXT",
+           "box": {
+            "x": 31,
+            "y": 274,
+            "w": 348,
+            "h": 20
+           },
+           "fill": "#111827",
+           "text": "Tomorrow, 9:00 AM – 11:00 AM",
+           "style": "Inter 600 14px ls=0"
+          }
+         ]
+        },
+        {
+         "name": "Background",
+         "type": "FRAME",
+         "box": {
+          "x": 31,
+          "y": 302,
+          "w": 212,
+          "h": 20
+         },
+         "layout": "HORIZONTAL pad=2,8,2,8 cross=CENTER gap=6",
+         "fill": "#ecfdf5",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Background",
+           "type": "RECTANGLE",
+           "box": {
+            "x": 39,
+            "y": 309,
+            "w": 6,
+            "h": 6
+           },
+           "fill": "#046938",
+           "radius": 9999
+          },
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 52,
+            "y": 304,
+            "w": 183,
+            "h": 16
+           },
+           "fill": "#046938",
+           "text": "Standard Express (Within 2 hrs)",
+           "style": "Inter 500 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Payment Method (M-Pesa selected)",
+       "type": "FRAME",
+       "box": {
+        "x": 14,
+        "y": 356,
+        "w": 383,
+        "h": 155
+       },
+       "layout": "VERTICAL pad=16,16,16,16 gap=7.5",
+       "fill": "#ffffff",
+       "stroke": "#046938",
+       "radius": 16,
+       "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 32,
+          "y": 374,
+          "w": 346,
+          "h": 20
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=0.07920791953802109",
+         "children": [
+          {
+           "name": "Border",
+           "type": "RECTANGLE",
+           "box": {
+            "x": 32,
+            "y": 376,
+            "w": 16,
+            "h": 16
+           },
+           "stroke": "#046938",
+           "radius": 9999
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 49,
+            "y": 374,
+            "w": 61,
+            "h": 20
+           },
+           "layout": "VERTICAL pad=0,0,0,8",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 57,
+              "y": 374,
+              "w": 53,
+              "h": 20
+             },
+             "fill": "#111827",
+             "text": "M-Pesa",
+             "style": "Inter 700 14px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Background+Border",
+         "type": "FRAME",
+         "box": {
+          "x": 32,
+          "y": 402,
+          "w": 346,
+          "h": 66
+         },
+         "layout": "VERTICAL pad=16.5,12,12,12",
+         "fill": "#f9fafb",
+         "stroke": "#e5e7eb",
+         "radius": 12,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 46,
+            "y": 419,
+            "w": 320,
+            "h": 15
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "M-PESA MOBILE NUMBER",
+             "type": "TEXT",
+             "box": {
+              "x": 46,
+              "y": 419,
+              "w": 320,
+              "h": 15
+             },
+             "fill": "#9ca3af",
+             "text": "M-PESA MOBILE NUMBER",
+             "style": "Inter 700 10px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 46,
+            "y": 435,
+            "w": 320,
+            "h": 20
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "+254 712 345 678",
+             "type": "TEXT",
+             "box": {
+              "x": 46,
+              "y": 435,
+              "w": 320,
+              "h": 20
+             },
+             "fill": "#1f2937",
+             "text": "+254 712 345 678",
+             "style": "Inter 600 14px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 32,
+          "y": 476,
+          "w": 346,
+          "h": 17
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=4",
+         "children": [
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 32,
+            "y": 477,
+            "w": 14,
+            "h": 14
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 34,
+              "y": 478,
+              "w": 11,
+              "h": 11
+             },
+             "fill": "#046938"
+            }
+           ]
+          },
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 51,
+            "y": 476,
+            "w": 213,
+            "h": 17
+           },
+           "fill": "#046938",
+           "text": "STK Push prompt will be sent to this line",
+           "style": "Inter 500 11px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Order Summary Preview",
+       "type": "FRAME",
+       "box": {
+        "x": 14,
+        "y": 527,
+        "w": 383,
+        "h": 50
+       },
+       "layout": "VERTICAL pad=16,16,16,16",
+       "fill": "#ffffff",
+       "stroke": "#e5e7eb",
+       "radius": 16,
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 31,
+          "y": 544,
+          "w": 348,
+          "h": 16
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN gap=106.69306945800781",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 31,
+            "y": 544,
+            "w": 170,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 31,
+              "y": 544,
+              "w": 170,
+              "h": 16
+             },
+             "fill": "#6b7280",
+             "text": "ORDER SUMMARY (2 ITEMS)",
+             "style": "Inter 700 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 330,
+            "y": 544,
+            "w": 50,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 330,
+              "y": 544,
+              "w": 50,
+              "h": 16
+             },
+             "fill": "#6b7280",
+             "text": "KES 370",
+             "style": "Inter 700 12px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Modal backdrop",
+   "type": "RECTANGLE",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 411,
+    "h": 845
+   },
+   "fill": "#000000@60%",
+   "blur": "BACKGROUND_BLUR 2"
+  },
+  {
+   "name": "Section - OTPBottomSheet",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 437,
+    "w": 411,
+    "h": 408
+   },
+   "layout": "VERTICAL pad=0,0,0,0 main=SPACE_BETWEEN",
+   "fill": "#ffffff",
+   "radius": "32,32,0,0",
+   "children": [
+    {
+     "name": "Section - OTPBottomSheet:shadow",
+     "type": "RECTANGLE",
+     "box": {
+      "x": 0,
+      "y": 437,
+      "w": 411,
+      "h": 408
+     },
+     "fill": "#ffffff@0%",
+     "shadow": "DROP_SHADOW #000000@25% 0/25 blur50"
+    },
+    {
+     "name": "Top Grab Bar & Prototype Demo Bar",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 437,
+      "w": 411,
+      "h": 75
+     },
+     "layout": "VERTICAL pad=12,24,12,24 cross=CENTER gap=12",
+     "children": [
+      {
+       "name": "iOS drag pill",
+       "type": "RECTANGLE",
+       "box": {
+        "x": 182,
+        "y": 449,
+        "w": 48,
+        "h": 6
+       },
+       "fill": "#d1d5db",
+       "radius": 9999
+      },
+      {
+       "name": "Interactive Prototype Mode Toggles",
+       "type": "FRAME",
+       "box": {
+        "x": 24,
+        "y": 467,
+        "w": 363,
+        "h": 33
+       },
+       "layout": "HORIZONTAL pad=6,6,6,6 main=SPACE_BETWEEN cross=CENTER gap=63.20000076293945",
+       "fill": "#f3f4f6",
+       "radius": 8,
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 30,
+          "y": 475,
+          "w": 89,
+          "h": 17
+         },
+         "layout": "VERTICAL pad=0,4,0,4",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 34,
+            "y": 475,
+            "w": 81,
+            "h": 17
+           },
+           "fill": "#6b7280",
+           "text": "Preview States:",
+           "style": "Inter 500 11px ls=0"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 204,
+          "y": 473,
+          "w": 178,
+          "h": 21
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 204,
+            "y": 473,
+            "w": 79,
+            "h": 21
+           },
+           "layout": "VERTICAL pad=2,8,2,8 main=CENTER cross=CENTER",
+           "fill": "#ffffff",
+           "radius": 4,
+           "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 212,
+              "y": 475,
+              "w": 63,
+              "h": 17
+             },
+             "fill": "#1f2937",
+             "text": "Active (4/6)",
+             "style": "Inter 600 11px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button:margin",
+           "type": "FRAME",
+           "box": {
+            "x": 283,
+            "y": 473,
+            "w": 46,
+            "h": 21
+           },
+           "layout": "VERTICAL pad=0,0,0,4",
+           "children": [
+            {
+             "name": "Button",
+             "type": "FRAME",
+             "box": {
+              "x": 287,
+              "y": 473,
+              "w": 42,
+              "h": 21
+             },
+             "layout": "VERTICAL pad=2,8,2,8 main=CENTER cross=CENTER",
+             "radius": 4,
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Button:margin",
+           "type": "FRAME",
+           "box": {
+            "x": 328,
+            "y": 473,
+            "w": 53,
+            "h": 21
+           },
+           "layout": "VERTICAL pad=0,0,0,4",
+           "children": [
+            {
+             "name": "Button",
+             "type": "FRAME",
+             "box": {
+              "x": 332,
+              "y": 473,
+              "w": 49,
+              "h": 21
+             },
+             "layout": "VERTICAL pad=2,8,2,8 main=CENTER cross=CENTER",
+             "radius": 4,
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Sheet Header & Phone Details",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 512,
+      "w": 411,
+      "h": 81
+     },
+     "layout": "VERTICAL pad=4,24,0,24",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 24,
+        "y": 516,
+        "w": 363,
+        "h": 77
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 24,
+          "y": 516,
+          "w": 216,
+          "h": 77
+         },
+         "layout": "VERTICAL pad=0,0,0,0 gap=6",
+         "children": [
+          {
+           "name": "Heading 2",
+           "type": "FRAME",
+           "box": {
+            "x": 24,
+            "y": 516,
+            "w": 216,
+            "h": 32
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 24,
+              "y": 516,
+              "w": 216,
+              "h": 32
+             },
+             "fill": "#1a1a1a",
+             "text": "Verify your number",
+             "style": "Inter 700 24px ls=-0.6000000238418579"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 24,
+            "y": 554,
+            "w": 216,
+            "h": 39
+           },
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 24,
+              "y": 553,
+              "w": 273,
+              "h": 20
+             },
+             "fill": "#6b7280",
+             "text": "Enter the 6-digit code sent to +254 712 345 678",
+             "style": "Inter 400 12px ls=0"
+            },
+            {
+             "name": "Button",
+             "type": "FRAME",
+             "box": {
+              "x": 28,
+              "y": 575,
+              "w": 93,
+              "h": 16
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Button - Close verification sheet:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 363,
+          "y": 516,
+          "w": 24,
+          "h": 32
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Button - Close verification sheet",
+           "type": "FRAME",
+           "box": {
+            "x": 363,
+            "y": 516,
+            "w": 32,
+            "h": 32
+           },
+           "layout": "VERTICAL pad=8,8,8,8",
+           "fill": "#f3f4f6",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "SVG",
+             "type": "FRAME",
+             "box": {
+              "x": 371,
+              "y": 524,
+              "w": 16,
+              "h": 16
+             },
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "OtpInputSection:margin",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 593,
+      "w": 411,
+      "h": 122
+     },
+     "layout": "VERTICAL pad=20,0,20,0",
+     "children": [
+      {
+       "name": "OtpInputSection",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 613,
+        "w": 411,
+        "h": 82
+       },
+       "layout": "VERTICAL pad=0,24,0,24 gap=16",
+       "children": [
+        {
+         "name": "6 OTP Digit Cells",
+         "type": "FRAME",
+         "box": {
+          "x": 24,
+          "y": 613,
+          "w": 363,
+          "h": 50
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER gap=8",
+         "children": [
+          {
+           "name": "Box 1: Filled '5",
+           "type": "FRAME",
+           "box": {
+            "x": 35,
+            "y": 613,
+            "w": 50,
+            "h": 50
+           },
+           "layout": "HORIZONTAL pad=9.149999618530273,0,9.180000305175781,0 main=CENTER cross=CENTER",
+           "fill": "#f9fafb@70%",
+           "stroke": "#d1d5db",
+           "radius": 12,
+           "shadow": "INNER_SHADOW #000000@5% 0/2 blur4",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 53,
+              "y": 624,
+              "w": 12,
+              "h": 28
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Box 2: Filled '8",
+           "type": "FRAME",
+           "box": {
+            "x": 93,
+            "y": 613,
+            "w": 50,
+            "h": 50
+           },
+           "layout": "HORIZONTAL pad=9.149999618530273,0,9.180000305175781,0 main=CENTER cross=CENTER",
+           "fill": "#f9fafb@70%",
+           "stroke": "#d1d5db",
+           "radius": 12,
+           "shadow": "INNER_SHADOW #000000@5% 0/2 blur4",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 111,
+              "y": 624,
+              "w": 13,
+              "h": 28
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Box 3: Filled '2",
+           "type": "FRAME",
+           "box": {
+            "x": 151,
+            "y": 613,
+            "w": 50,
+            "h": 50
+           },
+           "layout": "HORIZONTAL pad=9.149999618530273,0,9.180000305175781,0 main=CENTER cross=CENTER",
+           "fill": "#f9fafb@70%",
+           "stroke": "#d1d5db",
+           "radius": 12,
+           "shadow": "INNER_SHADOW #000000@5% 0/2 blur4",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 170,
+              "y": 624,
+              "w": 13,
+              "h": 28
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Box 4: Active Focused Box with Forest Green border & pulsating cursor",
+           "type": "FRAME",
+           "box": {
+            "x": 209,
+            "y": 613,
+            "w": 50,
+            "h": 50
+           },
+           "layout": "HORIZONTAL pad=9.170000076293945,0,9.170000076293945,0 main=CENTER cross=CENTER",
+           "fill": "#ecfdf5@30%",
+           "stroke": "#046938",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Box 4: Active Focused Box with Forest Green border & pulsating cursor:shadow",
+             "type": "RECTANGLE",
+             "box": {
+              "x": 209,
+              "y": 613,
+              "w": 50,
+              "h": 50
+             },
+             "fill": "#ffffff@0%",
+             "radius": 12,
+             "shadow": "DROP_SHADOW #046938@20% 0/0 blur0"
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 226,
+              "y": 624,
+              "w": 17,
+              "h": 28
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=MAX gap=2",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Box 5: Empty Slot",
+           "type": "FRAME",
+           "box": {
+            "x": 268,
+            "y": 613,
+            "w": 50,
+            "h": 50
+           },
+           "fill": "#ffffff",
+           "stroke": "#e5e7eb",
+           "radius": 12
+          },
+          {
+           "name": "Box 6: Empty Slot",
+           "type": "FRAME",
+           "box": {
+            "x": 326,
+            "y": 613,
+            "w": 50,
+            "h": 50
+           },
+           "fill": "#ffffff",
+           "stroke": "#e5e7eb",
+           "radius": 12
+          }
+         ]
+        },
+        {
+         "name": "Resend Code Timer",
+         "type": "FRAME",
+         "box": {
+          "x": 24,
+          "y": 679,
+          "w": 363,
+          "h": 16
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 93,
+            "y": 679,
+            "w": 121,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 93,
+              "y": 679,
+              "w": 121,
+              "h": 16
+             },
+             "fill": "#6b7280",
+             "text": "Didn't receive code? ",
+             "style": "Inter 500 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 214,
+            "y": 679,
+            "w": 104,
+            "h": 16
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "SVG:margin",
+             "type": "FRAME",
+             "box": {
+              "x": 214,
+              "y": 680,
+              "w": 18,
+              "h": 14
+             },
+             "layout": "VERTICAL pad=0,4,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 232,
+              "y": 679,
+              "w": 86,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Bottom Section: Sticky Action Button & Security Badge",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 715,
+      "w": 411,
+      "h": 130
+     },
+     "layout": "VERTICAL pad=8,24,24,24 gap=16",
+     "fill": "linear(#ffffff,#ffffff,#ffffff)",
+     "children": [
+      {
+       "name": "Primary Action Button",
+       "type": "FRAME",
+       "box": {
+        "x": 24,
+        "y": 723,
+        "w": 363,
+        "h": 52
+       },
+       "layout": "HORIZONTAL pad=14,16,14,16 main=CENTER cross=CENTER gap=8",
+       "fill": "#046938",
+       "radius": 12,
+       "children": [
+        {
+         "name": "Primary Action Button:shadow",
+         "type": "RECTANGLE",
+         "box": {
+          "x": 24,
+          "y": 723,
+          "w": 363,
+          "h": 52
+         },
+         "fill": "#ffffff@0%",
+         "radius": 12,
+         "shadow": "DROP_SHADOW #046938@20% 0/4 blur6 + DROP_SHADOW #046938@20% 0/10 blur15"
+        },
+        {
+         "name": "SVG",
+         "type": "FRAME",
+         "box": {
+          "x": 124,
+          "y": 739,
+          "w": 20,
+          "h": 20
+         },
+         "children": [
+          {
+           "name": "Vector",
+           "type": "VECTOR",
+           "box": {
+            "x": 126,
+            "y": 741,
+            "w": 15,
+            "h": 15
+           },
+           "stroke": "#ffffff"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 152,
+          "y": 737,
+          "w": 135,
+          "h": 24
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 152,
+            "y": 737,
+            "w": 135,
+            "h": 24
+           },
+           "fill": "#ffffff",
+           "text": "Verify & Continue",
+           "style": "Inter 600 16px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Footer - Security Trust Note",
+       "type": "FRAME",
+       "box": {
+        "x": 24,
+        "y": 791,
+        "w": 363,
+        "h": 30
+       },
+       "layout": "HORIZONTAL pad=12,0,0,0 main=CENTER cross=CENTER",
+       "stroke": "#f3f4f6",
+       "children": [
+        {
+         "name": "SVG",
+         "type": "FRAME",
+         "box": {
+          "x": 61,
+          "y": 806,
+          "w": 14,
+          "h": 14
+         },
+         "children": [
+          {
+           "name": "Vector",
+           "type": "VECTOR",
+           "box": {
+            "x": 63,
+            "y": 807,
+            "w": 10,
+            "h": 11
+           },
+           "fill": "#9ca3af"
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 75,
+          "y": 804,
+          "w": 276,
+          "h": 17
+         },
+         "layout": "VERTICAL pad=0,0,0,6",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 81,
+            "y": 804,
+            "w": 270,
+            "h": 17
+           },
+           "fill": "#9ca3af",
+           "text": "Safe & secure 256-bit encryption · Xana Life Nairobi",
+           "style": "Inter 400 11px ls=0"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "texts": [
+  {
+   "text": "9:41",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 22,
+    "y": 8
+   }
+  },
+  {
+   "text": "Checkout",
+   "style": "Inter 700 18px ls=0",
+   "box": {
+    "x": 51,
+    "y": 44
+   }
+  },
+  {
+   "text": "Secure",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 341,
+    "y": 50
+   }
+  },
+  {
+   "text": "DELIVERY ADDRESS",
+   "style": "Inter 700 12px ls=0.6000000238418579",
+   "box": {
+    "x": 31,
+    "y": 119
+   }
+  },
+  {
+   "text": "Change",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 334,
+    "y": 119
+   }
+  },
+  {
+   "text": "Amina Odhiambo ",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 31,
+    "y": 143
+   }
+  },
+  {
+   "text": "DEFAULT · HOME",
+   "style": "Inter 700 10px ls=0",
+   "box": {
+    "x": 164,
+    "y": 145
+   }
+  },
+  {
+   "text": "Apt 4B, Karura Springs, 2nd Parklands Ave, Nairobi",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 31,
+    "y": 169
+   }
+  },
+  {
+   "text": "+254 712 345 678",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 31,
+    "y": 187
+   }
+  },
+  {
+   "text": "DELIVERY SLOT",
+   "style": "Inter 700 12px ls=0.6000000238418579",
+   "box": {
+    "x": 31,
+    "y": 254
+   }
+  },
+  {
+   "text": "Change",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 334,
+    "y": 254
+   }
+  },
+  {
+   "text": "Tomorrow, 9:00 AM – 11:00 AM",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 31,
+    "y": 274
+   }
+  },
+  {
+   "text": "Standard Express (Within 2 hrs)",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 52,
+    "y": 304
+   }
+  },
+  {
+   "text": "M-Pesa",
+   "style": "Inter 700 14px ls=0",
+   "box": {
+    "x": 57,
+    "y": 374
+   }
+  },
+  {
+   "text": "M-PESA MOBILE NUMBER",
+   "style": "Inter 700 10px ls=0",
+   "box": {
+    "x": 46,
+    "y": 419
+   }
+  },
+  {
+   "text": "+254 712 345 678",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 46,
+    "y": 435
+   }
+  },
+  {
+   "text": "STK Push prompt will be sent to this line",
+   "style": "Inter 500 11px ls=0",
+   "box": {
+    "x": 51,
+    "y": 476
+   }
+  },
+  {
+   "text": "ORDER SUMMARY (2 ITEMS)",
+   "style": "Inter 700 12px ls=0",
+   "box": {
+    "x": 31,
+    "y": 544
+   }
+  },
+  {
+   "text": "KES 370",
+   "style": "Inter 700 12px ls=0",
+   "box": {
+    "x": 330,
+    "y": 544
+   }
+  },
+  {
+   "text": "Preview States:",
+   "style": "Inter 500 11px ls=0",
+   "box": {
+    "x": 34,
+    "y": 475
+   }
+  },
+  {
+   "text": "Active (4/6)",
+   "style": "Inter 600 11px ls=0",
+   "box": {
+    "x": 212,
+    "y": 475
+   }
+  },
+  {
+   "text": "Error",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 295,
+    "y": 475
+   }
+  },
+  {
+   "text": "Ready",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 340,
+    "y": 475
+   }
+  },
+  {
+   "text": "Verify your number",
+   "style": "Inter 700 24px ls=-0.6000000238418579",
+   "box": {
+    "x": 24,
+    "y": 516
+   }
+  },
+  {
+   "text": "Enter the 6-digit code sent to +254 712 345 678",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 24,
+    "y": 553
+   }
+  },
+  {
+   "text": "Change number",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 28,
+    "y": 575
+   }
+  },
+  {
+   "text": "5",
+   "style": "Inter 700 20px ls=0",
+   "box": {
+    "x": 53,
+    "y": 624
+   }
+  },
+  {
+   "text": "8",
+   "style": "Inter 700 20px ls=0",
+   "box": {
+    "x": 111,
+    "y": 624
+   }
+  },
+  {
+   "text": "2",
+   "style": "Inter 700 20px ls=0",
+   "box": {
+    "x": 170,
+    "y": 624
+   }
+  },
+  {
+   "text": "9",
+   "style": "Inter 700 20px ls=0",
+   "box": {
+    "x": 226,
+    "y": 624
+   }
+  },
+  {
+   "text": "Didn't receive code? ",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 93,
+    "y": 679
+   }
+  },
+  {
+   "text": "Resend in 0:27",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 232,
+    "y": 679
+   }
+  },
+  {
+   "text": "Verify & Continue",
+   "style": "Inter 600 16px ls=0",
+   "box": {
+    "x": 152,
+    "y": 737
+   }
+  },
+  {
+   "text": "Safe & secure 256-bit encryption · Xana Life Nairobi",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 81,
+    "y": 804
+   }
+  }
+ ]
+}

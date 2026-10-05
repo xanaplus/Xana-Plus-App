@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "Xana Plus",
+    "slug": "xanaplus",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/brand/icon.png",
+    "scheme": "xanaplus",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#fcf9f8",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "ke.co.xana.xanaplus",
+      "icon": "./assets/brand/icon.png"
+    },
+    "android": {
+      "package": "ke.co.xana.xanaplus",
+      "edgeToEdgeEnabled": true,
+      "adaptiveIcon": {
+        "backgroundColor": "#fcf9f8",
+        "foregroundImage": "./assets/brand/adaptive-foreground.png",
+        "monochromeImage": "./assets/brand/adaptive-foreground.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#fcf9f8",
+          "image": "./assets/brand/splash-logo.png",
+          "imageWidth": 200,
+          "resizeMode": "contain"
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Xana Plus uses the camera to scan product barcodes.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

@@ -1,0 +1,1212 @@
+{
+ "id": "24:11824",
+ "name": "07c · Address — Add (Out of Zone)",
+ "slug": "07c-address-add-out-of-zone",
+ "size": {
+  "w": 390,
+  "h": 1173
+ },
+ "bg": "#fcf9f8",
+ "tree": [
+  {
+   "name": "Main",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 1173
+   },
+   "layout": "VERTICAL pad=100,0,0,0",
+   "fill": "#fcf9f8",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 100,
+      "w": 390,
+      "h": 1073
+     },
+     "children": [
+      {
+       "name": "Amber/Cream Status Notification Strip",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 420,
+        "w": 390,
+        "h": 59
+       },
+       "layout": "HORIZONTAL pad=12,20,12,20 gap=10",
+       "fill": "#fdf3e0",
+       "children": [
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 432,
+          "w": 18,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 20,
+            "y": 434,
+            "w": 18,
+            "h": 16
+           },
+           "fill": "#92400e"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 48,
+          "y": 432,
+          "w": 322,
+          "h": 35
+         },
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 48,
+            "y": 431,
+            "w": 322,
+            "h": 19
+           },
+           "layout": "VERTICAL pad=0,0,0.8799999952316284,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 48,
+              "y": 431,
+              "w": 161,
+              "h": 18
+             },
+             "fill": "#92400e",
+             "text": "Outside our delivery zone",
+             "style": "Inter 600 13px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 48,
+            "y": 452,
+            "w": 322,
+            "h": 15
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 48,
+              "y": 452,
+              "w": 302,
+              "h": 15
+             },
+             "fill": "#92400e@90%",
+             "text": "Nearest active branch is Ruiru XanaPlus, 14 km away.",
+             "style": "Inter 400 12px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Top Map Section (40% viewport feel)",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 100,
+        "w": 390,
+        "h": 320
+       },
+       "layout": "VERTICAL pad=0,0,0,0 main=CENTER",
+       "fill": "#f0eded",
+       "children": [
+        {
+         "name": "Static Map Placeholder with data-location",
+         "type": "RECTANGLE",
+         "box": {
+          "x": 0,
+          "y": 100,
+          "w": 390,
+          "h": 320
+         },
+         "fill": "image"
+        },
+        {
+         "name": "Greyed-out out-of-zone translucent polygon mask overlay",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 100,
+          "w": 390,
+          "h": 320
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "fill": "#313030@35%",
+         "children": [
+          {
+           "name": "Zone Boundary Mock (SVG dashed zone outline)",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 100,
+            "w": 390,
+            "h": 320
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": -20,
+              "y": 260,
+              "w": 440,
+              "h": 180
+             },
+             "fill": "#000000@18%",
+             "stroke": "#ffffff"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Floating Helper Banner: \"Drag the map to place your gate",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 116,
+          "w": 390,
+          "h": 28
+         },
+         "layout": "HORIZONTAL pad=0,20,0,20 main=CENTER",
+         "children": [
+          {
+           "name": "Background+Shadow+OverlayBlur",
+           "type": "FRAME",
+           "box": {
+            "x": 80,
+            "y": 116,
+            "w": 230,
+            "h": 28
+           },
+           "layout": "HORIZONTAL pad=6,14,6,14 cross=CENTER gap=6",
+           "fill": "#fcf9f8@95%",
+           "radius": 9999,
+           "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+           "blur": "BACKGROUND_BLUR 12",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 94,
+              "y": 123,
+              "w": 12,
+              "h": 14
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 112,
+              "y": 122,
+              "w": 184,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Out-of-Zone Desaturated Map Pin Target",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 100,
+          "w": 390,
+          "h": 320
+         },
+         "layout": "HORIZONTAL pad=102.75,0,134.75,0 main=CENTER cross=CENTER",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 132,
+            "y": 203,
+            "w": 127,
+            "h": 83
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Badge indicating Out of Zone directly over the pin head:margin",
+             "type": "FRAME",
+             "box": {
+              "x": 132,
+              "y": 203,
+              "w": 127,
+              "h": 27
+             },
+             "layout": "VERTICAL pad=0,0,6,0",
+             "childCount": 1
+            },
+            {
+             "name": "Desaturated Pin Icon Graphic",
+             "type": "FRAME",
+             "box": {
+              "x": 175,
+              "y": 230,
+              "w": 40,
+              "h": 40
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "childCount": 2
+            },
+            {
+             "name": "Pulse shadow beneath pin:margin",
+             "type": "FRAME",
+             "box": {
+              "x": 185,
+              "y": 270,
+              "w": 20,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=10,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Floating Chip: \"Use my current location",
+         "type": "FRAME",
+         "box": {
+          "x": 230,
+          "y": 376,
+          "w": 140,
+          "h": 32
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 230,
+            "y": 376,
+            "w": 140,
+            "h": 32
+           },
+           "layout": "HORIZONTAL pad=8,12,8,12 cross=CENTER gap=6",
+           "fill": "#fcf9f8",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Button:shadow",
+             "type": "RECTANGLE",
+             "box": {
+              "x": 230,
+              "y": 376,
+              "w": 140,
+              "h": 32
+             },
+             "fill": "#ffffff@0%",
+             "radius": 9999,
+             "shadow": "DROP_SHADOW #000000@10% 0/2 blur4 + DROP_SHADOW #000000@10% 0/4 blur6"
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 242,
+              "y": 384,
+              "w": 16,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 264,
+              "y": 384,
+              "w": 94,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Form Details Container",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 479,
+        "w": 390,
+        "h": 552
+       },
+       "layout": "VERTICAL pad=16,20,0,20",
+       "children": [
+        {
+         "name": "Address Label Selector",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 495,
+          "w": 350,
+          "h": 56
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Label",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 495,
+            "w": 350,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Save Address As",
+             "type": "TEXT",
+             "box": {
+              "x": 20,
+              "y": 495,
+              "w": 350,
+              "h": 16
+             },
+             "fill": "#6f7a70",
+             "text": "Save Address As",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 511,
+            "w": 350,
+            "h": 40
+           },
+           "layout": "VERTICAL pad=6,0,0,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 517,
+              "w": 350,
+              "h": 34
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER gap=8",
+             "childCount": 3
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Inputs Group:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 551,
+          "w": 350,
+          "h": 364
+         },
+         "layout": "VERTICAL pad=16,0,0,0",
+         "children": [
+          {
+           "name": "Inputs Group",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 567,
+            "w": 350,
+            "h": 348
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "1. Estate / Apartment Name",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 567,
+              "w": 350,
+              "h": 60
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 2
+            },
+            {
+             "name": "2. House / Door Number:margin",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 627,
+              "w": 350,
+              "h": 72
+             },
+             "layout": "VERTICAL pad=12,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "3. Nearest Landmark:margin",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 699,
+              "w": 350,
+              "h": 72
+             },
+             "layout": "VERTICAL pad=12,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "4. Recipient Name:margin",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 771,
+              "w": 350,
+              "h": 72
+             },
+             "layout": "VERTICAL pad=12,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "5. Recipient Phone:margin",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 843,
+              "w": 350,
+              "h": 72
+             },
+             "layout": "VERTICAL pad=12,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Expansion Notice Card:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 915,
+          "w": 350,
+          "h": 116
+         },
+         "layout": "VERTICAL pad=16,0,0,0",
+         "children": [
+          {
+           "name": "Expansion Notice Card",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 931,
+            "w": 350,
+            "h": 100
+           },
+           "layout": "HORIZONTAL pad=14,14,14,14 gap=12",
+           "fill": "#f6f3f2",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Margin",
+             "type": "FRAME",
+             "box": {
+              "x": 34,
+              "y": 945,
+              "w": 32,
+              "h": 34
+             },
+             "layout": "VERTICAL pad=2,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 78,
+              "y": 945,
+              "w": 278,
+              "h": 72
+             },
+             "layout": "VERTICAL pad=0,0,0,0 gap=0.875",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Sticky Bottom Actions Section:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 0,
+        "y": 662,
+        "w": 390,
+        "h": 118
+       },
+       "layout": "VERTICAL pad=24,0,0,0",
+       "children": [
+        {
+         "name": "Sticky Bottom Actions Section",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 686,
+          "w": 390,
+          "h": 94
+         },
+         "layout": "VERTICAL pad=12,20,0,20 cross=CENTER",
+         "fill": "#fcf9f8@95%",
+         "shadow": "DROP_SHADOW #000000@4% 0/-4 blur16",
+         "blur": "BACKGROUND_BLUR 12",
+         "children": [
+          {
+           "name": "Notify Me Outlined Button",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 698,
+            "w": 350,
+            "h": 48
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER gap=8",
+           "fill": "#fcf9f8",
+           "stroke": "#0b6b3a",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 73,
+              "y": 714,
+              "w": 17,
+              "h": 17
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 98,
+              "y": 713,
+              "w": 219,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Button - Choose Different Location Link:margin",
+           "type": "FRAME",
+           "box": {
+            "x": 95,
+            "y": 746,
+            "w": 200,
+            "h": 34
+           },
+           "layout": "VERTICAL pad=12,0,0,0",
+           "children": [
+            {
+             "name": "Button - Choose Different Location Link",
+             "type": "FRAME",
+             "box": {
+              "x": 95,
+              "y": 758,
+              "w": 200,
+              "h": 22
+             },
+             "layout": "HORIZONTAL pad=0,0,4,0 cross=CENTER gap=6",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Header",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 100
+   },
+   "layout": "VERTICAL pad=0,0,0,0",
+   "fill": "#fcf9f8@90%",
+   "shadow": "DROP_SHADOW #000000@3% 0/1 blur8",
+   "blur": "BACKGROUND_BLUR 24",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 44
+     },
+     "layout": "HORIZONTAL pad=0,20,0,20 main=SPACE_BETWEEN cross=CENTER",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 13,
+        "w": 27,
+        "h": 18
+       },
+       "layout": "VERTICAL pad=0,0,0,0",
+       "children": [
+        {
+         "name": "Text",
+         "type": "TEXT",
+         "box": {
+          "x": 20,
+          "y": 13,
+          "w": 27,
+          "h": 18
+         },
+         "fill": "#1c1b1b",
+         "text": "9:41",
+         "style": "Inter 600 14px ls=-0.3499999940395355"
+        }
+       ]
+      },
+      {
+       "name": "Margin",
+       "type": "FRAME",
+       "box": {
+        "x": 47,
+        "y": 10,
+        "w": 270,
+        "h": 24
+       },
+       "layout": "VERTICAL pad=0,66.5781021118164,0,66.59380340576172 cross=CENTER",
+       "children": [
+        {
+         "name": "Background",
+         "type": "FRAME",
+         "box": {
+          "x": 118,
+          "y": 10,
+          "w": 128,
+          "h": 24
+         },
+         "layout": "HORIZONTAL pad=0,10,0,10 main=MAX cross=CENTER",
+         "fill": "#313030",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Overlay",
+           "type": "RECTANGLE",
+           "box": {
+            "x": 226,
+            "y": 17,
+            "w": 10,
+            "h": 10
+           },
+           "fill": "#fcf9f8@20%",
+           "radius": 9999
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 317,
+        "y": 16,
+        "w": 53,
+        "h": 11
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=6",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 317,
+          "y": 17,
+          "w": 10,
+          "h": 11
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 317,
+            "y": 17,
+            "w": 10,
+            "h": 11
+           },
+           "fill": "#1c1b1b"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 333,
+          "y": 16,
+          "w": 16,
+          "h": 11
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 333,
+            "y": 16,
+            "w": 16,
+            "h": 11
+           },
+           "fill": "#1c1b1b"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 355,
+          "y": 18,
+          "w": 15,
+          "h": 8
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 355,
+            "y": 18,
+            "w": 15,
+            "h": 8
+           },
+           "fill": "#1c1b1b"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 44,
+      "w": 390,
+      "h": 56
+     },
+     "layout": "HORIZONTAL pad=0,20,0,20 main=SPACE_BETWEEN cross=CENTER gap=167.6999969482422",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 50,
+        "w": 150,
+        "h": 44
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=4",
+       "children": [
+        {
+         "name": "Button - Go Back:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 50,
+          "w": 36,
+          "h": 44
+         },
+         "children": [
+          {
+           "name": "Button - Go Back",
+           "type": "FRAME",
+           "box": {
+            "x": 12,
+            "y": 50,
+            "w": 44,
+            "h": 44
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 30,
+              "y": 66,
+              "w": 7,
+              "h": 12
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Heading 1",
+         "type": "FRAME",
+         "box": {
+          "x": 60,
+          "y": 60,
+          "w": 110,
+          "h": 24
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 60,
+            "y": 60,
+            "w": 110,
+            "h": 24
+           },
+           "fill": "#1c1b1b",
+           "text": "Add Address",
+           "style": "Inter 600 18px ls=-0.18000000715255737"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Background",
+       "type": "FRAME",
+       "box": {
+        "x": 338,
+        "y": 56,
+        "w": 32,
+        "h": 32
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+       "fill": "#004f28",
+       "radius": 9999,
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 348,
+          "y": 66,
+          "w": 12,
+          "h": 12
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 348,
+            "y": 66,
+            "w": 12,
+            "h": 12
+           },
+           "fill": "#ffffff"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "texts": [
+  {
+   "text": "Outside our delivery zone",
+   "style": "Inter 600 13px ls=0",
+   "box": {
+    "x": 48,
+    "y": 431
+   }
+  },
+  {
+   "text": "Nearest active branch is Ruiru XanaPlus, 14 km away.",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 48,
+    "y": 452
+   }
+  },
+  {
+   "text": "Drag map to pin your exact gate",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 112,
+    "y": 122
+   }
+  },
+  {
+   "text": "Unserviceable area",
+   "style": "Inter 400 11px ls=-0.2750000059604645",
+   "box": {
+    "x": 154,
+    "y": 205
+   }
+  },
+  {
+   "text": "Current location",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 264,
+    "y": 384
+   }
+  },
+  {
+   "text": "Save Address As",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 20,
+    "y": 495
+   }
+  },
+  {
+   "text": "Home",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 64,
+    "y": 525
+   }
+  },
+  {
+   "text": "Work",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 187,
+    "y": 525
+   }
+  },
+  {
+   "text": "Other",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 304,
+    "y": 525
+   }
+  },
+  {
+   "text": "Estate or Apartment Name",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 20,
+    "y": 567
+   }
+  },
+  {
+   "text": "Kasarani Seasons Estate",
+   "style": "Inter 400 15px ls=0",
+   "box": {
+    "x": 34,
+    "y": 597
+   }
+  },
+  {
+   "text": "House / Door Number",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 20,
+    "y": 639
+   }
+  },
+  {
+   "text": "Court 4, House 12",
+   "style": "Inter 400 15px ls=0",
+   "box": {
+    "x": 34,
+    "y": 669
+   }
+  },
+  {
+   "text": "Nearest Landmark / Gate Description",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 20,
+    "y": 711
+   }
+  },
+  {
+   "text": "Opposite Equity Bank Kasarani",
+   "style": "Inter 400 15px ls=0",
+   "box": {
+    "x": 34,
+    "y": 741
+   }
+  },
+  {
+   "text": "Recipient Name",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 20,
+    "y": 783
+   }
+  },
+  {
+   "text": "Amina Mohamed",
+   "style": "Inter 400 15px ls=0",
+   "box": {
+    "x": 34,
+    "y": 813
+   }
+  },
+  {
+   "text": "Delivery Contact Number",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 20,
+    "y": 855
+   }
+  },
+  {
+   "text": "+254",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 34,
+    "y": 886
+   }
+  },
+  {
+   "text": "712 345 678",
+   "style": "Inter 400 15px ls=0",
+   "box": {
+    "x": 88,
+    "y": 885
+   }
+  },
+  {
+   "text": "We're expanding rapidly across Nairobi!",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 78,
+    "y": 945
+   }
+  },
+  {
+   "text": "Syokimau and Ruiru branches currently\nservice within 10 km. We are onboarding\nKasarani dispatch riders soon.",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 78,
+    "y": 962
+   }
+  },
+  {
+   "text": "Notify me when you deliver here",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 98,
+    "y": 713
+   }
+  },
+  {
+   "text": "Choose a different location",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 113,
+    "y": 758
+   }
+  },
+  {
+   "text": "9:41",
+   "style": "Inter 600 14px ls=-0.3499999940395355",
+   "box": {
+    "x": 20,
+    "y": 13
+   }
+  },
+  {
+   "text": "Add Address",
+   "style": "Inter 600 18px ls=-0.18000000715255737",
+   "box": {
+    "x": 60,
+    "y": 60
+   }
+  }
+ ]
+}

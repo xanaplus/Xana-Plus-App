@@ -1,0 +1,2999 @@
+{
+ "id": "21:8825",
+ "name": "08a · Pharmacy — Storefront",
+ "slug": "08a-pharmacy-storefront",
+ "size": {
+  "w": 390,
+  "h": 3168
+ },
+ "bg": "#fcf9f8",
+ "tree": [
+  {
+   "name": "Main",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 3168
+   },
+   "layout": "VERTICAL pad=64,20,96,20",
+   "fill": "#fcf9f8",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 20,
+      "y": 64,
+      "w": 350,
+      "h": 3008
+     },
+     "children": [
+      {
+       "name": "Prescription Action Card:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 124,
+        "w": 350,
+        "h": 120
+       },
+       "layout": "VERTICAL pad=0,0,28,0",
+       "children": [
+        {
+         "name": "Prescription Action Card",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 124,
+          "w": 350,
+          "h": 92
+         },
+         "layout": "HORIZONTAL pad=4,0,4,0 main=CENTER gap=8",
+         "children": [
+          {
+           "name": "Link",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 128,
+            "w": 82,
+            "h": 84
+           },
+           "layout": "VERTICAL pad=0,0,15,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 37,
+              "y": 128,
+              "w": 48,
+              "h": 48
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#f6f3f2",
+             "radius": 9999,
+             "childCount": 1
+            },
+            {
+             "name": "Margin",
+             "type": "FRAME",
+             "box": {
+              "x": 32,
+              "y": 176,
+              "w": 58,
+              "h": 21
+             },
+             "layout": "VERTICAL pad=6,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Link",
+           "type": "FRAME",
+           "box": {
+            "x": 110,
+            "y": 128,
+            "w": 82,
+            "h": 84
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 126,
+              "y": 128,
+              "w": 48,
+              "h": 48
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#f6f3f2",
+             "radius": 9999,
+             "childCount": 1
+            },
+            {
+             "name": "Margin",
+             "type": "FRAME",
+             "box": {
+              "x": 110,
+              "y": 176,
+              "w": 82,
+              "h": 36
+             },
+             "layout": "VERTICAL pad=6,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Link",
+           "type": "FRAME",
+           "box": {
+            "x": 199,
+            "y": 128,
+            "w": 82,
+            "h": 84
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 216,
+              "y": 128,
+              "w": 48,
+              "h": 48
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#f6f3f2",
+             "radius": 9999,
+             "childCount": 1
+            },
+            {
+             "name": "Margin",
+             "type": "FRAME",
+             "box": {
+              "x": 199,
+              "y": 176,
+              "w": 82,
+              "h": 36
+             },
+             "layout": "VERTICAL pad=6,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Link",
+           "type": "FRAME",
+           "box": {
+            "x": 289,
+            "y": 128,
+            "w": 82,
+            "h": 84
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 305,
+              "y": 128,
+              "w": 48,
+              "h": 48
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#f6f3f2",
+             "radius": 9999,
+             "childCount": 1
+            },
+            {
+             "name": "Margin",
+             "type": "FRAME",
+             "box": {
+              "x": 289,
+              "y": 176,
+              "w": 82,
+              "h": 36
+             },
+             "layout": "VERTICAL pad=6,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Search & Barcode Scan Bar:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 64,
+        "w": 350,
+        "h": 60
+       },
+       "layout": "VERTICAL pad=0,0,12,0",
+       "children": [
+        {
+         "name": "Search & Barcode Scan Bar",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 64,
+          "w": 350,
+          "h": 48
+         },
+         "layout": "HORIZONTAL pad=0,14,0,14 cross=CENTER",
+         "fill": "#f6f3f2",
+         "radius": 12,
+         "children": [
+          {
+           "name": "Margin",
+           "type": "FRAME",
+           "box": {
+            "x": 34,
+            "y": 80,
+            "w": 27,
+            "h": 17
+           },
+           "layout": "VERTICAL pad=0,10,0,0",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 34,
+              "y": 80,
+              "w": 17,
+              "h": 17
+             },
+             "fill": "#6f7a70"
+            }
+           ]
+          },
+          {
+           "name": "Input",
+           "type": "FRAME",
+           "box": {
+            "x": 61,
+            "y": 78,
+            "w": 266,
+            "h": 20
+           },
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 61,
+              "y": 78,
+              "w": 252,
+              "h": 19
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 61,
+              "y": 78,
+              "w": 266,
+              "h": 20
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Button - Scan medicine barcode:margin",
+           "type": "FRAME",
+           "box": {
+            "x": 326,
+            "y": 72,
+            "w": 30,
+            "h": 32
+           },
+           "layout": "VERTICAL pad=0,0,0,4",
+           "children": [
+            {
+             "name": "Button - Scan medicine barcode",
+             "type": "FRAME",
+             "box": {
+              "x": 330,
+              "y": 72,
+              "w": 26,
+              "h": 32
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "radius": 8,
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Clinical Categories / Filter Chips (Horizontal Scroll):margin",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 244,
+        "w": 350,
+        "h": 64
+       },
+       "children": [
+        {
+         "name": "Clinical Categories / Filter Chips (Horizontal Scroll)",
+         "type": "FRAME",
+         "box": {
+          "x": 0,
+          "y": 244,
+          "w": 390,
+          "h": 36
+         },
+         "children": [
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 244,
+            "w": 108,
+            "h": 32
+           },
+           "layout": "VERTICAL pad=8,16,8,16 main=CENTER cross=CENTER",
+           "fill": "#004f28",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 36,
+              "y": 252,
+              "w": 76,
+              "h": 16
+             },
+             "fill": "#ffffff",
+             "text": "All Pharmacy",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 136,
+            "y": 244,
+            "w": 93,
+            "h": 32
+           },
+           "layout": "VERTICAL pad=8,16,8,16 main=CENTER cross=CENTER",
+           "fill": "#f6f3f2",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 152,
+              "y": 252,
+              "w": 61,
+              "h": 16
+             },
+             "fill": "#3f4940",
+             "text": "Pain Relief",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 237,
+            "y": 244,
+            "w": 173,
+            "h": 32
+           },
+           "layout": "VERTICAL pad=8,16,8,16 main=CENTER cross=CENTER",
+           "fill": "#f6f3f2",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 253,
+              "y": 252,
+              "w": 141,
+              "h": 16
+             },
+             "fill": "#3f4940",
+             "text": "Vitamins & Supplements",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 419,
+            "y": 244,
+            "w": 80,
+            "h": 32
+           },
+           "layout": "VERTICAL pad=8,16,8,16 main=CENTER cross=CENTER",
+           "fill": "#f6f3f2",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 435,
+              "y": 252,
+              "w": 48,
+              "h": 16
+             },
+             "fill": "#3f4940",
+             "text": "First Aid",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 507,
+            "y": 244,
+            "w": 102,
+            "h": 32
+           },
+           "layout": "VERTICAL pad=8,16,8,16 main=CENTER cross=CENTER",
+           "fill": "#f6f3f2",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 523,
+              "y": 252,
+              "w": 70,
+              "h": 16
+             },
+             "fill": "#3f4940",
+             "text": "Baby Health",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 617,
+            "y": 244,
+            "w": 113,
+            "h": 32
+           },
+           "layout": "VERTICAL pad=8,16,8,16 main=CENTER cross=CENTER",
+           "fill": "#f6f3f2",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 633,
+              "y": 252,
+              "w": 81,
+              "h": 16
+             },
+             "fill": "#3f4940",
+             "text": "Personal Care",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Button",
+           "type": "FRAME",
+           "box": {
+            "x": 738,
+            "y": 244,
+            "w": 134,
+            "h": 32
+           },
+           "layout": "VERTICAL pad=8,16,8,16 main=CENTER cross=CENTER",
+           "fill": "#f6f3f2",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 754,
+              "y": 252,
+              "w": 102,
+              "h": 16
+             },
+             "fill": "#3f4940",
+             "text": "Wellness Devices",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section - SECTION 1: Pain Relief:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 308,
+        "w": 350,
+        "h": 390
+       },
+       "layout": "VERTICAL pad=0,0,28,0",
+       "children": [
+        {
+         "name": "Section - SECTION 1: Pain Relief",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 308,
+          "w": 350,
+          "h": 362
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER gap=12",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 308,
+            "w": 350,
+            "h": 42
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=1.350000023841858",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 308,
+              "w": 284,
+              "h": 42
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 316,
+              "y": 320,
+              "w": 54,
+              "h": 18
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=2",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 362,
+            "w": 390,
+            "h": 308
+           },
+           "children": [
+            {
+             "name": "Article - Product 1: Panadol Extra",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 362,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN gap=20",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            },
+            {
+             "name": "Article - Product 2: Ibuprofen 400mg (Rx)",
+             "type": "FRAME",
+             "box": {
+              "x": 208,
+              "y": 362,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            },
+            {
+             "name": "Article - Product 3: Deep Heat Spray",
+             "type": "FRAME",
+             "box": {
+              "x": 396,
+              "y": 362,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section - SECTION 2: Vitamins & Supplements:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 698,
+        "w": 350,
+        "h": 390
+       },
+       "layout": "VERTICAL pad=0,0,28,0",
+       "children": [
+        {
+         "name": "Section - SECTION 2: Vitamins & Supplements",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 698,
+          "w": 350,
+          "h": 362
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER gap=12",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 698,
+            "w": 350,
+            "h": 42
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=33.08000183105469",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 698,
+              "w": 252,
+              "h": 42
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 316,
+              "y": 710,
+              "w": 54,
+              "h": 18
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=2",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 752,
+            "w": 390,
+            "h": 308
+           },
+           "children": [
+            {
+             "name": "Article - Product 1: Seven Seas Cod Liver Oil",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 752,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            },
+            {
+             "name": "Article - Product 2: Vitamin C 1000mg Effervescent",
+             "type": "FRAME",
+             "box": {
+              "x": 208,
+              "y": 752,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            },
+            {
+             "name": "Article - Product 3: Calcium + Zinc Tablets",
+             "type": "FRAME",
+             "box": {
+              "x": 396,
+              "y": 752,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section - SECTION 3: First Aid:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 1088,
+        "w": 350,
+        "h": 390
+       },
+       "layout": "VERTICAL pad=0,0,28,0",
+       "children": [
+        {
+         "name": "Section - SECTION 3: First Aid",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 1088,
+          "w": 350,
+          "h": 362
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER gap=12",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 1088,
+            "w": 350,
+            "h": 42
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=0.07999999821186066",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 1088,
+              "w": 285,
+              "h": 42
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 316,
+              "y": 1100,
+              "w": 54,
+              "h": 18
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=2",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 1142,
+            "w": 390,
+            "h": 308
+           },
+           "children": [
+            {
+             "name": "Article - Product 1: Betadine",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 1142,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            },
+            {
+             "name": "Article - Product 2: Hansaplast Plasters",
+             "type": "FRAME",
+             "box": {
+              "x": 208,
+              "y": 1142,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            },
+            {
+             "name": "Article - Product 3: Sterile Gauze Swabs",
+             "type": "FRAME",
+             "box": {
+              "x": 396,
+              "y": 1142,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN gap=20",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section - SECTION 4: Baby Health:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 1478,
+        "w": 350,
+        "h": 390
+       },
+       "layout": "VERTICAL pad=0,0,28,0",
+       "children": [
+        {
+         "name": "Section - SECTION 4: Baby Health",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 1478,
+          "w": 350,
+          "h": 362
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER gap=12",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 1478,
+            "w": 350,
+            "h": 42
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=56.189998626708984",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 1478,
+              "w": 229,
+              "h": 42
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 316,
+              "y": 1490,
+              "w": 54,
+              "h": 18
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=2",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 1532,
+            "w": 390,
+            "h": 308
+           },
+           "children": [
+            {
+             "name": "Article - Product 1: Calpol Infant",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 1532,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            },
+            {
+             "name": "Article - Product 2: Infacol Drops",
+             "type": "FRAME",
+             "box": {
+              "x": 208,
+              "y": 1532,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN gap=20",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            },
+            {
+             "name": "Article - Product 3: Sudocrem",
+             "type": "FRAME",
+             "box": {
+              "x": 396,
+              "y": 1532,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section - SECTION 5: Personal Care & Hygiene:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 1868,
+        "w": 350,
+        "h": 390
+       },
+       "layout": "VERTICAL pad=0,0,28,0",
+       "children": [
+        {
+         "name": "Section - SECTION 5: Personal Care & Hygiene",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 1868,
+          "w": 350,
+          "h": 362
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER gap=12",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 1868,
+            "w": 350,
+            "h": 42
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=16.989999771118164",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 1868,
+              "w": 268,
+              "h": 42
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 316,
+              "y": 1880,
+              "w": 54,
+              "h": 18
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=2",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 1922,
+            "w": 390,
+            "h": 308
+           },
+           "children": [
+            {
+             "name": "Article - Product 1: Dettol",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 1922,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            },
+            {
+             "name": "Article - Product 2: Sensodyne",
+             "type": "FRAME",
+             "box": {
+              "x": 208,
+              "y": 1922,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            },
+            {
+             "name": "Article - Product 3: Sebamed",
+             "type": "FRAME",
+             "box": {
+              "x": 396,
+              "y": 1922,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Section - SECTION 6: Wellness Devices:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 2258,
+        "w": 350,
+        "h": 390
+       },
+       "layout": "VERTICAL pad=0,0,28,0",
+       "children": [
+        {
+         "name": "Section - SECTION 6: Wellness Devices",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 2258,
+          "w": 350,
+          "h": 362
+         },
+         "layout": "VERTICAL pad=0,0,0,0 cross=CENTER gap=12",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 20,
+            "y": 2258,
+            "w": 350,
+            "h": 42
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=46.459999084472656",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 2258,
+              "w": 239,
+              "h": 42
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 2
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 316,
+              "y": 2270,
+              "w": 54,
+              "h": 18
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=2",
+             "childCount": 2
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 0,
+            "y": 2312,
+            "w": 390,
+            "h": 308
+           },
+           "children": [
+            {
+             "name": "Article - Product 1: Omron BP",
+             "type": "FRAME",
+             "box": {
+              "x": 20,
+              "y": 2312,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            },
+            {
+             "name": "Article - Product 2: Digital Medical Thermometer",
+             "type": "FRAME",
+             "box": {
+              "x": 208,
+              "y": 2312,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            },
+            {
+             "name": "Article - Product 3: Glucometer",
+             "type": "FRAME",
+             "box": {
+              "x": 396,
+              "y": 2312,
+              "w": 176,
+              "h": 300
+             },
+             "layout": "VERTICAL pad=12,12,12,12 main=SPACE_BETWEEN",
+             "fill": "#ffffff",
+             "radius": 16,
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Bottom Clinical Consultation Card:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 2648,
+        "w": 350,
+        "h": 136
+       },
+       "layout": "VERTICAL pad=0,0,12,0",
+       "children": [
+        {
+         "name": "Bottom Clinical Consultation Card",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 2648,
+          "w": 350,
+          "h": 124
+         },
+         "layout": "HORIZONTAL pad=16,16,16,16 main=SPACE_BETWEEN cross=CENTER gap=12",
+         "fill": "#f6f3f2",
+         "stroke": "#bec9be@30%",
+         "radius": 16,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 37,
+            "y": 2665,
+            "w": 226,
+            "h": 90
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=12",
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 37,
+              "y": 2692,
+              "w": 36,
+              "h": 36
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#ffffff",
+             "radius": 12,
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 85,
+              "y": 2665,
+              "w": 178,
+              "h": 90
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Link",
+           "type": "FRAME",
+           "box": {
+            "x": 263,
+            "y": 2701,
+            "w": 90,
+            "h": 18
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=2",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 263,
+              "y": 2701,
+              "w": 77,
+              "h": 18
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 342,
+              "y": 2705,
+              "w": 11,
+              "h": 11
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Margin",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 2784,
+        "w": 350,
+        "h": 176
+       },
+       "layout": "VERTICAL pad=0,0,24,0",
+       "children": [
+        {
+         "name": "Background",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 2784,
+          "w": 350,
+          "h": 152
+         },
+         "layout": "VERTICAL pad=16,16,16,16",
+         "fill": "#f6f3f2",
+         "radius": 16,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 2800,
+            "w": 318,
+            "h": 120
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 gap=12",
+           "children": [
+            {
+             "name": "Background",
+             "type": "FRAME",
+             "box": {
+              "x": 36,
+              "y": 2800,
+              "w": 40,
+              "h": 40
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#004f28",
+             "radius": 12,
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 88,
+              "y": 2800,
+              "w": 266,
+              "h": 120
+             },
+             "layout": "VERTICAL pad=0,0,0,0 gap=4",
+             "childCount": 3
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Regulatory Footnote:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 2960,
+        "w": 350,
+        "h": 80
+       },
+       "layout": "VERTICAL pad=0,0,8,0",
+       "children": [
+        {
+         "name": "Regulatory Footnote",
+         "type": "FRAME",
+         "box": {
+          "x": 20,
+          "y": 2960,
+          "w": 350,
+          "h": 72
+         },
+         "layout": "VERTICAL pad=8,16,8,16 gap=4",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 2968,
+            "w": 318,
+            "h": 16
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER gap=6",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 89,
+              "y": 2970,
+              "w": 9,
+              "h": 12
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 105,
+              "y": 2968,
+              "w": 196,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 36,
+            "y": 2988,
+            "w": 318,
+            "h": 36
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 41,
+              "y": 2988,
+              "w": 308,
+              "h": 36
+             },
+             "fill": "#6f7a70",
+             "text": "Licensed by the Kenya Pharmacy & Poisons Board\n(PPB) · Syokimau XanaPlus & Ruiru XanaPlus",
+             "style": "Inter 400 13px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Header",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 64
+   },
+   "layout": "VERTICAL pad=0,0,0,0",
+   "fill": "#fcf9f8@80%",
+   "shadow": "DROP_SHADOW #000000@4% 0/1 blur8",
+   "blur": "BACKGROUND_BLUR 24",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 64
+     },
+     "layout": "HORIZONTAL pad=0,20,0,20 main=SPACE_BETWEEN cross=CENTER gap=182.02000427246094",
+     "children": [
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 20,
+        "y": 20,
+        "w": 84,
+        "h": 24
+       },
+       "layout": "VERTICAL pad=0,0,0,0",
+       "children": [
+        {
+         "name": "Text",
+         "type": "TEXT",
+         "box": {
+          "x": 20,
+          "y": 20,
+          "w": 84,
+          "h": 24
+         },
+         "fill": "#004f28",
+         "text": "Pharmacy",
+         "style": "Inter 600 18px ls=-0.44999998807907104"
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 286,
+        "y": 10,
+        "w": 84,
+        "h": 44
+       },
+       "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+       "children": [
+        {
+         "name": "Button - Search essentials",
+         "type": "FRAME",
+         "box": {
+          "x": 286,
+          "y": 10,
+          "w": 44,
+          "h": 44
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 299,
+            "y": 23,
+            "w": 18,
+            "h": 18
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 299,
+              "y": 23,
+              "w": 18,
+              "h": 18
+             },
+             "fill": "#3f4940"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Background",
+         "type": "FRAME",
+         "box": {
+          "x": 338,
+          "y": 16,
+          "w": 32,
+          "h": 32
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "fill": "#004f28",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 348,
+            "y": 26,
+            "w": 12,
+            "h": 12
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 348,
+              "y": 26,
+              "w": 12,
+              "h": 12
+             },
+             "fill": "#ffffff"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Nav",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 3104,
+    "w": 390,
+    "h": 64
+   },
+   "layout": "VERTICAL pad=0,0,0,0",
+   "fill": "#fcf9f8@80%",
+   "shadow": "DROP_SHADOW #000000@4% 0/-1 blur8",
+   "blur": "BACKGROUND_BLUR 24",
+   "children": [
+    {
+     "name": "Container",
+     "type": "FRAME",
+     "box": {
+      "x": 0,
+      "y": 3104,
+      "w": 390,
+      "h": 64
+     },
+     "children": [
+      {
+       "name": "Link",
+       "type": "FRAME",
+       "box": {
+        "x": 13,
+        "y": 3108,
+        "w": 56,
+        "h": 56
+       },
+       "layout": "VERTICAL pad=0,10.90999984741211,0,10.930000305175781 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 33,
+          "y": 3118,
+          "w": 16,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 33,
+            "y": 3118,
+            "w": 16,
+            "h": 18
+           },
+           "fill": "#3f4940"
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 24,
+          "y": 3136,
+          "w": 34,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 24,
+            "y": 3138,
+            "w": 34,
+            "h": 16
+           },
+           "fill": "#3f4940",
+           "text": "Home",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Link",
+       "type": "FRAME",
+       "box": {
+        "x": 88,
+        "y": 3108,
+        "w": 63,
+        "h": 56
+       },
+       "layout": "VERTICAL pad=0,0,0,0 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 110,
+          "y": 3118,
+          "w": 18,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 110,
+            "y": 3118,
+            "w": 18,
+            "h": 18
+           },
+           "fill": "#3f4940"
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 88,
+          "y": 3136,
+          "w": 63,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 88,
+            "y": 3138,
+            "w": 63,
+            "h": 16
+           },
+           "fill": "#3f4940",
+           "text": "Categories",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Link",
+       "type": "FRAME",
+       "box": {
+        "x": 321,
+        "y": 3108,
+        "w": 56,
+        "h": 56
+       },
+       "layout": "VERTICAL pad=0,9.180000305175781,0,9.149999618530273 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 341,
+          "y": 3119,
+          "w": 16,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Icon",
+           "type": "VECTOR",
+           "box": {
+            "x": 341,
+            "y": 3119,
+            "w": 16,
+            "h": 16
+           },
+           "fill": "#3f4940"
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 330,
+          "y": 3135,
+          "w": 38,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 330,
+            "y": 3137,
+            "w": 38,
+            "h": 16
+           },
+           "fill": "#3f4940",
+           "text": "Profile",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Container",
+       "type": "FRAME",
+       "box": {
+        "x": 170,
+        "y": 3090,
+        "w": 58,
+        "h": 68
+       },
+       "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+       "children": [
+        {
+         "name": "Link",
+         "type": "FRAME",
+         "box": {
+          "x": 175,
+          "y": 3090,
+          "w": 48,
+          "h": 48
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "fill": "#046938",
+         "radius": 9999,
+         "shadow": "DROP_SHADOW #046938@30% 0/4 blur12",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 190,
+            "y": 3104,
+            "w": 18,
+            "h": 20
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 190,
+              "y": 3104,
+              "w": 18,
+              "h": 20
+             },
+             "fill": "#004f28"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 170,
+          "y": 3138,
+          "w": 58,
+          "h": 20
+         },
+         "layout": "VERTICAL pad=4,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 170,
+            "y": 3142,
+            "w": 58,
+            "h": 16
+           },
+           "fill": "#004f28",
+           "text": "Pharmacy",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Link",
+       "type": "FRAME",
+       "box": {
+        "x": 246,
+        "y": 3108,
+        "w": 56,
+        "h": 56
+       },
+       "layout": "VERTICAL pad=0,15.539999961853027,0,15.510000228881836 main=CENTER cross=CENTER",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 266,
+          "y": 3117,
+          "w": 16,
+          "h": 20
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 266,
+            "y": 3117,
+            "w": 16,
+            "h": 20
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Icon",
+             "type": "VECTOR",
+             "box": {
+              "x": 266,
+              "y": 3117,
+              "w": 16,
+              "h": 20
+             },
+             "fill": "#3f4940"
+            }
+           ]
+          },
+          {
+           "name": "Background",
+           "type": "FRAME",
+           "box": {
+            "x": 271,
+            "y": 3113,
+            "w": 19,
+            "h": 15
+           },
+           "layout": "VERTICAL pad=2,6,2,6 cross=CENTER",
+           "fill": "#fd9926",
+           "radius": 9999,
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 277,
+              "y": 3115,
+              "w": 7,
+              "h": 11
+             },
+             "fill": "#ffffff",
+             "text": "3",
+             "style": "Inter 700 11px ls=0.2199999988079071"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Margin",
+         "type": "FRAME",
+         "box": {
+          "x": 262,
+          "y": 3137,
+          "w": 25,
+          "h": 18
+         },
+         "layout": "VERTICAL pad=2,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 262,
+            "y": 3139,
+            "w": 25,
+            "h": 16
+           },
+           "fill": "#3f4940",
+           "text": "Cart",
+           "style": "Inter 600 12px ls=0"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "texts": [
+  {
+   "text": "Upload Rx",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 182
+   }
+  },
+  {
+   "text": "Consult\nDoctor",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 129,
+    "y": 182
+   }
+  },
+  {
+   "text": "My\nPrescriptions",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 202,
+    "y": 182
+   }
+  },
+  {
+   "text": "Ask\nPharmacist",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 298,
+    "y": 182
+   }
+  },
+  {
+   "text": "Search medicines & wellness products...",
+   "style": "Inter 400 15px ls=0",
+   "box": {
+    "x": 61,
+    "y": 78
+   }
+  },
+  {
+   "text": "All Pharmacy",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 36,
+    "y": 252
+   }
+  },
+  {
+   "text": "Pain Relief",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 152,
+    "y": 252
+   }
+  },
+  {
+   "text": "Vitamins & Supplements",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 253,
+    "y": 252
+   }
+  },
+  {
+   "text": "First Aid",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 435,
+    "y": 252
+   }
+  },
+  {
+   "text": "Baby Health",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 523,
+    "y": 252
+   }
+  },
+  {
+   "text": "Personal Care",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 633,
+    "y": 252
+   }
+  },
+  {
+   "text": "Wellness Devices",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 754,
+    "y": 252
+   }
+  },
+  {
+   "text": "Pain Relief",
+   "style": "Inter 600 18px ls=-0.44999998807907104",
+   "box": {
+    "x": 20,
+    "y": 308
+   }
+  },
+  {
+   "text": "Analgesics, anti-inflammatories & muscle care",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 20,
+    "y": 332
+   }
+  },
+  {
+   "text": "See All",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 316,
+    "y": 320
+   }
+  },
+  {
+   "text": "16 Caplets · Oral",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 536
+   }
+  },
+  {
+   "text": "Panadol Extra 16s",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 32,
+    "y": 554
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 614
+   }
+  },
+  {
+   "text": "KES 210.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 32,
+    "y": 630
+   }
+  },
+  {
+   "text": "Rx Required",
+   "style": "Inter 700 11px ls=0.2750000059604645",
+   "box": {
+    "x": 236,
+    "y": 384
+   }
+  },
+  {
+   "text": "30 Tablets · 400mg",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 220,
+    "y": 536
+   }
+  },
+  {
+   "text": "Ibuprofen 400mg\nTablets",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 220,
+    "y": 554
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 220,
+    "y": 614
+   }
+  },
+  {
+   "text": "KES 320.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 220,
+    "y": 630
+   }
+  },
+  {
+   "text": "150ml · Topical Spray",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 408,
+    "y": 536
+   }
+  },
+  {
+   "text": "Deep Heat Pain\nSpray",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 408,
+    "y": 554
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 408,
+    "y": 614
+   }
+  },
+  {
+   "text": "KES 780.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 408,
+    "y": 630
+   }
+  },
+  {
+   "text": "Vitamins & Supplements",
+   "style": "Inter 600 18px ls=-0.44999998807907104",
+   "box": {
+    "x": 20,
+    "y": 698
+   }
+  },
+  {
+   "text": "Everyday immunity, vitality & bone health",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 20,
+    "y": 722
+   }
+  },
+  {
+   "text": "See All",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 316,
+    "y": 710
+   }
+  },
+  {
+   "text": "120 Softgels · Omega 3",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 926
+   }
+  },
+  {
+   "text": "Seven Seas Cod\nLiver Oil",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 32,
+    "y": 944
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 1004
+   }
+  },
+  {
+   "text": "KES 1,450.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 32,
+    "y": 1020
+   }
+  },
+  {
+   "text": "20 Effervescent Tablets",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 220,
+    "y": 926
+   }
+  },
+  {
+   "text": "Vitamin C 1000mg\nHigh Potency",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 220,
+    "y": 944
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 220,
+    "y": 1004
+   }
+  },
+  {
+   "text": "KES 620.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 220,
+    "y": 1020
+   }
+  },
+  {
+   "text": "60 Coated Tablets",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 408,
+    "y": 926
+   }
+  },
+  {
+   "text": "Calcium + Zinc\nComplex",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 408,
+    "y": 944
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 408,
+    "y": 1004
+   }
+  },
+  {
+   "text": "KES 950.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 408,
+    "y": 1020
+   }
+  },
+  {
+   "text": "First Aid & Wound Care",
+   "style": "Inter 600 18px ls=-0.44999998807907104",
+   "box": {
+    "x": 20,
+    "y": 1088
+   }
+  },
+  {
+   "text": "Dressings, antiseptics & rapid emergency care",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 20,
+    "y": 1112
+   }
+  },
+  {
+   "text": "See All",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 316,
+    "y": 1100
+   }
+  },
+  {
+   "text": "100ml · Antiseptic Liquid",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 1316
+   }
+  },
+  {
+   "text": "Betadine Antiseptic\nSolution",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 32,
+    "y": 1334
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 1394
+   }
+  },
+  {
+   "text": "KES 420.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 32,
+    "y": 1410
+   }
+  },
+  {
+   "text": "20 Strips · Breathable",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 220,
+    "y": 1316
+   }
+  },
+  {
+   "text": "Hansaplast Elastic\nStrips",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 220,
+    "y": 1334
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 220,
+    "y": 1394
+   }
+  },
+  {
+   "text": "KES 260.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 220,
+    "y": 1410
+   }
+  },
+  {
+   "text": "Pack of 10 · 7.5cm x 7.5cm",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 408,
+    "y": 1316
+   }
+  },
+  {
+   "text": "Sterile Gauze Swabs",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 408,
+    "y": 1334
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 408,
+    "y": 1394
+   }
+  },
+  {
+   "text": "KES 150.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 408,
+    "y": 1410
+   }
+  },
+  {
+   "text": "Baby Health",
+   "style": "Inter 600 18px ls=-0.44999998807907104",
+   "box": {
+    "x": 20,
+    "y": 1478
+   }
+  },
+  {
+   "text": "Gentle pediatric remedies & skin care",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 20,
+    "y": 1502
+   }
+  },
+  {
+   "text": "See All",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 316,
+    "y": 1490
+   }
+  },
+  {
+   "text": "100ml · Strawberry Flavor",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 1706
+   }
+  },
+  {
+   "text": "Calpol Infant\nSuspension",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 32,
+    "y": 1724
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 1784
+   }
+  },
+  {
+   "text": "KES 540.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 32,
+    "y": 1800
+   }
+  },
+  {
+   "text": "50ml · Colic Relief",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 220,
+    "y": 1706
+   }
+  },
+  {
+   "text": "Infacol Colic Drops",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 220,
+    "y": 1724
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 220,
+    "y": 1784
+   }
+  },
+  {
+   "text": "KES 890.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 220,
+    "y": 1800
+   }
+  },
+  {
+   "text": "60g · Barrier Cream",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 408,
+    "y": 1706
+   }
+  },
+  {
+   "text": "Sudocrem Care &\nProtect",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 408,
+    "y": 1724
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 408,
+    "y": 1784
+   }
+  },
+  {
+   "text": "KES 480.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 408,
+    "y": 1800
+   }
+  },
+  {
+   "text": "Personal Care & Hygiene",
+   "style": "Inter 600 18px ls=-0.44999998807907104",
+   "box": {
+    "x": 20,
+    "y": 1868
+   }
+  },
+  {
+   "text": "Dermatological wash, oral care & protection",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 20,
+    "y": 1892
+   }
+  },
+  {
+   "text": "See All",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 316,
+    "y": 1880
+   }
+  },
+  {
+   "text": "250ml · Disinfectant",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 2096
+   }
+  },
+  {
+   "text": "Dettol Antiseptic\nLiquid",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 32,
+    "y": 2114
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 2174
+   }
+  },
+  {
+   "text": "KES 390.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 32,
+    "y": 2190
+   }
+  },
+  {
+   "text": "75ml · Sensitive Teeth",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 220,
+    "y": 2096
+   }
+  },
+  {
+   "text": "Sensodyne Rapid\nRelief",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 220,
+    "y": 2114
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 220,
+    "y": 2174
+   }
+  },
+  {
+   "text": "KES 460.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 220,
+    "y": 2190
+   }
+  },
+  {
+   "text": "200ml · pH 5.5 Formula",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 408,
+    "y": 2096
+   }
+  },
+  {
+   "text": "Sebamed Gentle\nWash",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 408,
+    "y": 2114
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 408,
+    "y": 2174
+   }
+  },
+  {
+   "text": "KES 890.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 408,
+    "y": 2190
+   }
+  },
+  {
+   "text": "Wellness Devices",
+   "style": "Inter 600 18px ls=-0.44999998807907104",
+   "box": {
+    "x": 20,
+    "y": 2258
+   }
+  },
+  {
+   "text": "Diagnostics, vitals monitoring & meters",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 20,
+    "y": 2282
+   }
+  },
+  {
+   "text": "See All",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 316,
+    "y": 2270
+   }
+  },
+  {
+   "text": "Automatic Arm Monitor",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 2486
+   }
+  },
+  {
+   "text": "Omron M2 BP\nMonitor",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 32,
+    "y": 2504
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 32,
+    "y": 2564
+   }
+  },
+  {
+   "text": "KES 5,800.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 32,
+    "y": 2580
+   }
+  },
+  {
+   "text": "10s Fast Read ·…",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 220,
+    "y": 2486
+   }
+  },
+  {
+   "text": "Digital Medical\nThermometer",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 220,
+    "y": 2504
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 220,
+    "y": 2564
+   }
+  },
+  {
+   "text": "KES 650.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 220,
+    "y": 2580
+   }
+  },
+  {
+   "text": "Complete Starter Kit",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 408,
+    "y": 2486
+   }
+  },
+  {
+   "text": "Accu-Chek Instant\nKit",
+   "style": "Inter 600 15px ls=0",
+   "box": {
+    "x": 408,
+    "y": 2504
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 408,
+    "y": 2564
+   }
+  },
+  {
+   "text": "KES 3,200.00",
+   "style": "Inter 700 16px ls=-0.1599999964237213",
+   "box": {
+    "x": 408,
+    "y": 2580
+   }
+  },
+  {
+   "text": "Free Skin Analysis This\nWeek · Get a\npersonalised skincare\nconsultation, free with\nany purchase.",
+   "style": "Inter 600 13px ls=0",
+   "box": {
+    "x": 85,
+    "y": 2665
+   }
+  },
+  {
+   "text": "Learn More",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 263,
+    "y": 2701
+   }
+  },
+  {
+   "text": "Ask a Pharmacist",
+   "style": "Inter 600 18px ls=-0.44999998807907104",
+   "box": {
+    "x": 88,
+    "y": 2800
+   }
+  },
+  {
+   "text": "Free, confidential clinical consultation via\nWhatsApp or real-time in-app chat.",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 88,
+    "y": 2828
+   }
+  },
+  {
+   "text": "Chat with Pharmacist",
+   "style": "Inter 600 14px ls=0",
+   "box": {
+    "x": 160,
+    "y": 2889
+   }
+  },
+  {
+   "text": "OFFICIAL PHARMACY LICENSE",
+   "style": "Inter 600 12px ls=0.6000000238418579",
+   "box": {
+    "x": 105,
+    "y": 2968
+   }
+  },
+  {
+   "text": "Licensed by the Kenya Pharmacy & Poisons Board\n(PPB) · Syokimau XanaPlus & Ruiru XanaPlus",
+   "style": "Inter 400 13px ls=0",
+   "box": {
+    "x": 41,
+    "y": 2988
+   }
+  },
+  {
+   "text": "Pharmacy",
+   "style": "Inter 600 18px ls=-0.44999998807907104",
+   "box": {
+    "x": 20,
+    "y": 20
+   }
+  },
+  {
+   "text": "Home",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 24,
+    "y": 3138
+   }
+  },
+  {
+   "text": "Categories",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 88,
+    "y": 3138
+   }
+  },
+  {
+   "text": "Profile",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 330,
+    "y": 3137
+   }
+  },
+  {
+   "text": "Pharmacy",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 170,
+    "y": 3142
+   }
+  },
+  {
+   "text": "3",
+   "style": "Inter 700 11px ls=0.2199999988079071",
+   "box": {
+    "x": 277,
+    "y": 3115
+   }
+  },
+  {
+   "text": "Cart",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 262,
+    "y": 3139
+   }
+  }
+ ]
+}

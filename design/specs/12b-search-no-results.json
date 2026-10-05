@@ -1,0 +1,1598 @@
+{
+ "id": "14:5365",
+ "name": "12b · Search — No Results",
+ "slug": "12b-search-no-results",
+ "size": {
+  "w": 411,
+  "h": 884
+ },
+ "bg": "#ffffff|#eae7e6",
+ "tree": [
+  {
+   "name": "Mobile iOS Container Frame (iPhone 15 Pro Dimensions)",
+   "type": "FRAME",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 411,
+    "h": 884
+   },
+   "fill": "#ffffff",
+   "stroke": "#e5e2e1",
+   "radius": 36,
+   "shadow": "DROP_SHADOW #000000@25% 0/25 blur50",
+   "children": [
+    {
+     "name": "Main - EmptyStateContent",
+     "type": "FRAME",
+     "box": {
+      "x": 1,
+      "y": 174,
+      "w": 409,
+      "h": 619
+     },
+     "layout": "VERTICAL pad=24,20,24,20 main=SPACE_BETWEEN cross=CENTER",
+     "fill": "#ffffff",
+     "children": [
+      {
+       "name": "Upper & Central State Block",
+       "type": "FRAME",
+       "box": {
+        "x": 21,
+        "y": 198,
+        "w": 369,
+        "h": 403
+       },
+       "children": [
+        {
+         "name": "Heading 2 - Headline:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 116,
+          "y": 306,
+          "w": 158,
+          "h": 36
+         },
+         "layout": "VERTICAL pad=0,0,8,0",
+         "children": [
+          {
+           "name": "Heading 2 - Headline",
+           "type": "FRAME",
+           "box": {
+            "x": 116,
+            "y": 306,
+            "w": 158,
+            "h": 28
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 116,
+              "y": 306,
+              "w": 158,
+              "h": 28
+             },
+             "fill": "#171717",
+             "text": "No results for 'xyz'",
+             "style": "Inter 700 18px ls=-0.44999998807907104"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Explanatory Subtitle:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 50,
+          "y": 342,
+          "w": 290,
+          "h": 91
+         },
+         "layout": "VERTICAL pad=0,0,32,0",
+         "children": [
+          {
+           "name": "Explanatory Subtitle",
+           "type": "FRAME",
+           "box": {
+            "x": 50,
+            "y": 342,
+            "w": 290,
+            "h": 59
+           },
+           "layout": "VERTICAL pad=0,5.170000076293945,0,5.170000076293945 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 55,
+              "y": 342,
+              "w": 280,
+              "h": 59
+             },
+             "fill": "#737373",
+             "text": "We couldn't find matches for \"xyz\". Try checking\nyour spelling or searching for a broader term in\ngroceries or pharmacy.",
+             "style": "Inter 400 12px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Popular Searches Container Card",
+         "type": "FRAME",
+         "box": {
+          "x": 21,
+          "y": 432,
+          "w": 369,
+          "h": 168
+         },
+         "layout": "VERTICAL pad=16,16,16,16 gap=12",
+         "fill": "#fcf9f8",
+         "stroke": "#f0edec",
+         "radius": 16,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 38,
+            "y": 449,
+            "w": 335,
+            "h": 16
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 main=SPACE_BETWEEN cross=CENTER gap=96.12999725341797",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 38,
+              "y": 449,
+              "w": 129,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 284,
+              "y": 450,
+              "w": 89,
+              "h": 15
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "Wrapping Chips Grid",
+           "type": "FRAME",
+           "box": {
+            "x": 38,
+            "y": 477,
+            "w": 335,
+            "h": 106
+           },
+           "children": [
+            {
+             "name": "Button - Chip 1",
+             "type": "FRAME",
+             "box": {
+              "x": 38,
+              "y": 477,
+              "w": 100,
+              "h": 30
+             },
+             "layout": "HORIZONTAL pad=6,12,6,12 cross=CENTER gap=6",
+             "fill": "#ffffff",
+             "stroke": "#e8e4e2",
+             "radius": 9999,
+             "childCount": 2
+            },
+            {
+             "name": "Button - Chip 2",
+             "type": "FRAME",
+             "box": {
+              "x": 146,
+              "y": 477,
+              "w": 107,
+              "h": 30
+             },
+             "layout": "HORIZONTAL pad=6,12,6,12 cross=CENTER gap=6",
+             "fill": "#ffffff",
+             "stroke": "#e8e4e2",
+             "radius": 9999,
+             "childCount": 2
+            },
+            {
+             "name": "Button - Chip 3",
+             "type": "FRAME",
+             "box": {
+              "x": 38,
+              "y": 515,
+              "w": 115,
+              "h": 30
+             },
+             "layout": "HORIZONTAL pad=6,12,6,12 cross=CENTER gap=6",
+             "fill": "#ffffff",
+             "stroke": "#e8e4e2",
+             "radius": 9999,
+             "childCount": 2
+            },
+            {
+             "name": "Button - Chip 4 (Pharmacy highlight)",
+             "type": "FRAME",
+             "box": {
+              "x": 161,
+              "y": 515,
+              "w": 157,
+              "h": 30
+             },
+             "layout": "HORIZONTAL pad=6,12,6,12 cross=CENTER gap=6",
+             "fill": "#f2f8f5",
+             "stroke": "#046938@30%",
+             "radius": 9999,
+             "childCount": 2
+            },
+            {
+             "name": "Button - Chip 5",
+             "type": "FRAME",
+             "box": {
+              "x": 38,
+              "y": 553,
+              "w": 123,
+              "h": 30
+             },
+             "layout": "HORIZONTAL pad=6,12,6,12 cross=CENTER gap=6",
+             "fill": "#ffffff",
+             "stroke": "#e8e4e2",
+             "radius": 9999,
+             "childCount": 2
+            },
+            {
+             "name": "Button - Chip 6",
+             "type": "FRAME",
+             "box": {
+              "x": 169,
+              "y": 553,
+              "w": 106,
+              "h": 30
+             },
+             "layout": "HORIZONTAL pad=6,12,6,12 cross=CENTER gap=6",
+             "fill": "#ffffff",
+             "stroke": "#e8e4e2",
+             "radius": 9999,
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Visual Badge with Soft Glow & Empty Cue:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 155,
+          "y": 206,
+          "w": 80,
+          "h": 100
+         },
+         "layout": "VERTICAL pad=0,0,20,0",
+         "children": [
+          {
+           "name": "Visual Badge with Soft Glow & Empty Cue",
+           "type": "FRAME",
+           "box": {
+            "x": 155,
+            "y": 206,
+            "w": 80,
+            "h": 80
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Background+Shadow",
+             "type": "FRAME",
+             "box": {
+              "x": 155,
+              "y": 206,
+              "w": 80,
+              "h": 80
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#e8f5ee",
+             "radius": 9999,
+             "shadow": "INNER_SHADOW #000000@5% 0/2 blur4",
+             "childCount": 1
+            },
+            {
+             "name": "Tiny floating decorative accent",
+             "type": "FRAME",
+             "box": {
+              "x": 219,
+              "y": 202,
+              "w": 20,
+              "h": 20
+             },
+             "layout": "HORIZONTAL pad=0,0,1,0 main=CENTER cross=CENTER",
+             "fill": "#046938",
+             "stroke": "#ffffff",
+             "radius": 9999,
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Support & Helpdesk Footer Note:margin",
+       "type": "FRAME",
+       "box": {
+        "x": 21,
+        "y": 600,
+        "w": 369,
+        "h": 168
+       },
+       "layout": "VERTICAL pad=103,0,0,0 main=MAX",
+       "children": [
+        {
+         "name": "Support & Helpdesk Footer Note",
+         "type": "FRAME",
+         "box": {
+          "x": 21,
+          "y": 703,
+          "w": 369,
+          "h": 65
+         },
+         "layout": "VERTICAL pad=16,0,16,0",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 21,
+            "y": 719,
+            "w": 369,
+            "h": 33
+           },
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 152,
+              "y": 719,
+              "w": 108,
+              "h": 17
+             },
+             "fill": "#737373",
+             "text": "Can't find your item? ",
+             "style": "Inter 400 11px ls=0"
+            },
+            {
+             "name": "Link",
+             "type": "FRAME",
+             "box": {
+              "x": 88,
+              "y": 735,
+              "w": 240,
+              "h": 17
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=1.9900000095367432",
+             "childCount": 2
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "StickyMiniCartBar",
+     "type": "FRAME",
+     "box": {
+      "x": 1,
+      "y": 792,
+      "w": 409,
+      "h": 91
+     },
+     "layout": "VERTICAL pad=12,12,14,12 cross=CENTER gap=8",
+     "fill": "#ffffff",
+     "stroke": "#f0edec",
+     "children": [
+      {
+       "name": "StickyMiniCartBar:shadow",
+       "type": "RECTANGLE",
+       "box": {
+        "x": 1,
+        "y": 792,
+        "w": 409,
+        "h": 91
+       },
+       "fill": "#ffffff@0%",
+       "shadow": "DROP_SHADOW #000000@10% 0/4 blur6 + DROP_SHADOW #000000@10% 0/10 blur15"
+      },
+      {
+       "name": "Background",
+       "type": "FRAME",
+       "box": {
+        "x": 13,
+        "y": 805,
+        "w": 385,
+        "h": 52
+       },
+       "layout": "HORIZONTAL pad=10,14,10,14 main=SPACE_BETWEEN cross=CENTER gap=56.459999084472656",
+       "fill": "#181a18",
+       "radius": 16,
+       "children": [
+        {
+         "name": "Overlay+Shadow",
+         "type": "RECTANGLE",
+         "box": {
+          "x": 13,
+          "y": 805,
+          "w": 385,
+          "h": 52
+         },
+         "fill": "#ffffff@0%",
+         "radius": 16,
+         "shadow": "DROP_SHADOW #000000@10% 0/8 blur10 + DROP_SHADOW #000000@10% 0/20 blur25"
+        },
+        {
+         "name": "Cart info & counter badge",
+         "type": "FRAME",
+         "box": {
+          "x": 27,
+          "y": 815,
+          "w": 171,
+          "h": 32
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=12",
+         "children": [
+          {
+           "name": "Background+Shadow",
+           "type": "FRAME",
+           "box": {
+            "x": 27,
+            "y": 815,
+            "w": 32,
+            "h": 32
+           },
+           "layout": "HORIZONTAL pad=7.5,0,8.5,0 main=CENTER cross=CENTER",
+           "fill": "#e67e22",
+           "radius": 9999,
+           "shadow": "INNER_SHADOW #000000@5% 0/2 blur4",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 39,
+              "y": 823,
+              "w": 8,
+              "h": 16
+             },
+             "fill": "#ffffff",
+             "text": "3",
+             "style": "Inter 700 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 71,
+            "y": 816,
+            "w": 127,
+            "h": 31
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 71,
+              "y": 816,
+              "w": 127,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            },
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 71,
+              "y": 832,
+              "w": 127,
+              "h": 15
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=4",
+             "childCount": 3
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Action Button",
+         "type": "FRAME",
+         "box": {
+          "x": 275,
+          "y": 815,
+          "w": 109,
+          "h": 32
+         },
+         "layout": "HORIZONTAL pad=8,16,8,16 cross=CENTER gap=6",
+         "fill": "#046938",
+         "radius": 12,
+         "shadow": "DROP_SHADOW #000000@5% 0/1 blur2",
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 291,
+            "y": 823,
+            "w": 57,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 291,
+              "y": 823,
+              "w": 57,
+              "h": 16
+             },
+             "fill": "#ffffff",
+             "text": "View Cart",
+             "style": "Inter 600 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 354,
+            "y": 824,
+            "w": 14,
+            "h": 14
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 356,
+              "y": 827,
+              "w": 11,
+              "h": 9
+             },
+             "stroke": "#ffffff"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Home Indicator bar (iOS home bar simulation)",
+       "type": "RECTANGLE",
+       "box": {
+        "x": 142,
+        "y": 865,
+        "w": 128,
+        "h": 4
+       },
+       "fill": "#d4d4d4",
+       "radius": 9999
+      }
+     ]
+    },
+    {
+     "name": "Header - TopBar",
+     "type": "FRAME",
+     "box": {
+      "x": 1,
+      "y": 1,
+      "w": 409,
+      "h": 173
+     },
+     "layout": "VERTICAL pad=0,0,0,0",
+     "fill": "#ffffff",
+     "stroke": "#f0edec",
+     "children": [
+      {
+       "name": "iOS Status Bar",
+       "type": "FRAME",
+       "box": {
+        "x": 1,
+        "y": 1,
+        "w": 409,
+        "h": 44
+       },
+       "layout": "HORIZONTAL pad=0,28,0,28 main=SPACE_BETWEEN cross=CENTER gap=249",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 29,
+          "y": 15,
+          "w": 23,
+          "h": 16
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 29,
+            "y": 15,
+            "w": 23,
+            "h": 16
+           },
+           "fill": "#262626",
+           "text": "9:41",
+           "style": "Inter 600 12px ls=-0.30000001192092896"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 322,
+          "y": 16,
+          "w": 60,
+          "h": 14
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=6",
+         "children": [
+          {
+           "name": "SVG - Cellular",
+           "type": "FRAME",
+           "box": {
+            "x": 322,
+            "y": 16,
+            "w": 14,
+            "h": 14
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 324,
+              "y": 17,
+              "w": 11,
+              "h": 11
+             },
+             "fill": "#262626"
+            },
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 327,
+              "y": 21,
+              "w": 4,
+              "h": 4
+             },
+             "fill": "#262626"
+            },
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 323,
+              "y": 19,
+              "w": 13,
+              "h": 9
+             },
+             "fill": "#262626"
+            }
+           ]
+          },
+          {
+           "name": "SVG - Wifi",
+           "type": "FRAME",
+           "box": {
+            "x": 342,
+            "y": 16,
+            "w": 14,
+            "h": 14
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 342,
+              "y": 18,
+              "w": 14,
+              "h": 10
+             },
+             "fill": "#262626"
+            }
+           ]
+          },
+          {
+           "name": "Battery",
+           "type": "FRAME",
+           "box": {
+            "x": 362,
+            "y": 18,
+            "w": 20,
+            "h": 10
+           },
+           "layout": "HORIZONTAL pad=2,2,2,2 cross=CENTER",
+           "stroke": "#262626",
+           "radius": 2,
+           "children": [
+            {
+             "name": "Background",
+             "type": "RECTANGLE",
+             "box": {
+              "x": 365,
+              "y": 21,
+              "w": 10,
+              "h": 4
+             },
+             "fill": "#262626"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Search Input Header Row",
+       "type": "FRAME",
+       "box": {
+        "x": 1,
+        "y": 45,
+        "w": 409,
+        "h": 48
+       },
+       "layout": "HORIZONTAL pad=2,16,10,16 cross=CENTER gap=10",
+       "children": [
+        {
+         "name": "Button - Go back:margin",
+         "type": "FRAME",
+         "box": {
+          "x": 17,
+          "y": 47,
+          "w": 30,
+          "h": 36
+         },
+         "layout": "VERTICAL pad=8,8,8,2",
+         "children": [
+          {
+           "name": "Button - Go back → SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 19,
+            "y": 55,
+            "w": 20,
+            "h": 20
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 26,
+              "y": 59,
+              "w": 6,
+              "h": 13
+             },
+             "stroke": "#404040"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Search Input Bar with Barcode Scanner & Clear Button",
+         "type": "FRAME",
+         "box": {
+          "x": 57,
+          "y": 47,
+          "w": 337,
+          "h": 36
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+         "children": [
+          {
+           "name": "Input - Search catalog",
+           "type": "FRAME",
+           "box": {
+            "x": 57,
+            "y": 47,
+            "w": 337,
+            "h": 36
+           },
+           "layout": "VERTICAL pad=8,64,8,36",
+           "fill": "#f6f3f2",
+           "radius": 12,
+           "children": [
+            {
+             "name": "Container",
+             "type": "FRAME",
+             "box": {
+              "x": 93,
+              "y": 55,
+              "w": 237,
+              "h": 20
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          },
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 69,
+            "y": 57,
+            "w": 16,
+            "h": 16
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 72,
+              "y": 60,
+              "w": 9,
+              "h": 9
+             },
+             "stroke": "#737373"
+            },
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 80,
+              "y": 68,
+              "w": 2,
+              "h": 2
+             },
+             "stroke": "#737373"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 335,
+            "y": 57,
+            "w": 49,
+            "h": 16
+           },
+           "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=8",
+           "children": [
+            {
+             "name": "Button - Clear search",
+             "type": "FRAME",
+             "box": {
+              "x": 335,
+              "y": 57,
+              "w": 16,
+              "h": 16
+             },
+             "layout": "HORIZONTAL pad=0,0,0,0 main=CENTER cross=CENTER",
+             "fill": "#d4d4d4",
+             "radius": 9999,
+             "childCount": 1
+            },
+            {
+             "name": "Vertical Divider",
+             "type": "RECTANGLE",
+             "box": {
+              "x": 359,
+              "y": 58,
+              "w": 1,
+              "h": 14
+             },
+             "fill": "#d4d4d4"
+            },
+            {
+             "name": "Button - Scan barcode",
+             "type": "FRAME",
+             "box": {
+              "x": 368,
+              "y": 57,
+              "w": 16,
+              "h": 16
+             },
+             "layout": "VERTICAL pad=0,0,0,0",
+             "childCount": 1
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Quick Filter Chips Row (Scrollable)",
+       "type": "FRAME",
+       "box": {
+        "x": 1,
+        "y": 93,
+        "w": 409,
+        "h": 46
+       },
+       "children": [
+        {
+         "name": "Button - Sort Chip (Active)",
+         "type": "FRAME",
+         "box": {
+          "x": 17,
+          "y": 102,
+          "w": 152,
+          "h": 28
+         },
+         "layout": "HORIZONTAL pad=6,12,6,12 cross=CENTER gap=6",
+         "fill": "#046938",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 29,
+            "y": 109,
+            "w": 14,
+            "h": 14
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 31,
+              "y": 112,
+              "w": 10,
+              "h": 10
+             },
+             "stroke": "#ffffff"
+            }
+           ]
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 49,
+            "y": 108,
+            "w": 90,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 49,
+              "y": 108,
+              "w": 90,
+              "h": 16
+             },
+             "fill": "#ffffff",
+             "text": "Sort: Relevance",
+             "style": "Inter 500 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 145,
+            "y": 110,
+            "w": 12,
+            "h": 12
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 147,
+              "y": 114,
+              "w": 8,
+              "h": 4
+             },
+             "stroke": "#ffffff@80%"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Button - Category Chip",
+         "type": "FRAME",
+         "box": {
+          "x": 177,
+          "y": 102,
+          "w": 93,
+          "h": 28
+         },
+         "layout": "HORIZONTAL pad=6,12,6,12 cross=CENTER gap=4",
+         "fill": "#f6f3f2",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 189,
+            "y": 108,
+            "w": 53,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 189,
+              "y": 108,
+              "w": 53,
+              "h": 16
+             },
+             "fill": "#404040",
+             "text": "Category",
+             "style": "Inter 500 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 246,
+            "y": 110,
+            "w": 12,
+            "h": 12
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 248,
+              "y": 114,
+              "w": 8,
+              "h": 4
+             },
+             "stroke": "#737373"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Button - In Stock Only Chip",
+         "type": "FRAME",
+         "box": {
+          "x": 278,
+          "y": 101,
+          "w": 114,
+          "h": 30
+         },
+         "layout": "HORIZONTAL pad=6,12,6,12 cross=CENTER gap=6",
+         "fill": "#e8f5ee@50%",
+         "stroke": "#046938@30%",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Background",
+           "type": "RECTANGLE",
+           "box": {
+            "x": 291,
+            "y": 113,
+            "w": 6,
+            "h": 6
+           },
+           "fill": "#046938",
+           "radius": 9999
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 303,
+            "y": 108,
+            "w": 76,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 303,
+              "y": 108,
+              "w": 76,
+              "h": 16
+             },
+             "fill": "#046938",
+             "text": "In Stock Only",
+             "style": "Inter 500 12px ls=0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "name": "Button - Price Chip",
+         "type": "FRAME",
+         "box": {
+          "x": 400,
+          "y": 102,
+          "w": 69,
+          "h": 28
+         },
+         "layout": "HORIZONTAL pad=6,12,6,12 cross=CENTER gap=4",
+         "fill": "#f6f3f2",
+         "radius": 9999,
+         "children": [
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 412,
+            "y": 108,
+            "w": 29,
+            "h": 16
+           },
+           "layout": "VERTICAL pad=0,0,0,0 cross=CENTER",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 412,
+              "y": 108,
+              "w": 29,
+              "h": 16
+             },
+             "fill": "#404040",
+             "text": "Price",
+             "style": "Inter 500 12px ls=0"
+            }
+           ]
+          },
+          {
+           "name": "SVG",
+           "type": "FRAME",
+           "box": {
+            "x": 446,
+            "y": 110,
+            "w": 12,
+            "h": 12
+           },
+           "children": [
+            {
+             "name": "Vector",
+             "type": "VECTOR",
+             "box": {
+              "x": 448,
+              "y": 114,
+              "w": 8,
+              "h": 4
+             },
+             "stroke": "#737373"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Result Metadata Subheader",
+       "type": "FRAME",
+       "box": {
+        "x": 1,
+        "y": 139,
+        "w": 409,
+        "h": 34
+       },
+       "layout": "HORIZONTAL pad=8,16,8,16 main=SPACE_BETWEEN cross=CENTER gap=97.63999938964844",
+       "fill": "#fcf9f8",
+       "stroke": "#f0edec",
+       "children": [
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 17,
+          "y": 148,
+          "w": 145,
+          "h": 17
+         },
+         "layout": "VERTICAL pad=0,0,0,0",
+         "children": [
+          {
+           "name": "Text",
+           "type": "TEXT",
+           "box": {
+            "x": 17,
+            "y": 148,
+            "w": 145,
+            "h": 17
+           },
+           "fill": "#737373",
+           "text": "Showing 0 results for \"xyz\"",
+           "style": "Inter 400 11px ls=0"
+          }
+         ]
+        },
+        {
+         "name": "Container",
+         "type": "FRAME",
+         "box": {
+          "x": 281,
+          "y": 148,
+          "w": 113,
+          "h": 17
+         },
+         "layout": "HORIZONTAL pad=0,0,0,0 cross=CENTER gap=4",
+         "children": [
+          {
+           "name": "Background",
+           "type": "RECTANGLE",
+           "box": {
+            "x": 281,
+            "y": 154,
+            "w": 6,
+            "h": 6
+           },
+           "fill": "#046938",
+           "radius": 9999
+          },
+          {
+           "name": "Container",
+           "type": "FRAME",
+           "box": {
+            "x": 291,
+            "y": 148,
+            "w": 103,
+            "h": 17
+           },
+           "layout": "VERTICAL pad=0,0,0,0",
+           "children": [
+            {
+             "name": "Text",
+             "type": "TEXT",
+             "box": {
+              "x": 291,
+              "y": 148,
+              "w": 103,
+              "h": 17
+             },
+             "fill": "#525252",
+             "text": "Syokimau XanaPlus",
+             "style": "Inter 500 11px ls=0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "texts": [
+  {
+   "text": "No results for 'xyz'",
+   "style": "Inter 700 18px ls=-0.44999998807907104",
+   "box": {
+    "x": 116,
+    "y": 306
+   }
+  },
+  {
+   "text": "We couldn't find matches for \"xyz\". Try checking\nyour spelling or searching for a broader term in\ngroceries or pharmacy.",
+   "style": "Inter 400 12px ls=0",
+   "box": {
+    "x": 55,
+    "y": 342
+   }
+  },
+  {
+   "text": "POPULAR SEARCHES",
+   "style": "Inter 600 12px ls=0.30000001192092896",
+   "box": {
+    "x": 38,
+    "y": 449
+   }
+  },
+  {
+   "text": "Quick suggestions",
+   "style": "Inter 500 10px ls=0",
+   "box": {
+    "x": 284,
+    "y": 450
+   }
+  },
+  {
+   "text": "🥛",
+   "style": "Liberation Sans 500 12px ls=0",
+   "box": {
+    "x": 51,
+    "y": 484
+   }
+  },
+  {
+   "text": "Fresh Milk",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 66,
+    "y": 484
+   }
+  },
+  {
+   "text": "🍞",
+   "style": "Liberation Sans 500 12px ls=0",
+   "box": {
+    "x": 159,
+    "y": 484
+   }
+  },
+  {
+   "text": "Farm Bread",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 174,
+    "y": 484
+   }
+  },
+  {
+   "text": "🌾",
+   "style": "Liberation Sans 500 12px ls=0",
+   "box": {
+    "x": 51,
+    "y": 522
+   }
+  },
+  {
+   "text": "Basmati Rice",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 66,
+    "y": 522
+   }
+  },
+  {
+   "text": "💊",
+   "style": "Liberation Sans 500 12px ls=0",
+   "box": {
+    "x": 174,
+    "y": 522
+   }
+  },
+  {
+   "text": "Paracetamol 500mg",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 189,
+    "y": 522
+   }
+  },
+  {
+   "text": "🥑",
+   "style": "Liberation Sans 500 12px ls=0",
+   "box": {
+    "x": 51,
+    "y": 560
+   }
+  },
+  {
+   "text": "Hass Avocado",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 66,
+    "y": 560
+   }
+  },
+  {
+   "text": "🧴",
+   "style": "Liberation Sans 500 12px ls=0",
+   "box": {
+    "x": 182,
+    "y": 560
+   }
+  },
+  {
+   "text": "Hand Wash",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 197,
+    "y": 560
+   }
+  },
+  {
+   "text": "0",
+   "style": "Inter 700 10px ls=0",
+   "box": {
+    "x": 226,
+    "y": 204
+   }
+  },
+  {
+   "text": "Can't find your item? ",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 152,
+    "y": 719
+   }
+  },
+  {
+   "text": "Contact Syokimau Branch",
+   "style": "Inter 600 11px ls=0",
+   "box": {
+    "x": 88,
+    "y": 735
+   }
+  },
+  {
+   "text": "(+254 718 666 661)",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 227,
+    "y": 735
+   }
+  },
+  {
+   "text": "3",
+   "style": "Inter 700 12px ls=0",
+   "box": {
+    "x": 39,
+    "y": 823
+   }
+  },
+  {
+   "text": "KES 1,360.00",
+   "style": "Inter 700 12px ls=-0.30000001192092896",
+   "box": {
+    "x": 71,
+    "y": 816
+   }
+  },
+  {
+   "text": "3 items in cart",
+   "style": "Inter 400 10px ls=0",
+   "box": {
+    "x": 71,
+    "y": 832
+   }
+  },
+  {
+   "text": "•",
+   "style": "Inter 400 10px ls=0",
+   "box": {
+    "x": 142,
+    "y": 832
+   }
+  },
+  {
+   "text": "Syokimau",
+   "style": "Inter 400 10px ls=0",
+   "box": {
+    "x": 152,
+    "y": 832
+   }
+  },
+  {
+   "text": "View Cart",
+   "style": "Inter 600 12px ls=0",
+   "box": {
+    "x": 291,
+    "y": 823
+   }
+  },
+  {
+   "text": "9:41",
+   "style": "Inter 600 12px ls=-0.30000001192092896",
+   "box": {
+    "x": 29,
+    "y": 15
+   }
+  },
+  {
+   "text": "xyz",
+   "style": "Inter 500 14px ls=0",
+   "box": {
+    "x": 93,
+    "y": 55
+   }
+  },
+  {
+   "text": "Sort: Relevance",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 49,
+    "y": 108
+   }
+  },
+  {
+   "text": "Category",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 189,
+    "y": 108
+   }
+  },
+  {
+   "text": "In Stock Only",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 303,
+    "y": 108
+   }
+  },
+  {
+   "text": "Price",
+   "style": "Inter 500 12px ls=0",
+   "box": {
+    "x": 412,
+    "y": 108
+   }
+  },
+  {
+   "text": "Showing 0 results for \"xyz\"",
+   "style": "Inter 400 11px ls=0",
+   "box": {
+    "x": 17,
+    "y": 148
+   }
+  },
+  {
+   "text": "Syokimau XanaPlus",
+   "style": "Inter 500 11px ls=0",
+   "box": {
+    "x": 291,
+    "y": 148
+   }
+  }
+ ]
+}
