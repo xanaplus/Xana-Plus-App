@@ -38,6 +38,12 @@ yarn-error.*
 # Supabase CLI local state (linked project, pooler URL, versions)
 supabase/.temp/
 
+# Firebase service-account keys (FCM V1). Never committed; the real one lives
+# outside the repo. google-services.json is different: it is public-facing and
+# is committed on purpose (Expo requires it in the project for builds).
+*firebase-adminsdk*.json
+*fcm-service-account*.json
+
 # typescript
 *.tsbuildinfo
 

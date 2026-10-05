@@ -439,3 +439,8 @@ verify_jwt = false
 # Same caller and secret as bc-items-sync (pg_cron, every 2 minutes).
 [functions.product-images-sync]
 verify_jwt = false
+
+# Called by the orders trigger with the same x-sync-secret header, so no user
+# JWT; it rejects anything without the secret.
+[functions.send-push]
+verify_jwt = false

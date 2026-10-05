@@ -36,12 +36,45 @@ from the project root. **Port 8090 is pinned deliberately** — `.claude/launch.
 - **Sign in:** any Kenyan mobile number (e.g. `712345678`), code **`123456`**. You land as *Amina Odhiambo*, Gold tier, 2,480 points.
 - **The demo trap:** session, cart and orders are in-memory only. A hard reload signs you out and re-seeds the basket — navigating inside the app is fine, reloading is not.
 
+## Push notifications
+
+Order updates reach the phone through Expo's push service. Three parts, all in this repo:
+
+| Part | Where |
+| --- | --- |
+| Client — asks permission, gets the Expo push token, saves it | `src/lib/notifications.ts`, mounted as `PushBridge` in `src/app/_layout.tsx` |
+| Store — one row per device | `public.push_tokens` (migration `20261005000000_push_notifications.sql`) |
+| Sender — reads the tokens and posts to Expo | `supabase/functions/send-push` |
+
+The `orders` table fires the sender whenever staff change an order's status (`staff_set_order_status`), so the customer gets "Out for delivery" and the rest with no app code involved. The wording lives in `send-push` (`ORDER_MESSAGES`); a tapped notification opens `/orders/<order_no>`.
+
+**Push does not work in Expo Go on Android from SDK 53.** A development build is required, which needs a free Expo account and `eas init` — that writes `extra.eas.projectId` into `app.json`, which `getExpoPushTokenAsync` requires. Until then `registerForPush` returns `{ ok: false, error: 'no-project' }` and the app runs unchanged.
+
+`bash scripts/setup-push-notifications.sh` walks the whole setup: Expo account → EAS project → Firebase FCM key → development build. A development build needs `expo-dev-client` (the wizard installs it); `eas.json` holds the `development` profile (APK, internal distribution).
+
+**Lockfile gotcha.** EAS Build runs `npm ci` with **npm 10**, which rejects a lockfile written by **npm 12** (npm 12 adds `libc` fields npm 10 does not understand, and `npm ci` then fails with `Missing: <pkg> from lock file`). After any `npm install` on a machine with npm 12, regenerate before building:
+
+```
+npx --yes npm@10.9.4 install --package-lock-only --no-audit --no-fund
+```
+
+`package.json` pins `"packageManager": "npm@10.9.4"` for the same reason. `google-services.json` is committed on purpose (Firebase API keys ship inside every APK); the FCM service-account key is not, and `.gitignore` blocks `*firebase-adminsdk*.json`.
+
+Send a test push by hand:
+
+```
+curl -X POST "https://yinlbtldfojobuwddpsj.supabase.co/functions/v1/send-push" \
+  -H "Content-Type: application/json" \
+  -H "x-sync-secret: <BC_SYNC_SECRET>" \
+  -d '{"userIds":["<user-uuid>"],"title":"Test","body":"Hello"}'
+```
+
 ## Component tests (Storybook)
 
 Each shared component has a `*.stories.tsx` file beside it: `src/components/ui/` plus `features/orders/rate-order` and `features/staff/insights`. A story shows one state; a `play` function taps and checks it like a test.
 
 ```
-npm run storybook       # browse the components at http://localhost:6006
+npm run storybook:dev   # browse the components at http://localhost:6006
 npm run test:stories    # run every story as a test, headless, in the installed Chrome
 ```
 

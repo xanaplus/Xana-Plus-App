@@ -14,6 +14,7 @@ import { FulfilmentProvider } from '@/store/fulfilment';
 import { OrdersProvider } from '@/store/orders';
 import { SessionProvider, useSession } from '@/store/session';
 import { reportError, setScreen, setTrackingEnabled, startTracking, track } from '@/lib/analytics';
+import { usePushNotifications } from '@/lib/notifications';
 import { loadSnapshot } from '@/lib/storage';
 import { colors, spacing } from '@/theme';
 
@@ -41,6 +42,13 @@ function TrackingBridge() {
     if (route === 'checkout') track('checkout_view');
   }, [route]);
 
+  return null;
+}
+
+/** Registers this device for push notifications once a customer is signed in. */
+function PushBridge() {
+  const { user } = useSession();
+  usePushNotifications(user?.id ?? null);
   return null;
 }
 
@@ -111,6 +119,7 @@ export default function RootLayout() {
               <CartToast />
               <NamePrompt />
               <TrackingBridge />
+              <PushBridge />
             </OrdersProvider>
           </CartProvider>
         </FulfilmentProvider>
