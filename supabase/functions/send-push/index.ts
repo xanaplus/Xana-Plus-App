@@ -37,6 +37,18 @@ const ORDER_MESSAGES: Record<string, { title: string; body: string }> = {
   },
 };
 
+/**
+ * Which switch each order status answers to, matching the toggles under
+ * Profile > Notifications (`profiles.preferences.alerts`). A status with no
+ * entry here is always sent.
+ */
+const STATUS_ALERT: Record<string, string> = {
+  received: 'orderConfirmed',
+  shopping: 'orderConfirmed',
+  'out-for-delivery': 'outForDelivery',
+  delivered: 'delivered',
+};
+
 Deno.serve(async request => {
   if (request.method !== 'POST') return json(405, { error: 'method_not_allowed' });
 
@@ -69,6 +81,20 @@ Deno.serve(async request => {
     const status = typeof body.status === 'string' ? body.status : order.status;
     const copy = ORDER_MESSAGES[status];
     if (!copy) return json(200, { skipped: 'no_message' });
+
+    // The customer's own switches win: Profile > Notifications writes these.
+    const { data: profile } = await db
+      .from('profiles')
+      .select('preferences')
+      .eq('id', order.user_id)
+      .maybeSingle();
+    const prefs = (profile?.preferences ?? {}) as {
+      pushEnabled?: boolean;
+      alerts?: Record<string, boolean>;
+    };
+    if (prefs.pushEnabled === false) return json(200, { skipped: 'push_disabled' });
+    const alertKey = STATUS_ALERT[status];
+    if (alertKey && prefs.alerts?.[alertKey] === false) return json(200, { skipped: 'muted' });
 
     userIds = [order.user_id];
     title = copy.title;

@@ -10,6 +10,9 @@ import { supabase } from './supabase';
 /** One Android channel is enough for now; order updates all share it. */
 const ANDROID_CHANNEL_ID = 'orders';
 
+/** The token this run saved, so sign-out can delete its row without a round trip. */
+let savedToken: string | null = null;
+
 /** Foreground delivery: show the banner instead of silently dropping the message. */
 if (Platform.OS !== 'web') {
   Notifications.setNotificationHandler({
@@ -35,6 +38,7 @@ export type PushResult =
 
 /** Saves (or refreshes) this device's token against the signed-in customer. */
 async function saveToken(userId: string, token: string): Promise<void> {
+  savedToken = token;
   await supabase.from('push_tokens').upsert(
     {
       user_id: userId,
@@ -77,6 +81,31 @@ export async function registerForPush(userId: string): Promise<PushResult> {
   } catch {
     return { ok: false, error: 'failed' };
   }
+}
+
+/**
+ * Forgets this device, so a signed-out phone stops receiving that account's
+ * notifications. Call it *before* signing out: afterwards the session is gone
+ * and RLS refuses the delete.
+ */
+export async function unregisterPush(): Promise<void> {
+  if (Platform.OS === 'web' || !Device.isDevice) return;
+
+  const id = projectId();
+  let token = savedToken;
+  if (id) {
+    try {
+      token = (await Notifications.getExpoPushTokenAsync({ projectId: id })).data;
+    } catch {
+      // Offline or no permission: fall back to the token this run already saved.
+    }
+  }
+  if (!token) return;
+
+  savedToken = null;
+  // Best effort. If this fails the row is harmless: the next sign-in on this
+  // device upserts the same token onto the new customer.
+  await supabase.from('push_tokens').delete().eq('token', token);
 }
 
 /**

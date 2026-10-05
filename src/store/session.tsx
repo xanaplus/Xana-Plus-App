@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import type { User } from '@/data/types';
+import { unregisterPush } from '@/lib/notifications';
 import { parsePersisted, persisted, save, STORAGE_KEYS } from '@/lib/storage';
 import { callFunction, supabase, type FunctionError } from '@/lib/supabase';
 
@@ -66,7 +67,7 @@ export type SessionContextValue = {
   requestOtp: (phone: string) => Promise<SignInResult & { phone: string }>;
   /** Checks the code for the pending phone and, on success, signs the customer in. */
   verify: (code: string) => Promise<SignInResult>;
-  signOut: () => void;
+  signOut: () => Promise<void>;
   /** True once signed in with no name on the profile yet (a first sign-in). */
   needsName: boolean;
   /** Saves the customer's name to their profile. */
@@ -206,10 +207,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     [pendingPhone, applyProfile],
   );
 
-  const signOut = useCallback(() => {
+  const signOut = useCallback(async () => {
+    // Drop this device's push token first; once the session is gone RLS refuses it.
+    await unregisterPush();
     applyProfile(null);
     setPendingPhone(null);
-    void supabase.auth.signOut();
+    await supabase.auth.signOut();
   }, [applyProfile]);
 
   const updateName = useCallback(

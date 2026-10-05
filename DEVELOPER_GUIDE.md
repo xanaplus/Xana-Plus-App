@@ -48,6 +48,8 @@ Order updates reach the phone through Expo's push service. Three parts, all in t
 
 The `orders` table fires the sender whenever staff change an order's status (`staff_set_order_status`), so the customer gets "Out for delivery" and the rest with no app code involved. The wording lives in `send-push` (`ORDER_MESSAGES`); a tapped notification opens `/orders/<order_no>`.
 
+Two rules the sender enforces: it skips a message when the matching switch under Profile > Notifications is off (`profiles.preferences.alerts`, plus the `pushEnabled` master switch, mapped by `STATUS_ALERT`), and signing out deletes this device's token row first (`unregisterPush`) so a signed-out phone stops receiving that account's order updates.
+
 **Push does not work in Expo Go on Android from SDK 53.** A development build is required, which needs a free Expo account and `eas init` — that writes `extra.eas.projectId` into `app.json`, which `getExpoPushTokenAsync` requires. Until then `registerForPush` returns `{ ok: false, error: 'no-project' }` and the app runs unchanged.
 
 `bash scripts/setup-push-notifications.sh` walks the whole setup: Expo account → EAS project → Firebase FCM key → development build. A development build needs `expo-dev-client` (the wizard installs it); `eas.json` holds the `development` profile (APK, internal distribution).
