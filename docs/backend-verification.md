@@ -102,6 +102,12 @@ Pause traffic and coordinate any rollback with the backend owner.
 
 ## Remaining limitations
 
+Aggregate SMS controls are also staged: see `sms-abuse-controls.md` for the
+owner-approved 10/minute, 30/hour, 60/rolling-24-hour caps and pause switch.
+Apply the aggregate migration after `atomic_otp` and before reopening traffic.
+For continuous enforcement across cutover, its aggregate history requires a
+24-hour pause, rather than the per-phone-only one-hour pause described above.
+
 - The signed-in UI was not visually verified; the screenshot browser cannot sign in.
   Signed-in behavior was checked through live API requests and isolated store tests.
 - Native storage, camera, push, and Android/iOS builds are outside these web/API checks.

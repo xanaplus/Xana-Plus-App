@@ -25,6 +25,8 @@ const SIGN_IN_MESSAGES: Record<FunctionError, string> = {
   too_soon: 'A code was just sent. Wait 30 seconds before asking for another.',
   too_many: 'Too many codes requested for this number. Try again in an hour.',
   sms_failed: "We couldn't send the SMS just now. Please try again.",
+  sms_limit: 'SMS sign-in is temporarily at capacity. Please try again later.',
+  sms_paused: 'SMS sign-in is temporarily unavailable. Please try again later.',
   sms_blocked:
     'Your network blocked our text because promotional SMS are switched off on this number. Switch them back on with your network provider, or try another number.',
   wrong_code: CODE_INVALID_MESSAGE,

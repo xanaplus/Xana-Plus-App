@@ -72,11 +72,15 @@ submission.
 | `20261001000000_catalogue_photo_first` | `has_photo` / `in_stock` on the catalogue view |
 | `20261005000000_push_notifications` | `push_tokens`, the `orders` status trigger |
 | `20261006000000_atomic_otp` | Staged: service-only durable OTP request ledger, atomic reservation/delivery/consumption RPCs and hourly retention cleanup |
+| `20261006020000_aggregate_otp` | Staged: owner-approved shared SMS attempt caps and emergency pause, with independent 24-hour accounting |
 
 The OTP hardening migration and matching handlers are **not deployed by this
 change**. See `docs/backend-verification.md` for the owner-approved coordinated
 rollout; handlers must not be deployed before their RPCs or mixed with legacy
 handlers during live traffic.
+
+See `docs/sms-abuse-controls.md` for aggregate limits, the owner pause procedure,
+unverified hosted/provider settings, and the longer 24-hour cutover requirement.
 
 **Edge Functions** (`supabase/functions/`): `request-otp` and `verify-otp` (sign-in),
 `place-order` (re-prices every line from `catalogue` and refuses unknown/sold-out/Rx/18+

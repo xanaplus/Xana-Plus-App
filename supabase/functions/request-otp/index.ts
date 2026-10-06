@@ -30,6 +30,8 @@ Deno.serve(async request => {
   if (reservation?.error === 'too_soon' || reservation?.error === 'too_many') {
     return reply(429, { error: reservation.error });
   }
+  if (reservation?.error === 'sms_limit') return reply(429, { error: 'sms_limit' });
+  if (reservation?.error === 'sms_paused') return reply(503, { error: 'sms_paused' });
   if (!reservation?.id) return reply(500, { error: 'server_error' });
 
   const sent = await sendSms(phone, `Your Xana Plus code is ${code}. It expires in 5 minutes. Never share it with anyone.`);

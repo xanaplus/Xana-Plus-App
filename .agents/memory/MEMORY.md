@@ -3,3 +3,4 @@
 - [Restoring test dependencies](dependency-restoration.md) — restore locked React-compatible test packages rather than resolving newer minor peer requirements.
 - [Prescription-first ordering](prescription-workflow.md) — customers upload first; pharmacist review and pricing precede customer ordering.
 - [Screen test boundaries](screen-test-boundaries.md) — isolate native and live-data dependencies; assert visible primitives rather than serializing React element props.
+- [SMS safeguards](sms-policy.md) — owner-approved aggregate limits and demo exemption; staging approval is not live-rollout approval.

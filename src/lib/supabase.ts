@@ -38,6 +38,8 @@ export type FunctionError =
   | 'too_soon'
   | 'too_many'
   | 'sms_failed'
+  | 'sms_limit'
+  | 'sms_paused'
   | 'sms_blocked'
   | 'wrong_code'
   | 'expired'
@@ -47,6 +49,7 @@ export type FunctionError =
 
 const FUNCTION_ERRORS: readonly FunctionError[] = [
   'invalid_phone', 'too_soon', 'too_many', 'sms_failed', 'sms_blocked',
+  'sms_limit', 'sms_paused',
   'wrong_code', 'expired', 'too_many_attempts', 'server_error',
 ];
 

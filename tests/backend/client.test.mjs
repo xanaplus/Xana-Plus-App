@@ -8,7 +8,7 @@ import { callFunction } from '@/lib/supabase';
 
 afterEach(() => vi.unstubAllGlobals());
 describe('sign-in error handling', () => {
-  it.each(['too_soon', 'too_many', 'sms_failed', 'sms_blocked', 'wrong_code', 'expired', 'too_many_attempts'])('preserves %s', async error => {
+  it.each(['too_soon', 'too_many', 'sms_failed', 'sms_blocked', 'sms_limit', 'sms_paused', 'wrong_code', 'expired', 'too_many_attempts'])('preserves %s', async error => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ error }), { status: 400 })));
     expect(await callFunction('request-otp', {})).toEqual({ error });
   });

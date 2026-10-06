@@ -49,8 +49,8 @@ function loadHandler(name, database, options = {}) {
   vm.runInNewContext(compile(`supabase/functions/${name}/index.ts`), context);
   return {
     externalFetch, auth, db, messages, helpers,
-    async run(body) {
-      const response = await handler(new Request('https://test.invalid', { method: 'POST', body: JSON.stringify(body) }));
+    async run(body, headers = {}) {
+      const response = await handler(new Request('https://test.invalid', { method: 'POST', headers, body: JSON.stringify(body) }));
       return { status: response.status, body: await response.json() };
     },
   };
@@ -60,12 +60,171 @@ describe('OTP atomic server-side boundaries (isolated PostgreSQL)', () => {
   let database;
   beforeAll(() => { database = createOtpDatabase(); }, 30000);
   afterAll(() => database?.close());
-  beforeEach(async () => { await database.sql('truncate public.otp_codes, public.otp_requests'); });
+  beforeEach(async () => {
+    await database.sql(`truncate public.otp_codes, public.otp_requests, public.otp_sms_requests;
+      update public.otp_sms_policy set paused = false, minute_limit = 10, hour_limit = 30, day_limit = 60;`);
+  });
   const request = options => loadHandler('request-otp', database, options);
   const verify = options => loadHandler('verify-otp', database, options);
   const age = () => database.sql("update public.otp_requests set created_at = created_at - interval '31 seconds'");
   const deliveredCode = sender => sender.messages.at(-1).match(/code is (\d{6})/)[1];
   const count = table => database.sql(`select count(*) from public.${table}`);
+  const differentPhone = i => `0700${String(i + 100).padStart(6, '0')}`;
+
+  it('enforces the approved defaults across many phones despite spoofed forwarding headers', async () => {
+    const sender = request();
+    const results = await Promise.all(Array.from({ length: 24 }, (_, i) =>
+      sender.run({ phone: differentPhone(i) }, {
+        'x-forwarded-for': `198.51.100.${i}`, 'x-real-ip': `192.0.2.${i}`,
+        'forwarded': `for=203.0.113.${i}`, 'cf-connecting-ip': `203.0.113.${i}`,
+      })));
+    expect(results.filter(r => r.status === 200)).toHaveLength(10);
+    expect(results.filter(r => r.status === 429 && r.body.error === 'sms_limit')).toHaveLength(14);
+    expect(sender.externalFetch).toHaveBeenCalledTimes(10);
+    expect(await count('otp_sms_requests')).toBe('10');
+    expect(await count('otp_requests')).toBe('10');
+    expect(await count('otp_codes')).toBe('10');
+    expect(await database.sql('select minute_limit, hour_limit, day_limit from public.otp_sms_policy')).toBe('10|30|60');
+  });
+
+  it.each([
+    ['minute', 10, '10 seconds'],
+    ['hour', 30, '2 minutes'],
+    ['day', 60, '2 hours'],
+  ])('admits exactly one concurrent reservation at the %s boundary', async (_window, limit, ageBy) => {
+    await database.sql(`insert into public.otp_sms_requests (id, created_at)
+      select -n, now() - interval '${ageBy}' from generate_series(1, ${limit - 1}) n`);
+    const sender = request();
+    const results = await Promise.all(Array.from({ length: 12 }, (_, i) => sender.run({ phone: differentPhone(i) })));
+    expect(results.filter(r => r.status === 200)).toHaveLength(1);
+    expect(results.filter(r => r.status === 429 && r.body.error === 'sms_limit')).toHaveLength(11);
+    expect(sender.externalFetch).toHaveBeenCalledTimes(1);
+    expect(await count('otp_sms_requests')).toBe(String(limit));
+    expect(await count('otp_requests')).toBe('1');
+  });
+
+  it.each([
+    [10, '10 seconds', '61 seconds'],
+    [30, '2 minutes', '61 minutes'],
+    [60, '2 hours', '25 hours'],
+  ])('recovers when the rolling window for %i reservations expires', async (limit, beforeAge, afterAge) => {
+    await database.sql(`insert into public.otp_sms_requests (id, created_at)
+      select -n, now() - interval '${beforeAge}' from generate_series(1, ${limit}) n`);
+    const sender = request();
+    expect(await sender.run({ phone: PHONE })).toMatchObject({ status: 429, body: { error: 'sms_limit' } });
+    expect(sender.externalFetch).not.toHaveBeenCalled();
+    await database.sql(`update public.otp_sms_requests set created_at = now() - interval '${afterAge}'`);
+    expect(await sender.run({ phone: PHONE })).toMatchObject({ status: 200 });
+  });
+
+  it('keeps aggregate history through delivery failure, consumption, and per-phone cleanup', async () => {
+    const failed = request({ smsThrows: true });
+    await failed.run({ phone: PHONE });
+    const sender = request();
+    await sender.run({ phone: differentPhone(1) });
+    await verify().run({ phone: differentPhone(1), code: deliveredCode(sender) });
+    await database.sql(`update public.otp_requests set created_at = now() - interval '2 hours';
+      update public.otp_sms_requests set created_at = now() - interval '2 hours'`);
+    await database.sql(await database.sql("select command from cron.jobs where name = 'otp-retention-cleanup'"));
+    expect(await count('otp_requests')).toBe('0');
+    expect(await count('otp_codes')).toBe('0');
+    expect(await count('otp_sms_requests')).toBe('2');
+    const failedMany = request({ smsStatus: 'Failed' });
+    for (let i = 0; i < 10; i++) {
+      expect(await failedMany.run({ phone: differentPhone(i + 2) })).toMatchObject({ status: 502 });
+    }
+    expect(await failedMany.run({ phone: differentPhone(20) })).toMatchObject({ status: 429, body: { error: 'sms_limit' } });
+    expect(failedMany.externalFetch).toHaveBeenCalledTimes(10);
+    expect(await count('otp_sms_requests')).toBe('12');
+  });
+
+  it('does not charge rejected per-phone requests to the aggregate ledger', async () => {
+    const sender = request();
+    for (let i = 0; i < 5; i++) {
+      await sender.run({ phone: PHONE });
+      expect(await sender.run({ phone: PHONE })).toMatchObject({ body: { error: 'too_soon' } });
+      await age();
+    }
+    expect(await sender.run({ phone: PHONE })).toMatchObject({ body: { error: 'too_many' } });
+    expect(await count('otp_sms_requests')).toBe('5');
+  });
+
+  it('pauses all non-demo sends without blocking demo sign-in or existing code verification', async () => {
+    const sender = request();
+    await sender.run({ phone: PHONE });
+    const code = deliveredCode(sender);
+    await database.sql('update public.otp_sms_policy set paused = true');
+    const paused = request();
+    const results = await Promise.all(Array.from({ length: 12 }, (_, i) => paused.run({ phone: differentPhone(i) })));
+    expect(results.every(r => r.status === 503 && r.body.error === 'sms_paused')).toBe(true);
+    expect(await paused.run({ phone: '0700000000' })).toMatchObject({ status: 200 });
+    expect(paused.externalFetch).not.toHaveBeenCalled();
+    expect(await verify().run({ phone: '0700000000', code: '123456' })).toMatchObject({ status: 200 });
+    expect(await verify().run({ phone: PHONE, code })).toMatchObject({ status: 200 });
+    expect(await count('otp_sms_requests')).toBe('1');
+    await database.sql('update public.otp_sms_policy set paused = false');
+    expect(await paused.run({ phone: differentPhone(0) })).toMatchObject({ status: 200 });
+  });
+
+  it('keeps demo sends exempt when the aggregate budget is exhausted', async () => {
+    await database.sql(`insert into public.otp_sms_requests (id, created_at)
+      select -n, now() from generate_series(1, 60) n`);
+    const sender = request();
+    expect(await sender.run({ phone: PHONE })).toMatchObject({ status: 429, body: { error: 'sms_limit' } });
+    expect(await sender.run({ phone: '0700000000' })).toMatchObject({ status: 200 });
+    expect(sender.externalFetch).not.toHaveBeenCalled();
+    expect(await count('otp_sms_requests')).toBe('60');
+  });
+
+  it('fails closed on a missing policy while preserving demo behavior', async () => {
+    await database.sql('delete from public.otp_sms_policy');
+    try {
+      const sender = request();
+      expect(await sender.run({ phone: PHONE })).toMatchObject({ status: 500, body: { error: 'server_error' } });
+      expect(await sender.run({ phone: '0700000000' })).toMatchObject({ status: 200 });
+      expect(sender.externalFetch).not.toHaveBeenCalled();
+      expect(await count('otp_requests')).toBe('0');
+    } finally {
+      await database.sql('insert into public.otp_sms_policy (minute_limit, hour_limit, day_limit) values (10, 30, 60)');
+    }
+  });
+
+  it('rolls back both phone reservation and code if aggregate accounting fails', async () => {
+    await database.sql(`create function public.reject_sms_insert() returns trigger language plpgsql as
+      $$ begin raise exception 'Simulated accounting failure'; end $$;
+      create trigger reject_sms_insert before insert on public.otp_sms_requests
+      for each row execute function public.reject_sms_insert()`);
+    try {
+      const sender = request();
+      expect(await sender.run({ phone: PHONE })).toMatchObject({ status: 500, body: { error: 'server_error' } });
+      expect(sender.externalFetch).not.toHaveBeenCalled();
+      expect(await count('otp_requests')).toBe('0');
+      expect(await count('otp_codes')).toBe('0');
+      expect(await count('otp_sms_requests')).toBe('0');
+    } finally {
+      await database.sql('drop trigger reject_sms_insert on public.otp_sms_requests; drop function public.reject_sms_insert()');
+    }
+  });
+
+  it('only prunes aggregate history older than 24 hours', async () => {
+    await database.sql(`insert into public.otp_sms_requests values
+      (-1, now() - interval '25 hours'), (-2, now() - interval '23 hours')`);
+    await database.sql(await database.sql("select command from cron.jobs where name = 'otp-sms-retention-cleanup'"));
+    expect(await database.sql('select id from public.otp_sms_requests')).toBe('-2');
+  });
+
+  it('prevents direct aggregate-table edits and bypass of the wrapper', async () => {
+    for (const role of ['anon', 'authenticated', 'service_role']) {
+      for (const statement of [
+        'select * from public.otp_sms_requests',
+        'delete from public.otp_sms_requests',
+        'update public.otp_sms_policy set paused = false',
+        "select public.reserve_otp_per_phone('+254700000001', repeat('a',64))",
+      ]) await expect(database.sql(`set role ${role}; ${statement}`)).rejects.toThrow();
+    }
+    await expect(database.sql('update public.otp_sms_policy set minute_limit = 0')).rejects.toThrow();
+    await expect(database.sql('update public.otp_sms_policy set hour_limit = 61')).rejects.toThrow();
+  });
 
   it('rejects invalid phone numbers and malformed codes before database or SMS access', async () => {
     const sender = request();
@@ -285,6 +444,7 @@ describe('OTP atomic server-side boundaries (isolated PostgreSQL)', () => {
     `);
     try {
       expect(await fixture.sql('select count(*) from public.otp_requests')).toBe('5');
+      expect(await fixture.sql('select count(*) from public.otp_sms_requests')).toBe('5');
       const sender = loadHandler('request-otp', fixture);
       expect(await sender.run({ phone: PHONE })).toMatchObject({ body: { error: 'too_many' } });
       expect(sender.externalFetch).not.toHaveBeenCalled();
@@ -296,6 +456,7 @@ describe('OTP atomic server-side boundaries (isolated PostgreSQL)', () => {
       ? { data: null, error: { message: 'offline' } } : database.rpc(name, params)) });
     expect(await sender.run({ phone: PHONE })).toMatchObject({ status: 500, body: { error: 'server_error' } });
     expect(await count('otp_requests')).toBe('1');
+    expect(await count('otp_sms_requests')).toBe('1');
     expect(await sender.run({ phone: PHONE })).toMatchObject({ body: { error: 'too_soon' } });
   });
 });

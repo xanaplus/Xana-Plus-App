@@ -1,6 +1,9 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
-/** Database RPCs own the five-minute TTL, 30-second wait and five-attempt limits. */
+/** Database RPCs own OTP limits and the owner-approved aggregate SMS policy.
+ * Never key abuse controls on caller-supplied forwarded-IP headers: no verified
+ * gateway identity contract is configured for these public endpoints.
+ */
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',

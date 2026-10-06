@@ -42,6 +42,7 @@ export function createOtpDatabase(seedSql = '') {
       ${seedSql}
     `], { stdio: 'pipe' });
     execFileSync('psql', [...args, '-f', 'supabase/migrations/20261006000000_atomic_otp.sql'], { stdio: 'pipe' });
+    execFileSync('psql', [...args, '-f', 'supabase/migrations/20261006020000_aggregate_otp.sql'], { stdio: 'pipe' });
   } catch (error) {
     close();
     throw error;
