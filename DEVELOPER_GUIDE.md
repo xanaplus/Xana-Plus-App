@@ -289,10 +289,8 @@ complains it isn't a recognised route, cast rather than rename the call:
 
 The five commercial questions **D-1 to D-5** were answered on 23 Sep 2026 and implemented
 (hold the item rather than substitute, refunds by credit note, suggest an alternative,
-never show the packaging fee, 1 point per KES 120). **`SRS.md` still marks FR-C.7 as
-"Blocked — waiting on Decision 1" and D-1 as open; that is stale** — the "Item on hold"
-card exists in `src/app/orders/[id].tsx`. The living management doc was updated to all 53;
-`SRS.md` was not.
+never show the packaging fee, 1 point per KES 120). FR-C.7 is the "Item on hold" card in
+`src/app/orders/[id].tsx`. `SRS.md` (version 1.2) records the answers in section 8.
 
 Still genuinely open: whether to keep the KES 20 platform fee hidden, the D-1 cut-off
 (30 minutes, then next slot, then refund), the D-3 substitution wording, and whether the

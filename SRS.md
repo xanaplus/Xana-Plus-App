@@ -1,21 +1,21 @@
 # XanaPlus — what the app must do
 
-Requirements specification · Version 1.1 · 22 September 2026 · Owner: Product
+Requirements specification · Version 1.2 · 6 October 2026 · Owner: Product
 
-*Plain-language edition. Nothing has been added, removed or changed — only the wording. Every requirement keeps the same reference code as Version 1.0.*
+*Plain-language edition. Every requirement keeps the same reference code as Version 1.0. Version 1.2 records the answers to Decisions 1 to 5 (given 23 September 2026) and marks FR-C.7 as built.*
 
 ## Executive summary
 
-XanaPlus gives customers one app for buying groceries and prescription medicines, paying by M-Pesa or another supported method, and following the order until it arrives. Most of the customer-facing app is already built and can be tapped through today; the systems behind it — catalogue, stock, payments, pharmacy — are not yet connected. Approval should stay conditional on settling five business decisions and proving the app meets the standards set out in section 6.
+XanaPlus gives customers one app for buying groceries and prescription medicines, paying by M-Pesa or another supported method, and following the order until it arrives. Most of the customer-facing app is already built and can be tapped through today; the systems behind it — catalogue, stock, payments, pharmacy — are not yet connected. Approval should stay conditional on management confirming the answers to five business decisions and on proving the app meets the standards set out in section 6.
 
 | What the board should look at | Where we stand | What we are asking for |
 | --- | --- | --- |
-| Is the scope ready? | 53 things the app must do: 52 built as screens, 1 not started (blocked on a decision below) | Protect what is already working, and settle Decision 1 so the last item can be finished. |
+| Is the scope ready? | 53 things the app must do: all 53 built as screens | Protect what is already working. |
 | Is it safe to launch? | 28 measurable quality standards (speed, uptime, security, pharmacy rules, accessibility) | Require hard evidence against each one before launch, not an opinion. |
 | What is non-negotiable? | 39 of the 53 are marked Must | Nothing marked Must changes without the named owner agreeing and the impact being written down. |
-| What is still undecided? | 5 business decisions are open | Give Decisions 1 to 5 an owner and a date. Decisions 1 to 3 come first — they affect customer trust and money directly. |
+| What is still undecided? | All 5 business decisions were answered on 23 Sep 2026; management has not yet confirmed them, and three details are still open | Confirm Decisions 1 to 5, and settle the open details in section 8: the cut-off for holding an item, the replacement wording, and the hidden packaging fee. |
 
-**Recommendation:** approve XanaPlus as the agreed launch baseline, on three conditions — put an owner and a date against Decisions 1 to 5; finish every Must item or formally agree an exception; and show evidence that each quality standard in section 6 has been met.
+**Recommendation:** approve XanaPlus as the agreed launch baseline, on three conditions — confirm the answers to Decisions 1 to 5 and settle their open details; finish every Must item or formally agree an exception; and show evidence that each quality standard in section 6 has been met.
 
 ## 1. What this document covers
 
@@ -52,7 +52,7 @@ Every requirement is one short sentence saying what the app does, with a plain t
 | **FR-** | A feature — something the app does. FR stands for functional requirement. 53 of them, grouped A to G. |
 | **NFR-** | A standard — how well the app must do it (speed, uptime, security, accessibility). NFR stands for non-functional requirement. 28 of them. |
 | **US-** | A customer journey, written from the customer's point of view. 5 of them. |
-| **D-** | A business decision we have not made yet. 5 of them, in section 8. |
+| **D-** | A business decision. 5 of them, in section 8, all answered on 23 Sep 2026. |
 | **Must** | Needed for launch. Cannot be dropped without the named owner agreeing. |
 | **Should** | Wanted for launch, but launch can go ahead without it. |
 | **Could** | Nice to have. Only if there is time. |
@@ -109,7 +109,7 @@ Reference codes are permanent. If a requirement is dropped, its code is retired,
 | FR-C.4 | Asks before checkout what to do if an item is unavailable: replace it, leave it out, or call me first | The choice shows on the basket and travels with the order | Must | Built |
 | FR-C.5 | Offers items from past orders when the basket is empty | With nothing in it, the basket shows past purchases and a way back to browsing | Should | Built |
 | FR-C.6 | Asks the customer what to do when an item turns out to be unavailable during picking, showing the shopper's note | The customer can choose replace, refund or call, and the choice is recorded on the order | Must | Built |
-| FR-C.7 | Follows a set rule when the customer does not answer that question | ⛔ Blocked — waiting on Decision 1 | Must | Open |
+| FR-C.7 | Follows a set rule when the customer does not answer that question | The unavailable item is held rather than replaced, and the order shows an "Item on hold" card with a way to choose now (Decision 1) | Must | Built |
 
 ### 5.4 Checkout and payment
 
@@ -240,15 +240,15 @@ These are the journeys the requirements exist to support. Each one can be built,
 
 ## 8. Decisions we need from the business
 
-The designs currently say different things on these five points. Each one blocks the requirement named beside it. Nothing blocked gets built until the decision is made and written down here.
+The designs said different things on these five points. All five were answered on 23 Sep 2026 and the app follows the answers. Management has not yet confirmed them, and the details marked "Still open" need settling.
 
-| Ref | The decision | Blocks | Owner | Decided |
-| --- | --- | --- | --- | --- |
-| D-1 | When we cannot reach a customer about an out-of-stock item, do we drop the item and refund it, or send the nearest equivalent? | FR-C.7 | Operations | — |
-| D-2 | Is an M-Pesa refund immediate or within 24 hours? And is refunding a price difference handled differently from refunding a whole item? | FR-E.6, NFR-A.4 | Finance | — |
-| D-3 | Is a replacement of equal or higher value free to the customer, or do we send a cheaper one and refund the difference? What do we do when only a dearer equivalent exists? | FR-C.6 | Commercial | — |
-| D-4 | Which lines does the order summary officially show — is the packaging fee shown alongside member savings, or instead of it? | FR-D.1 | Finance | — |
-| D-5 | What is the published rate at which customers earn points? | FR-G.1 | Commercial | — |
+| Ref | The decision | Affects | Owner | Answer (23 Sep 2026) | Still open |
+| --- | --- | --- | --- | --- | --- |
+| D-1 | When we cannot reach a customer about an out-of-stock item, do we drop the item and refund it, or send the nearest equivalent? | FR-C.7 | Operations | Neither: hold the item until the customer is reached | How long to hold. Suggested: 30 minutes of attempts, then the next slot, then remove the item and refund it by credit note |
+| D-2 | Is an M-Pesa refund immediate or within 24 hours? And is refunding a price difference handled differently from refunding a whole item? | FR-E.6, NFR-A.4 | Finance | Not immediate: every refund goes through an internal credit note first | How long a refund takes |
+| D-3 | Is a replacement of equal or higher value free to the customer, or do we send a cheaper one and refund the difference? What do we do when only a dearer equivalent exists? | FR-C.6 | Commercial | Mark the item out of stock and suggest an alternative; the customer chooses (for now) | The wording "equal or greater value at no extra cost" is not confirmed |
+| D-4 | Which lines does the order summary officially show — is the packaging fee shown alongside member savings, or instead of it? | FR-D.1 | Finance | The packaging fee is never shown | The KES 20 fee is still charged, so the lines shown do not add up to the total (FR-D.1) |
+| D-5 | What is the published rate at which customers earn points? | FR-G.1 | Commercial | 1 point per KES 120 spent | Points are spent at 10 points = KES 1, which returns under 0.1% |
 
 Decisions 1, 2 and 3 carry direct financial and trust consequences. Getting one of them wrong means charging a customer for something they did not want, or promising a refund we do not honour.
 
