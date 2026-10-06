@@ -27,5 +27,6 @@ Sign-in, the live catalogue, saved orders, and account data depend on that proje
 - `npm run typecheck` checks TypeScript.
 - `npm run lint` runs Expo's ESLint configuration.
 - M-Pesa payment confirmation is simulated in the imported app; it does not capture real payments.
+- The user has deferred real M-Pesa integration until they have Daraja API access. Leave the simulated flow unchanged unless they ask to resume that work.
 - Web preview does not verify native camera, push notifications, or Android/iOS builds.
 - No Supabase migrations or Edge Function deployments are performed as part of environment setup.
