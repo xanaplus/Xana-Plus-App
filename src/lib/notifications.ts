@@ -1,6 +1,6 @@
-import Constants from 'expo-constants';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
+import type * as NotificationsModule from 'expo-notifications';
 import { router, type Href } from 'expo-router';
 import { useEffect } from 'react';
 import { Platform } from 'react-native';
@@ -13,8 +13,19 @@ const ANDROID_CHANNEL_ID = 'orders';
 /** The token this run saved, so sign-out can delete its row without a round trip. */
 let savedToken: string | null = null;
 
+/**
+ * Expo Go dropped remote push in SDK 53 and expo-notifications throws on import
+ * there, which would crash the whole app. Load it only where push can work:
+ * development and store builds on a phone. Null means "no push here".
+ */
+const Notifications: typeof NotificationsModule | null =
+  Platform.OS === 'web' || Constants.executionEnvironment === ExecutionEnvironment.StoreClient
+    ? null
+    : // eslint-disable-next-line @typescript-eslint/no-require-imports
+      require('expo-notifications');
+
 /** Foreground delivery: show the banner instead of silently dropping the message. */
-if (Platform.OS !== 'web') {
+if (Notifications) {
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowBanner: true,
@@ -56,8 +67,8 @@ async function saveToken(userId: string, token: string): Promise<void> {
  * server can reach the customer. Called on sign-in; safe to call repeatedly.
  */
 export async function registerForPush(userId: string): Promise<PushResult> {
-  // The web preview and simulators have no push service.
-  if (Platform.OS === 'web' || !Device.isDevice) return { ok: false, error: 'unsupported' };
+  // The web preview, Expo Go and simulators have no push service.
+  if (!Notifications || !Device.isDevice) return { ok: false, error: 'unsupported' };
 
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync(ANDROID_CHANNEL_ID, {
@@ -89,7 +100,7 @@ export async function registerForPush(userId: string): Promise<PushResult> {
  * and RLS refuses the delete.
  */
 export async function unregisterPush(): Promise<void> {
-  if (Platform.OS === 'web' || !Device.isDevice) return;
+  if (!Notifications || !Device.isDevice) return;
 
   const id = projectId();
   let token = savedToken;
@@ -115,7 +126,7 @@ export async function unregisterPush(): Promise<void> {
  */
 export function usePushNotifications(userId: string | null): void {
   useEffect(() => {
-    if (!userId || Platform.OS === 'web') return;
+    if (!userId || !Notifications) return;
     let live = true;
     void registerForPush(userId);
     // Expo rotates the underlying device token; re-read the Expo token and refresh the row.
@@ -129,7 +140,7 @@ export function usePushNotifications(userId: string | null): void {
   }, [userId]);
 
   useEffect(() => {
-    if (Platform.OS === 'web') return;
+    if (!Notifications) return;
     const open = (data: unknown) => {
       const route = (data as { route?: unknown } | null)?.route;
       if (typeof route === 'string' && route.startsWith('/')) router.push(route as Href);
