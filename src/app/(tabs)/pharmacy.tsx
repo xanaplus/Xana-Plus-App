@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import {
@@ -30,6 +30,7 @@ import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
 import { colors, elevation, gradients, layout, radius, spacing } from '@/theme';
+import { isPharmacyReviewer } from '@/features/prescriptions/api';
 
 /** Clinical filter chips above the product groups — `null` shows every group. */
 const PHARMACY_FILTERS: readonly { label: string; categorySlug: string | null }[] = [
@@ -137,11 +138,24 @@ export default function PharmacyRoute() {
   const router = useRouter();
   const cart = useCart();
   const { store } = useFulfilment();
-  const { isAuthenticated } = useSession();
+  const { isAuthenticated, user } = useSession();
   const [filter, setFilter] = useState<string | null>(null);
   const [openIntake, setOpenIntake] = useState<string | null>(null);
   const [choice, setChoice] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [reviewerCheck, setReviewerCheck] = useState<{ userId: string; allowed: boolean } | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    const userId = user?.id;
+    if (!isAuthenticated || !userId) return () => { active = false; };
+    void isPharmacyReviewer().then(allowed => {
+      if (active) setReviewerCheck({ userId, allowed: Boolean(allowed) });
+    }).catch(() => {
+      if (active) setReviewerCheck({ userId, allowed: false });
+    });
+    return () => { active = false; };
+  }, [isAuthenticated, user?.id]);
 
   const vertical = verticalBySlug('pharmacy');
   const sections = filter ? vertical.sections.filter(section => section.categorySlug === filter) : vertical.sections;
@@ -158,6 +172,10 @@ export default function PharmacyRoute() {
     // open their intake sheet.
     if (id === 'prescriptions') {
       router.push('/pharmacy/prescriptions');
+      return;
+    }
+    if (id === 'upload-rx') {
+      router.push('/pharmacy/upload');
       return;
     }
     if (id === 'ask') {
@@ -227,6 +245,15 @@ export default function PharmacyRoute() {
             </Pressable>
           ))}
         </View>
+        {isAuthenticated && reviewerCheck?.userId === user?.id && reviewerCheck?.allowed ? <View style={styles.inset}>
+          <Card variant="tinted" padding={spacing.md} style={styles.reviewAccess}>
+            <View style={styles.reviewCopy}>
+              <Txt variant="label">Pharmacy review queue</Txt>
+              <Txt variant="caption" color="onSurfaceVariant">Customers: upload a prescription first; pharmacist updates appear under My Prescriptions.</Txt>
+            </View>
+            <Button label="Open reviewer queue" size="sm" variant="outline" onPress={() => router.push('/pharmacy/review')} />
+          </Card>
+        </View> : null}
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
@@ -441,6 +468,8 @@ const styles = StyleSheet.create({
   searchField: { borderRadius: radius.lg },
   quickRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, marginTop: spacing.md },
   quickAction: { flex: 1, alignItems: 'center', gap: spacing.sm },
+  reviewAccess: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: spacing.md },
+  reviewCopy: { flex: 1, gap: spacing.xxs },
   quickGlyph: {
     width: layout.touchTarget,
     height: layout.touchTarget,

@@ -98,7 +98,9 @@ Deno.serve(async request => {
   });
 
   if (items.some(item => item.age_restricted) && body.ageConfirmed !== true) return reply(400, { error: 'age_unconfirmed' });
-  if (items.some(item => item.requires_rx) && body.rxSupplied !== true) return reply(400, { error: 'rx_missing' });
+  // Rx orders are created only by the transaction-bound pharmacist-quote RPC.
+  // A client-supplied boolean/reference is never clinical approval.
+  if (items.some(item => item.requires_rx)) return reply(400, { error: 'rx_missing' });
 
   const itemsSubtotal = items.reduce((sum, item) => sum + item.line_total, 0);
 

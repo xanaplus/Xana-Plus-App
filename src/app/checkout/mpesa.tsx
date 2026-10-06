@@ -63,6 +63,10 @@ export default function MpesaPendingRoute() {
 
   /** Saves the order, empties the basket and opens live tracking. */
   const confirm = async () => {
+    if (cart.items.some(item => item.product.rxRequired)) {
+      setSaveError('Prescription medicines must be ordered from the pharmacist’s quote in My prescriptions. No payment has been collected.');
+      return;
+    }
     setSaving(true);
     setSaveError(null);
     const result = await placeOrder({
@@ -75,7 +79,7 @@ export default function MpesaPendingRoute() {
       substitution: cart.substitution,
       pointsRedeemed: pointsUsed,
       ageConfirmed: fulfilment.ageConfirmed,
-      rxSupplied: !cart.items.some(i => i.product.rxRequired) || fulfilment.rxReference !== '',
+      rxSupplied: false,
       rxReference: fulfilment.rxReference || undefined,
       promoCode: fulfilment.promo?.code,
     });

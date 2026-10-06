@@ -25,11 +25,13 @@ create table public.prescriptions (
   patient_kind text not null check (patient_kind in ('myself', 'dependant')),
   doctor text not null default '' check (char_length(doctor) <= 100),
   notes text not null default '' check (char_length(notes) <= 1000),
-  status text not null default 'draft' check (status in ('draft','submitted','quoted','rejected','ordered','cancelled')),
+  status text not null default 'draft' check (status in ('draft','submitted','clarification','held','quoted','rejected','ordered','cancelled')),
+  consented_at timestamptz not null default now(),
+  clarification_response text not null default '',
   files jsonb not null default '[]'::jsonb,
   quote_lines jsonb not null default '[]'::jsonb,
   review_note text not null default '',
-  reviewer_id uuid references auth.users(id),
+  reviewer_id uuid references auth.users(id) on delete set null,
   valid_until date,
   quoted_at timestamptz,
   created_at timestamptz not null default now(),
@@ -45,6 +47,34 @@ create policy "Pharmacy reviewers read prescriptions" on public.prescriptions fo
   using ((select public.is_pharmacy_reviewer()) and status <> 'draft');
 revoke all on public.prescriptions from anon, authenticated;
 grant select on public.prescriptions to authenticated;
+
+-- Immutable decision history, private to the customer and authorised reviewers.
+create table public.prescription_events (
+  id bigint generated always as identity primary key,
+  prescription_id uuid not null references public.prescriptions(id) on delete cascade,
+  actor_id uuid references auth.users(id) on delete set null,
+  status text not null,
+  review_note text not null,
+  quote_lines jsonb not null,
+  created_at timestamptz not null default now()
+);
+alter table public.prescription_events enable row level security;
+create policy "Prescription participants read decision history" on public.prescription_events
+  for select to authenticated using (exists (
+    select 1 from public.prescriptions p where p.id=prescription_id
+      and (p.user_id=(select auth.uid()) or ((select public.is_pharmacy_reviewer()) and p.status<>'draft'))
+  ));
+revoke all on public.prescription_events from anon,authenticated;
+grant select on public.prescription_events to authenticated;
+create function public.audit_prescription_change() returns trigger
+language plpgsql security definer set search_path=public as $$
+begin
+  insert into prescription_events(prescription_id,actor_id,status,review_note,quote_lines)
+    values(new.id,auth.uid(),new.status,new.review_note,new.quote_lines);
+  return new;
+end; $$;
+create trigger prescription_audit after insert or update on public.prescriptions
+  for each row execute function public.audit_prescription_change();
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('prescriptions','prescriptions',false,10485760,array['image/jpeg','image/png','image/webp']);
@@ -70,11 +100,12 @@ create policy "Customer removes draft prescription photos" on storage.objects
       where p.id::text = (storage.foldername(name))[2] and p.user_id = (select auth.uid()) and p.status = 'draft')
   );
 
-create function public.create_prescription(p_patient text, p_kind text, p_doctor text, p_notes text)
+create function public.create_prescription(p_patient text, p_kind text, p_doctor text, p_notes text, p_consent boolean)
 returns uuid language plpgsql security definer set search_path = public as $$
 declare v_id uuid;
 begin
   if auth.uid() is null then raise exception 'signed_out'; end if;
+  if p_consent is distinct from true then raise exception 'consent_required'; end if;
   if nullif(trim(p_patient),'') is null or length(p_patient)>100 or p_kind not in ('myself','dependant')
     or p_kind is null or length(coalesce(p_doctor,''))>100 or length(coalesce(p_notes,''))>1000
     then raise exception 'invalid_prescription'; end if;
@@ -89,11 +120,11 @@ declare v prescriptions;
 begin
   select * into v from prescriptions where id=p_id and user_id=auth.uid() for update;
   if not found or v.status<>'draft' then raise exception 'not_editable'; end if;
+  if exists (select 1 from jsonb_array_elements(v.files) f where f->>'path'=p_path) then return; end if;
   if jsonb_array_length(v.files)>=5 or split_part(p_path,'/',1)<>auth.uid()::text
     or split_part(p_path,'/',2)<>p_id::text or p_path is null
     or not exists (select 1 from storage.objects where bucket_id='prescriptions' and name=p_path)
     then raise exception 'invalid_file'; end if;
-  if exists (select 1 from jsonb_array_elements(v.files) f where f->>'path'=p_path) then return; end if;
   update prescriptions set files=files||jsonb_build_array(jsonb_build_object('path',p_path,'name',left(coalesce(p_name,'Prescription photo'),100))),
     updated_at=now() where id=p_id;
 end; $$;
@@ -123,7 +154,7 @@ end; $$;
 create function public.cancel_prescription(p_id uuid) returns void
 language plpgsql security definer set search_path = public as $$
 begin
-  perform 1 from prescriptions where id=p_id and user_id=auth.uid() and status in ('draft','submitted','quoted','rejected') for update;
+  perform 1 from prescriptions where id=p_id and user_id=auth.uid() and status in ('draft','submitted','clarification','held','quoted','rejected') for update;
   if not found then raise exception 'not_editable'; end if;
   update prescriptions set status='cancelled',updated_at=now() where id=p_id;
 end; $$;
@@ -134,7 +165,7 @@ declare v prescriptions; v_line jsonb; v_row record; v_lines jsonb := '[]'::json
 begin
   if not is_pharmacy_reviewer() then raise exception 'not_reviewer'; end if;
   select * into v from prescriptions where id=p_id for update;
-  if not found or v.status not in ('submitted','quoted') then raise exception 'not_reviewable'; end if;
+  if not found or v.status not in ('submitted','quoted','clarification','held') then raise exception 'not_reviewable'; end if;
   if p_note is null or length(p_note)>1000 then raise exception 'invalid_quote'; end if;
   if p_reject then
     if nullif(trim(p_note),'') is null then raise exception 'invalid_quote'; end if;
@@ -146,18 +177,41 @@ begin
     or p_lines is null or jsonb_typeof(p_lines)<>'array' or jsonb_array_length(p_lines) not between 1 and 50
     then raise exception 'invalid_quote'; end if;
   for v_line in select * from jsonb_array_elements(p_lines) loop
-    if (v_line->>'quantity') !~ '^[1-9][0-9]{0,2}$' or v_line->>'itemNo' is null
+    if v_line->>'quantity' is null or (v_line->>'quantity') !~ '^[1-9][0-9]{0,2}$' or v_line->>'itemNo' is null
       or length(coalesce(v_line->>'instructions',''))>500 then raise exception 'invalid_quote'; end if;
     v_qty := (v_line->>'quantity')::integer;
-    select item_no,name,price,stock into v_row from catalogue where item_no=v_line->>'itemNo';
+    select item_no,name,price,stock,category,age_restricted into v_row from catalogue where item_no=v_line->>'itemNo';
     if not found or v_row.price<=0 or v_row.price is null or coalesce(v_row.stock,0)<v_qty
       or exists(select 1 from jsonb_array_elements(v_lines) l where l->>'item_no'=v_row.item_no)
       then raise exception 'invalid_quote'; end if;
+    if v_row.age_restricted or coalesce(v_row.category,'') not in ('GENERAL','OVER THE COUNTER','CHRONIC','SUPPLEMENT','COSMETICS & BEAUTY P')
+      or v_row.name ~* '(digoxin|lithium|carbamazepine)' then raise exception 'restricted_item'; end if;
     v_lines := v_lines || jsonb_build_array(jsonb_build_object('item_no',v_row.item_no,'name',v_row.name,
       'quantity',v_qty,'unit_price',v_row.price,'instructions',coalesce(v_line->>'instructions','')));
   end loop;
   update prescriptions set status='quoted',quote_lines=v_lines,review_note=trim(p_note),reviewer_id=auth.uid(),
     valid_until=p_valid_until,quoted_at=now(),updated_at=now() where id=p_id;
+end; $$;
+
+create function public.set_prescription_review_status(p_id uuid,p_status text,p_note text)
+returns void language plpgsql security definer set search_path=public as $$
+begin
+  if not is_pharmacy_reviewer() then raise exception 'not_reviewer'; end if;
+  if p_status is null or p_status not in ('clarification','held') or nullif(trim(p_note),'') is null
+    or length(p_note)>1000 then raise exception 'response_required'; end if;
+  perform 1 from prescriptions where id=p_id and status in ('submitted','quoted','clarification','held') for update;
+  if not found then raise exception 'not_reviewable'; end if;
+  update prescriptions set status=p_status,review_note=trim(p_note),reviewer_id=auth.uid(),
+    clarification_response='',quote_lines='[]'::jsonb,quoted_at=null,valid_until=null,updated_at=now() where id=p_id;
+end; $$;
+
+create function public.respond_to_prescription(p_id uuid,p_message text)
+returns void language plpgsql security definer set search_path=public as $$
+begin
+  if nullif(trim(p_message),'') is null or length(p_message)>1000 then raise exception 'response_required'; end if;
+  perform 1 from prescriptions where id=p_id and user_id=auth.uid() and status='clarification' for update;
+  if not found then raise exception 'not_editable'; end if;
+  update prescriptions set status='submitted',clarification_response=trim(p_message),updated_at=now() where id=p_id;
 end; $$;
 
 alter table public.orders add column prescription_id uuid references public.prescriptions(id);
@@ -172,8 +226,8 @@ begin
   if new.requires_rx or exists(select 1 from catalogue c where c.item_no=new.item_no and c.requires_rx) then
     select * into v_order from orders where id=new.order_id;
     select * into v from prescriptions where id=v_order.prescription_id and user_id=v_order.user_id;
-    if not found or v.status not in ('quoted','ordered') or v.valid_until<current_date
-      or v.quoted_at<now()-interval '48 hours' or not exists(
+    if not found or v.reviewer_id is null or v.status not in ('quoted','ordered') or v.valid_until is null or v.valid_until<current_date
+      or v.quoted_at is null or (v.status='quoted' and v.quoted_at<now()-interval '48 hours') or not exists(
         select 1 from jsonb_array_elements(v.quote_lines) l
         where l->>'item_no'=new.item_no and (l->>'quantity')::integer=new.quantity
           and (l->>'unit_price')::numeric=new.unit_price)
@@ -183,6 +237,22 @@ begin
 end; $$;
 create trigger prescription_order_item_gate before insert or update on public.order_items
   for each row execute function public.guard_prescription_order_item();
+
+-- Fulfilment cannot advance reference-only Rx orders without logged approval.
+create function public.guard_prescription_dispatch() returns trigger
+language plpgsql security definer set search_path=public as $$
+begin
+  if new.status in ('shopping','out-for-delivery','delivered')
+    and exists(select 1 from order_items i left join catalogue c on c.item_no=i.item_no
+      where i.order_id=new.id and (i.requires_rx or c.requires_rx)) then
+    if not exists(select 1 from prescriptions p where p.id=new.prescription_id
+      and p.user_id=new.user_id and p.status='ordered' and p.reviewer_id is not null
+      and p.order_no=new.order_no) then raise exception 'rx_missing'; end if;
+  end if;
+  return new;
+end; $$;
+create trigger prescription_dispatch_gate before update on public.orders
+  for each row execute function public.guard_prescription_dispatch();
 
 -- Customer checkout is one transaction and one prescription is redeemable once.
 -- Quote validity and current stock/prices are rechecked under the prescription lock.
@@ -197,8 +267,10 @@ begin
   -- Repeated confirmation returns the same order without a second charge/order.
   if v.status='ordered' then return jsonb_build_object('orderNo',v.order_no); end if;
   if v.status<>'quoted' then raise exception 'not_approved'; end if;
-  if v.valid_until is null or v.valid_until<current_date or v.quoted_at<now()-interval '48 hours'
+  if v.reviewer_id is null or v.valid_until is null or v.valid_until<current_date or v.quoted_at is null or v.quoted_at<now()-interval '48 hours'
     then raise exception 'expired_quote'; end if;
+  if p_details->>'quoteVersion' is null or (p_details->>'quoteVersion')::timestamptz<>v.quoted_at
+    then raise exception 'quote_updated'; end if;
   if p_details->>'paymentMethod' is null or p_details->>'paymentMethod' not in ('cod','mpesa')
     or nullif(trim(p_details->>'contact'),'') is null or length(p_details->>'contact')>100
     or nullif(trim(p_details->>'addressLine'),'') is null or length(p_details->>'addressLine')>300
@@ -206,9 +278,11 @@ begin
     or nullif(trim(p_details->>'storeName'),'') is null or length(p_details->>'storeName')>100
     then raise exception 'invalid_order'; end if;
   for v_line in select * from jsonb_array_elements(v.quote_lines) loop
-    select item_no,name,price,stock,age_restricted into v_row from catalogue where item_no=v_line->>'item_no';
-    if not found or v_row.age_restricted or v_row.price<>(v_line->>'unit_price')::numeric
+    select item_no,name,price,stock,age_restricted,category into v_row from catalogue where item_no=v_line->>'item_no';
+    if not found or v_row.age_restricted or v_row.price is null or v_row.price<=0 or v_row.price<>(v_line->>'unit_price')::numeric
       or coalesce(v_row.stock,0)<(v_line->>'quantity')::integer then raise exception 'quote_changed'; end if;
+    if coalesce(v_row.category,'') not in ('GENERAL','OVER THE COUNTER','CHRONIC','SUPPLEMENT','COSMETICS & BEAUTY P')
+      or v_row.name ~* '(digoxin|lithium|carbamazepine)' then raise exception 'restricted_item'; end if;
     v_subtotal:=v_subtotal+(v_line->>'unit_price')::numeric*(v_line->>'quantity')::integer;
   end loop;
   v_total:=v_subtotal+20;
@@ -220,7 +294,7 @@ begin
         age_confirmed,rx_reference,prescription_id)
       values(v_order_no,auth.uid(),true,p_details->>'paymentMethod','simulated',trim(p_details->>'contact'),
         trim(p_details->>'addressLine'),trim(p_details->>'slotLabel'),trim(p_details->>'storeName'),'call',
-        v_subtotal,0,0,20,v_total,0,v_total,floor(v_total/120)::integer,false,p_id::text,p_id)
+         v_subtotal,0,0,20,v_total,0,v_total,0,false,p_id::text,p_id)
       returning id into v_order_id;
       exit;
     exception when unique_violation then
@@ -236,14 +310,16 @@ begin
   return jsonb_build_object('orderNo',v_order_no);
 end; $$;
 
-revoke all on function public.create_prescription(text,text,text,text),
+revoke all on function public.create_prescription(text,text,text,text,boolean),
   public.attach_prescription_photo(uuid,text,text),public.remove_prescription_photo(uuid,text),
   public.submit_prescription(uuid),public.cancel_prescription(uuid),
-  public.review_prescription(uuid,jsonb,text,date,boolean),public.place_prescription_order(uuid,jsonb)
+  public.review_prescription(uuid,jsonb,text,date,boolean),public.place_prescription_order(uuid,jsonb),
+  public.set_prescription_review_status(uuid,text,text),public.respond_to_prescription(uuid,text)
   from public,anon;
-grant execute on function public.create_prescription(text,text,text,text),
+grant execute on function public.create_prescription(text,text,text,text,boolean),
   public.attach_prescription_photo(uuid,text,text),public.remove_prescription_photo(uuid,text),
   public.submit_prescription(uuid),public.cancel_prescription(uuid),
-  public.review_prescription(uuid,jsonb,text,date,boolean),public.place_prescription_order(uuid,jsonb)
+  public.review_prescription(uuid,jsonb,text,date,boolean),public.place_prescription_order(uuid,jsonb),
+  public.set_prescription_review_status(uuid,text,text),public.respond_to_prescription(uuid,text)
   to authenticated;
 commit;

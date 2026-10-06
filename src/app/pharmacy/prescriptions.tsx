@@ -9,6 +9,7 @@ import { colors, radius, spacing } from '@/theme';
 
 const tone = (status: Prescription['status']): 'neutral' | 'info' | 'fresh' | 'warning' => ({
   draft: 'neutral', submitted: 'info', quoted: 'fresh', rejected: 'warning', ordered: 'fresh', cancelled: 'neutral',
+  clarification: 'info', held: 'warning',
 }[status] as 'neutral' | 'info' | 'fresh' | 'warning');
 
 export default function PrescriptionsScreen() {
@@ -23,7 +24,12 @@ export default function PrescriptionsScreen() {
     <View style={styles.listHead}><Txt variant="titleLg">Your requests</Txt><Pressable accessibilityRole="button" onPress={() => void refresh()}><Txt variant="label" color="primaryContainer">Refresh</Txt></Pressable></View>
     {!isAuthenticated ? <Card variant="elevated" padding={spacing.lg} style={styles.empty}><Txt variant="title">Sign in to view your prescriptions</Txt><Txt variant="bodySm" color="onSurfaceVariant">Prescription records are private to your account.</Txt><Button label="Sign in" onPress={() => router.push('/login')} /></Card> :
       loading && records.length === 0 ? <View style={styles.loading}><ActivityIndicator color={colors.primary} /><Txt variant="bodySm" color="onSurfaceVariant">Loading your requests…</Txt></View> :
-      error ? <ErrorNotice message={error} onRetry={() => void refresh()} /> :
+      error ? <View style={styles.errorState}>
+        <Card variant="tinted" padding={spacing.md}>
+          <Txt variant="caption" color="onSurfaceVariant">Your prescription history could not be loaded. No new prescription has been submitted from this screen.</Txt>
+        </Card>
+        <ErrorNotice message={error} onRetry={() => void refresh()} />
+      </View> :
       records.length === 0 ? <Card variant="elevated" padding={spacing.lg} style={styles.empty}><View style={styles.emptyGlyph}><Icon name="prescription" size={23} color="primaryContainer" /></View><Txt variant="title">No prescription requests yet</Txt><Txt variant="bodySm" color="onSurfaceVariant">Start by adding a clear photo of the prescription. A quote comes back here for your review.</Txt><Button label="Upload prescription" onPress={() => router.push('/pharmacy/upload')} /></Card> :
       <View style={styles.list}>{records.map(record => <Pressable key={record.id} accessibilityRole="button" onPress={() => router.push(`/pharmacy/prescription/${record.id}`)}>
         <Card variant="elevated" padding={spacing.lg} style={styles.record}>
@@ -39,7 +45,7 @@ export default function PrescriptionsScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { gap: spacing.md, paddingBottom: spacing.giant }, actions: { marginTop: spacing.xs }, explainer: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md }, explainerText: { flex: 1 },
+  content: { gap: spacing.md, paddingBottom: spacing.giant }, actions: { marginTop: spacing.xs }, explainer: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md }, explainerText: { flex: 1 }, errorState: { gap: spacing.sm },
   listHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: spacing.md }, list: { gap: spacing.md },
   record: { gap: spacing.md }, recordHead: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm }, recordTitle: { flex: 1, gap: spacing.xxs },
   openRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.outlineVariant },

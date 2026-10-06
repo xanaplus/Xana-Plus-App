@@ -20,6 +20,14 @@ export default function UploadPrescriptionScreen() {
   const [draftId, setDraftId] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [backendUnavailable, setBackendUnavailable] = useState(false);
+
+  const checkBackendError = (cause: unknown) => {
+    const message = cause && typeof cause === 'object'
+      ? `${'message' in cause ? String(cause.message) : ''} ${'code' in cause ? String(cause.code) : ''}`.toLowerCase()
+      : '';
+    setBackendUnavailable(['does not exist', 'schema cache', 'could not find function', 'pgrst202', 'pgrst205', '42p01', 'bucket not found'].some(part => message.includes(part)));
+  };
 
   const addPhotos = async (camera: boolean) => {
     setError('');
@@ -35,14 +43,14 @@ export default function UploadPrescriptionScreen() {
         return true;
       });
       setAssets(current => [...current, ...usable.filter(a => !current.some(existing => existing.uri === a.uri))].slice(0, 5));
-    } catch (e) { setError(e instanceof Error ? e.message : prescriptionError(e)); }
+    } catch (e) { checkBackendError(e); setError(e instanceof Error ? e.message : prescriptionError(e)); }
   };
 
   const submit = async () => {
     if (!isAuthenticated) { setError('Sign in to securely submit this prescription. Your photos and details remain on this screen.'); return; }
     if (!patientName.trim() || !consent) { setError('Enter the patient name and confirm consent before continuing.'); return; }
     if (assets.length === 0 && !draftId) { setError('Add at least one prescription photo.'); return; }
-    setBusy(true); setError('');
+    setBusy(true); setError(''); setBackendUnavailable(false);
     try {
       let id = draftId;
       if (!id) {
@@ -55,7 +63,7 @@ export default function UploadPrescriptionScreen() {
       }
       await submitPrescription(id);
       router.replace(`/pharmacy/prescription/${id}`);
-    } catch (e) { setError(prescriptionError(e)); }
+    } catch (e) { checkBackendError(e); setError(prescriptionError(e)); }
     finally { setBusy(false); }
   };
 
@@ -68,18 +76,21 @@ export default function UploadPrescriptionScreen() {
     <PhotoQueue assets={assets} onRemove={uri => setAssets(current => current.filter(asset => asset.uri !== uri))} onCamera={() => void addPhotos(true)} onGallery={() => void addPhotos(false)} disabled={busy || assets.length >= 5} />
     <Card variant="elevated" padding={spacing.lg} style={styles.card}>
       <Txt variant="title">Who is the prescription for?</Txt>
-      <View style={styles.choiceRow}><Chip label="Myself" selected={kind === 'myself'} onPress={() => { setKind('myself'); setPatientName(''); }} />
-        <Chip label="A dependant" selected={kind === 'dependant'} onPress={() => { setKind('dependant'); setPatientName(''); }} /></View>
-      <Field label={kind === 'myself' ? 'Your full name' : 'Dependant’s full name'} value={patientName} onChangeText={setPatientName} placeholder="Name as written on prescription" />
-      <Field label="Doctor or facility (optional)" value={doctor} onChangeText={setDoctor} placeholder="Prescriber or clinic" />
-      <Field label="Note for pharmacist (optional)" value={notes} onChangeText={setNotes} placeholder="Anything relevant to the review" multiline />
+      <View style={styles.choiceRow}><Chip label="Myself" selected={kind === 'myself'} onPress={() => { if (!draftId && !busy) { setKind('myself'); setPatientName(''); } }} />
+        <Chip label="A dependant" selected={kind === 'dependant'} onPress={() => { if (!draftId && !busy) { setKind('dependant'); setPatientName(''); } }} /></View>
+      <Field label={kind === 'myself' ? 'Your full name' : 'Dependant’s full name'} value={patientName} onChangeText={setPatientName} editable={!draftId && !busy} placeholder="Name as written on prescription" />
+      <Field label="Doctor or facility (optional)" value={doctor} onChangeText={setDoctor} editable={!draftId && !busy} placeholder="Prescriber or clinic" />
+      <Field label="Note for pharmacist (optional)" value={notes} onChangeText={setNotes} editable={!draftId && !busy} placeholder="Anything relevant to the review" multiline />
     </Card>
     <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: consent }} onPress={() => setConsent(v => !v)} style={styles.consent}>
       <View style={[styles.checkbox, consent && styles.checked]}>{consent ? <Icon name="check" size={13} color="onPrimary" /> : null}</View>
-      <Txt variant="caption" color="onSurfaceVariant" style={styles.consentText}>I consent to an authorised pharmacist handling this prescription to assess and price the medicines. This does not place an order.</Txt>
+      <Txt variant="caption" color="onSurfaceVariant" style={styles.consentText}>I am authorised to share this prescription and consent to pharmacist review and pricing. This does not place an order.</Txt>
     </Pressable>
     {!isAuthenticated ? <Card variant="flat" padding={spacing.md}><Txt variant="label">Sign in is required before submission.</Txt><Button label="Sign in" size="sm" variant="outline" onPress={() => router.push('/login')} /></Card> : null}
-    {error ? <ErrorNotice message={error} /> : null}
+    {error ? <>
+      {backendUnavailable ? <Card variant="tinted" padding={spacing.md}><Txt variant="caption" color="onSurfaceVariant">The prescription backend or private photo storage service is unavailable in this environment. No request has been confirmed.</Txt></Card> : null}
+      <ErrorNotice message={error} />
+    </> : null}
     {draftId ? <Txt variant="caption" color="onSurfaceVariant">Draft saved for retry. Successfully uploaded photos will not be uploaded again.</Txt> : null}
     <Button label={busy ? 'Saving securely…' : draftId ? 'Retry submission' : 'Submit for pharmacist review'} fullWidth size="lg" disabled={busy || !consent || !patientName.trim() || (!assets.length && !draftId)} onPress={() => void submit()} />
   </Screen>;

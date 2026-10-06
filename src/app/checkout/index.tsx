@@ -57,11 +57,8 @@ const CLUB_POINTS_RATE = 1 / 120;
 const POINTS_PER_KES = 10;
 const POINT_PRESETS = [500, 1000, 1500];
 
-/** Shortest prescription reference the upload sheet accepts. */
-const REFERENCE_MIN_LENGTH = 4;
-
 /** The overlay a checkout screen can raise. */
-type SheetKind = 'address' | 'slot' | 'mpesa-number' | 'upload-rx' | 'age' | null;
+type SheetKind = 'address' | 'slot' | 'mpesa-number' | 'age' | null;
 
 /** The counter address used when the shopper collects from a store. */
 const pickupAddress = (pickupStore: (typeof stores)[number], contact: string): Address => ({
@@ -110,16 +107,8 @@ export default function CheckoutRoute() {
 
   const [sheet, setSheet] = useState<SheetKind>(null);
   const [itemsExpanded, setItemsExpanded] = useState(true);
-  /** Pharmacy items whose prescription has been supplied locally. */
-  // A reference given earlier (before an M-Pesa retry) still clears the basket's Rx lines.
-  const [approvedRx, setApprovedRx] = useState<string[]>(() =>
-    fulfilment.rxReference ? cart.items.filter(item => item.product.rxRequired).map(item => item.product.id) : [],
-  );
-  const prescriptionRef = fulfilment.rxReference;
-  const setPrescriptionRef = fulfilment.setRxReference;
   const [placing, setPlacing] = useState(false);
   const [placeError, setPlaceError] = useState<string | null>(null);
-  const [referenceDraft, setReferenceDraft] = useState('');
   const [phoneDraft, setPhoneDraft] = useState<PhoneInput>(EMPTY_PHONE_INPUT);
   const [authOpen, setAuthOpen] = useState(false);
   const [pendingPay, setPendingPay] = useState(false);
@@ -130,10 +119,9 @@ export default function CheckoutRoute() {
   const [promoError, setPromoError] = useState<string | null>(null);
 
   const method = PAYMENT_METHODS.find(entry => entry.id === fulfilment.paymentMethod) ?? PAYMENT_METHODS[0];
-  const blockedItems = cart.items.filter(item => item.product.rxRequired && !approvedRx.includes(item.product.id));
+  const blockedItems = cart.items.filter(item => item.product.rxRequired);
   const rxBlocked = blockedItems.length > 0;
   const blockedNames = blockedItems.map(item => item.product.name).join(', ');
-  const rxNames = cart.items.filter(item => item.product.rxRequired).map(item => item.product.name).join(', ');
   /** Alcohol in the basket: the shopper confirms they are 18 or over before paying. */
   const needsAgeCheck = cart.items.some(item => item.product.ageRestricted);
   const { ageConfirmed, setAgeConfirmed } = fulfilment;
@@ -208,20 +196,15 @@ export default function CheckoutRoute() {
     closeSheet();
   };
 
-  const submitPrescription = () => {
-    const reference = referenceDraft.trim().toUpperCase();
-    if (reference.length < REFERENCE_MIN_LENGTH) return;
-    setApprovedRx(previous => [...previous, ...blockedItems.map(item => item.product.id)]);
-    setPrescriptionRef(reference);
-    setReferenceDraft('');
-    closeSheet();
-  };
-
   const removeBlockedItems = () => {
     blockedItems.forEach(item => cart.remove(item.product.id));
   };
 
   const placeOrder = async (confirmedAge = ageConfirmed) => {
+    if (rxBlocked) {
+      setPlaceError('Upload your prescription first. Confirm the pharmacist’s priced list from My prescriptions before ordering medicines.');
+      return;
+    }
     if (method.id === 'mpesa') {
       router.replace('/checkout/mpesa');
       return;
@@ -239,7 +222,6 @@ export default function CheckoutRoute() {
       pointsRedeemed: pointsUsed,
       ageConfirmed: confirmedAge,
       rxSupplied: !rxBlocked,
-      rxReference: prescriptionRef || undefined,
       promoCode: promo?.code,
     });
     setPlacing(false);
@@ -258,7 +240,7 @@ export default function CheckoutRoute() {
     fulfilment.setPointsRedeemed(0);
     setPromo(null);
     setAgeConfirmed(false);
-    setPrescriptionRef('');
+    fulfilment.setRxReference('');
   };
 
   const applyPromo = async () => {
@@ -772,9 +754,9 @@ export default function CheckoutRoute() {
                 </Txt>
               </View>
 
-              <Pressable accessibilityRole="button" onPress={() => setSheet('upload-rx')} style={styles.rxRefLink}>
+              <Pressable accessibilityRole="button" onPress={() => router.push('/pharmacy/prescriptions')} style={styles.rxRefLink}>
                 <Txt variant="label" color="primaryContainer">
-                  I already have a prescription reference
+                  View my prescription requests and quotes
                 </Txt>
               </Pressable>
 
@@ -795,13 +777,6 @@ export default function CheckoutRoute() {
                   style={styles.flex}
                 />
               </View>
-            </View>
-          ) : prescriptionRef && rxNames ? (
-            <View style={[styles.inset, styles.rxResolved]}>
-              <Icon name="check-circle" size={18} color="primaryContainer" />
-              <Txt variant="bodySm" color="onSuccessContainer" style={styles.flex}>
-                {`Prescription ${prescriptionRef} attached for ${rxNames}. A pharmacist verifies it before your order leaves ${fulfilment.store.name}.`}
-              </Txt>
             </View>
           ) : null}
         </>
@@ -911,64 +886,6 @@ export default function CheckoutRoute() {
               {"We'll send the M-Pesa prompt to this number each time you order."}
             </Txt>
           )}
-        </View>
-      </BottomSheet>
-
-      <BottomSheet
-        visible={sheet === 'upload-rx'}
-        onClose={closeSheet}
-        title="Upload prescription"
-        description="A pharmacist verifies every prescription before pharmacy items leave the store."
-        footer={
-          <Button
-            label="Submit prescription"
-            icon="prescription"
-            iconPosition="leading"
-            disabled={referenceDraft.trim().length < REFERENCE_MIN_LENGTH}
-            onPress={submitPrescription}
-          />
-        }
-      >
-        <View style={styles.sheetGroup}>
-          <Txt variant="overline" color="onSurfaceVariant">
-            Awaiting prescription
-          </Txt>
-          {blockedItems.map(item => (
-            <View key={item.product.id} style={styles.rxItem}>
-              <View style={styles.rxItemIcon}>
-                <Icon name="prescription" size={16} color="primaryContainer" />
-              </View>
-              <View style={styles.flex}>
-                <Txt variant="title" numberOfLines={2}>
-                  {item.product.name}
-                </Txt>
-                <Txt variant="caption" color="onSurfaceVariant">
-                  {item.product.pack}
-                </Txt>
-              </View>
-              <Txt variant="label">{formatKes(item.lineTotal)}</Txt>
-            </View>
-          ))}
-        </View>
-        <View style={styles.field}>
-          <Txt variant="overline" color="onSurfaceVariant">
-            Prescription reference
-          </Txt>
-          <View style={styles.fieldRow}>
-            <TextInput
-              value={referenceDraft}
-              onChangeText={setReferenceDraft}
-              placeholder="RX-2481-PB"
-              placeholderTextColor={colors.outline}
-              autoCapitalize="characters"
-              autoCorrect={false}
-              accessibilityLabel="Prescription reference"
-              style={styles.input}
-            />
-          </View>
-          <Txt variant="caption" color="onSurfaceVariant">
-            Printed on the prescription slip or in the SMS from your doctor.
-          </Txt>
         </View>
       </BottomSheet>
 

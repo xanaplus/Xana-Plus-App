@@ -6,12 +6,12 @@ import { Button, Card, Icon, Txt } from '@/components/ui';
 import { prescriptionPhotoUrl, type PrescriptionFile } from './api';
 import { colors, radius, spacing } from '@/theme';
 
-export function Field({ label, value, onChangeText, placeholder, multiline = false, keyboardType }: {
+export function Field({ label, value, onChangeText, placeholder, multiline = false, keyboardType, editable = true }: {
   label: string; value: string; onChangeText: (value: string) => void; placeholder?: string;
-  multiline?: boolean; keyboardType?: 'default' | 'phone-pad';
+  multiline?: boolean; keyboardType?: 'default' | 'phone-pad'; editable?: boolean;
 }) {
   return <View style={styles.field}><Txt variant="label">{label}</Txt><TextInput accessibilityLabel={label}
-    value={value} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor={colors.outline}
+    value={value} onChangeText={onChangeText} editable={editable} placeholder={placeholder} placeholderTextColor={colors.outline}
     multiline={multiline} keyboardType={keyboardType} textAlignVertical={multiline ? 'top' : 'center'}
     style={[styles.input, multiline && styles.multiline]} /></View>;
 }
@@ -28,7 +28,7 @@ export function PhotoQueue({ assets, onRemove, onCamera, onGallery, disabled }: 
       <Image source={{ uri: asset.uri }} contentFit="cover" style={styles.thumb} />
       <View style={styles.fileInfo}><Txt variant="label" numberOfLines={1}>{asset.fileName || `Photo ${i + 1}`}</Txt>
         <Txt variant="caption" color="onSurfaceVariant">{((asset.fileSize ?? 0) / 1024 / 1024).toFixed(1)} MB</Txt></View>
-      <Pressable accessibilityRole="button" accessibilityLabel="Remove photo" onPress={() => onRemove(asset.uri)}><Icon name="close" size={18} color="onSurfaceVariant" /></Pressable>
+      <Pressable accessibilityRole="button" accessibilityLabel="Remove photo" disabled={disabled} onPress={() => onRemove(asset.uri)}><Icon name="close" size={18} color="onSurfaceVariant" /></Pressable>
     </View>)}
   </Card>;
 }
@@ -38,11 +38,22 @@ export function PrivatePhotos({ files }: { files: PrescriptionFile[] }) {
   const [failed, setFailed] = useState<string[]>([]);
   useEffect(() => {
     let active = true;
-    setUrls({}); setFailed([]);
-    Promise.all(files.map(async file => {
-      try { const url = await prescriptionPhotoUrl(file.path); if (active) setUrls(old => ({ ...old, [file.path]: url })); }
-      catch { if (active) setFailed(old => [...old, file.path]); }
-    }));
+    const refreshPhotos = async () => {
+      await Promise.resolve();
+      if (!active) return;
+      setUrls({});
+      setFailed([]);
+      const nextUrls: Record<string, string> = {};
+      const nextFailed: string[] = [];
+      await Promise.all(files.map(async file => {
+        try { nextUrls[file.path] = await prescriptionPhotoUrl(file.path); }
+        catch { nextFailed.push(file.path); }
+      }));
+      if (!active) return;
+      setUrls(nextUrls);
+      setFailed(nextFailed);
+    };
+    void refreshPhotos();
     return () => { active = false; };
   }, [files]);
   if (!files.length) return <Txt variant="caption" color="onSurfaceVariant">No prescription photos attached.</Txt>;
