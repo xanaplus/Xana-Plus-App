@@ -77,7 +77,14 @@ const reply = {
   data: { orderNo: 'XN-test', createdAt: '2026-10-06T10:00:00Z', itemsSubtotal: 100, promoDiscount: 0,
     deliveryFee: 0, platformFee: 20, total: 120, pointsEarned: 1 }, error: null,
 };
-const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
+const deferred = () => { let resolve, reject; const promise = new Promise((r, j) => { resolve = r; reject = j; }); return { promise, resolve, reject }; };
+const profile = (id, preferences = {}) => ({
+  data: { id, name: 'Test', phone: '+254700000001', club_tier: 'Bronze', club_points: 0, preferences }, error: null,
+});
+const savedOrder = id => ({
+  order_no: id, created_at: '2026-10-06T10:00:00Z', status: 'received', order_items: [],
+  items_subtotal: 100, delivery_fee: 0, platform_fee: 20, total: 120, points_earned: 1,
+});
 let root, session, orders;
 function SessionProbe() { session = useSession(); return null; }
 function OrdersProbe() { orders = useOrders(); return null; }
@@ -185,5 +192,160 @@ describe('session authority', () => {
     expect(await session.requestOtp('0700000001')).toMatchObject({ ok: false, error: 'too_soon' });
     expect(session.pendingPhone).toBeNull();
     expect(await session.verify('000000')).toEqual({ ok: false, error: 'expired' });
+  });
+});
+
+describe('preferences sync feedback', () => {
+  const mount = async () => {
+    mocks.session = { user: { id: 'A' } };
+    mocks.tables.profiles = profile('A', { pushEnabled: true, privacy: { analytics: true } });
+    await act(async () => { root = create(React.createElement(SessionProvider, null, React.createElement(SessionProbe))); });
+  };
+
+  it('marks optimistic settings unsaved on backend error and retries the merged choices', async () => {
+    await mount();
+    mocks.tables.profiles = { data: null, error: { message: 'offline' } };
+    await act(async () => session.updatePreferences({ pushEnabled: false }));
+    expect(session.preferences.pushEnabled).toBe(false);
+    expect(session.preferencesSaving).toBe(false);
+    expect(session.preferencesError).toContain('not been saved');
+    mocks.tables.profiles = profile('A');
+    await act(async () => session.retryPreferences());
+    expect(session.preferencesError).toBeNull();
+    expect(session.preferencesSaving).toBe(false);
+    expect(mocks.calls.filter(c => c.action === 'update').at(-1)).toMatchObject({
+      filters: [['id', 'A']], payload: { preferences: { pushEnabled: false, privacy: { analytics: true } } },
+    });
+  });
+
+  it('handles rejected requests and zero-row updates as failed saves', async () => {
+    await mount();
+    const pending = deferred();
+    mocks.tables.profiles = pending.promise;
+    await act(async () => session.updatePreferences({ pushEnabled: false }));
+    expect(session.preferencesSaving).toBe(true);
+    await act(async () => pending.reject(new Error('network')));
+    expect(session.preferencesError).not.toBeNull();
+    mocks.tables.profiles = { data: null, error: null };
+    await act(async () => session.retryPreferences());
+    expect(session.preferencesError).not.toBeNull();
+  });
+
+  it('serializes rapid changes and saves the newest merged preferences', async () => {
+    await mount();
+    const pending = deferred();
+    mocks.tables.profiles = pending.promise;
+    await act(async () => session.updatePreferences({ pushEnabled: false }));
+    await act(async () => session.updatePreferences({ privacy: { analytics: false } }));
+    expect(mocks.calls.filter(c => c.action === 'update')).toHaveLength(1);
+    mocks.tables.profiles = profile('A');
+    await act(async () => pending.resolve(profile('A')));
+    const writes = mocks.calls.filter(c => c.action === 'update');
+    expect(writes).toHaveLength(2);
+    expect(writes[1].payload.preferences).toMatchObject({ pushEnabled: false, privacy: { analytics: false } });
+    expect(session.preferencesSaving).toBe(false);
+    expect(session.preferencesError).toBeNull();
+  });
+
+  it('does not let a profile refresh hide pending unsaved changes', async () => {
+    await mount();
+    mocks.tables.profiles = { data: null, error: { message: 'offline' } };
+    await act(async () => session.updatePreferences({ pushEnabled: false }));
+    mocks.tables.profiles = profile('A', { pushEnabled: true });
+    await act(async () => session.refreshProfile());
+    expect(session.preferences.pushEnabled).toBe(false);
+    expect(session.preferencesError).not.toBeNull();
+  });
+
+  it('does not let a delayed profile refresh overwrite choices saved after the refresh began', async () => {
+    await mount();
+    const pending = deferred();
+    mocks.tables.profiles = pending.promise;
+    let refreshing;
+    await act(async () => { refreshing = session.refreshProfile(); });
+    mocks.tables.profiles = profile('A');
+    await act(async () => session.updatePreferences({ pushEnabled: false }));
+    await act(async () => {
+      pending.resolve(profile('A', { pushEnabled: true }));
+      await refreshing;
+    });
+    expect(session.preferences.pushEnabled).toBe(false);
+    expect(session.preferencesError).toBeNull();
+  });
+
+  it.each(['success', 'failure'])('ignores an old account save %s after sign-out and switching accounts', async outcome => {
+    await mount();
+    const pending = deferred();
+    mocks.tables.profiles = pending.promise;
+    await act(async () => session.updatePreferences({ pushEnabled: false }));
+    await act(async () => session.signOut());
+    mocks.session = { user: { id: 'B' } };
+    mocks.tables.profiles = profile('B', { pushEnabled: true });
+    mocks.callFunction.mockResolvedValueOnce({ data: { ok: true } }).mockResolvedValueOnce({ data: { access_token: 'fake', refresh_token: 'fake' } });
+    await act(async () => session.requestOtp('0700000001'));
+    await act(async () => expect((await session.verify('000000')).ok).toBe(true));
+    await act(async () => pending.resolve(outcome === 'success' ? profile('A') : { data: null, error: { message: 'offline' } }));
+    expect(session.user.id).toBe('B');
+    expect(session.preferences).toEqual({ pushEnabled: true });
+    expect(session.preferencesError).toBeNull();
+    expect(session.preferencesSaving).toBe(false);
+    const writes = mocks.calls.filter(c => c.action === 'update').length;
+    await act(async () => session.retryPreferences());
+    expect(mocks.calls.filter(c => c.action === 'update')).toHaveLength(writes);
+  });
+});
+
+describe('order history sync feedback', () => {
+  it('shows loading, offline error without cache, and successful retry', async () => {
+    const pending = deferred();
+    mocks.tables.orders = pending.promise;
+    await act(async () => { root = create(ordersTree('A')); });
+    expect(orders.historyLoading).toBe(true);
+    await act(async () => pending.resolve({ data: null, error: { message: 'offline' } }));
+    expect(orders.historyLoading).toBe(false);
+    expect(orders.historyError).toContain('Could not sync');
+    expect(orders.orders).toEqual([]);
+    mocks.tables.orders = { data: [savedOrder('recovered')], error: null };
+    await act(async () => orders.retryHistory());
+    expect(orders.historyError).toBeNull();
+    expect(orders.orders.map(o => o.id)).toEqual(['recovered']);
+    expect(mocks.calls.filter(c => c.table === 'orders').every(c => c.filters.some(([key, value]) => key === 'user_id' && value === 'A'))).toBe(true);
+  });
+
+  it('keeps matching cached history visible on a rejected offline request', async () => {
+    mocks.snapshot.orders = JSON.stringify({ userId: 'A', orders: [order('cached')] });
+    const pending = deferred();
+    mocks.tables.orders = pending.promise;
+    await act(async () => { root = create(ordersTree('A')); });
+    await act(async () => pending.reject(new Error('network')));
+    expect(orders.orders.map(o => o.id)).toEqual(['cached']);
+    expect(orders.historyLoading).toBe(false);
+    expect(orders.historyError).not.toBeNull();
+  });
+
+  it.each(['success', 'failure'])('ignores old history %s and clears error state when switching accounts', async outcome => {
+    const pending = deferred();
+    mocks.tables.orders = pending.promise;
+    await act(async () => { root = create(ordersTree('A')); });
+    mocks.tables.orders = { data: [savedOrder('B-order')], error: null };
+    await act(async () => root.update(ordersTree('B')));
+    await act(async () => pending.resolve(outcome === 'success' ? { data: [savedOrder('A-order')], error: null } : { data: null, error: { message: 'offline' } }));
+    expect(orders.orders.map(o => o.id)).toEqual(['B-order']);
+    expect(orders.historyError).toBeNull();
+    expect(orders.historyLoading).toBe(false);
+    expect(mocks.save.mock.calls.filter(([key]) => key === 'orders').at(-1)[1].userId).toBe('B');
+  });
+
+  it('ignores an older retry response when a newer retry succeeds', async () => {
+    mocks.tables.orders = { data: null, error: { message: 'offline' } };
+    await act(async () => { root = create(ordersTree('A')); });
+    const pending = deferred();
+    mocks.tables.orders = pending.promise;
+    await act(async () => orders.retryHistory());
+    mocks.tables.orders = { data: [], error: null };
+    await act(async () => orders.retryHistory());
+    await act(async () => pending.resolve({ data: null, error: { message: 'offline' } }));
+    expect(orders.historyError).toBeNull();
+    expect(orders.historyLoading).toBe(false);
   });
 });

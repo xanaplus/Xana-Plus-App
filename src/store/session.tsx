@@ -66,8 +66,11 @@ export type SessionContextValue = {
   updateName: (name: string) => Promise<boolean>;
   /** Settings saved on the profile; empty until loaded, so screens fall back to their defaults. */
   preferences: Preferences;
-  /** Merges `patch` into the saved settings. The switch flips straight away; the save happens behind it. */
+  /** Applies choices immediately; failed saves stay marked unsaved until retried. */
   updatePreferences: (patch: Preferences) => void;
+  preferencesSaving: boolean;
+  preferencesError: string | null;
+  retryPreferences: () => void;
   /** Deletes the account on the server (profile, addresses, sign-in), then signs out. */
   deleteAccount: () => Promise<boolean>;
   /** Signed in with the demo number, which also sees the app's sample orders and data. */
@@ -124,30 +127,49 @@ async function loadProfile(userId: string): Promise<Profile | null> {
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const authGeneration = useRef(0);
+  const mounted = useRef(true);
   const [pendingPhone, setPendingPhone] = useState<string | null>(null);
   // Assume a cached user is named until the profile says otherwise, so the name prompt never flashes.
   const [named, setNamed] = useState(true);
   const [preferences, setPreferences] = useState<Preferences>({});
+  const [preferencesSaving, setPreferencesSaving] = useState(false);
+  const [preferencesError, setPreferencesError] = useState<string | null>(null);
+  const preferenceState = useRef({
+    owner: null as string | null, value: {} as Preferences, revision: 0, dirty: false, saving: false,
+  });
   const [isStaff, setIsStaff] = useState(false);
 
-  const applyProfile = useCallback((profile: Profile | null) => {
+  const applyProfile = useCallback((profile: Profile | null, preservePreferences = false) => {
+    const owner = profile?.user.id ?? null;
+    if (preferenceState.current.owner !== owner) {
+      preferenceState.current = { owner, value: profile?.preferences ?? {}, revision: 0, dirty: false, saving: false };
+      setPreferencesSaving(false);
+      setPreferencesError(null);
+    } else if (!preferenceState.current.dirty && !preservePreferences) {
+      preferenceState.current.value = profile?.preferences ?? {};
+    }
     setUser(profile?.user ?? null);
     setNamed(profile?.named ?? true);
-    setPreferences(profile?.preferences ?? {});
+    setPreferences(preferenceState.current.value);
     setIsStaff(profile?.isStaff ?? false);
   }, []);
 
   const refreshProfile = useCallback(async () => {
     const generation = authGeneration.current;
+    const state = preferenceState.current;
+    const revision = state.revision;
     const { data } = await supabase.auth.getSession();
     if (!data.session) return;
     const profile = await loadProfile(data.session.user.id);
-    if (profile && generation === authGeneration.current) applyProfile(profile);
+    if (profile && generation === authGeneration.current) {
+      applyProfile(profile, preferenceState.current === state && state.revision !== revision);
+    }
   }, [applyProfile]);
 
   // Reconcile the cached user with the real Supabase session on launch.
   useEffect(() => {
     let live = true;
+    mounted.current = true;
     const generation = authGeneration.current;
     const stored = storedSession();
     const expired = stored ? Date.now() - stored.lastSeenAt > INACTIVE_SESSION_MS : false;
@@ -172,6 +194,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     });
     return () => {
       live = false;
+      mounted.current = false;
       listener.subscription.unsubscribe();
     };
   }, [applyProfile]);
@@ -211,10 +234,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     authGeneration.current += 1;
-    // Drop this device's push token first; once the session is gone RLS refuses it.
-    await unregisterPush();
     applyProfile(null);
     setPendingPhone(null);
+    // Drop this device's push token first; once the session is gone RLS refuses it.
+    await unregisterPush();
     await supabase.auth.signOut();
   }, [applyProfile]);
 
@@ -231,22 +254,50 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     [user],
   );
 
+  // Serialize saves: a slower older write must never overwrite a newer choice.
+  const retryPreferences = useCallback(() => {
+    const state = preferenceState.current;
+    if (!state.owner || !state.dirty || state.saving) return;
+    const current = () => mounted.current && preferenceState.current === state;
+    state.saving = true;
+    setPreferencesSaving(true);
+    setPreferencesError(null);
+    void (async () => {
+      try {
+        while (current() && state.dirty) {
+          const revision = state.revision;
+          const { data, error } = await supabase.from('profiles')
+            .update({ preferences: state.value }).eq('id', state.owner!).select('id').maybeSingle();
+          if (!current()) return;
+          if (error || !data) throw new Error('Preferences not saved');
+          if (revision === state.revision) state.dirty = false;
+        }
+      } catch {
+        if (current()) setPreferencesError('Your settings have not been saved. Check your connection and retry.');
+      } finally {
+        state.saving = false;
+        if (current()) setPreferencesSaving(false);
+      }
+    })();
+  }, []);
+
   const updatePreferences = useCallback(
     (patch: Preferences) => {
-      if (!user) return;
-      setPreferences(current => {
-        const next: Preferences = {
-          ...current,
-          ...patch,
-          alerts: { ...current.alerts, ...patch.alerts },
-          privacy: { ...current.privacy, ...patch.privacy },
-        };
-        // Fire-and-forget (the `.then` is what sends it): a failed save leaves the switch where the customer put it for this visit.
-        void supabase.from('profiles').update({ preferences: next }).eq('id', user.id).then(() => {});
-        return next;
-      });
+      const state = preferenceState.current;
+      if (!user || state.owner !== user.id) return;
+      const next: Preferences = {
+        ...state.value,
+        ...patch,
+        alerts: { ...state.value.alerts, ...patch.alerts },
+        privacy: { ...state.value.privacy, ...patch.privacy },
+      };
+      state.value = next;
+      state.revision += 1;
+      state.dirty = true;
+      setPreferences(next);
+      retryPreferences();
     },
-    [user],
+    [user, retryPreferences],
   );
 
   const deleteAccount = useCallback(async () => {
@@ -277,13 +328,16 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       updateName,
       preferences,
       updatePreferences,
+      preferencesSaving,
+      preferencesError,
+      retryPreferences,
       deleteAccount,
       isDemo: user !== null && user.phone.replace(/\D/g, '') === DEMO_DIGITS,
       isStaff,
       refreshProfile,
       spendPoints,
     }),
-    [user, pendingPhone, requestOtp, verify, signOut, named, updateName, preferences, updatePreferences, deleteAccount, isStaff, refreshProfile, spendPoints],
+    [user, pendingPhone, requestOtp, verify, signOut, named, updateName, preferences, updatePreferences, preferencesSaving, preferencesError, retryPreferences, deleteAccount, isStaff, refreshProfile, spendPoints],
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

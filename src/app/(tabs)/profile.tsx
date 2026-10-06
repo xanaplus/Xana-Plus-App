@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Linking, Pressable, StyleSheet, Switch, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, Switch, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import {
   BottomSheet,
@@ -243,7 +243,19 @@ export default function ProfileRoute() {
   const router = useRouter();
   const cart = useCart();
   const { orders } = useOrders();
-  const { user, isAuthenticated, signOut, preferences, updatePreferences, deleteAccount, isStaff, isDemo } = useSession();
+  const {
+    user,
+    isAuthenticated,
+    signOut,
+    preferences,
+    updatePreferences,
+    preferencesSaving,
+    preferencesError,
+    retryPreferences,
+    deleteAccount,
+    isStaff,
+    isDemo,
+  } = useSession();
   const { address, addresses, setAddress, removeAddress, hasAddress, mode, setMode, mpesaNumber, paymentMethod, setPaymentMethod, setStoreId, slot, store, storeId } = useFulfilment();
 
   const [sheet, setSheet] = useState<SheetId | null>(null);
@@ -389,6 +401,15 @@ export default function ProfileRoute() {
   return (
     <Screen padded={false} contentStyle={styles.content}>
       <TopBar title="Profile" actions={<TopBarAction name="settings" accessibilityLabel="Settings" onPress={() => setSheet('settings')} />} />
+
+      {preferencesSaving || preferencesError ? (
+        <PreferencesSyncFeedback
+          saving={preferencesSaving}
+          error={preferencesError}
+          onRetry={retryPreferences}
+          style={styles.inset}
+        />
+      ) : null}
 
       {user ? (
         <Card variant="elevated" padding={spacing.lg} style={styles.inset}>
@@ -833,6 +854,11 @@ export default function ProfileRoute() {
         footer={<Button label="Done" onPress={closeSheet} />}
         scrollable
       >
+        <PreferencesSyncFeedback
+          saving={preferencesSaving}
+          error={preferencesError}
+          onRetry={retryPreferences}
+        />
         <Card variant="flat" padding={spacing.lg}>
           <ToggleRow
             icon="bell"
@@ -900,6 +926,15 @@ export default function ProfileRoute() {
 
             <SectionHeader title="Privacy settings" style={styles.cardStack} />
             <Card variant="flat" padding={spacing.none} style={styles.cardStack}>
+              {preferencesSaving || preferencesError ? (
+                <View style={styles.privacySync}>
+                  <PreferencesSyncFeedback
+                    saving={preferencesSaving}
+                    error={preferencesError}
+                    onRetry={retryPreferences}
+                  />
+                </View>
+              ) : null}
               {PRIVACY_ROWS.map((row, index) => (
                 <View key={row.key}>
                   {index > 0 ? <Divider inset={spacing.lg} /> : null}
@@ -994,6 +1029,38 @@ export default function ProfileRoute() {
         ))}
       </BottomSheet>
     </Screen>
+  );
+}
+
+/** Persistent, calm status for the optimistic account-preferences save. */
+function PreferencesSyncFeedback({
+  saving,
+  error,
+  onRetry,
+  style,
+}: {
+  saving: boolean;
+  error: string | null;
+  onRetry: () => void;
+  style?: StyleProp<ViewStyle>;
+}) {
+  if (!saving && !error) return null;
+
+  return (
+    <View
+      accessibilityRole="summary"
+      style={[styles.syncNotice, error ? styles.syncNoticeError : styles.syncNoticePending, style]}
+    >
+      <Icon name="info" size={18} color={error ? 'error' : 'primaryContainer'} />
+      <View style={styles.syncNoticeBody}>
+        <Txt variant="caption" color={error ? 'error' : 'onSurfaceVariant'}>
+          {error ?? 'Saving your settings…'}
+        </Txt>
+        {error ? (
+          <Button label="Retry" size="sm" variant="outline" fullWidth={false} onPress={onRetry} />
+        ) : null}
+      </View>
+    </View>
   );
 }
 
@@ -1222,6 +1289,11 @@ const styles = StyleSheet.create({
   rowBody: { flex: 1, gap: spacing.xxs },
 
   toggleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.md, borderRadius: radius.lg, backgroundColor: colors.surfaceContainerLow },
+  syncNotice: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, padding: spacing.md, borderRadius: radius.md },
+  syncNoticeError: { backgroundColor: colors.amberTint15 },
+  syncNoticePending: { backgroundColor: colors.surfaceContainerLow },
+  syncNoticeBody: { flex: 1, gap: spacing.xs, alignItems: 'flex-start' },
+  privacySync: { paddingHorizontal: spacing.md, paddingTop: spacing.md },
 
   tierRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.md, minHeight: layout.touchTarget },
 

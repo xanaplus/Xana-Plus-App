@@ -300,6 +300,9 @@ const fromRow = (row: OrderRow): PlacedOrder => {
 
 type OrdersContextValue = {
   orders: PlacedOrder[];
+  historyLoading: boolean;
+  historyError: string | null;
+  retryHistory: () => void;
   orderById: (id: string) => PlacedOrder | undefined;
   /** Saves a new order in Supabase and returns its number, or why it was refused. */
   placeOrder: (input: PlaceOrderInput) => Promise<PlaceOrderResult>;
@@ -315,6 +318,16 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   const userId = user?.id;
   const [orders, setOrders] = useState<PlacedOrder[]>(() => hydrateOrders(userId, isDemo));
   const activeUserId = useRef(userId);
+  const accountGeneration = useRef(0);
+  const [historyLoading, setHistoryLoading] = useState(Boolean(userId));
+  const [historyError, setHistoryError] = useState<string | null>(null);
+  const [historyAttempt, setHistoryAttempt] = useState(0);
+  const retryHistory = useCallback(() => {
+    if (!userId) return;
+    setHistoryLoading(true);
+    setHistoryError(null);
+    setHistoryAttempt(attempt => attempt + 1);
+  }, [userId]);
 
   // A different account on this phone starts from a clean list, so nobody sees
   // the previous person's orders; the saved ones then load below.
@@ -322,24 +335,31 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   /** Orders placed in this app session, kept if the saved list loads before they reach it. */
   const placedHere = useRef(new Set<string>());
   useLayoutEffect(() => {
-    if (activeUserId.current !== userId) placedHere.current.clear();
+    if (activeUserId.current !== userId) {
+      placedHere.current.clear();
+      accountGeneration.current += 1;
+    }
     activeUserId.current = userId;
   }, [userId]);
   if (ordersFor !== (userId ?? null)) {
     setOrdersFor(userId ?? null);
     setOrders(hydrateOrders(userId, isDemo));
+    setHistoryLoading(Boolean(userId));
+    setHistoryError(null);
   }
 
   // Staff changes to a saved order arrive live. Delivered adds points and
   // cancelled returns spent ones, so the balance is re-read then.
   useEffect(() => {
     if (!userId) return;
+    const generation = accountGeneration.current;
     const channel = supabase
       .channel(`orders:${userId}`)
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'orders', filter: `user_id=eq.${userId}` },
         payload => {
+          if (generation !== accountGeneration.current || activeUserId.current !== userId) return;
           const row = payload.new as { order_no?: string; status?: OrderStatus };
           if (!row.order_no || !row.status || !STATUSES.includes(row.status)) return;
           setOrders(prev => prev.map(o => (o.id === row.order_no ? { ...o, status: row.status as OrderStatus } : o)));
@@ -356,38 +376,48 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!userId) return;
     let current = true;
+    const generation = accountGeneration.current;
+    const isCurrent = () => current && generation === accountGeneration.current && activeUserId.current === userId;
     (async () => {
-      const { data, error } = await supabase
-        .from('orders')
-        .select(
-          'order_no, created_at, status, is_test, payment_method, payment_reference, contact, address_line, slot_label, store_name, substitution, items_subtotal, promo_code, promo_discount, delivery_fee, platform_fee, total, points_earned, order_items(item_no, quantity)',
-        )
-        // Staff accounts can read every order, so a customer's list must ask for its own explicitly.
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(50);
-      if (error || !current) return;
-      const saved = (data as OrderRow[]).map(fromRow);
-      // Order screens look lines up by id, so load any item this device hasn't seen yet.
-      const missing = [...new Set(saved.flatMap(order => order.lines.map(line => line.productId)))].filter(id => !productById(id));
-      await fetchProducts(missing).catch(() => []);
-      if (!current) return;
-      const savedIds = new Set(saved.map(order => order.id));
-      setOrders(prev => [
-        // Placed on this device while the load was in flight, so not in `saved` yet.
-        ...prev.filter(order => placedHere.current.has(order.id) && !savedIds.has(order.id)),
-        ...saved,
-        ...(isDemo ? prev.filter(order => SEED_IDS.has(order.id)) : []),
-      ]);
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .select(
+            'order_no, created_at, status, is_test, payment_method, payment_reference, contact, address_line, slot_label, store_name, substitution, items_subtotal, promo_code, promo_discount, delivery_fee, platform_fee, total, points_earned, order_items(item_no, quantity)',
+          )
+          // Staff accounts can read every order, so a customer's list must ask for its own explicitly.
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false })
+          .limit(50);
+        if (!isCurrent()) return;
+        if (error || !data) throw new Error('History unavailable');
+        const saved = (data as OrderRow[]).map(fromRow);
+        // Order screens look lines up by id, so load any item this device hasn't seen yet.
+        const missing = [...new Set(saved.flatMap(order => order.lines.map(line => line.productId)))].filter(id => !productById(id));
+        await fetchProducts(missing).catch(() => []);
+        if (!isCurrent()) return;
+        const savedIds = new Set(saved.map(order => order.id));
+        setOrders(prev => [
+          // Placed on this device while the load was in flight, so not in `saved` yet.
+          ...prev.filter(order => placedHere.current.has(order.id) && !savedIds.has(order.id)),
+          ...saved,
+          ...(isDemo ? prev.filter(order => SEED_IDS.has(order.id)) : []),
+        ]);
+      } catch {
+        if (isCurrent()) setHistoryError('Could not sync your order history. Check your connection and retry.');
+      } finally {
+        if (isCurrent()) setHistoryLoading(false);
+      }
     })();
     return () => {
       current = false;
     };
-  }, [userId, isDemo]);
+  }, [userId, isDemo, historyAttempt]);
 
   const placeOrder = useCallback(async (input: PlaceOrderInput): Promise<PlaceOrderResult> => {
     if (!userId) return { ok: false, error: 'signed_out' };
     const owner = userId;
+    const generation = accountGeneration.current;
     const { data, error } = await supabase.functions.invoke<PlaceOrderReply>('place-order', {
       body: {
         lines: input.lines.map(line => ({ itemNo: line.productId, quantity: line.quantity })),
@@ -406,7 +436,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     });
 
     // A response for a previous account must not enter the next account's cache.
-    if (activeUserId.current !== owner) return { ok: false, error: 'signed_out' };
+    if (activeUserId.current !== owner || accountGeneration.current !== generation) return { ok: false, error: 'signed_out' };
 
     if (error || !data) {
       // FunctionsHttpError carries the function's JSON reply in `context`.
@@ -478,8 +508,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   const orderById = useCallback((id: string) => orders.find(o => o.id === id), [orders]);
 
   const value = useMemo<OrdersContextValue>(
-    () => ({ orders, orderById, placeOrder, resolveSubstitution, advanceStatus }),
-    [orders, orderById, placeOrder, resolveSubstitution, advanceStatus],
+    () => ({ orders, historyLoading, historyError, retryHistory, orderById, placeOrder, resolveSubstitution, advanceStatus }),
+    [orders, historyLoading, historyError, retryHistory, orderById, placeOrder, resolveSubstitution, advanceStatus],
   );
 
   return <OrdersContext.Provider value={value}>{children}</OrdersContext.Provider>;

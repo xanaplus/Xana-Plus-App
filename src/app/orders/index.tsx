@@ -40,7 +40,7 @@ const STATUS_META: Record<OrderStatus, { label: string; tone: BadgeTone }> = {
 export default function OrderHistoryScreen() {
   const router = useRouter();
   const cart = useCart();
-  const { orders } = useOrders();
+  const { orders, historyLoading, historyError, retryHistory } = useOrders();
   const [filter, setFilter] = useState<Filter>('all');
 
   const counts = useMemo(
@@ -81,10 +81,33 @@ export default function OrderHistoryScreen() {
 
       <Segmented options={options} value={filter} onChange={setFilter} style={styles.filter} />
 
+      {historyLoading || historyError ? (
+        <View
+          accessibilityRole="summary"
+          style={[styles.syncNotice, historyError ? styles.syncNoticeError : styles.syncNoticePending]}
+        >
+          <Icon name="info" size={18} color={historyError ? 'error' : 'primaryContainer'} />
+          <View style={styles.syncNoticeBody}>
+            <Txt variant="caption" color={historyError ? 'error' : 'onSurfaceVariant'}>
+              {historyError
+                ? `${historyError}${orders.length > 0 ? ' Saved orders are shown and may be out of date.' : ''}`
+                : orders.length > 0
+                  ? 'Updating your order history. Saved orders are shown and may be out of date.'
+                  : 'Loading your order history…'}
+            </Txt>
+            {historyError ? (
+              <Button label="Retry" size="sm" variant="outline" fullWidth={false} onPress={retryHistory} />
+            ) : null}
+          </View>
+        </View>
+      ) : null}
+
       {visible.length === 0 ? (
-        <EmptyState icon="delivery" title="No orders here" description="Orders you place will appear in this list.">
-          <Button label="Start shopping" onPress={() => router.replace('/(tabs)')} />
-        </EmptyState>
+        orders.length === 0 && (historyLoading || historyError) ? null : (
+          <EmptyState icon="delivery" title="No orders here" description="Orders you place will appear in this list.">
+            <Button label="Start shopping" onPress={() => router.replace('/(tabs)')} />
+          </EmptyState>
+        )
       ) : (
         visible.map((order, index) => {
           const meta = STATUS_META[order.status];
@@ -159,6 +182,10 @@ export default function OrderHistoryScreen() {
 const styles = StyleSheet.create({
   content: { gap: spacing.md, paddingBottom: spacing.giant },
   filter: { marginTop: spacing.sm },
+  syncNotice: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, padding: spacing.md, borderRadius: radius.md },
+  syncNoticeError: { backgroundColor: colors.amberTint15 },
+  syncNoticePending: { backgroundColor: colors.surfaceContainerLow },
+  syncNoticeBody: { flex: 1, gap: spacing.xs, alignItems: 'flex-start' },
   card: { gap: spacing.md },
   cardHead: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: spacing.sm },
   cardHeadText: { flex: 1, gap: spacing.xxs },

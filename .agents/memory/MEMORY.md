@@ -2,3 +2,4 @@
 - [Temporary secret cleanup](temporary-secret-cleanup.md) — verify existence after deletion; an environment deletion acknowledgement may leave secrets intact.
 - [Restoring test dependencies](dependency-restoration.md) — restore locked React-compatible test packages rather than resolving newer minor peer requirements.
 - [Prescription-first ordering](prescription-workflow.md) — customers upload first; pharmacist review and pricing precede customer ordering.
+- [Screen test boundaries](screen-test-boundaries.md) — isolate native and live-data dependencies; assert visible primitives rather than serializing React element props.
