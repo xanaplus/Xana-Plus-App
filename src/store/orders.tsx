@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import { productById } from '@/data/catalog';
 import { fetchProducts } from '@/data/live-catalogue';
@@ -138,12 +138,21 @@ const isPlacedOrder = (value: unknown): value is PlacedOrder => {
   );
 };
 
-const isOrderList = (value: unknown): value is PlacedOrder[] => Array.isArray(value) && value.every(isPlacedOrder);
+type CachedOrders = { userId: string; orders: PlacedOrder[] };
+const isCachedOrders = (value: unknown): value is CachedOrders => {
+  if (typeof value !== 'object' || value === null) return false;
+  const cached = value as CachedOrders;
+  return typeof cached.userId === 'string' && Array.isArray(cached.orders) && cached.orders.every(isPlacedOrder);
+};
 
 const SEED_IDS = new Set(SEED.map(order => order.id));
 
-/** Restores order history — saved orders plus the demo baskets. */
-const hydrateOrders = (): PlacedOrder[] => parsePersisted(persisted().orders, isOrderList) ?? SEED;
+/** Never restore an unowned legacy cache or another customer's orders. */
+const hydrateOrders = (userId: string | undefined, isDemo: boolean): PlacedOrder[] => {
+  if (!userId) return [];
+  const cached = parsePersisted(persisted().orders, isCachedOrders);
+  return cached?.userId === userId ? cached.orders : isDemo ? SEED : [];
+};
 
 export type PlaceOrderInput = {
   lines: OrderLine[];
@@ -302,18 +311,23 @@ type OrdersContextValue = {
 const OrdersContext = createContext<OrdersContextValue | null>(null);
 
 export function OrdersProvider({ children }: { children: ReactNode }) {
-  const [orders, setOrders] = useState<PlacedOrder[]>(hydrateOrders);
   const { user, isDemo, refreshProfile } = useSession();
   const userId = user?.id;
+  const [orders, setOrders] = useState<PlacedOrder[]>(() => hydrateOrders(userId, isDemo));
+  const activeUserId = useRef(userId);
 
   // A different account on this phone starts from a clean list, so nobody sees
   // the previous person's orders; the saved ones then load below.
   const [ordersFor, setOrdersFor] = useState<string | null>(userId ?? null);
   /** Orders placed in this app session, kept if the saved list loads before they reach it. */
   const placedHere = useRef(new Set<string>());
+  useLayoutEffect(() => {
+    if (activeUserId.current !== userId) placedHere.current.clear();
+    activeUserId.current = userId;
+  }, [userId]);
   if (ordersFor !== (userId ?? null)) {
     setOrdersFor(userId ?? null);
-    setOrders(isDemo ? SEED : []);
+    setOrders(hydrateOrders(userId, isDemo));
   }
 
   // Staff changes to a saved order arrive live. Delivered adds points and
@@ -372,6 +386,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   }, [userId, isDemo]);
 
   const placeOrder = useCallback(async (input: PlaceOrderInput): Promise<PlaceOrderResult> => {
+    if (!userId) return { ok: false, error: 'signed_out' };
+    const owner = userId;
     const { data, error } = await supabase.functions.invoke<PlaceOrderReply>('place-order', {
       body: {
         lines: input.lines.map(line => ({ itemNo: line.productId, quantity: line.quantity })),
@@ -388,6 +404,9 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         promoCode: input.promoCode,
       },
     });
+
+    // A response for a previous account must not enter the next account's cache.
+    if (activeUserId.current !== owner) return { ok: false, error: 'signed_out' };
 
     if (error || !data) {
       // FunctionsHttpError carries the function's JSON reply in `context`.
@@ -429,7 +448,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     successFeedback();
     setOrders(prev => [order, ...prev]);
     return { ok: true, id: order.id };
-  }, []);
+  }, [userId]);
 
   const resolveSubstitution = useCallback((orderId: string, preference: SubstitutionPreference) => {
     setOrders(prev =>
@@ -453,8 +472,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    save(STORAGE_KEYS.orders, orders);
-  }, [orders]);
+    save(STORAGE_KEYS.orders, { userId: userId ?? '', orders });
+  }, [orders, userId]);
 
   const orderById = useCallback((id: string) => orders.find(o => o.id === id), [orders]);
 

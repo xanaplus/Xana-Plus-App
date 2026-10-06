@@ -19,7 +19,7 @@ export const STORAGE_KEYS = {
   session: `${PREFIX}session.v1`,
   cart: `${PREFIX}cart.v1`,
   fulfilment: `${PREFIX}fulfilment.v1`,
-  orders: `${PREFIX}orders.v1`,
+  orders: `${PREFIX}orders.v2`,
   products: `${PREFIX}products.v1`,
 } as const;
 

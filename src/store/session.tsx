@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import type { User } from '@/data/types';
 import { unregisterPush } from '@/lib/notifications';
@@ -10,8 +10,8 @@ import { callFunction, supabase, type FunctionError } from '@/lib/supabase';
  * Africa's Talking, `verify-otp` checks it and returns a Supabase session, and
  * the customer's `profiles` row becomes `user`.
  *
- * The last signed-in user is also cached on the device so the app opens
- * signed in straight away; the Supabase session is then checked and wins.
+ * Device profile data is not authentication: the Supabase session and profile
+ * must be checked before signed-in customer data is exposed.
  */
 const PHONE_PATTERN = /^\+254[17]\d{8}$/;
 /** NFR-S.5: an account unused for 30 days is signed out on next launch. */
@@ -47,14 +47,6 @@ const isPersistedSession = (value: unknown): value is PersistedSession =>
   ((value as PersistedSession).user === null || isUser((value as PersistedSession).user));
 
 const storedSession = () => parsePersisted(persisted().session, isPersistedSession);
-
-/** Restores the cached shopper from device storage, or null. */
-const hydrateUser = (): User | null => {
-  const stored = storedSession();
-  if (!stored || stored.user === null) return null;
-  if (Date.now() - stored.lastSeenAt > INACTIVE_SESSION_MS) return null;
-  return stored.user;
-};
 
 export type SignInResult = { ok: true } | { ok: false; error: FunctionError };
 
@@ -130,7 +122,8 @@ async function loadProfile(userId: string): Promise<Profile | null> {
 }
 
 export function SessionProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(hydrateUser);
+  const [user, setUser] = useState<User | null>(null);
+  const authGeneration = useRef(0);
   const [pendingPhone, setPendingPhone] = useState<string | null>(null);
   // Assume a cached user is named until the profile says otherwise, so the name prompt never flashes.
   const [named, setNamed] = useState(true);
@@ -145,31 +138,37 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refreshProfile = useCallback(async () => {
+    const generation = authGeneration.current;
     const { data } = await supabase.auth.getSession();
     if (!data.session) return;
     const profile = await loadProfile(data.session.user.id);
-    if (profile) setUser(profile.user);
-  }, []);
+    if (profile && generation === authGeneration.current) applyProfile(profile);
+  }, [applyProfile]);
 
   // Reconcile the cached user with the real Supabase session on launch.
   useEffect(() => {
     let live = true;
+    const generation = authGeneration.current;
     const stored = storedSession();
     const expired = stored ? Date.now() - stored.lastSeenAt > INACTIVE_SESSION_MS : false;
 
     supabase.auth.getSession().then(async ({ data }) => {
-      if (!live) return;
+      if (!live || generation !== authGeneration.current) return;
       if (!data.session || expired) {
         if (data.session) await supabase.auth.signOut();
         if (live) setUser(null);
         return;
       }
       const profile = await loadProfile(data.session.user.id);
-      if (live) applyProfile(profile);
+      if (live && generation === authGeneration.current) applyProfile(profile);
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange(event => {
-      if (event === 'SIGNED_OUT') applyProfile(null);
+      if (event === 'SIGNED_OUT') {
+        authGeneration.current += 1;
+        applyProfile(null);
+        setPendingPhone(null);
+      }
     });
     return () => {
       live = false;
@@ -189,15 +188,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const verify = useCallback(
     async (code: string): Promise<SignInResult> => {
       if (!pendingPhone) return { ok: false, error: 'expired' };
+      const generation = ++authGeneration.current;
       const result = await callFunction<{ access_token: string; refresh_token: string }>('verify-otp', {
         phone: pendingPhone,
         code,
       });
       if ('error' in result) return { ok: false, error: result.error };
+      if (generation !== authGeneration.current) return { ok: false, error: 'expired' };
 
       const { data, error } = await supabase.auth.setSession(result.data);
       if (error || !data.session) return { ok: false, error: 'server_error' };
       const profile = await loadProfile(data.session.user.id);
+      if (generation !== authGeneration.current) return { ok: false, error: 'expired' };
       if (!profile) return { ok: false, error: 'server_error' };
 
       applyProfile(profile);
@@ -208,6 +210,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   );
 
   const signOut = useCallback(async () => {
+    authGeneration.current += 1;
     // Drop this device's push token first; once the session is gone RLS refuses it.
     await unregisterPush();
     applyProfile(null);
@@ -249,7 +252,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const deleteAccount = useCallback(async () => {
     const { error } = await supabase.functions.invoke('delete-account', { body: {} });
     if (error) return false;
-    signOut();
+    await signOut();
     return true;
   }, [signOut]);
 

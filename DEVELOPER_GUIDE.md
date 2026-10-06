@@ -125,9 +125,28 @@ the dev server entirely if it has to prompt for a different port.
   development build — see *Builds and updates*.
 
 **What survives a reload:** the session, cart, orders, fulfilment and the product cache are
-all persisted to AsyncStorage under `xanaplus.*.v1` (`src/lib/storage.ts`), so reloading
-does not sign you out. Clear `xanaplus.orders.v1` to reset the demo orders, or
-`xanaplus.session.v1` to force a fresh sign-in.
+persisted to AsyncStorage (`src/lib/storage.ts`), so reloading does not sign you out.
+The Supabase session and profile are checked before the app exposes authenticated data;
+a cached profile alone is not a sign-in. Orders use `xanaplus.orders.v2` with an owner ID;
+unowned legacy caches and other customers' caches are never restored. Other app stores
+still use `xanaplus.*.v1`. To sign out, use the app's sign-out action, which also clears
+Supabase's separately stored tokens; deleting the profile cache alone is not enough.
+
+The current OTP provider sends **SMS only**. WhatsApp is not offered until a matching
+server-side delivery implementation exists.
+
+### Backend regression checks
+
+```
+npm run test:backend
+npm run typecheck
+npm run lint
+```
+
+`tests/backend/` runs isolated customer-store, client-error, and real Edge Function
+handler checks with stubbed database/SMS responses. It never contacts Supabase, sends
+SMS, or triggers payments. This suite complements Storybook without requiring Chrome.
+See `docs/backend-verification.md` for the live verification results and limitations.
 
 ## Builds and updates
 

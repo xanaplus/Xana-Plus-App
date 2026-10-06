@@ -84,7 +84,6 @@ function formatCountdown(seconds: number): string {
 
 const CHANNELS: { value: SignInChannel; label: string; icon: IconName }[] = [
   { value: 'sms', label: 'SMS', icon: 'message' },
-  { value: 'whatsapp', label: 'WhatsApp', icon: 'message' },
 ];
 
 /** Inline failure note used by both steps — the design's error state. */
@@ -228,6 +227,7 @@ export function OtpCodeField({
   onSubmit,
   error,
   autoFocus,
+  busy = false,
 }: {
   code: string;
   onChangeCode: (next: string) => void;
@@ -236,6 +236,7 @@ export function OtpCodeField({
   onSubmit?: () => void;
   error?: string;
   autoFocus?: boolean;
+  busy?: boolean;
 }) {
   const [secondsLeft, setSecondsLeft] = useState(RESEND_SECONDS);
   const [focused, setFocused] = useState(false);
@@ -298,6 +299,7 @@ export function OtpCodeField({
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Resend verification code"
+            disabled={busy}
             hitSlop={8}
             onPress={() => {
               setSecondsLeft(RESEND_SECONDS);
@@ -385,8 +387,11 @@ function SignInSheet({ onClose, onSuccess }: { onClose: () => void; onSuccess?: 
   };
 
   const resendCode = async () => {
+    if (busy) return;
+    setBusy(true);
     setCode('');
     const result = await requestOtp(phoneFromInput(phone));
+    setBusy(false);
     setError(result.ok ? '' : signInErrorMessage(result.error));
   };
 
@@ -458,6 +463,7 @@ function SignInSheet({ onClose, onSuccess }: { onClose: () => void; onSuccess?: 
             onSubmit={() => void confirmCode()}
             error={error}
             autoFocus
+            busy={busy}
           />
         </View>
       )}

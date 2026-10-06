@@ -45,6 +45,11 @@ export type FunctionError =
   | 'server_error'
   | 'network';
 
+const FUNCTION_ERRORS: readonly FunctionError[] = [
+  'invalid_phone', 'too_soon', 'too_many', 'sms_failed', 'sms_blocked',
+  'wrong_code', 'expired', 'too_many_attempts', 'server_error',
+];
+
 /** POSTs to an Edge Function and returns its JSON, or the error code it sent back. */
 export async function callFunction<T>(name: string, body: Record<string, unknown>): Promise<{ data: T } | { error: FunctionError }> {
   try {
@@ -53,8 +58,9 @@ export async function callFunction<T>(name: string, body: Record<string, unknown
       headers: { 'Content-Type': 'application/json', apikey: key },
       body: JSON.stringify(body),
     });
-    const json = await response.json().catch(() => ({}));
-    if (!response.ok) return { error: (json.error as FunctionError) ?? 'server_error' };
+    const json = await response.json().catch(() => null);
+    if (!response.ok) return { error: FUNCTION_ERRORS.includes(json?.error) ? json.error : 'server_error' };
+    if (!json || typeof json !== 'object') return { error: 'server_error' };
     return { data: json as T };
   } catch {
     return { error: 'network' };

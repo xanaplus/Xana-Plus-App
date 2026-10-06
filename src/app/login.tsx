@@ -76,8 +76,11 @@ export default function LoginRoute() {
   };
 
   const resendCode = async () => {
+    if (busy) return;
+    setBusy(true);
     setCode('');
     const result = await requestOtp(phoneFromInput(phone));
+    setBusy(false);
     setError(result.ok ? '' : signInErrorMessage(result.error));
   };
 
@@ -139,6 +142,7 @@ export default function LoginRoute() {
             onSubmit={() => void confirmCode()}
             error={error}
             autoFocus
+            busy={busy}
           />
         </View>
       )}
