@@ -1,4 +1,3 @@
-import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
@@ -21,6 +20,7 @@ import {
   TopBar,
   TopBarAction,
 } from '@/components/ui';
+import { ProductPhoto } from '@/components/ui/product-photo';
 import { productsByIds } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
 import type { Product, SubstitutionPreference } from '@/data/types';
@@ -267,13 +267,7 @@ function CartLineRow({
   return (
     <View style={styles.line}>
       <Pressable accessibilityRole="button" accessibilityLabel={product.name} onPress={onPress} style={styles.lineImageWrap}>
-        {image ? (
-          <Image source={image} style={styles.lineImage} contentFit="cover" />
-        ) : (
-          <View style={styles.noPhoto}>
-            <Icon name="store" size={24} color="outlineVariant" />
-          </View>
-        )}
+        <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="row" />
       </Pressable>
 
       <View style={styles.lineBody}>
@@ -331,7 +325,6 @@ function SummaryRow({ label, value, tone = 'default' }: { label: string; value: 
 const styles = StyleSheet.create({
   content: { gap: spacing.lg },
   inset: { marginHorizontal: 20 },
-  noPhoto: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   avatar: { width: 32, height: 32, borderRadius: radius.pill, backgroundColor: colors.primaryContainer, alignItems: 'center', justifyContent: 'center' },
   masthead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md },
   mastheadText: { flexDirection: 'row', alignItems: 'baseline', gap: spacing.sm, flexShrink: 1 },
@@ -350,7 +343,6 @@ const styles = StyleSheet.create({
   slotBody: { flex: 1, gap: 2 },
   line: { flexDirection: 'row', gap: spacing.md, paddingVertical: spacing.md },
   lineImageWrap: { width: 68, height: 68, borderRadius: radius.lg, overflow: 'hidden', backgroundColor: colors.surfaceContainerLow },
-  lineImage: { width: '100%', height: '100%' },
   lineBody: { flex: 1, gap: spacing.xs },
   lineHead: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
   lineTitle: { flex: 1 },

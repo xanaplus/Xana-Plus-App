@@ -1,4 +1,3 @@
-import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
@@ -26,6 +25,7 @@ import {
   TopBar,
   TopBarAction,
 } from '@/components/ui';
+import { ProductPhoto } from '@/components/ui/product-photo';
 import type { BadgeTone, IconName, SegmentedOption } from '@/components/ui';
 import { stores, verticalBySlug } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
@@ -727,7 +727,7 @@ function RailCard({
   return (
     <View style={[styles.railCard, { width }]}>
       <View style={[styles.railImage, { height: width }]}>
-        {image ? <Image source={image} style={styles.image} contentFit="cover" transition={120} /> : null}
+        <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="card" />
         <View style={styles.railBadges}>
           {badge ? <Badge label={badge.label} tone={badge.tone} /> : null}
           {product.rxRequired ? <Badge label="Rx Required" tone="brand" /> : null}
@@ -938,7 +938,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: colors.surfaceContainerLow,
   },
-  image: { width: '100%', height: '100%' },
   railBadges: { position: 'absolute', top: spacing.sm, left: spacing.sm, right: spacing.sm, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.xs },
   railAge: { position: 'absolute', top: spacing.sm, right: spacing.sm },
   railBody: { gap: spacing.xs, padding: spacing.md },

@@ -1,4 +1,3 @@
-import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
@@ -20,6 +19,7 @@ import {
   Txt,
   type IconName,
 } from '@/components/ui';
+import { ProductPhoto } from '@/components/ui/product-photo';
 import { deliverySlots, stores } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
 import type { PaymentMethodId } from '@/data/types';
@@ -687,7 +687,12 @@ export default function CheckoutRoute() {
                       <View key={item.product.id} style={styles.previewRow}>
                         {rxBlocked ? (
                           <View style={styles.previewThumb}>
-                            {image ? <Image source={image} style={styles.previewImage} contentFit="cover" /> : null}
+                            <ProductPhoto
+                              source={image}
+                              productId={item.product.id}
+                              accessibilityLabel={`${item.product.name} product photo`}
+                              variant="row"
+                            />
                           </View>
                         ) : null}
                         <View style={styles.previewBody}>
@@ -1115,7 +1120,6 @@ const styles = StyleSheet.create({
   preview: { gap: spacing.md, paddingTop: spacing.md, paddingBottom: spacing.md },
   previewRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   previewThumb: { width: 46, height: 46, borderRadius: radius.lg, overflow: 'hidden', backgroundColor: colors.surfaceContainerLow },
-  previewImage: { width: '100%', height: '100%' },
   previewBody: { flex: 1, gap: spacing.xxs },
   previewMeta: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   financials: { gap: spacing.md, paddingTop: spacing.md },

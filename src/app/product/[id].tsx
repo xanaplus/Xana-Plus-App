@@ -1,4 +1,3 @@
-import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Fragment, useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, Share, StyleSheet, View } from 'react-native';
@@ -21,6 +20,7 @@ import {
   TopBar,
   TopBarAction,
 } from '@/components/ui';
+import { ProductPhoto } from '@/components/ui/product-photo';
 import { deliverySlots, productById, productsByCategory, productsByIds, verticalBySlug, verticals } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
 import { fetchProduct, LIVE_PHARMACY_CATEGORIES, liveProductById, useLive } from '@/data/live-catalogue';
@@ -357,7 +357,7 @@ function ProductDetail({ product }: { product: Product }) {
       </View>
 
       <View style={styles.hero}>
-        {image ? <Image source={image} style={styles.heroImage} contentFit="cover" transition={120} /> : null}
+        <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="hero" />
         <View style={styles.heroBadges}>
           {isPharmacy ? <NoticePill icon="shieldPlus" label={PHARMACIST_REVIEW} tone="brand" /> : null}
           {!isPharmacy && tier ? <Badge label={BULK_BADGE} tone="discount" /> : null}
@@ -710,8 +710,13 @@ const styles = StyleSheet.create({
   back: { width: 28, height: 28, alignItems: 'flex-start', justifyContent: 'center' },
   crumbs: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   barActions: { flexDirection: 'row', alignItems: 'center' },
-  hero: { aspectRatio: 1, backgroundColor: colors.surfaceContainerLow },
-  heroImage: { width: '100%', height: '100%' },
+  hero: {
+    width: '100%',
+    maxWidth: layout.maxContentWidth,
+    aspectRatio: 1,
+    alignSelf: 'center',
+    backgroundColor: colors.surfaceContainerLow,
+  },
   heroBadges: { position: 'absolute', top: spacing.lg, left: spacing.lg, right: spacing.lg, alignItems: 'flex-start', gap: spacing.sm },
   headline: { gap: spacing.xxs },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.xs },

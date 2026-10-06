@@ -1,4 +1,3 @@
-import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -6,6 +5,7 @@ import Animated from 'react-native-reanimated';
 import { Badge, type BadgeTone } from '@/components/ui/badge';
 import { Icon } from '@/components/ui/icon';
 import { usePressScale } from '@/components/ui/pressable-scale';
+import { ProductPhoto } from '@/components/ui/product-photo';
 import { Txt } from '@/components/ui/text';
 import { figmaAsset } from '@/data/images';
 import type { Product, ProductBadge } from '@/data/types';
@@ -53,14 +53,7 @@ export function ProductCard({ product, width, quantity = 0, onPress, onAdd, styl
   return (
     <Animated.View style={[styles.card, width ? { width } : styles.flex, style, press.style]}>
       <View style={styles.imageWrap}>
-        {image ? (
-          <Image source={image} style={styles.image} contentFit="cover" transition={120} />
-        ) : (
-          // Business Central items have no photos yet; a faint glyph reads as "no photo", not "still loading".
-          <View style={styles.noPhoto}>
-            <Icon name="store" size={28} color="outlineVariant" />
-          </View>
-        )}
+        <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="card" />
         {topBadge ? (
           <View style={styles.badges}>
             <Badge
@@ -143,13 +136,7 @@ export function ProductRow({ product, eyebrow, description, quantity = 0, onPres
   return (
     <View style={[styles.row, style]}>
       <View style={styles.rowImageWrap}>
-        {image ? (
-          <Image source={image} style={styles.rowImage} contentFit="cover" transition={120} />
-        ) : (
-          <View style={styles.noPhoto}>
-            <Icon name="store" size={20} color="outlineVariant" />
-          </View>
-        )}
+        <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="row" />
       </View>
       <View style={styles.rowBody}>
         {eyebrow ? (
@@ -203,14 +190,12 @@ const styles = StyleSheet.create({
   card: { gap: spacing.xs },
   flex: { flex: 1 },
   imageWrap: {
-    height: 132,
+    aspectRatio: 1,
     borderRadius: radius.xl,
     overflow: 'hidden',
     backgroundColor: colors.surfaceContainerLow,
     marginBottom: spacing.sm,
   },
-  image: { width: '100%', height: '100%' },
-  noPhoto: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   badges: { position: 'absolute', top: spacing.sm, left: spacing.sm, flexDirection: 'row', gap: spacing.xs },
   outOfStock: {
     position: 'absolute',
@@ -254,7 +239,6 @@ const styles = StyleSheet.create({
     ...elevation.hairline,
   },
   rowImageWrap: { width: 64, height: 64, borderRadius: radius.lg, overflow: 'hidden', backgroundColor: colors.surfaceContainerLow },
-  rowImage: { width: '100%', height: '100%' },
   rowBody: { flex: 1, gap: 2 },
   rowFooter: { flexDirection: 'row', alignItems: 'baseline', gap: spacing.sm, marginTop: spacing.xxs },
   /** Card-wide tap target; rendered before the trailing control so the two are siblings. */

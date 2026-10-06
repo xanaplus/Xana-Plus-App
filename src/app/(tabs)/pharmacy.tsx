@@ -1,4 +1,3 @@
-import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -21,6 +20,7 @@ import {
   Txt,
   type IconName,
 } from '@/components/ui';
+import { ProductPhoto } from '@/components/ui/product-photo';
 import { pharmacyQuickActions, verticalBySlug } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
 import { useShelves } from '@/data/live-catalogue';
@@ -378,13 +378,7 @@ function PharmacyCard({
   return (
     <View style={styles.card}>
       <View style={styles.cardImageWrap}>
-        {image ? (
-          <Image source={image} style={styles.cardImage} contentFit="cover" transition={120} />
-        ) : (
-          <View style={styles.noPhoto}>
-            <Icon name="store" size={28} color="outlineVariant" />
-          </View>
-        )}
+        <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="card" />
         {product.rxRequired ? <Badge label="Rx Required" tone="brand" style={styles.rxBadge} /> : null}
       </View>
 
@@ -475,8 +469,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: colors.surfaceContainerLow,
   },
-  cardImage: { width: '100%', height: '100%' },
-  noPhoto: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   rxBadge: { position: 'absolute', top: spacing.sm, left: spacing.sm },
   cardText: { flexGrow: 1, gap: spacing.xxs },
   cardFooter: {

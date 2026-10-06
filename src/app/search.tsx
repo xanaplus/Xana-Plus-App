@@ -1,4 +1,3 @@
-import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
@@ -19,6 +18,7 @@ import {
   Txt,
 } from '@/components/ui';
 import type { BadgeTone } from '@/components/ui';
+import { ProductPhoto } from '@/components/ui/product-photo';
 import { popularSearches, shelfForTerm, stores, verticalForProduct } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
 import { fetchShelf, searchCatalogue, useLive } from '@/data/live-catalogue';
@@ -593,13 +593,7 @@ function ResultTile({
   return (
     <View style={[styles.tile, { width }]}>
       <View style={styles.tileArt}>
-        {image ? (
-          <Image source={image} style={styles.tileImage} contentFit="cover" transition={120} />
-        ) : (
-          <View style={styles.noPhoto}>
-            <Icon name="store" size={28} color="outlineVariant" />
-          </View>
-        )}
+        <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="card" />
         {badge ? (
           <View style={styles.tileBadge}>
             <Badge
@@ -882,8 +876,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceContainerLow,
     marginBottom: spacing.sm,
   },
-  tileImage: { width: '100%', height: '100%' },
-  noPhoto: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   // Placeholders stay faint: no shadow, a hairline edge and the palest grey.
   skeletonTile: {
     padding: spacing.md,
