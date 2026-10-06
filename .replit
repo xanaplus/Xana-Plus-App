@@ -1,7 +1,35 @@
-modules = ["nodejs-20", "bash"]
+modules = ["bash", "nodejs-22"]
 
 [nix]
 channel = "stable-25_05"
 
 [agent]
 expertMode = true
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "XanaPlus web"
+
+[[workflows.workflow]]
+name = "XanaPlus web"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "EXPO_UNSTABLE_HEADLESS=1 npm run web -- --port 5000 --host lan"
+waitForPort = 5000
+
+[[ports]]
+localPort = 5000
+externalPort = 80
