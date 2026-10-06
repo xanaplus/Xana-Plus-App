@@ -1,2 +1,3 @@
 - [Safe backend testing](backend-testing.md) — demo sessions verify persistence, not real SMS; keep shared-backend tests controlled and clearly labelled.
 - [Temporary secret cleanup](temporary-secret-cleanup.md) — verify existence after deletion; an environment deletion acknowledgement may leave secrets intact.
+- [Restoring test dependencies](dependency-restoration.md) — restore locked React-compatible test packages rather than resolving newer minor peer requirements.

@@ -1,4 +1,4 @@
-import { MAX_ATTEMPTS, adminClient, hashCode, isDemoPhone, normalizePhone, preflight, reply } from '../_shared/otp.ts';
+import { adminClient, hashCode, isDemoPhone, normalizePhone, preflight, reply } from '../_shared/otp.ts';
 
 /**
  * POST { phone, code } → checks the code and returns a real Supabase session
@@ -20,24 +20,14 @@ Deno.serve(async request => {
   if (demo) {
     if (code !== Deno.env.get('DEMO_CODE')) return reply(400, { error: 'wrong_code' });
   } else {
-    const { data: latest, error } = await db
-      .from('otp_codes')
-      .select('id, code_hash, expires_at, attempts')
-      .eq('phone', phone)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    const { data: consumed, error } = await db.rpc('consume_otp', {
+      p_phone: phone, p_code_hash: await hashCode(phone, code),
+    });
     if (error) return reply(500, { error: 'server_error' });
-    if (!latest || new Date(latest.expires_at).getTime() < Date.now()) return reply(400, { error: 'expired' });
-    if (latest.attempts >= MAX_ATTEMPTS) {
-      await db.from('otp_codes').delete().eq('phone', phone);
-      return reply(400, { error: 'too_many_attempts' });
+    if (['expired', 'wrong_code', 'too_many_attempts'].includes(consumed?.error)) {
+      return reply(400, { error: consumed.error });
     }
-    if ((await hashCode(phone, code)) !== latest.code_hash) {
-      await db.from('otp_codes').update({ attempts: latest.attempts + 1 }).eq('id', latest.id);
-      return reply(400, { error: 'wrong_code' });
-    }
-    await db.from('otp_codes').delete().eq('phone', phone);
+    if (consumed?.ok !== true) return reply(500, { error: 'server_error' });
   }
 
   // Supabase Auth has no Africa's Talking phone provider, so each phone gets a

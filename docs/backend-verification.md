@@ -54,16 +54,58 @@ Run `npm run test:backend`. Coverage includes:
 - Cached profiles are not treated as authenticated.
 - Profile name updates are awaited, normalized, and scoped to the correct customer.
 - OTP client errors, malformed replies and network failures remain explicit.
-- Real request/verify handlers reject invalid input, recent resends, five retained
-  hourly codes, expired codes, and verification after five wrong attempts.
+- Real request/verify handlers run against the actual OTP migration in a disposable
+  local PostgreSQL fixture. SMS and Supabase Auth are mocked; no sample number is
+  contacted. The fixture needs `initdb`, `pg_ctl` and `psql` on PATH and fails
+  explicitly if these are unavailable. It never uses Supabase credentials.
+- Concurrent requests allow only one send in the resend window, including at the
+  fifth hourly request. Failed delivery, code consumption and exhausted attempts
+  retain the hourly history. Concurrent verification grants only one session;
+  concurrent wrong attempts stop at five. Replay, expiry, pending delivery,
+  resend-versus-verification, delayed delivery failure, legacy-history seeding,
+  cleanup, customer-role permissions and fail-closed RPC replies are checked.
+
+## OTP hardening rollout — staged, not applied to the shared backend
+
+`supabase/migrations/20261006000000_atomic_otp.sql` adds a service-only request
+ledger and three atomic RPCs. Every accepted send reservation counts, even on SMS
+failure or a handler crash. The newest five attempts within the sliding hour are
+retained per phone; reservation prunes old entries and an hourly pg_cron job removes
+inactive history and expired codes. OTP codes still expire after five minutes;
+the resend wait is 30 seconds and the wrong-code budget is five attempts.
+All operations use the same per-phone transaction lock. Codes are unusable until
+delivery is marked successful. Session minting happens only after atomic
+consumption; an Auth failure after consumption requires requesting a new code,
+not replaying the consumed code. Configured demo sign-in remains unchanged.
+
+No migration, Edge Function deployment or real SMS was performed for this change.
+Offline tests do not establish that the shared backend now has these protections.
+
+Owner-approved rollout on the **existing** Supabase project requires backend
+deployment/database access (public client keys are not sufficient):
+
+1. Review pending migrations and confirm pg_cron from the existing BC-sync
+   migration is installed. Do not create or replace a database.
+2. Pause non-demo OTP traffic and drain in-flight legacy function calls.
+   Keep requests paused for a full hour if uninterrupted hourly enforcement across
+   cutover is required: historical deleted codes cannot be reconstructed.
+3. Apply this migration, then deploy **both** updated OTP functions while traffic
+   remains paused. Do not deploy handlers before the RPCs or resume with mixed
+   legacy/new handlers; legacy handlers bypass the new ledger.
+4. Confirm the cleanup job, RPC grants and demo sign-in. With explicit approval
+   for a controlled recipient only, verify cooldown, replay and post-consumption
+   throttling on the shared backend before reopening traffic. Never use sample
+   numbers for live SMS checks.
+
+Do not roll back only the handlers: old handlers would bypass durable throttling.
+Pause traffic and coordinate any rollback with the backend owner.
 
 ## Remaining limitations
 
 - The signed-in UI was not visually verified; the screenshot browser cannot sign in.
   Signed-in behavior was checked through live API requests and isolated store tests.
 - Native storage, camera, push, and Android/iOS builds are outside these web/API checks.
-- OTP rate-limit tests cover sequential handler behavior only. The current hourly
-  count uses retained code rows, which are deleted on verification or failed delivery;
-  it is not a durable send-attempt history. Concurrent requests/verification can also
-  race because checking, updating attempts, and consuming codes are separate operations.
-  Do not interpret the passing tests as proof of atomic throttling or replay protection.
+- The last verified live backend still uses retained-code throttling and separate
+  check/update/delete operations. The staged hardening above passes offline atomic
+  tests, but live throttling and race protection remain unverified until approved
+  migration and coordinated deployment.

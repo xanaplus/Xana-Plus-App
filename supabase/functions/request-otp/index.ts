@@ -1,7 +1,4 @@
 import {
-  CODE_TTL_MS,
-  MAX_CODES_PER_HOUR,
-  RESEND_AFTER_MS,
   adminClient,
   hashCode,
   isDemoPhone,
@@ -25,31 +22,22 @@ Deno.serve(async request => {
   if (isDemoPhone(phone)) return reply(200, { ok: true, phone });
 
   const db = adminClient();
-  const hourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-  const { data: recent, error: recentError } = await db
-    .from('otp_codes')
-    .select('created_at')
-    .eq('phone', phone)
-    .gte('created_at', hourAgo)
-    .order('created_at', { ascending: false });
-  if (recentError) return reply(500, { error: 'server_error' });
-
-  if (recent.length > 0 && Date.now() - new Date(recent[0].created_at).getTime() < RESEND_AFTER_MS) {
-    return reply(429, { error: 'too_soon' });
-  }
-  if (recent.length >= MAX_CODES_PER_HOUR) return reply(429, { error: 'too_many' });
-
   const code = newCode();
-  const { data: row, error: insertError } = await db
-    .from('otp_codes')
-    .insert({ phone, code_hash: await hashCode(phone, code), expires_at: new Date(Date.now() + CODE_TTL_MS).toISOString() })
-    .select('id')
-    .single();
-  if (insertError) return reply(500, { error: 'server_error' });
+  const { data: reservation, error: reserveError } = await db.rpc('reserve_otp', {
+    p_phone: phone, p_code_hash: await hashCode(phone, code),
+  });
+  if (reserveError) return reply(500, { error: 'server_error' });
+  if (reservation?.error === 'too_soon' || reservation?.error === 'too_many') {
+    return reply(429, { error: reservation.error });
+  }
+  if (!reservation?.id) return reply(500, { error: 'server_error' });
 
   const sent = await sendSms(phone, `Your Xana Plus code is ${code}. It expires in 5 minutes. Never share it with anyone.`);
+  const { data: delivery, error: deliveryError } = await db.rpc('finish_otp_delivery', {
+    p_phone: phone, p_id: reservation.id, p_sent: sent === 'Success',
+  });
+  if (deliveryError || delivery?.ok !== true) return reply(500, { error: 'server_error' });
   if (sent !== 'Success') {
-    await db.from('otp_codes').delete().eq('id', row.id);
     // The customer has opted out of promotional SMS at the network (Do Not Disturb), so the app can say why.
     if (sent === 'UserInBlacklist') return reply(422, { error: 'sms_blocked' });
     if (sent === 'InvalidPhoneNumber') return reply(400, { error: 'invalid_phone' });

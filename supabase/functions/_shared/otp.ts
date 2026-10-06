@@ -1,10 +1,6 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
-/** Codes live five minutes; a phone can ask again after 30 seconds, at most five times an hour. */
-export const CODE_TTL_MS = 5 * 60 * 1000;
-export const RESEND_AFTER_MS = 30 * 1000;
-export const MAX_CODES_PER_HOUR = 5;
-export const MAX_ATTEMPTS = 5;
+/** Database RPCs own the five-minute TTL, 30-second wait and five-attempt limits. */
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
