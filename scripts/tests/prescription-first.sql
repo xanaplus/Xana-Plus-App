@@ -1,5 +1,11 @@
--- Run only inside a transaction ending in ROLLBACK on the existing backend.
--- Synthetic users and metadata; no SMS, physical files, stock changes or real charges.
+-- Self-contained rollback-only test. Never remove BEGIN or ROLLBACK.
+-- Synthetic users, catalogue items and file metadata; no SMS, real stock or charges.
+begin;
+set local statement_timeout = '20s';
+set local lock_timeout = '5s';
+insert into public.products(item_no,description,item_category_code,unit_price,inventory,inventory_posting_group)
+values ('RX-ROLLBACK-TEST','Synthetic pharmacy test — never dispense','POM',123.45,10,'GENERAL'),
+ ('RX-ROLLBACK-CONTROLLED','Synthetic controlled test — never dispense','CONTROLLED',100,10,'CONTROLLED');
 insert into auth.users(id,aud,role,email) values
  ('10000000-0000-4000-8000-000000000001','authenticated','authenticated','rx-owner@example.invalid'),
  ('10000000-0000-4000-8000-000000000002','authenticated','authenticated','rx-other@example.invalid'),
@@ -56,20 +62,48 @@ do $test$
 declare v_item text; v_denied boolean:=false;
 begin
   perform public.set_prescription_review_status(current_setting('rx.test_id')::uuid,'held','Checking with prescriber.');
-  select item_no into v_item from public.catalogue where category='CONTROLLED' and price>0 and stock>=1 limit 1;
+  select item_no into v_item from public.catalogue where item_no='RX-ROLLBACK-CONTROLLED';
   if v_item is not null then
     begin perform public.review_prescription(current_setting('rx.test_id')::uuid,
       jsonb_build_array(jsonb_build_object('itemNo',v_item,'quantity',1)),'',current_date+10);
     exception when others then if sqlerrm='restricted_item' then v_denied:=true; else raise; end if; end;
     if not v_denied then raise exception 'TEST FAIL: controlled medicine gate'; end if;
   end if;
-  select item_no into v_item from public.catalogue where category in ('GENERAL','CHRONIC','OVER THE COUNTER')
-    and price>0 and stock>=1 and not age_restricted and name !~* '(digoxin|lithium|carbamazepine)' limit 1;
+  select item_no into v_item from public.catalogue where item_no='RX-ROLLBACK-TEST';
   if v_item is null then raise exception 'TEST FAIL: no suitable catalogue test item'; end if;
   perform public.review_prescription(current_setting('rx.test_id')::uuid,
-    jsonb_build_array(jsonb_build_object('itemNo',v_item,'quantity',1,'instructions','Synthetic test instructions')),
+    jsonb_build_array(jsonb_build_object('itemNo',v_item,'quantity',2,'instructions','Synthetic test instructions')),
     'Synthetic quote; never dispense.',current_date+10);
 end; $test$;
+-- Change only the synthetic product, all within this uncommitted transaction.
+reset role;
+do $test$
+declare v_details jsonb; v_denied boolean:=false;
+begin
+  v_details:=jsonb_build_object('paymentMethod','cod','contact','Synthetic test',
+    'addressLine','DO NOT FULFIL - rollback test','slotLabel','Test only','storeName','Test only',
+    'quoteVersion',(select quoted_at from public.prescriptions where id=current_setting('rx.test_id')::uuid));
+  perform set_config('request.jwt.claim.sub','10000000-0000-4000-8000-000000000001',true);
+  update public.products set unit_price=124.45 where item_no='RX-ROLLBACK-TEST';
+  begin perform public.place_prescription_order(current_setting('rx.test_id')::uuid,v_details);
+  exception when others then if sqlerrm='quote_changed' then v_denied:=true; else raise; end if; end;
+  if not v_denied then raise exception 'TEST FAIL: changed catalogue price'; end if;
+  update public.products set unit_price=123.45,inventory=1 where item_no='RX-ROLLBACK-TEST';
+  v_denied:=false;
+  begin perform public.place_prescription_order(current_setting('rx.test_id')::uuid,v_details);
+  exception when others then if sqlerrm='quote_changed' then v_denied:=true; else raise; end if; end;
+  if not v_denied then raise exception 'TEST FAIL: insufficient current stock'; end if;
+  update public.products set inventory=10 where item_no='RX-ROLLBACK-TEST';
+  update public.prescriptions set valid_until=current_date-1 where id=current_setting('rx.test_id')::uuid;
+  v_denied:=false;
+  begin perform public.place_prescription_order(current_setting('rx.test_id')::uuid,v_details);
+  exception when others then if sqlerrm='expired_quote' then v_denied:=true; else raise; end if; end;
+  if not v_denied then raise exception 'TEST FAIL: expired quote'; end if;
+  update public.prescriptions set valid_until=current_date+10 where id=current_setting('rx.test_id')::uuid;
+  if exists(select 1 from public.orders where prescription_id=current_setting('rx.test_id')::uuid)
+    then raise exception 'TEST FAIL: failed confirmation created an order'; end if;
+end; $test$;
+set local role authenticated;
 select set_config('request.jwt.claim.sub','10000000-0000-4000-8000-000000000001',true);
 do $test$
 declare v_details jsonb; v_result jsonb; v_again jsonb; v_denied boolean:=false; v_order uuid;
@@ -92,8 +126,49 @@ begin
     then raise exception 'TEST FAIL: duplicate order'; end if;
   if not exists(select 1 from public.orders where id=v_order and is_test and payment_status='simulated'
     and points_redeemed=0 and points_earned=0) then raise exception 'TEST FAIL: test payment and no loyalty side effects'; end if;
+  if not exists(select 1 from public.order_items where order_id=v_order and item_no='RX-ROLLBACK-TEST'
+    and unit_price=123.45 and quantity=2 and line_total=246.90)
+    then raise exception 'TEST FAIL: exact quoted lines'; end if;
+  if not exists(select 1 from public.orders where id=v_order and items_subtotal=246.90
+    and platform_fee=20 and total=266.90 and amount_due=266.90)
+    then raise exception 'TEST FAIL: exact quoted totals'; end if;
   if (select count(*) from public.prescription_events where prescription_id=current_setting('rx.test_id')::uuid)<7
     then raise exception 'TEST FAIL: audit history'; end if;
+end; $test$;
+-- A distinct synthetic request proves hold, decline and cancellation block ordering.
+do $test$
+declare v_id uuid; v_denied boolean; v_details jsonb;
+begin
+  v_id:=public.create_prescription('Synthetic decline test','myself','','Never dispense',true);
+  insert into storage.objects(bucket_id,name,owner_id)
+    values('prescriptions',auth.uid()::text||'/'||v_id::text||'/synthetic.jpg',auth.uid()::text);
+  perform public.attach_prescription_photo(v_id,auth.uid()::text||'/'||v_id::text||'/synthetic.jpg','Synthetic metadata');
+  perform public.submit_prescription(v_id);
+  v_details:='{"paymentMethod":"cod","contact":"Synthetic","addressLine":"DO NOT FULFIL","slotLabel":"Test","storeName":"Test"}';
+  perform set_config('request.jwt.claim.sub','10000000-0000-4000-8000-000000000003',true);
+  perform public.set_prescription_review_status(v_id,'held','Synthetic hold reason');
+  perform set_config('request.jwt.claim.sub','10000000-0000-4000-8000-000000000001',true);
+  v_denied:=false;
+  begin perform public.place_prescription_order(v_id,v_details);
+  exception when others then if sqlerrm='not_approved' then v_denied:=true; else raise; end if; end;
+  if not v_denied then raise exception 'TEST FAIL: held request ordered'; end if;
+  perform set_config('request.jwt.claim.sub','10000000-0000-4000-8000-000000000003',true);
+  perform public.review_prescription(v_id,'[]','Synthetic decline reason',null,true);
+  perform set_config('request.jwt.claim.sub','10000000-0000-4000-8000-000000000001',true);
+  if not exists(select 1 from public.prescriptions where id=v_id and status='rejected'
+    and review_note='Synthetic decline reason' and quote_lines='[]'::jsonb)
+    then raise exception 'TEST FAIL: decline decision not visible to customer'; end if;
+  v_denied:=false;
+  begin perform public.place_prescription_order(v_id,v_details);
+  exception when others then if sqlerrm='not_approved' then v_denied:=true; else raise; end if; end;
+  if not v_denied then raise exception 'TEST FAIL: declined request ordered'; end if;
+  perform public.cancel_prescription(v_id);
+  if not exists(select 1 from public.prescriptions where id=v_id and status='cancelled')
+    then raise exception 'TEST FAIL: cancellation not persisted'; end if;
+  v_denied:=false;
+  begin perform public.place_prescription_order(v_id,v_details);
+  exception when others then if sqlerrm='not_approved' then v_denied:=true; else raise; end if; end;
+  if not v_denied then raise exception 'TEST FAIL: cancelled request ordered'; end if;
 end; $test$;
 reset role;
 -- The service-role/legacy writer also cannot create an unapproved Rx line.
@@ -129,4 +204,5 @@ begin
   if not v_denied then raise exception 'TEST FAIL: anonymous RPC'; end if;
 end; $test$;
 reset role;
-select 'PASS: consent, uploads, owner privacy, reviewer isolation, clarification, hold, restricted medicines, quote snapshot, one-time test ordering, audit and legacy Rx gate' as result;
+select 'PASS: consent, metadata attachment, owner privacy, reviewer isolation, clarification, hold, decline, cancellation, restricted medicines, stock/price changes, expiry, exact quote totals, one-time test ordering, audit and legacy Rx gate' as result;
+rollback;

@@ -1,4 +1,5 @@
 - [Safe backend testing](backend-testing.md) — demo sessions verify persistence, not real SMS; keep shared-backend tests controlled and clearly labelled.
+- [Git provider authentication](git-provider-auth.md) — source-control access is distinct from connector setup; healthy metadata does not prove a push can authenticate.
 - [Temporary secret cleanup](temporary-secret-cleanup.md) — verify existence after deletion; an environment deletion acknowledgement may leave secrets intact.
 - [Restoring test dependencies](dependency-restoration.md) — restore locked React-compatible test packages rather than resolving newer minor peer requirements.
 - [Prescription-first ordering](prescription-workflow.md) — customers upload first; pharmacist review and pricing precede customer ordering.

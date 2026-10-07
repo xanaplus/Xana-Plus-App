@@ -4,21 +4,17 @@ import { createClient } from '@supabase/supabase-js';
 // Uses only the existing no-SMS demo session. Never logs credentials or sessions.
 const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const key = process.env.EXPO_PUBLIC_SUPABASE_KEY;
-const demoCode = process.env.XANAPLUS_TEST_OTP;
+// Deliberately separate from a delivered/consumed real-recipient test OTP.
+const demoCode = process.env.XANAPLUS_TEST_DEMO_CODE;
 assert.ok(url && key && demoCode, 'Required test configuration is missing');
 const db = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 const phone = '+254700000000';
-for (const [name, body] of [
-  ['request-otp', { phone }],
-  ['verify-otp', { phone, code: demoCode }],
-]) {
-  const result = await db.functions.invoke(name, { body });
-  assert.ok(!result.error, `${name} demo verification failed`);
-  if (name === 'verify-otp') {
-    const auth = await db.auth.setSession(result.data);
-    assert.ok(!auth.error && auth.data.session, 'Demo session was not created');
-  }
-}
+// Verify the owner-supplied fixed demo code directly. Do not call request-otp:
+// even a misconfigured demo-phone setting must never turn this test into an SMS.
+const result = await db.functions.invoke('verify-otp', { body: { phone, code: demoCode } });
+assert.ok(!result.error, 'verify-otp demo verification failed');
+const session = await db.auth.setSession(result.data);
+assert.ok(!session.error && session.data.session, 'Demo session was not created');
 const { data: auth } = await db.auth.getUser();
 assert.ok(auth.user, 'Demo user unavailable');
 const created = await db.rpc('create_prescription', {

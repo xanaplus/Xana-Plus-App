@@ -129,8 +129,10 @@ the dev server entirely if it has to prompt for a different port.
 - **On a phone:** Expo Go, scan the QR, same Wi-Fi. `npx expo start --port 8090 --tunnel`
   when the firewall blocks the LAN (the office Wi-Fi is Private, Node is allowed on Public
   only).
-- **Sign in:** the demo number **0700 000 000** with code **`123456`** never sends an SMS.
-  Any other Kenyan number gets a real code by text. You land as *Amina Odhiambo*, Gold tier.
+- **Sign in:** the demo number **0700 000 000** is intended for no-SMS testing,
+  but its fixed code must match the deployed server's `DEMO_CODE`. Do not assume
+  an old documented code or a delivered test OTP is valid. Any other Kenyan
+  number can send a real SMS; do not use one for testing without approval.
 - **Push notifications do not work in Expo Go on Android** (SDK 53 and later). Use a
   development build — see *Builds and updates*.
 
@@ -144,6 +146,28 @@ Supabase's separately stored tokens; deleting the profile cache alone is not eno
 
 The current OTP provider sends **SMS only**. WhatsApp is not offered until a matching
 server-side delivery implementation exists.
+
+### Fresh local checkout
+
+Use Node.js 22 or newer and npm:
+
+```sh
+git pull origin main
+npm ci
+```
+
+Create a gitignored `.env` in the project root with the existing project's
+`EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_KEY` (publishable/anon client
+key only). See `.env.example`; do not put a service-role key or management token
+in Expo client configuration.
+
+Then run `npx expo start --port 8090` and open the appropriate Expo Go or
+development client on your phone. Use `--go` to explicitly select Expo Go, or
+`--tunnel` if your phone cannot reach your computer over Wi-Fi. The prescription
+camera/gallery path needs a phone to verify native behavior.
+
+Do not apply pending Supabase migrations as part of local Expo setup. Several
+SMS-hardening migrations are staged and require separate rollout approval.
 
 ### Backend regression checks
 
