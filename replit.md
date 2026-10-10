@@ -52,3 +52,12 @@ Sign-in, the live catalogue, saved orders, and account data depend on that proje
 - Product and basket pricing share the checkout quantity-price resolver. Checkout rejects a supplied stale unit price and refreshes catalogue data for review before retry.
 - Prescription orders continue to use the pharmacist's fixed quote; this work does not change clinical quote pricing, SMS or simulated payments.
 - `node scripts/tests/wholesale-browser.mjs` checks real catalogue/PDP/basket interactions as a guest and never invokes login, SMS or order creation.
+
+## Customer catalogue visibility
+
+- The owner approved hiding the 60 item numbers in `docs/hide-from-website.csv` from both the website and app through their shared catalogue.
+- `products.show_on_website` is app-owned and defaults to true. Neither BC sync may write/reset it.
+- The public `catalogue` must retain its visibility filter, existing safe columns, wholesale tiers and regulatory rules in future view migrations.
+- The view is read-only for public clients. Keep the visibility flag and costs/margins private.
+- The scoped visibility migration was explicitly applied to the existing shared Supabase backend. No frontend publishing is required for this database change.
+- `node scripts/tests/catalogue-visibility.mjs` verifies exclusions/public permissions and runs only rollback-only database fixtures; it must never commit test changes.
