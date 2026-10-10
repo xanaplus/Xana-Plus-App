@@ -22,3 +22,14 @@ or ask the developer to expose a new endpoint before existing access was checked
 **How to apply:** investigate the existing BC/POS integration first. Do not ask
 for replacement credentials or claim the tier endpoint is missing without
 checking what the current integration exposes.
+
+Only general-customer rules should be exposed to public shoppers; customer
+price-group and customer-specific rates require a separately approved eligibility
+mapping.
+
+**Why:** the current requirement establishes per-product quantity qualification,
+not permission to give every shopper negotiated customer prices.
+
+**How to apply:** preserve that eligibility boundary when adding customer groups
+or alternative selling units. Do not infer wholesale membership from a basket's
+quantity or from ordinary staff/pharmacist access.

@@ -205,12 +205,13 @@ export default function CartRoute() {
       <Card variant="elevated" padding={spacing.lg} style={[styles.inset, styles.summary]}>
         <SummaryRow label={`Items Subtotal (${formatCartCounts(cart.itemCount, cart.unitCount)})`} value={formatKes(cart.summary.itemsSubtotal)} />
         {cart.summary.wholesaleSavings > 0 ? (
-          <SummaryRow label="Quantity Wholesale Savings" value={`-${formatKes(cart.summary.wholesaleSavings)}`} tone="primary" />
+          <SummaryRow label="Wholesale savings already included" value={formatKes(cart.summary.wholesaleSavings)} tone="primary" />
         ) : null}
         <SummaryRow
           label={`Delivery Fee (${store.name.replace('Xana Plus ', '')} / Ruiru)`}
           value={cart.summary.deliveryFee === 0 ? 'Free' : formatKes(cart.summary.deliveryFee)}
         />
+        {cart.summary.platformFee > 0 ? <SummaryRow label="Packaging fee" value={formatKes(cart.summary.platformFee)} /> : null}
         <Divider />
         <View style={styles.totalRow}>
           <Txt variant="titleLg">To Pay</Txt>

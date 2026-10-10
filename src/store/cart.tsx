@@ -1,6 +1,8 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState, useSyncExternalStore, type ReactNode } from 'react';
 
 import { productById } from '@/data/catalog';
+import { quantityUnitPrice } from '@/lib/quantity-pricing';
+import { catalogueVersion, subscribeCatalogue } from '@/data/live-catalogue';
 import type { CartLine, OrderSummary, Product, SubstitutionPreference } from '@/data/types';
 import { parsePersisted, persisted, save, STORAGE_KEYS } from '@/lib/storage';
 import { track } from '@/lib/analytics';
@@ -97,7 +99,10 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 
 /** Price for one unit, applying the wholesale tier when the quantity qualifies. */
 export const unitPrice = (product: Product, quantity: number): number =>
-  product.wholesalePrice && product.wholesaleMinQty && quantity >= product.wholesaleMinQty ? product.wholesalePrice : product.price;
+  quantityUnitPrice(product.price, quantity, product.priceTiers ?? (
+    product.wholesalePrice && product.wholesaleMinQty
+      ? [{ minQty: product.wholesaleMinQty, unitPrice: product.wholesalePrice }] : []
+  ));
 
 type CartContextValue = {
   lines: CartLine[];
@@ -123,22 +128,23 @@ const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, undefined, hydrateCart);
+  const liveProducts = useSyncExternalStore(subscribeCatalogue, catalogueVersion, catalogueVersion);
 
   const items = useMemo(
     () =>
       state.lines.flatMap(line => {
-        const product = productById(line.productId);
+        const product = liveProducts.get(line.productId) ?? productById(line.productId);
         if (!product) return [];
         const price = unitPrice(product, line.quantity);
         return [{ product, quantity: line.quantity, unitPrice: price, lineTotal: price * line.quantity }];
       }),
-    [state.lines],
+    [state.lines, liveProducts],
   );
 
   const summary = useMemo<OrderSummary>(() => {
     const itemsSubtotal = items.reduce((sum, i) => sum + i.lineTotal, 0);
     const wholesaleSavings = items.reduce(
-      (sum, i) => sum + (i.product.wholesalePrice ? (i.product.price - i.unitPrice) * i.quantity : 0),
+      (sum, i) => sum + Math.max(0, (i.product.price - i.unitPrice) * i.quantity),
       0,
     );
     const deliveryFee = itemsSubtotal >= FREE_DELIVERY_THRESHOLD ? DELIVERY_FEE : DELIVERY_FEE;

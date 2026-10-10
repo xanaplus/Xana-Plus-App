@@ -10,7 +10,7 @@ export type PaymentMethodId = 'mpesa' | 'cod' | 'card';
 
 export type ProductBadge = 'discount' | 'fresh' | 'new' | 'organic' | 'bulk';
 
-/** A purchasable item. Money is in KES, stored as whole shillings. */
+/** A purchasable item. Money is in KES, with up to two decimal places. */
 export type Product = {
   id: string;
   name: string;
@@ -22,6 +22,8 @@ export type Product = {
   /** Wholesale price applied from `wholesaleMinQty` units upwards. */
   wholesalePrice?: number;
   wholesaleMinQty?: number;
+  /** General-customer BC quantity prices, in the item's base unit and inclusive of VAT. */
+  priceTiers?: import('../lib/quantity-pricing').PriceTier[];
   image: string;
   badges?: ProductBadge[];
   /** Category slug from `categories`. */

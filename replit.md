@@ -40,3 +40,15 @@ Sign-in, the live catalogue, saved orders, and account data depend on that proje
 - Redemption checks cover this app's prescriptions, not in-store/Collabmed dispensing. Do not claim cross-channel duplicate prevention or live dispensing integration.
 - `scripts/tests/prescription-first.sql` uses synthetic fixtures and must run in a transaction ending in rollback. It must never be run without rollback against the shared backend.
 - Do not activate SMS configuration or apply unrelated migrations as part of Pharmacy work.
+
+## BC wholesale pricing
+
+- BC quantity rules apply independently to each product, never the combined basket.
+- The existing BC `itemSalesPrice` API supplies the rules; credentials remain backend-only.
+- Only general-customer, KES/base-unit rules are public. Customer-specific prices, other selling units and zero-price records are excluded and counted in sync results.
+- Prices are VAT-inclusive. Ex-VAT rules are converted only when BC VAT configuration gives an unambiguous rate; ambiguous tax configuration fails the sync.
+- The separately deployed `bc-wholesale-sync` function updates a complete snapshot atomically. Its daily job follows the item sync at 03:35 UTC, and uses the existing Vault authentication.
+- The wholesale migration was explicitly applied, and the updated `place-order` function was explicitly deployed. Post-merge setup must still never apply migrations or deploy functions.
+- Product and basket pricing share the checkout quantity-price resolver. Checkout rejects a supplied stale unit price and refreshes catalogue data for review before retry.
+- Prescription orders continue to use the pharmacist's fixed quote; this work does not change clinical quote pricing, SMS or simulated payments.
+- `node scripts/tests/wholesale-browser.mjs` checks real catalogue/PDP/basket interactions as a guest and never invokes login, SMS or order creation.

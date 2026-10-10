@@ -71,7 +71,7 @@ export function summariseLines(lines: OrderLine[]): OrderSummary {
 
   const itemsSubtotal = priced.reduce((sum, i) => sum + i.lineTotal, 0);
   const wholesaleSavings = priced.reduce(
-    (sum, i) => sum + (i.product.wholesalePrice ? (i.product.price - i.unitPrice) * i.quantity : 0),
+    (sum, i) => sum + Math.max(0, (i.product.price - i.unitPrice) * i.quantity),
     0,
   );
 
@@ -178,6 +178,7 @@ export type PlaceOrderError =
   | 'age_unconfirmed'
   | 'rx_missing'
   | 'points_unavailable'
+  | 'price_changed'
   | PromoError
   | 'server_error'
   | 'network';
@@ -218,6 +219,8 @@ export const placeOrderErrorMessage = (error: PlaceOrderError): string => {
       return 'A prescription is needed for the medicine in your cart.';
     case 'points_unavailable':
       return 'Those Xana Club points are no longer available. Adjust the points and try again.';
+    case 'price_changed':
+      return 'A price or wholesale tier has changed. Refresh your basket and review the total before trying again. You have not been charged.';
     case 'network':
       return 'No connection. Check your internet and try again. You have not been charged.';
     default:
@@ -420,7 +423,10 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     const generation = accountGeneration.current;
     const { data, error } = await supabase.functions.invoke<PlaceOrderReply>('place-order', {
       body: {
-        lines: input.lines.map(line => ({ itemNo: line.productId, quantity: line.quantity })),
+        lines: input.lines.map(line => {
+          const product = productById(line.productId);
+          return { itemNo: line.productId, quantity: line.quantity, expectedUnitPrice: product ? unitPrice(product, line.quantity) : undefined };
+        }),
         paymentMethod: input.paymentMethod,
         contact: input.contact,
         addressLine: input.addressLine,
@@ -443,6 +449,10 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       const context = (error as { context?: Response } | null)?.context;
       const reply = context ? await context.json().catch(() => null) : null;
       const failed: PlaceOrderError = reply ? ((reply.error as PlaceOrderError) ?? 'server_error') : 'network';
+      if (failed === 'price_changed') {
+        try { await fetchProducts(input.lines.map(line => line.productId)); }
+        catch { return { ok: false, error: 'network' }; }
+      }
       track('order_failed', { reason: failed });
       if (!reply) return { ok: false, error: 'network' };
       return { ok: false, error: failed, items: reply.items, minSpend: reply.minSpend };

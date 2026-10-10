@@ -26,6 +26,7 @@ import { figmaAsset } from '@/data/images';
 import { fetchProduct, LIVE_PHARMACY_CATEGORIES, liveProductById, useLive } from '@/data/live-catalogue';
 import type { CategoryVertical, Product } from '@/data/types';
 import { discountPercent, formatKes } from '@/lib/format';
+import { activePriceTiers, type PriceTier } from '@/lib/quantity-pricing';
 import { unitPrice, useCart } from '@/store/cart';
 import { colors, layout, radius, spacing } from '@/theme';
 
@@ -245,17 +246,21 @@ function ProductDetail({ product }: { product: Product }) {
     : ['Home', aisle?.label ?? 'Shop All', copy?.crumb ?? aisle?.name ?? humanize(product.category)]
   ).filter((crumb): crumb is string => crumb !== undefined);
 
-  const tier =
-    product.wholesalePrice !== undefined && product.wholesaleMinQty !== undefined
-      ? {
-          price: product.wholesalePrice,
-          minQty: product.wholesaleMinQty,
-          savePercent: discountPercent(product.wholesalePrice, product.price),
-        }
-      : undefined;
-
+  // Samples pre-date BC tiers and keep their single wholesale threshold. Live
+  // catalogue products carry priceTiers (including an empty array), so never
+  // manufacture a threshold for them from legacy fields.
+  const sourceTiers: readonly PriceTier[] =
+    product.priceTiers !== undefined
+      ? product.priceTiers
+      : product.wholesalePrice !== undefined && product.wholesaleMinQty !== undefined
+        ? [{ minQty: product.wholesaleMinQty, unitPrice: product.wholesalePrice }]
+        : [];
+  const tiers = activePriceTiers(sourceTiers).filter(priceTier => priceTier.unitPrice < product.price);
+  const currentUnitPrice = unitPrice(product, quantity);
+  const tierSaving = Math.max(0, product.price - currentUnitPrice);
   const saving = product.wasPrice !== undefined ? product.wasPrice - product.price : 0;
-  const lineTotal = unitPrice(product, quantity) * quantity;
+  const nextTier = tiers.find(priceTier => priceTier.minQty > quantity && priceTier.unitPrice < currentUnitPrice);
+  const lineTotal = currentUnitPrice * quantity;
   const reviewLabel =
     product.reviewCount === undefined
       ? undefined
@@ -360,7 +365,7 @@ function ProductDetail({ product }: { product: Product }) {
         <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="hero" />
         <View style={styles.heroBadges}>
           {isPharmacy ? <NoticePill icon="shieldPlus" label={PHARMACIST_REVIEW} tone="brand" /> : null}
-          {!isPharmacy && tier ? <Badge label={BULK_BADGE} tone="discount" /> : null}
+          {!isPharmacy && tiers.length > 0 ? <Badge label={BULK_BADGE} tone="discount" /> : null}
           {!isPharmacy && eyebrow ? <NoticePill label={eyebrow} tone="info" /> : null}
         </View>
       </View>
@@ -387,13 +392,17 @@ function ProductDetail({ product }: { product: Product }) {
         <View style={styles.priceBlock}>
           <View style={styles.priceRow}>
             <View style={styles.priceGroup}>
-              <Txt variant="priceLg">{formatKes(product.price)}</Txt>
-              {product.wasPrice !== undefined ? (
+              <Txt variant="priceLg">{formatKes(currentUnitPrice)}</Txt>
+              {(tierSaving > 0 || product.wasPrice !== undefined) ? (
                 <Txt variant="priceStrike" color="outline" style={styles.strike}>
-                  {formatKes(product.wasPrice)}
+                  {formatKes(tierSaving > 0 ? product.price : product.wasPrice!)}
                 </Txt>
               ) : null}
-              {saving > 0 ? <Badge label={`Save ${formatKes(saving)}`} tone="warning" /> : null}
+              {tierSaving > 0 ? (
+                <Badge label={`Save ${formatKes(tierSaving)}`} tone="brand" />
+              ) : saving > 0 ? (
+                <Badge label={`Save ${formatKes(saving)}`} tone="warning" />
+              ) : null}
             </View>
             {isPharmacy ? <NoticePill icon="check-circle" label="Licensed Pharmacy Stock" tone="info" /> : null}
           </View>
@@ -414,24 +423,52 @@ function ProductDetail({ product }: { product: Product }) {
           )}
         </View>
 
-        {tier ? (
+        {tiers.length > 0 ? (
           <View style={styles.tierTable}>
-            <View style={styles.tierRow}>
-              <Txt variant="body">{`1 to ${tier.minQty - 1} units`}</Txt>
-              <Txt variant="title">{`${formatKes(product.price)} each`}</Txt>
+            <View style={styles.tierIntro}>
+              <Txt variant="title">Quantity pricing</Txt>
+              <Txt variant="bodySm" color="onSurfaceVariant">
+                {`${quantity} ${quantity === 1 ? 'unit' : 'units'} selected · ${formatKes(currentUnitPrice)} each`}
+              </Txt>
             </View>
-            <View style={[styles.tierRow, styles.tierRowActive]}>
+            <View style={[styles.tierRow, quantity < tiers[0].minQty ? styles.tierRowActive : null]}>
               <View style={styles.tierLeft}>
-                <Txt variant="title" color="primary">{`${tier.minQty}+ units`}</Txt>
-                <Txt variant="bodySm" color="onSurfaceVariant">
-                  Wholesale price
+                <Txt variant="title" color={quantity < tiers[0].minQty ? 'primary' : 'onSurface'}>
+                  {`1–${tiers[0].minQty - 1} units`}
                 </Txt>
               </View>
               <View style={styles.tierRight}>
-                <Badge label={`Save ${tier.savePercent}%`} tone="brand" />
-                <Txt variant="title">{`${formatKes(tier.price)} each`}</Txt>
+                {quantity < tiers[0].minQty ? <Badge label="Your price" tone="brand" /> : null}
+                <Txt variant="title">{`${formatKes(product.price)} each`}</Txt>
               </View>
             </View>
+            {tiers.map(priceTier => {
+              const selected = quantity >= priceTier.minQty && priceTier.unitPrice === currentUnitPrice;
+              const amountSaved = product.price - priceTier.unitPrice;
+              return (
+                <View key={`${priceTier.minQty}-${priceTier.unitPrice}`} style={[styles.tierRow, selected ? styles.tierRowActive : null]}>
+                  <View style={styles.tierLeft}>
+                    <Txt variant="title" color={selected ? 'primary' : 'onSurface'}>
+                      {`${priceTier.minQty}+ units`}
+                    </Txt>
+                  </View>
+                  <View style={styles.tierRight}>
+                    {selected ? <Badge label="Your price" tone="brand" /> : null}
+                    <Txt variant="title">{`${formatKes(priceTier.unitPrice)} each`}</Txt>
+                    <Txt variant="bodySm" color="onSurfaceVariant">
+                      {`Save ${formatKes(amountSaved)} (${discountPercent(priceTier.unitPrice, product.price)}%)`}
+                    </Txt>
+                  </View>
+                </View>
+              );
+            })}
+            {nextTier ? (
+              <View style={styles.nextTier}>
+                <Txt variant="bodySm" color="onSurfaceVariant">
+                  {`Add ${nextTier.minQty - quantity} ${nextTier.minQty - quantity === 1 ? 'unit' : 'units'} to unlock ${formatKes(nextTier.unitPrice)} each`}
+                </Txt>
+              </View>
+            ) : null}
           </View>
         ) : null}
 
@@ -728,6 +765,12 @@ const styles = StyleSheet.create({
   stockDot: { width: 8, height: 8, borderRadius: radius.pill, backgroundColor: colors.success },
   stockDotOut: { backgroundColor: colors.error },
   tierTable: { borderRadius: radius.lg, borderWidth: 1, borderColor: colors.outlineSoft30, overflow: 'hidden' },
+  tierIntro: {
+    gap: spacing.xxs,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    backgroundColor: colors.surfaceContainerLow,
+  },
   tierRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -737,8 +780,14 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   tierRowActive: { backgroundColor: colors.successContainer },
-  tierLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexShrink: 1 },
-  tierRight: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  tierLeft: { flex: 1, flexDirection: 'column', alignItems: 'flex-start', gap: spacing.xs },
+  tierRight: { flexShrink: 1, flexDirection: 'column', alignItems: 'flex-end', gap: spacing.xs },
+  nextTier: {
+    borderTopWidth: 1,
+    borderTopColor: colors.outlineSoft30,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+  },
   express: { backgroundColor: colors.surfaceContainerLow, borderRadius: radius.lg, padding: spacing.md },
   serviceRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   serviceIcon: { width: 40, height: 40, borderRadius: radius.md, backgroundColor: colors.mintSurface, alignItems: 'center', justifyContent: 'center' },

@@ -1,4 +1,5 @@
 import { adminClient, preflight, reply } from '../_shared/otp.ts';
+import { quantityUnitPrice } from '../../../src/lib/quantity-pricing.ts';
 
 /**
  * POST (signed in) { lines: [{ itemNo, quantity }], paymentMethod, contact,
@@ -24,7 +25,7 @@ const MAX_QUANTITY = 999;
 const PAYMENT_METHODS = ['mpesa', 'cod', 'card'];
 const SUBSTITUTIONS = ['similar', 'refund', 'call'];
 
-type Line = { itemNo: string; quantity: number };
+type Line = { itemNo: string; quantity: number; expectedUnitPrice?: number };
 
 const text = (value: unknown, max = 300): string | null =>
   typeof value === 'string' && value.trim() !== '' ? value.trim().slice(0, max) : null;
@@ -61,6 +62,7 @@ Deno.serve(async request => {
     lines.length === 0 ||
     lines.length > MAX_LINES ||
     lines.length !== (body.lines?.length ?? 0) ||
+    new Set(lines.map(line => line.itemNo)).size !== lines.length ||
     !paymentMethod || !PAYMENT_METHODS.includes(paymentMethod) ||
     !substitution || !SUBSTITUTIONS.includes(substitution) ||
     !contact || !addressLine || !slotLabel || !storeName
@@ -72,20 +74,20 @@ Deno.serve(async request => {
   const itemNos = [...new Set(lines.map(line => line.itemNo))];
   const { data: rows, error: catalogueError } = await db
     .from('catalogue')
-    .select('item_no, name, price, stock, requires_rx, age_restricted')
+    .select('item_no, name, price, stock, requires_rx, age_restricted, price_tiers')
     .in('item_no', itemNos);
   if (catalogueError) return reply(500, { error: 'server_error' });
 
   const byNo = new Map((rows ?? []).map(row => [row.item_no as string, row]));
   const unavailable = itemNos.filter(no => {
     const row = byNo.get(no);
-    return !row || Number(row.stock) <= 0;
+    return !row || Number(row.stock) < lines.find(line => line.itemNo === no)!.quantity;
   });
   if (unavailable.length > 0) return reply(409, { error: 'unavailable', items: unavailable });
 
   const items = lines.map(line => {
     const row = byNo.get(line.itemNo)!;
-    const unitPrice = Number(row.price);
+    const unitPrice = quantityUnitPrice(Number(row.price), line.quantity, row.price_tiers ?? []);
     return {
       item_no: line.itemNo,
       name: row.name ?? line.itemNo,
@@ -96,6 +98,11 @@ Deno.serve(async request => {
       age_restricted: row.age_restricted === true,
     };
   });
+
+  if (lines.some((line, index) => line.expectedUnitPrice !== undefined &&
+    (!Number.isFinite(line.expectedUnitPrice) || Math.abs(line.expectedUnitPrice - items[index].unit_price) >= 0.005))) {
+    return reply(409, { error: 'price_changed' });
+  }
 
   if (items.some(item => item.age_restricted) && body.ageConfirmed !== true) return reply(400, { error: 'age_unconfirmed' });
   // Rx orders are created only by the transaction-bound pharmacist-quote RPC.

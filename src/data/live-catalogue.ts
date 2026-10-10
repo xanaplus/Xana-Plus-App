@@ -24,9 +24,10 @@ type CatalogueRow = {
   requires_rx: boolean;
   age_restricted: boolean;
   photo_url: string | null;
+  price_tiers: Product['priceTiers'];
 };
 
-const COLUMNS = 'item_no,name,price,stock,category,requires_rx,age_restricted,photo_url';
+const COLUMNS = 'item_no,name,price,stock,category,requires_rx,age_restricted,photo_url,price_tiers';
 
 /** App category slug for every BC inventory posting group (the `category` column). */
 export const BC_GROUP_CATEGORY: Record<string, string> = {
@@ -98,6 +99,7 @@ const toProduct = (row: CatalogueRow): Product => {
     name,
     pack: packFromName(name),
     price: Number(row.price),
+    priceTiers: row.price_tiers ?? [],
     image: row.photo_url ?? '',
     category: BC_GROUP_CATEGORY[row.category ?? ''] ?? 'general-merchandise',
     rxRequired: row.requires_rx,
@@ -113,6 +115,13 @@ const toProduct = (row: CatalogueRow): Product => {
 
 const MAX_PERSISTED = 400;
 const cache = new Map<string, Product>();
+const catalogueListeners = new Set<() => void>();
+let catalogueSnapshot: ReadonlyMap<string, Product> = new Map();
+export const catalogueVersion = () => catalogueSnapshot;
+export const subscribeCatalogue = (listener: () => void) => {
+  catalogueListeners.add(listener);
+  return () => { catalogueListeners.delete(listener); };
+};
 let hydrated = false;
 let saveTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -128,6 +137,7 @@ function hydrate() {
 
 function remember(products: Product[]): Product[] {
   hydrate();
+  const changed = products.some(product => JSON.stringify(cache.get(product.id)) !== JSON.stringify(product));
   for (const product of products) {
     // Re-insert so the Map's order stays most-recent-last for the persisted slice.
     cache.delete(product.id);
@@ -135,6 +145,10 @@ function remember(products: Product[]): Product[] {
   }
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => save(STORAGE_KEYS.products, [...cache.values()].slice(-MAX_PERSISTED)), 500);
+  if (changed) {
+    catalogueSnapshot = new Map(cache);
+    catalogueListeners.forEach(listener => listener());
+  }
   return products;
 }
 
