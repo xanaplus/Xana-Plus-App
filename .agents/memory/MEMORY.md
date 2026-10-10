@@ -6,3 +6,4 @@
 - [V1 scope](v1-scope.md) — the user designated the Team Discussion Guide as V1 and the Super App PRD as the long-term goal.
 - [Screen test boundaries](screen-test-boundaries.md) — isolate native and live-data dependencies; assert visible primitives rather than serializing React element props.
 - [SMS safeguards](sms-policy.md) — owner-approved aggregate limits and demo exemption; staging approval is not live-rollout approval.
+- [Wholesale pricing](wholesale-pricing.md) — wholesale prices must come from BC and change at qualifying quantity thresholds.
