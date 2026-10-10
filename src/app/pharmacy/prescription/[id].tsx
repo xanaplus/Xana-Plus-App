@@ -11,6 +11,7 @@ import {
 } from '@/features/prescriptions/api';
 import { ErrorNotice, PhotoQueue, PrivatePhotos } from '@/features/prescriptions/ui';
 import { useFulfilment } from '@/store/fulfilment';
+import { useOrders } from '@/store/orders';
 import { useSession } from '@/store/session';
 import { colors, radius, spacing } from '@/theme';
 
@@ -64,6 +65,7 @@ export default function PrescriptionDetailScreen() {
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const { isAuthenticated } = useSession();
   const fulfilment = useFulfilment();
+  const { retryHistory } = useOrders();
   const [record, setRecord] = useState<Prescription | null>(null);
   const [events, setEvents] = useState<PrescriptionEvent[]>([]);
   const [eventsLoading, setEventsLoading] = useState(false);
@@ -82,6 +84,12 @@ export default function PrescriptionDetailScreen() {
   const eventsRequest = useRef(0);
   const prescriptionRequest = useRef(0);
   const detailsInitializedForId = useRef<string | null>(null);
+
+  // Prescription checkout saves through its own RPC, not the cart order writer.
+  // Refresh the shared history before the customer opens the existing order screen.
+  useEffect(() => {
+    if (record?.order_no) retryHistory();
+  }, [record?.order_no, retryHistory]);
 
   const loadEvents = useCallback(async (targetId: string) => {
     const requestNo = ++eventsRequest.current;

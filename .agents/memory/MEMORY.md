@@ -7,3 +7,4 @@
 - [Screen test boundaries](screen-test-boundaries.md) — isolate native and live-data dependencies; assert visible primitives rather than serializing React element props.
 - [SMS safeguards](sms-policy.md) — owner-approved aggregate limits and demo exemption; staging approval is not live-rollout approval.
 - [Wholesale pricing](wholesale-pricing.md) — wholesale prices must come from BC and change at qualifying quantity thresholds.
+- [Live browser checks](live-browser-verification.md) — verify in-app cached transitions; hidden Expo screens and closing dialogs can cause misleading selector failures.

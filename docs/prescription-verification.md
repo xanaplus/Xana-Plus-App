@@ -1,6 +1,113 @@
 # Prescription journey verification
 
-## Handoff status — 2026-10-07
+## Live verification completed — 2026-10-10
+
+**The approved no-SMS web/browser and live-backend checks now pass.** Native
+Android/iOS camera and gallery behavior remains unverified. This section supersedes
+the deferred-live-check status recorded below; offline mocks are still not live evidence.
+
+### Commands and evidence
+
+- `node scripts/tests/prescription-live.mjs --approved-temporary-no-sms` passed
+  against the configured Supabase backend and running Expo web app.
+- `node scripts/tests/prescription-db.mjs` passed again using only the fixed
+  rollback-only SQL fixture. No migration was deployed.
+- `npm run test:backend` passed all 108 isolated tests; `npm run typecheck`,
+  `npm run lint`, harness syntax and harness ESLint checks passed.
+- A signed-out phone-size screenshot of `/pharmacy/upload` still renders correctly.
+  That screenshot does **not** prove signed-in behavior. Signed-in customer and
+  temporary reviewer interactions below were exercised by Playwright with real
+  backend sessions, not mocked session providers or mocked API responses.
+
+### Live customer and temporary reviewer results
+
+- Created confirmed synthetic email/password accounts using the already configured
+  backend access. No OTP request, OTP guessing or SMS was used. Passwords, privileged
+  credentials, browser contexts, sessions and signed image URLs stayed ephemeral;
+  no session-state files, traces, screenshots containing sessions or credentials
+  were saved. All browser Edge Function requests were blocked as a safeguard;
+  the successful run asserted that none were attempted.
+- Selected a labelled nonclinical PNG through the browser's real gallery/file picker.
+  Deliberately aborted the first upload and first submission call. Retrying used
+  one draft, two upload attempts and two submission attempts, leaving exactly one
+  attached image. These deliberate aborts are retry tests, not backend outages.
+- Uploaded real private bytes. Owner signed-URL reads and temporary reviewer
+  downloads matched the original bytes exactly. Other-customer and anonymous
+  signing/downloads were denied; the public object URL was denied. Cross-customer
+  prescription reads returned no records, anonymous record reads were denied,
+  and an ordinary signed-in customer could not open the reviewer editor.
+- Exercised reviewer clarification, customer reply and persisted response, reviewer
+  hold, decline reason, keep-request, and confirmed cancellation. Held, declined
+  and cancelled requests were rejected by the order RPC without creating orders;
+  held/cancelled screens had no confirmation action.
+- Searched the real medicine catalogue by name, added a medicine, increased its
+  quantity to two, entered instructions/note/expiry and saved a server-priced quote.
+  Customer UI unit price, quantity, item identifier and subtotal matched the saved
+  quote. Saved order lines and subtotal matched that quote; total included the
+  existing KSh 20 fee.
+- Refreshing the quote behind the customer's displayed version produced the
+  stale-version error. Altering only the synthetic prescription's price snapshot
+  or quantity above current stock produced the price/availability error. No real
+  catalogue price or stock was changed. Actual catalogue-change checks remain
+  separately evidenced by the rollback-only SQL fixture, not this snapshot test.
+- A past expiry date and an over-48-hour review timestamp each disabled browser
+  confirmation and caused backend `expired_quote` rejection with no order.
+- Explicit customer confirmation, two immediate confirmation clicks, sequential
+  repeats and parallel repeats returned one order per request. Two independent
+  authenticated clients also issued concurrent **first** confirmations on a
+  separate fresh quote: both returned the same order, with only one order saved.
+- All orders asserted test/simulated payment, DO NOT FULFIL labels and zero points
+  earned/redeemed. No real payment was collected.
+- Opened the confirmed order through the app's existing order link without
+  reloading the app, and opened an existing prescription from customer history.
+
+### Issues fixed during verification
+
+The unrun harness needed name-based catalogue search, icon-tolerant payment-chip
+selection, waits for cancellation responses/dialog closure, and an exact order
+heading selector because Expo Router keeps the previous screen mounted but hidden.
+It now checks expiry, simultaneous first confirmations, exact image bytes and
+post-cleanup absence rather than relying on successful deletion acknowledgements.
+
+Prescription checkout writes through its own RPC rather than the cart's order
+writer. The prescription detail screen now refreshes shared order history when
+an order number is loaded, so the existing order screen can find the newly saved
+order. Offline assertions cover successful refresh and no refresh after a rejected
+confirmation; the final live run verified the in-app navigation.
+
+### Cleanup explicitly confirmed
+
+The final run removed its images (including uploads discovered by exact temporary
+owner prefixes), removed its non-order drafts, revoked its synthetic reviewer and
+deleted the reviewer/other-customer accounts. It compared all original pharmacist
+membership rows, including their timestamps, with the pre-run snapshot: unchanged.
+Accounts owning audit orders were banned long-term and had passwords rotated in
+memory; the bans were read back and verified.
+
+Earlier diagnostic runs were cleaned up the same way. A separate **read-only
+aggregate database audit** after the final run confirmed the overall retained state:
+
+| Audit check | Result |
+| --- | --- |
+| Retained synthetic customer accounts | 4 |
+| Retained customer accounts verified disabled | 4 |
+| Labelled simulated DO NOT FULFIL orders | 6 |
+| Orders lacking test/simulated flags, labels, or zero-points safeguards | 0 |
+| Temporary synthetic reviewer memberships | 0 |
+| Non-order synthetic prescription drafts | 0 |
+| Remaining prescription storage objects for synthetic owners | 0 |
+| Synthetic accounts without retained audit orders | 0 |
+
+The six orders include diagnostic-run orders; the successful final run created two.
+**Never fulfil these orders.** Ordered prescription records and decision history
+remain linked for audit; their test image bytes were removed. No credentials,
+sessions or record identifiers are included in this report.
+
+No owner-designated pharmacist membership, SMS configuration, shared customer
+setting, real catalogue price/stock, migration, Edge Function deployment or
+payment-provider setting was changed.
+
+## Historical handoff status — 2026-10-07
 
 **Prepared for local testing, not fully verified end to end.** The owner explicitly
 chose to apply the current changes to the main project and track unfinished checks
@@ -82,47 +189,17 @@ Signed-in screens were not visually verified.
 
 ## Remaining checks and safe continuation
 
-The owner subsequently approved attempting temporary no-SMS test accounts using
-the existing backend access, while preserving the original pharmacist membership.
-`scripts/tests/prescription-live.mjs` prepares that alternative with an explicit
-`--approved-temporary-no-sms` opt-in. **It has not been run.** Its syntax and lint
-checks do not establish that its live verification steps pass. The owner asked
-to push the changes to GitHub for local Expo testing before that live run.
+On an Android/iOS test device, verify real camera/gallery permission denial and
+grant, picker cancellation, capture/selection and private upload. The passing web
+run and offline picker tests do not establish native device behavior.
 
-The runner creates synthetic confirmed-email/password accounts without invoking
-OTP or sending messages, grants reviewer membership only to its synthetic reviewer,
-and tests signed-in screens against real APIs. Deliberately aborted network calls
-test retries; they are not treated as backend failures. It removes test images and
-temporary reviewer access afterward. If an order is created, it retains the
-labelled simulated order and disables its synthetic customer account for audit
-rather than deleting orders. No sessions, passwords or admin credentials are
-written to disk.
+Future live harness runs still require the explicit
+`--approved-temporary-no-sms` opt-in and owner approval. Each complete run retains
+two labelled simulated orders with their synthetic owner disabled for audit;
+do not repeatedly run it as routine CI. Preserve the designated pharmacist,
+remove all test images/reviewer access and verify cleanup each time.
 
-The preferred follow-up is the owner-approved temporary-account approach above;
-first verify the unrun harness and its cleanup before relying on its results.
-The demo-code/session instructions below are an alternative only if approved
-demo access becomes available. Do not ask the owner to obtain tokens they do not
-have when the already-approved synthetic-account approach is feasible.
-
-1. Request the configured fixed no-SMS **demo** code as
-   `XANAPLUS_TEST_DEMO_CODE` through secure secret tooling;
-   do not reuse an OTP intended for a real recipient, guess codes, or call
-   `request-otp`. The storage script verifies the demo code directly and never
-   requests SMS.
-2. Run `node scripts/tests/prescription-storage.mjs` using approved demo access.
-   Verify real bytes upload/attachment, signed URL read, public URL denial and
-   cleanup. It leaves a clearly labelled cancelled synthetic draft, not an order.
-3. Obtain approved no-SMS session access for the **existing owner-designated
-   pharmacist** through secure tooling. Do not grant reviewer access to the
-   customer demo account or replace the existing membership.
-4. Test actual signed-in customer/reviewer screens with synthetic, nonclinical
-   images and notes: submission/retry, clarification, hold/decline, exact quote,
-   confirm/cancel and existing order navigation. Any persisted order must remain
-   labelled DO NOT FULFIL, test/simulated and without loyalty redemption.
-5. On an Android/iOS test device, verify real camera and gallery permission,
-   cancellation, selection and upload. Web preview and mocked picker tests do not
-   establish native behavior.
-
-No new live prescription drafts, stored objects or orders were created in this
-verification session. No migration, Edge Function deployment, SMS configuration,
-payment-provider operation or shared account setting change was performed.
+The alternative demo-only `scripts/tests/prescription-storage.mjs` was read but
+not run: no approved matching demo code was available, and the synthetic-account
+approach supplied the real storage evidence instead. Do not guess or retry the
+previously failed OTP, request real SMS, or treat fixed demo access as SMS delivery.

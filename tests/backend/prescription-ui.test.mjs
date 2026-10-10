@@ -5,7 +5,7 @@ import { act, create } from 'react-test-renderer';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const m = vi.hoisted(() => ({
-  session: {}, fulfilment: {}, list: {}, record: {}, router: {}, api: {},
+  session: {}, fulfilment: {}, orders: {}, list: {}, record: {}, router: {}, api: {},
 }));
 vi.mock('react-native', () => ({
   View: 'View', Pressable: 'Pressable', TextInput: 'TextInput', ActivityIndicator: 'ActivityIndicator',
@@ -26,6 +26,7 @@ vi.mock('@/components/ui', () => {
 });
 vi.mock('@/store/session', () => ({ useSession: () => m.session }));
 vi.mock('@/store/fulfilment', () => ({ useFulfilment: () => m.fulfilment }));
+vi.mock('@/store/orders', () => ({ useOrders: () => m.orders }));
 vi.mock('@/data/catalog', () => ({
   stores: [{ id: 'test', name: 'Test store' }],
   deliverySlots: [{ id: 'delivery', mode: 'delivery', label: 'Today', window: 'Test window' },
@@ -88,6 +89,7 @@ beforeEach(() => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
   m.router = { push: vi.fn(), replace: vi.fn(), back: vi.fn(), canGoBack: () => false };
   m.session = { isAuthenticated: true };
+  m.orders = { retryHistory: vi.fn() };
   m.fulfilment = {
     address: { phone: 'Synthetic test contact', line: 'DO NOT FULFIL' }, mode: 'delivery', paymentMethod: 'cod',
     hasAddress: true, store: { name: 'Test store', address: 'Test address' }, storeId: 'test', slotId: 'delivery',
@@ -184,6 +186,7 @@ describe('customer detail interactions (offline mocks)', () => {
     await act(async () => resolve({ orderNo: m.record.order_no }));
     await flush();
     expect(button('Confirm quoted order')).toBeUndefined();
+    expect(m.orders.retryHistory).toHaveBeenCalledOnce();
     await press(nodes('Pressable').find(n => n.props.accessibilityLabel === 'Open order XN-SYNTHETIC'));
     expect(m.router.push).toHaveBeenCalledWith('/orders/XN-SYNTHETIC');
   });
@@ -194,6 +197,7 @@ describe('customer detail interactions (offline mocks)', () => {
     await press(button('Confirm order'));
     expect(visibleText()).toContain(code === 'quote_changed' ? 'Price or availability has changed' : 'The pharmacist updated this quote');
     expect(visibleText()).not.toContain('View order');
+    expect(m.orders.retryHistory).not.toHaveBeenCalled();
   });
   it('disables expired quotes', async () => {
     m.record.valid_until = new Date(Date.now() - 1000).toISOString();

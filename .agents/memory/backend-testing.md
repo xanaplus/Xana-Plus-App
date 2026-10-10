@@ -25,3 +25,18 @@ configurations match.
 **How to apply:** do not guess codes or switch to real phone numbers to continue
 testing. Use rollback-only SQL role tests where appropriate, and clearly separate
 those results from live signed-in UI or storage verification.
+
+When owner approval explicitly permits temporary synthetic accounts, use confirmed
+email/password creation without delivery or OTP calls. Keep sessions ephemeral,
+preserve the full designated reviewer membership snapshot, and discover storage
+objects by exact temporary-owner prefixes even when a run fails before attachment.
+Retain labelled simulated orders only with their synthetic owner disabled, then
+verify cleanup by reading state back rather than trusting deletion acknowledgements.
+
+**Why:** live retry and confirmation checks can fail after creating an object or
+order. Removing only attached images misses orphan uploads, while deleting an order
+owner destroys audit attribution.
+
+**How to apply:** use the approved live harness sparingly, not routine CI. A failed
+run after confirmation can retain valid audit orders; report aggregate leftovers
+across diagnostic runs as well as the successful final run.
