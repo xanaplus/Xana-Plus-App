@@ -1,6 +1,6 @@
 -- Permissions, grouped by category so the website and the app each own theirs.
 -- Status: PROPOSED, not applied to the shared database. Runs after
--- 20261013010000_user_roles.sql. Safe to run twice.
+-- 20261014010000_user_roles.sql. Safe to run twice.
 -- Roles are shared; permissions are not. Each permission belongs to one
 -- category ('website' or 'app') and is checked with has_permission(category, key).
 -- An admin holds every permission that exists, with no rows needed, except

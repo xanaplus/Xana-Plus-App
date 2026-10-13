@@ -1,6 +1,6 @@
 -- Paid memberships behind the 'member' role.
 -- Status: PROPOSED, not applied to the shared database. Runs after
--- 20261013010000_user_roles.sql. Safe to run twice.
+-- 20261014010000_user_roles.sql. Safe to run twice.
 -- The plan, price and period are the owner's to decide; this holds whatever
 -- the payment pipeline records. Tested by tests/db-roles.test.cjs in the website repo (xanaplus/Xana-Website).
 
