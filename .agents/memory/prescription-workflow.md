@@ -9,8 +9,8 @@ For prescription ordering, customers upload the prescription first. A pharmacist
 
 **How to apply:** implement the Pharmacy workflow around upload, pharmacist review and quote, then customer confirmation and checkout. Do not treat a customer-entered reference as pharmacist approval.
 
-Items classified as Controlled in BC require a prescription before purchase.
+Only items in BC's Controlled inventory posting group require a prescription before purchase. Generic PHARMACY, POM or CHRONIC item-category codes do not require one on their own.
 
-**Why:** the user identified Controlled in BC as the classification for items that need prescriptions.
+**Why:** the user identified Controlled in BC as the classification for items that need prescriptions, then explicitly confirmed “Yes, only Controlled.”
 
-**How to apply:** preserve prescription enforcement for BC Controlled items in catalogue flags and server-side ordering. This statement alone does not authorize removing prescription restrictions from other classifications.
+**How to apply:** derive the customer prescription flag from BC's Controlled inventory posting group only, preserving server-side pharmacist approval for those items. Do not infer prescription restrictions from other category names.

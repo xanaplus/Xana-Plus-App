@@ -20,7 +20,8 @@ export const STORAGE_KEYS = {
   cart: `${PREFIX}cart.v1`,
   fulfilment: `${PREFIX}fulfilment.v1`,
   orders: `${PREFIX}orders.v2`,
-  products: `${PREFIX}products.v1`,
+  // Regulatory classification changed: discard cached broad Rx flags.
+  products: `${PREFIX}products.v2`,
   appearance: `${PREFIX}appearance.v1`,
 } as const;
 

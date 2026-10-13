@@ -81,4 +81,14 @@ describe('actual checkout handler uses BC tiers',()=>{
     const h=checkout([{...row,requires_rx:true}]);expect((await h.run([{itemNo:row.item_no,quantity:6}],{rxSupplied:true,rxReference:'typed'})).body.error).toBe('rx_missing');
     expect(h.saved.headers).toHaveLength(0);
   });
+  it.each(['GENERAL','CHRONIC','OVER THE COUNTER','SUPPLEMENT'])(
+    'permits regular checkout for non-Controlled BC group %s regardless of a generic PHARMACY item category',
+    async category=>{
+      const h=checkout([{...row,category,item_category_code:'PHARMACY',requires_rx:false}]);
+      const result=await h.run([{itemNo:row.item_no,quantity:1}]);
+      expect(result.status).toBe(200);
+      expect(h.saved.headers).toHaveLength(1);
+      expect(h.saved.lines[0].requires_rx).toBe(false);
+    },
+  );
 });

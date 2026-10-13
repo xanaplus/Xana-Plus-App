@@ -33,6 +33,7 @@ Sign-in, the live catalogue, saved orders, and account data depend on that proje
 
 ## Pharmacy
 
+- Only BC's `CONTROLLED` inventory posting group requires a prescription. Generic `PHARMACY`, `POM`, `CHRONIC` or `CONTROLLED` item-category codes do not require one outside that posting group; the owner explicitly approved this rule.
 - Prescription ordering is upload-first: pharmacist review and a priced quote precede customer confirmation.
 - The `pharmacy_reviewers` membership is separate from ordinary staff. Only grant it to an account explicitly designated as an authorised pharmacist.
 - Prescription documents use private storage and short-lived signed URLs. Never expose them in public catalogue or summary screens.
@@ -40,6 +41,9 @@ Sign-in, the live catalogue, saved orders, and account data depend on that proje
 - Redemption checks cover this app's prescriptions, not in-store/Collabmed dispensing. Do not claim cross-channel duplicate prevention or live dispensing integration.
 - `scripts/tests/prescription-first.sql` uses synthetic fixtures and must run in a transaction ending in rollback. It must never be run without rollback against the shared backend.
 - Do not activate SMS configuration or apply unrelated migrations as part of Pharmacy work.
+- The scoped Controlled-only catalogue migration was explicitly applied to the existing Supabase backend. It preserves catalogue fields, prices, stock, visibility, age restrictions and read-only permissions; existing server-side prescription guards remain in place.
+- The product cache version was advanced to discard old broad prescription flags. Publish the updated frontend for existing live clients to get this cache invalidation; the backend rule is already active.
+- `node scripts/tests/catalogue-prescription-rule.mjs` checks rollback-only classification fixtures and public flag counts. `node scripts/tests/prescription-rule-browser.mjs` checks Controlled and OTC product labels as a guest, without SMS or orders.
 
 ## BC wholesale pricing
 
