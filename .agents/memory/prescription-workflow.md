@@ -8,3 +8,9 @@ For prescription ordering, customers upload the prescription first. A pharmacist
 **Why:** the user selected “Upload prescription first” rather than choosing medicines first or supporting both entry paths.
 
 **How to apply:** implement the Pharmacy workflow around upload, pharmacist review and quote, then customer confirmation and checkout. Do not treat a customer-entered reference as pharmacist approval.
+
+Items classified as Controlled in BC require a prescription before purchase.
+
+**Why:** the user identified Controlled in BC as the classification for items that need prescriptions.
+
+**How to apply:** preserve prescription enforcement for BC Controlled items in catalogue flags and server-side ordering. This statement alone does not authorize removing prescription restrictions from other classifications.
