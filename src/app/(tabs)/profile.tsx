@@ -27,6 +27,7 @@ import { ORDER_HISTORY, type OrderRecord } from '@/data/orders';
 import type { FulfilmentMode, PaymentMethodId, Product } from '@/data/types';
 import { NameSheet } from '@/features/account/name-sheet';
 import { formatCartCounts, formatKes } from '@/lib/format';
+import { recordedSavings } from '@/lib/order-savings';
 import { unitPrice, useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
 import { useOrders } from '@/store/orders';
@@ -521,7 +522,7 @@ export default function ProfileRoute() {
           <View style={styles.statsRow}>
             <Stat value={String(orders.length)} label="Orders" onPress={() => router.push('/orders')} />
             <View style={styles.statDivider} />
-            <Stat value={formatKes(cart.summary.wholesaleSavings)} label="Savings" onPress={() => router.push('/spending')} />
+            <Stat value={formatKes(recordedSavings(orders).totalSaved)} label="Savings" onPress={() => router.push('/spending')} />
             <View style={styles.statDivider} />
             <Stat value={String(isDemo ? REPEAT_SCRIPTS.length : 0)} label="Prescriptions" onPress={() => router.push('/pharmacy/prescriptions')} />
           </View>

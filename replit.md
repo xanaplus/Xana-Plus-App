@@ -61,3 +61,11 @@ Sign-in, the live catalogue, saved orders, and account data depend on that proje
 - The view is read-only for public clients. Keep the visibility flag and costs/margins private.
 - The scoped visibility migration was explicitly applied to the existing shared Supabase backend. No frontend publishing is required for this database change.
 - `node scripts/tests/catalogue-visibility.mjs` verifies exclusions/public permissions and runs only rollback-only database fixtures; it must never commit test changes.
+
+## Recorded savings
+
+- Profile Savings and Spending use recorded wholesale and promo discounts on non-cancelled orders, not the current basket or guessed delivery charges.
+- General checkout records the exact wholesale discount in `orders.wholesale_savings` and returns it for immediate display. History retains the saved value and line-price snapshots after reload.
+- Older wholesale savings were not stored. Their new column remains null; do not fabricate a backfill using current BC prices or tiers.
+- Spending opens at All time to agree with the profile counter; period filters remain available.
+- The scoped order-savings migration and updated checkout function were explicitly applied/deployed. Prescription quotes, SMS, payments and existing order totals were not changed.

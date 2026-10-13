@@ -110,6 +110,8 @@ Deno.serve(async request => {
   if (items.some(item => item.requires_rx)) return reply(400, { error: 'rx_missing' });
 
   const itemsSubtotal = items.reduce((sum, item) => sum + item.line_total, 0);
+  const wholesaleSavings = Math.round(items.reduce((sum, item) =>
+    sum + Math.max(0, Number(byNo.get(item.item_no)!.price) - item.unit_price) * item.quantity, 0) * 100) / 100;
 
   let promoDiscount = 0;
   if (promoCode) {
@@ -145,6 +147,7 @@ Deno.serve(async request => {
         store_name: storeName,
         substitution,
         items_subtotal: itemsSubtotal,
+        wholesale_savings: wholesaleSavings,
         promo_code: promoCode,
         promo_discount: promoDiscount,
         delivery_fee: DELIVERY_FEE,
@@ -184,6 +187,8 @@ Deno.serve(async request => {
     orderNo: order.order_no,
     createdAt: order.created_at,
     itemsSubtotal,
+    wholesaleSavings,
+    items: items.map(item => ({ itemNo: item.item_no, quantity: item.quantity, unitPrice: item.unit_price, lineTotal: item.line_total })),
     promoDiscount,
     deliveryFee: DELIVERY_FEE,
     platformFee: PLATFORM_FEE,

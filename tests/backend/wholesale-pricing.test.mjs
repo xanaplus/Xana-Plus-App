@@ -63,8 +63,10 @@ describe('actual checkout handler uses BC tiers',()=>{
     const h=checkout([row]);const result=await h.run([{itemNo:row.item_no,quantity:6,expectedUnitPrice:155}]);
     expect(result.status).toBe(200);
     expect(h.saved.lines[0]).toMatchObject({unit_price:155,quantity:6,line_total:930});
-    expect(h.saved.headers[0]).toMatchObject({items_subtotal:930,is_test:true,payment_status:'simulated'});
+    expect(h.saved.headers[0]).toMatchObject({items_subtotal:930,wholesale_savings:30,is_test:true,payment_status:'simulated'});
     expect(result.body.itemsSubtotal).toBe(930);
+    expect(result.body.wholesaleSavings).toBe(30);
+    expect(result.body.items[0]).toMatchObject({unitPrice:155,lineTotal:930});
   });
   it('refuses stale/tampered prices without creating an order',async()=>{
     const h=checkout([row]);const result=await h.run([{itemNo:row.item_no,quantity:6,expectedUnitPrice:1}]);

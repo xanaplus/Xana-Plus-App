@@ -8,7 +8,13 @@
 
 import type { ChipTone } from '@/components/ui';
 
-export type OrderLine = { productId: string; quantity: number };
+export type OrderLine = {
+  productId: string;
+  quantity: number;
+  /** Stored checkout prices when this is a saved order, not a demo basket. */
+  unitPrice?: number;
+  lineTotal?: number;
+};
 
 export type OrderRecord = {
   id: string;

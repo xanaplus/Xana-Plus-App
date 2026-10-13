@@ -19,11 +19,12 @@ import {
   type SegmentedOption,
 } from '@/components/ui';
 import { productById, verticalForProduct } from '@/data/catalog';
-import { ORDER_HISTORY, orderMonthLabel, parseOrderDate, type OrderRecord } from '@/data/orders';
+import { ORDER_HISTORY, orderMonthLabel, parseOrderDate } from '@/data/orders';
 import type { CategoryVertical } from '@/data/types';
 import { formatKes } from '@/lib/format';
+import { recordedSavings } from '@/lib/order-savings';
 import { unitPrice, useCart } from '@/store/cart';
-import { useOrders } from '@/store/orders';
+import { useOrders, type PlacedOrder } from '@/store/orders';
 import { useSession } from '@/store/session';
 import { colors, gradients, radius, spacing } from '@/theme';
 
@@ -32,7 +33,8 @@ import { colors, gradients, radius, spacing } from '@/theme';
  *
  * Reached from the savings figure on Profile, so it leads with money saved and
  * treats spend as the detail that explains it. Nothing here is tracked
- * separately: every number is computed from ORDER_HISTORY and the catalogue.
+ * separately: totals and discounts come from order snapshots; catalogue data
+ * is used only to describe recognised line items.
  *
  * Charts are single-hue by design. The bars compare magnitudes of one measure
  * and carry their own text labels, so colour is not encoding identity and no
@@ -48,9 +50,7 @@ const PERIOD_OPTIONS: SegmentedOption<Period>[] = [
 ];
 
 const PERIOD_MONTHS: Record<Period, number | null> = { '3m': 3, '6m': 6, all: null };
-
-/** D-5: 1 Xana Club point per KES 120 spent. */
-const POINTS_PER_SHILLING = 1 / 120;
+const SAMPLE_ORDER_IDS = new Set(ORDER_HISTORY.map(order => order.id));
 
 const CLUB_TIERS = [
   { tier: 'Bronze', from: 0 },
@@ -90,7 +90,6 @@ type Totals = {
   spent: number;
   wholesaleSavings: number;
   promoSavings: number;
-  deliverySavings: number;
   totalSaved: number;
   pointsEarned: number;
   departments: DepartmentTotal[];
@@ -99,30 +98,28 @@ type Totals = {
   pharmacySpend: number;
 };
 
-/** Free delivery at Syokimau and Ruiru — the fee the order would otherwise carry. */
-const DELIVERY_FEE_WAIVED = 150;
-
-function computeTotals(orders: OrderRecord[]): Totals {
+function computeTotals(orders: PlacedOrder[]): Totals {
   let spent = 0;
-  let wholesaleSavings = 0;
-  let promoSavings = 0;
   const byVertical = new Map<CategoryVertical, DepartmentTotal>();
   const byMonth = new Map<string, number>();
   const byProduct = new Map<string, RegularItem>();
 
   for (const order of orders) {
-    let orderTotal = 0;
-
+    const isSampleOrder = SAMPLE_ORDER_IDS.has(order.id);
     for (const line of order.lines) {
       const product = productById(line.productId);
       if (!product) continue;
 
-      const paid = unitPrice(product, line.quantity);
-      const lineTotal = paid * line.quantity;
-      orderTotal += lineTotal;
-
-      wholesaleSavings += (product.price - paid) * line.quantity;
-      if (product.wasPrice) promoSavings += (product.wasPrice - product.price) * line.quantity;
+      const lineTotal =
+        line.lineTotal ??
+        (line.unitPrice !== undefined
+          ? line.unitPrice * line.quantity
+          : isSampleOrder
+            ? unitPrice(product, line.quantity) * line.quantity
+            : null);
+      // Older saved orders may not have line-price snapshots. Keep them in the
+      // recorded order total, but don't re-price them from today's catalogue.
+      if (lineTotal === null) continue;
 
       const vertical = verticalForProduct(product);
       const dept = byVertical.get(vertical) ?? { vertical, total: 0, units: 0 };
@@ -147,12 +144,13 @@ function computeTotals(orders: OrderRecord[]): Totals {
       }
     }
 
-    spent += orderTotal;
+    // Summary totals include unavailable/hidden lines and order-level fees.
+    spent += order.summary.total;
     const month = orderMonthLabel(order.placed);
-    byMonth.set(month, (byMonth.get(month) ?? 0) + orderTotal);
+    byMonth.set(month, (byMonth.get(month) ?? 0) + order.summary.total);
   }
 
-  const deliverySavings = orders.length * DELIVERY_FEE_WAIVED;
+  const savings = recordedSavings(orders);
   const departments = [...byVertical.values()].sort((a, b) => b.total - a.total);
 
   const months = [...byMonth.entries()]
@@ -168,11 +166,10 @@ function computeTotals(orders: OrderRecord[]): Totals {
   return {
     orderCount: orders.length,
     spent,
-    wholesaleSavings,
-    promoSavings,
-    deliverySavings,
-    totalSaved: wholesaleSavings + promoSavings + deliverySavings,
-    pointsEarned: Math.floor(spent * POINTS_PER_SHILLING),
+    wholesaleSavings: savings.wholesaleSavings,
+    promoSavings: savings.promoSavings,
+    totalSaved: savings.totalSaved,
+    pointsEarned: orders.reduce((sum, order) => sum + order.pointsEarned, 0),
     departments,
     months,
     regulars,
@@ -183,20 +180,12 @@ function computeTotals(orders: OrderRecord[]): Totals {
 export default function SpendingScreen() {
   const router = useRouter();
   const cart = useCart();
-  const { user, isDemo } = useSession();
+  const { user } = useSession();
   const { orders: placedOrders } = useOrders();
-  const [period, setPeriod] = useState<Period>('3m');
+  const [period, setPeriod] = useState<Period>('all');
 
-  // The demo account keeps the sample history; everyone else sees their own non-cancelled orders.
-  const history = useMemo<OrderRecord[]>(
-    () =>
-      isDemo
-        ? ORDER_HISTORY
-        : placedOrders
-            .filter(o => o.status !== 'cancelled')
-            .map(o => ({ id: o.id, placed: o.placed, status: o.status, tone: 'neutral', lines: o.lines })),
-    [isDemo, placedOrders],
-  );
+  // Provider includes demo seed orders and saved orders with checkout snapshots.
+  const history = useMemo(() => placedOrders.filter(order => order.status !== 'cancelled'), [placedOrders]);
 
   const orders = useMemo(() => {
     const months = PERIOD_MONTHS[period];
@@ -281,13 +270,6 @@ export default function SpendingScreen() {
               label="Promotional pricing"
               note="Member and flash-drop prices"
               value={t.promoSavings}
-            />
-            <Divider />
-            <SavingRow
-              icon="delivery"
-              label="Free delivery"
-              note={`Waived on ${t.orderCount} ${t.orderCount === 1 ? 'order' : 'orders'} · Syokimau & Ruiru`}
-              value={t.deliverySavings}
             />
           </Card>
 
@@ -421,8 +403,7 @@ export default function SpendingScreen() {
           </Card>
 
           <Txt variant="caption" color="onSurfaceVariant" align="center" style={styles.footnote}>
-            Calculated from your order history. Delivery saving assumes the {formatKes(DELIVERY_FEE_WAIVED)} standard
-            fee waived at Syokimau and Ruiru.
+            Savings reflect discounts recorded on your orders.
           </Txt>
         </>
       )}
