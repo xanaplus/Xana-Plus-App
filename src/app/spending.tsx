@@ -26,7 +26,9 @@ import { recordedSavings } from '@/lib/order-savings';
 import { unitPrice, useCart } from '@/store/cart';
 import { useOrders, type PlacedOrder } from '@/store/orders';
 import { useSession } from '@/store/session';
-import { colors, gradients, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /**
  * Savings & Spending — a read-only view derived entirely from order history.
@@ -178,6 +180,8 @@ function computeTotals(orders: PlacedOrder[]): Totals {
 }
 
 export default function SpendingScreen() {
+  const { colors, gradients } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const cart = useCart();
   const { user } = useSession();
@@ -209,7 +213,6 @@ export default function SpendingScreen() {
   return (
     <Screen
       padded
-      backgroundColor={colors.background}
       contentStyle={styles.content}
     >
       <TopBar
@@ -307,7 +310,7 @@ export default function SpendingScreen() {
           {t.pharmacySpend > 0 ? (
             <Card variant="tinted" padding={spacing.lg} style={styles.privacyCard}>
               <View style={styles.privacyHead}>
-                <Icon name="pill" size={16} color="primaryContainer" />
+                <Icon name="pill" size={16} color="primaryAccent" />
                 <Txt variant="label">Pharmacy shown as a total</Txt>
               </View>
               <Txt variant="caption" color="onSurfaceVariant">
@@ -355,7 +358,7 @@ export default function SpendingScreen() {
                     </Txt>
                   </View>
                   <View style={styles.clubEarned}>
-                    <Txt variant="label" color="primaryContainer">
+                    <Txt variant="label" color="primaryAccent">
                       +{t.pointsEarned.toLocaleString('en-KE')} pts
                     </Txt>
                     <Txt variant="caption" color="onSurfaceVariant">
@@ -412,10 +415,11 @@ export default function SpendingScreen() {
 }
 
 function SavingRow({ icon, label, note, value }: { icon: IconName; label: string; note: string; value: number }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.savingRow}>
       <View style={styles.savingIcon}>
-        <Icon name={icon} size={16} color="primaryContainer" />
+        <Icon name={icon} size={16} color="primaryAccent" />
       </View>
       <View style={styles.savingText}>
         <Txt variant="label" numberOfLines={1}>
@@ -425,14 +429,14 @@ function SavingRow({ icon, label, note, value }: { icon: IconName; label: string
           {note}
         </Txt>
       </View>
-      <Txt variant="label" color="primaryContainer">
+      <Txt variant="label" color="primaryAccent">
         {value > 0 ? formatKes(value) : 'KES 0'}
       </Txt>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.md, paddingBottom: spacing.giant },
   period: { marginTop: spacing.sm },
 
@@ -459,7 +463,7 @@ const styles = StyleSheet.create({
   deptLabelRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm },
   deptLabel: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flex: 1 },
   barTrack: { height: 10, borderRadius: radius.xs, backgroundColor: colors.surfaceContainerHigh, overflow: 'hidden' },
-  barFill: { height: 10, borderRadius: radius.xs, backgroundColor: colors.primaryContainer },
+  barFill: { height: 10, borderRadius: radius.xs, backgroundColor: colors.primaryAccent },
 
   privacyCard: { marginTop: spacing.md, gap: spacing.sm },
   privacyHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
@@ -467,7 +471,7 @@ const styles = StyleSheet.create({
   monthChart: { flexDirection: 'row', alignItems: 'flex-end', gap: spacing.md, height: 168 },
   monthCol: { flex: 1, alignItems: 'center', gap: spacing.sm, height: '100%', justifyContent: 'flex-end' },
   monthBarWrap: { flex: 1, width: '100%', justifyContent: 'flex-end', alignItems: 'center' },
-  monthBar: { width: '70%', borderRadius: radius.xs, backgroundColor: colors.primaryContainer },
+  monthBar: { width: '70%', borderRadius: radius.xs, backgroundColor: colors.primaryAccent },
   monthNote: { marginTop: spacing.md },
 
   clubRow: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' },

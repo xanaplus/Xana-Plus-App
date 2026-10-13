@@ -40,6 +40,8 @@ import { useFulfilment, type Address, type AppliedPromo } from '@/store/fulfilme
 import { placeOrderErrorMessage, promoErrorMessage, useOrders, type PromoError } from '@/store/orders';
 import { useSession } from '@/store/session';
 import { colors, layout, radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /** Payment rows in the order Screen 6 stacks them. */
 type PaymentMethodCopy = { id: PaymentMethodId; title: string; icon: IconName; trust: string; showsTotal: boolean };
@@ -99,6 +101,8 @@ const groupDigits = (digits: string): string => (digits.match(/\d{1,3}/g) ?? [])
  * One screen, driven by the fulfilment and cart stores.
  */
 export default function CheckoutRoute() {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const cart = useCart();
   const session = useSession();
@@ -381,7 +385,7 @@ export default function CheckoutRoute() {
             <View style={styles.cardHeader}>
               <View style={styles.cardHeaderLeft}>
                 <View style={styles.headerIcon}>
-                  <Icon name={fulfilment.mode === 'pickup' ? 'store' : 'map-pin'} size={18} color="primaryContainer" />
+                  <Icon name={fulfilment.mode === 'pickup' ? 'store' : 'map-pin'} size={18} color="primaryAccent" />
                 </View>
                 <Txt variant="titleLg">{fulfilment.mode === 'pickup' ? 'Pickup Address' : 'Delivery Address'}</Txt>
               </View>
@@ -392,7 +396,7 @@ export default function CheckoutRoute() {
                 onPress={() => setSheet('address')}
                 style={styles.changeLink}
               >
-                <Txt variant="label" color="primary">
+                <Txt variant="label" color="primaryAccent">
                   Change
                 </Txt>
               </Pressable>
@@ -437,7 +441,7 @@ export default function CheckoutRoute() {
             <View style={styles.cardHeader}>
               <View style={styles.cardHeaderLeft}>
                 <View style={styles.headerIcon}>
-                  <Icon name="clock" size={18} color="primaryContainer" />
+                  <Icon name="clock" size={18} color="primaryAccent" />
                 </View>
                 <Txt variant="titleLg">Delivery Slot</Txt>
               </View>
@@ -448,7 +452,7 @@ export default function CheckoutRoute() {
                 onPress={() => setSheet('slot')}
                 style={styles.changeLink}
               >
-                <Txt variant="label" color="primary">
+                <Txt variant="label" color="primaryAccent">
                   Change
                 </Txt>
               </Pressable>
@@ -498,8 +502,8 @@ export default function CheckoutRoute() {
                           />
                         </View>
                         <View style={styles.numberNote}>
-                          <Icon name="check-circle" size={14} color="primaryContainer" />
-                          <Txt variant="caption" color="primary">
+                          <Icon name="check-circle" size={14} color="primaryAccent" />
+                          <Txt variant="caption" color="primaryAccent">
                             STK Push prompt will be sent to this line
                           </Txt>
                         </View>
@@ -531,7 +535,7 @@ export default function CheckoutRoute() {
                 style={styles.pointsHeader}
               >
                 <View style={styles.headerIcon}>
-                  <Icon name="star" size={18} color="primaryContainer" />
+                  <Icon name="star" size={18} color="primaryAccent" />
                 </View>
                 <View style={styles.flex}>
                   <Txt variant="titleLg">Use Xana Club points</Txt>
@@ -580,7 +584,7 @@ export default function CheckoutRoute() {
             <Card variant="outline" padding={spacing.lg} style={[styles.inset, styles.promoCard]}>
               <View style={styles.pointsHeader}>
                 <View style={styles.headerIcon}>
-                  <Icon name="tag" size={18} color="primaryContainer" />
+                  <Icon name="tag" size={18} color="primaryAccent" />
                 </View>
                 <View style={styles.flex}>
                   <Txt variant="titleLg">Promo code</Txt>
@@ -716,13 +720,13 @@ export default function CheckoutRoute() {
               <Divider />
               <View style={styles.totalRow}>
                 <Txt variant="titleLg">Total to Pay</Txt>
-                <Txt variant="display" tint={colors.primary}>
+                <Txt variant="display" tint={colors.primaryAccent}>
                   {formatKes(amountDue)}
                 </Txt>
               </View>
               <View style={styles.pointsRow}>
-                <Icon name="star" size={14} color="secondary" />
-                <Txt variant="label" color="secondary" style={styles.flex}>
+                <Icon name="star" size={14} color="secondaryAccent" />
+                <Txt variant="label" color="secondaryAccent" style={styles.flex}>
                   {`You'll earn ${clubPoints} Xana Club ${clubPoints === 1 ? 'point' : 'points'}`}
                 </Txt>
                 <Badge label={`+${clubPoints} pts`} tone="warning" />
@@ -755,7 +759,7 @@ export default function CheckoutRoute() {
               </View>
 
               <Pressable accessibilityRole="button" onPress={() => router.push('/pharmacy/prescriptions')} style={styles.rxRefLink}>
-                <Txt variant="label" color="primaryContainer">
+                <Txt variant="label" color="primaryAccent">
                   View my prescription requests and quotes
                 </Txt>
               </Pressable>
@@ -892,7 +896,7 @@ export default function CheckoutRoute() {
       <BottomSheet visible={placed !== null} onClose={finishOrder} title={placedCopy.title} description={placedCopy.description}>
         <View style={styles.placedBody}>
           <View style={styles.placedIcon}>
-            <Icon name="check-circle" size={30} color="primaryContainer" />
+            <Icon name="check-circle" size={30} color="primaryAccent" />
           </View>
           <View style={styles.sheetGroup}>
             <Txt variant="overline" color="onSurfaceVariant">
@@ -948,12 +952,13 @@ export default function CheckoutRoute() {
 
 /** One line of the order summary breakdown. */
 function SummaryLine({ label, value, tone = 'default' }: { label: string; value: string; tone?: 'default' | 'primary' }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.summaryRow}>
       <Txt variant="bodySm" color="onSurfaceVariant" numberOfLines={2} style={styles.summaryLabel}>
         {label}
       </Txt>
-      <Txt variant="label" tint={tone === 'primary' ? colors.primary : colors.onSurface}>
+      <Txt variant="label" tint={tone === 'primary' ? colors.primaryAccent : colors.onSurface}>
         {value}
       </Txt>
     </View>
@@ -962,6 +967,7 @@ function SummaryLine({ label, value, tone = 'default' }: { label: string; value:
 
 /** Visa / Mastercard marks on the card row. Card-network colours are brand assets, not palette tokens. */
 function CardMarks() {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.marks}>
       <View style={styles.visa}>
@@ -977,7 +983,7 @@ function CardMarks() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   ageActions: { gap: spacing.sm },
   content: { gap: spacing.lg },
   inset: { marginHorizontal: layout.screenMargin },
@@ -1083,10 +1089,10 @@ const styles = StyleSheet.create({
   placedIcon: { width: 64, height: 64, borderRadius: radius.pill, backgroundColor: colors.mintSurface, alignItems: 'center', justifyContent: 'center' },
 
   marks: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  visa: { paddingHorizontal: spacing.sm, paddingVertical: 2, borderRadius: radius.xs, backgroundColor: '#1a1f71' },
+  visa: { paddingHorizontal: spacing.sm, paddingVertical: 2, borderRadius: radius.xs, backgroundColor: colors.visaBrand },
   circles: { flexDirection: 'row', alignItems: 'center' },
-  circleRed: { width: 14, height: 14, borderRadius: radius.pill, backgroundColor: '#eb001b', opacity: 0.9 },
-  circleAmber: { width: 14, height: 14, borderRadius: radius.pill, backgroundColor: '#f79e1b', opacity: 0.9, marginLeft: -6 },
+  circleRed: { width: 14, height: 14, borderRadius: radius.pill, backgroundColor: colors.cardNetworkRed, opacity: 0.9 },
+  circleAmber: { width: 14, height: 14, borderRadius: radius.pill, backgroundColor: colors.cardNetworkAmber, opacity: 0.9, marginLeft: -6 },
 
   footer: { gap: spacing.sm },
   blockedNote: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs },

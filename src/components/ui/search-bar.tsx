@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, TextInput, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { colors, fonts, radius, spacing } from '@/theme';
+import { fonts, radius, spacing } from '@/theme';
+import { useTheme } from '@/theme/provider';
 
 import { Icon, type IconName } from './icon';
 import { Txt } from './text';
@@ -30,10 +31,11 @@ export function SearchBar({
   autoFocus,
   style,
 }: SearchBarProps) {
+  const { colors } = useTheme();
   const showValue = (value ?? '').length > 0;
 
   return (
-    <View style={[styles.field, style]}>
+    <View style={[styles.field, { backgroundColor: colors.surfaceContainerLow }, style]}>
       <Icon name="search" size={18} color="outline" />
       {onPress ? (
         <Pressable accessibilityRole="search" accessibilityLabel={placeholder} onPress={onPress} style={styles.flex}>
@@ -69,9 +71,8 @@ const styles = StyleSheet.create({
     height: 48,
     paddingHorizontal: spacing.lg,
     borderRadius: radius.pill,
-    backgroundColor: colors.surfaceContainerLow,
   },
-  input: { flex: 1, padding: 0, fontSize: 14, fontFamily: fonts.regular, color: colors.onSurface },
+  input: { flex: 1, padding: 0, fontSize: 14, fontFamily: fonts.regular },
   inputPlaceholder: { fontFamily: fonts.regular },
   flex: { flex: 1 },
 });

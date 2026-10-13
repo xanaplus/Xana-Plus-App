@@ -3,7 +3,9 @@ import { StyleSheet, TextInput, View } from 'react-native';
 
 import { BottomSheet, Button, Txt } from '@/components/ui';
 import { useSession } from '@/store/session';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /**
  * Asks for the customer's name and saves it to their profile. Shown once after
@@ -42,6 +44,8 @@ function NameForm({
   initialName: string;
   dismissLabel: string;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const { updateName } = useSession();
   const [name, setName] = useState(initialName);
   const [busy, setBusy] = useState(false);
@@ -115,7 +119,7 @@ export function NamePrompt() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   footer: { gap: spacing.sm },
   field: { gap: spacing.xs },
   input: {

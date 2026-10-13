@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { colors, elevation, layout, radius, spacing, type ColorToken } from '@/theme';
+import { elevation, layout, radius, spacing, type ColorToken } from '@/theme';
+import { useTheme } from '@/theme/provider';
 
 import { Icon, type IconName } from './icon';
 import { PressableScale } from './pressable-scale';
@@ -11,15 +12,6 @@ export type ButtonVariant = 'primary' | 'secondary' | 'tonal' | 'outline' | 'gho
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 type VariantStyle = { bg: string; fg: ColorToken | string; border?: string };
-
-const variants: Record<ButtonVariant, VariantStyle> = {
-  primary: { bg: colors.primaryContainer, fg: 'onPrimary' },
-  secondary: { bg: colors.secondaryContainer, fg: 'onSecondary' },
-  tonal: { bg: colors.mintSurface, fg: 'primary' },
-  outline: { bg: colors.surface, fg: 'primary', border: colors.outlineSoft30 },
-  ghost: { bg: colors.transparent, fg: 'primary' },
-  danger: { bg: colors.errorContainer, fg: 'onErrorContainer' },
-};
 
 const sizes: Record<ButtonSize, { height: number; px: number; gap: number; icon: number }> = {
   sm: { height: 36, px: spacing.lg, gap: spacing.xs, icon: 16 },
@@ -52,6 +44,15 @@ export function Button({
   fullWidth = true,
   style,
 }: ButtonProps) {
+  const { colors } = useTheme();
+  const variants: Record<ButtonVariant, VariantStyle> = {
+    primary: { bg: colors.primaryContainer, fg: 'onPrimary' },
+    secondary: { bg: colors.secondaryContainer, fg: 'onSecondary' },
+    tonal: { bg: colors.mintSurface, fg: 'primaryAccent' },
+    outline: { bg: colors.surface, fg: 'primaryAccent', border: colors.outlineSoft30 },
+    ghost: { bg: colors.transparent, fg: 'primaryAccent' },
+    danger: { bg: colors.errorContainer, fg: 'onErrorContainer' },
+  };
   const v = variants[variant];
   const s = sizes[size];
   const inactive = disabled || loading;
@@ -101,7 +102,7 @@ export function IconButton({
   onPress,
   size = layout.touchTarget,
   iconSize = 20,
-  background = colors.surfaceContainerLow,
+  background,
   color = 'onSurface',
   accessibilityLabel,
   style,
@@ -115,6 +116,7 @@ export function IconButton({
   accessibilityLabel: string;
   style?: StyleProp<ViewStyle>;
 }) {
+  const { colors } = useTheme();
   return (
     <Pressable
       accessibilityRole="button"
@@ -122,7 +124,7 @@ export function IconButton({
       onPress={onPress}
       hitSlop={6}
       style={({ pressed }) => [
-        { width: size, height: size, borderRadius: radius.pill, backgroundColor: background, alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.7 : 1 },
+        { width: size, height: size, borderRadius: radius.pill, backgroundColor: background ?? colors.surfaceContainerLow, alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.7 : 1 },
         style,
       ]}
     >

@@ -28,7 +28,9 @@ import type { CategoryVertical, Product } from '@/data/types';
 import { discountPercent, formatKes } from '@/lib/format';
 import { activePriceTiers, type PriceTier } from '@/lib/quantity-pricing';
 import { unitPrice, useCart } from '@/store/cart';
-import { colors, layout, radius, spacing } from '@/theme';
+import { layout, radius, spacing } from '@/theme';
+import { useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /**
  * Screen 4 — Product Detail (grocery) and Screen 4b — Product Detail (Pharmacy).
@@ -225,6 +227,7 @@ export default function ProductDetailRoute() {
 }
 
 function ProductDetail({ product }: { product: Product }) {
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const goBack = useBack();
   const cart = useCart();
@@ -413,7 +416,7 @@ function ProductDetail({ product }: { product: Product }) {
           ) : (
             <View style={styles.stockRow}>
               <View style={[styles.stockDot, inStock ? null : styles.stockDotOut]} />
-              <Txt variant="label" color={inStock ? 'primaryContainer' : 'error'}>
+              <Txt variant="label" color={inStock ? 'primaryAccent' : 'error'}>
                 {inStock ? 'In Stock' : 'Out of stock'}
               </Txt>
               <Txt variant="bodySm" color="onSurfaceVariant">
@@ -433,7 +436,7 @@ function ProductDetail({ product }: { product: Product }) {
             </View>
             <View style={[styles.tierRow, quantity < tiers[0].minQty ? styles.tierRowActive : null]}>
               <View style={styles.tierLeft}>
-                <Txt variant="title" color={quantity < tiers[0].minQty ? 'primary' : 'onSurface'}>
+              <Txt variant="title" color={quantity < tiers[0].minQty ? 'primaryAccent' : 'onSurface'}>
                   {`1–${tiers[0].minQty - 1} units`}
                 </Txt>
               </View>
@@ -448,7 +451,7 @@ function ProductDetail({ product }: { product: Product }) {
               return (
                 <View key={`${priceTier.minQty}-${priceTier.unitPrice}`} style={[styles.tierRow, selected ? styles.tierRowActive : null]}>
                   <View style={styles.tierLeft}>
-                    <Txt variant="title" color={selected ? 'primary' : 'onSurface'}>
+                    <Txt variant="title" color={selected ? 'primaryAccent' : 'onSurface'}>
                       {`${priceTier.minQty}+ units`}
                     </Txt>
                   </View>
@@ -476,7 +479,7 @@ function ProductDetail({ product }: { product: Product }) {
           <Card variant="outline" padding={spacing.md}>
             <View style={styles.serviceRow}>
               <View style={styles.serviceIcon}>
-                <Icon name="pharmacy" size={20} color="primary" />
+                <Icon name="pharmacy" size={20} color="primaryAccent" />
               </View>
               <View style={styles.serviceBody}>
                 <Txt variant="title">{PHARMACIST_SERVICE.title}</Txt>
@@ -490,7 +493,7 @@ function ProductDetail({ product }: { product: Product }) {
           <View style={styles.express}>
             <View style={styles.serviceRow}>
               <View style={styles.serviceIcon}>
-                <Icon name="delivery" size={20} color="primary" />
+                <Icon name="delivery" size={20} color="primaryAccent" />
               </View>
               <View style={styles.serviceBody}>
                 <Txt variant="title">{EXPRESS_SERVICE.title}</Txt>
@@ -514,7 +517,7 @@ function ProductDetail({ product }: { product: Product }) {
               )}
               {copy?.dosage ? (
                 <View style={styles.dosage}>
-                  <Txt variant="title" color="primary">
+                  <Txt variant="title" color="primaryAccent">
                     Recommended Dosage Guidelines:
                   </Txt>
                   {copy.dosage.map(line => (
@@ -620,7 +623,7 @@ function ProductDetail({ product }: { product: Product }) {
           style={({ pressed }) => [styles.ask, pressed ? styles.askPressed : null]}
         >
           <View style={styles.askIcon}>
-            <Icon name="message" size={20} color="primary" />
+            <Icon name="message" size={20} color="primaryAccent" />
           </View>
           <View style={styles.askBody}>
             <Txt variant="title">{ASK_PHARMACIST.title}</Txt>
@@ -628,7 +631,7 @@ function ProductDetail({ product }: { product: Product }) {
               {ASK_PHARMACIST.description}
             </Txt>
           </View>
-          <Icon name="arrow-right" size={20} color="primary" />
+          <Icon name="arrow-right" size={20} color="primaryAccent" />
         </Pressable>
       ) : null}
     </Screen>
@@ -647,6 +650,7 @@ function AccordionCard({
   onToggle: () => void;
   children: ReactNode;
 }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <Card variant="outline" padding={0}>
       <Pressable
@@ -658,7 +662,7 @@ function AccordionCard({
         <Txt variant="label" style={styles.leafletTitle}>
           {title}
         </Txt>
-        <Icon name={expanded ? 'chevron-up' : 'chevron-down'} size={18} color="primary" />
+        <Icon name={expanded ? 'chevron-up' : 'chevron-down'} size={18} color="primaryAccent" />
       </Pressable>
       {expanded ? (
         <>
@@ -682,6 +686,7 @@ function AccordionRow({
   onToggle: () => void;
   children: ReactNode;
 }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View>
       <Pressable accessibilityRole="button" accessibilityState={{ expanded }} onPress={onToggle} style={styles.accordionRow}>
@@ -696,6 +701,7 @@ function AccordionRow({
 }
 
 function Bullet({ text }: { text: string }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.bullet}>
       <View style={styles.bulletDot} />
@@ -707,6 +713,7 @@ function Bullet({ text }: { text: string }) {
 }
 
 function SpecRow({ label, value }: { label: string; value: string }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.specRow}>
       <Txt variant="bodySm" color="onSurfaceVariant" style={styles.specLabel}>
@@ -720,13 +727,14 @@ function SpecRow({ label, value }: { label: string; value: string }) {
 }
 
 function SlotRow({ label, note }: { label: string; note?: string }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.slotRow}>
       <Txt variant="bodySm" color="onSurfaceVariant" style={styles.slotLabel}>
         {label}
       </Txt>
       {note ? (
-        <Txt variant="labelSm" color="primary">
+        <Txt variant="labelSm" color="primaryAccent">
           {note}
         </Txt>
       ) : null}
@@ -734,7 +742,7 @@ function SlotRow({ label, note }: { label: string; note?: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.xl, paddingTop: 0 },
   body: { marginHorizontal: layout.screenMargin, gap: spacing.lg },
   bar: {

@@ -3,7 +3,7 @@ import { Stack, useSegments, type ErrorBoundaryProps } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { CartToast } from '@/components/nav/cart-toast';
@@ -16,7 +16,8 @@ import { SessionProvider, useSession } from '@/store/session';
 import { reportError, setScreen, setTrackingEnabled, startTracking, track } from '@/lib/analytics';
 import { usePushNotifications } from '@/lib/notifications';
 import { loadSnapshot } from '@/lib/storage';
-import { colors, spacing } from '@/theme';
+import { spacing } from '@/theme';
+import { ThemeProvider, useTheme } from '@/theme/provider';
 
 SplashScreen.preventAutoHideAsync();
 startTracking();
@@ -54,12 +55,13 @@ function PushBridge() {
 
 /** A screen crashed: report it and offer a way back instead of a blank page. */
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  const { colors: palette } = useTheme();
   useEffect(() => {
     reportError(error, true);
   }, [error]);
 
   return (
-    <View style={styles.crash}>
+    <View style={[styles.crash, { backgroundColor: palette.background }]}>
       <Txt variant="headlineLg" align="center">
         Something went wrong
       </Txt>
@@ -98,36 +100,53 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <SessionProvider>
-        <FulfilmentProvider>
-          <CartProvider>
-            <OrdersProvider>
-              <StatusBar style="dark" />
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  contentStyle: { backgroundColor: colors.background },
-                  // The iOS push (with the parallax slide of the screen behind) on both platforms.
-                  animation: 'ios_from_right',
-                }}
-              >
-                <Stack.Screen name="index" options={{ animation: 'fade' }} />
-                <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
-                <Stack.Screen name="login" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
-                <Stack.Screen name="checkout/mpesa" options={{ gestureEnabled: false }} />
-              </Stack>
-              <CartToast />
-              <NamePrompt />
-              <TrackingBridge />
-              <PushBridge />
-            </OrdersProvider>
-          </CartProvider>
-        </FulfilmentProvider>
-      </SessionProvider>
+      <ThemeProvider>
+        <SessionProvider>
+          <FulfilmentProvider>
+            <CartProvider>
+              <OrdersProvider>
+                <AppFrame />
+              </OrdersProvider>
+            </CartProvider>
+          </FulfilmentProvider>
+        </SessionProvider>
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }
 
+function AppFrame() {
+  const { resolved, colors: palette } = useTheme();
+  useEffect(() => {
+    if (Platform.OS === 'web' && typeof document !== 'undefined') {
+      document.documentElement.style.colorScheme = resolved;
+      document.documentElement.style.backgroundColor = palette.background;
+      document.body.style.backgroundColor = palette.background;
+    }
+  }, [resolved, palette.background]);
+  return (
+    <>
+      <StatusBar style={resolved === 'dark' ? 'light' : 'dark'} />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: palette.background },
+          animation: 'ios_from_right',
+        }}
+      >
+        <Stack.Screen name="index" options={{ animation: 'fade' }} />
+        <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
+        <Stack.Screen name="login" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="checkout/mpesa" options={{ gestureEnabled: false }} />
+      </Stack>
+      <CartToast />
+      <NamePrompt />
+      <TrackingBridge />
+      <PushBridge />
+    </>
+  );
+}
+
 const styles = StyleSheet.create({
-  crash: { flex: 1, justifyContent: 'center', gap: spacing.md, padding: spacing.xl, backgroundColor: colors.background },
+  crash: { flex: 1, justifyContent: 'center', gap: spacing.md, padding: spacing.xl },
 });

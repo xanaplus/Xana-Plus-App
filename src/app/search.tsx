@@ -26,7 +26,9 @@ import type { CategoryVertical, Product, ProductBadge } from '@/data/types';
 import { discountPercent, formatKesDecimal } from '@/lib/format';
 import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
-import { colors, elevation, gradients, layout, radius, spacing } from '@/theme';
+import { colors, elevation, layout, radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 type SortBy = 'relevance' | 'price-asc' | 'price-desc' | 'newest';
 
@@ -208,6 +210,8 @@ const buildGroups = (items: Product[]): ResultGroup[] => {
  * to when a query matches nothing in the catalogue.
  */
 export default function SearchRoute() {
+  const { colors, gradients } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const cart = useCart();
   const { store } = useFulfilment();
@@ -284,7 +288,6 @@ export default function SearchRoute() {
 
   return (
     <Screen
-      topInsetColor={colors.background}
       scroll={false}
       padded={false}
       contentStyle={styles.screenBody}
@@ -402,7 +405,7 @@ export default function SearchRoute() {
                     <Icon name="prescription" size={18} color="onPrimary" />
                   </View>
                   <View style={styles.rxCopy}>
-                    <Txt variant="overline" color="primary" numberOfLines={2}>
+                    <Txt variant="overline" color="primaryAccent" numberOfLines={2}>
                       {group.title}
                     </Txt>
                     <Txt variant="caption" color="onSurfaceVariant">
@@ -410,14 +413,14 @@ export default function SearchRoute() {
                     </Txt>
                   </View>
                   <View style={styles.ppb}>
-                    <Txt variant="labelSm" color="primaryContainer" numberOfLines={1}>
+                    <Txt variant="labelSm" color="primaryAccent" numberOfLines={1}>
                       PPB Verified
                     </Txt>
                   </View>
                 </LinearGradient>
               ) : (
                 <View style={styles.groupHead}>
-                  <Txt variant="overline" color="primary" numberOfLines={2} style={styles.groupTitle}>
+                  <Txt variant="overline" color="primaryAccent" numberOfLines={2} style={styles.groupTitle}>
                     {group.title}
                   </Txt>
                   <View style={styles.aislePill}>
@@ -529,6 +532,7 @@ const SKELETON_TILES = 4;
  * gently pulsing while a search runs, so the page doesn't jump when results land.
  */
 function ResultsSkeleton({ tileWidth }: { tileWidth: number }) {
+  const styles = useThemeStyles(createStyles);
   const [pulse] = useState(() => new Animated.Value(0.5));
   useEffect(() => {
     const loop = Animated.loop(
@@ -587,6 +591,7 @@ function ResultTile({
   onIncrement: () => void;
   onDecrement: () => void;
 }) {
+  const styles = useThemeStyles(createStyles);
   const badge = product.badges?.[0];
   const image = figmaAsset(product.image);
 
@@ -659,13 +664,14 @@ function ResultTile({
  * out, which switches the copy from "nothing matched" to "nothing fits the filter".
  */
 function NoResults({ query, matched }: { query: string; matched: number }) {
+  const styles = useThemeStyles(createStyles);
   const filteredOut = matched > 0;
 
   return (
     <View style={styles.empty}>
       <View style={styles.emptyBadge}>
         <View style={styles.emptyIcon}>
-          <Icon name="search" size={30} color="primaryContainer" />
+          <Icon name="search" size={30} color="primaryAccent" />
         </View>
         <View style={styles.emptyCount}>
           <Txt variant="micro" tint={colors.onPrimary}>
@@ -687,6 +693,7 @@ function NoResults({ query, matched }: { query: string; matched: number }) {
 
 /** Quick suggestions card shared by the empty state. */
 function PopularSearches({ onPick }: { onPick: (label: string) => void }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.popular}>
       <View style={styles.popularHead}>
@@ -711,6 +718,7 @@ function PopularSearches({ onPick }: { onPick: (label: string) => void }) {
 
 /** "Can't find your item?" — dials the branch the shopper is shopping from. */
 function ContactBranch({ store }: { store: (typeof stores)[number] }) {
+  const styles = useThemeStyles(createStyles);
   const branch = store.name.replace('Xana Plus ', '');
 
   return (
@@ -728,7 +736,7 @@ function ContactBranch({ store }: { store: (typeof stores)[number] }) {
         style={styles.helpLink}
       >
         <Txt variant="labelSm">{`Contact ${branch} Branch`}</Txt>
-        <Txt variant="caption" color="primaryContainer">
+        <Txt variant="caption" color="primaryAccent">
           {`(${store.phone})`}
         </Txt>
       </Pressable>
@@ -736,7 +744,7 @@ function ContactBranch({ store }: { store: (typeof stores)[number] }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   screenBody: { paddingTop: spacing.none, paddingBottom: spacing.none },
 
   header: {
@@ -764,7 +772,7 @@ const styles = StyleSheet.create({
     borderColor: colors.surfaceContainerHigh,
   },
   inputWrap: { flex: 1 },
-  field: { height: 44, backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.primaryContainer },
+  field: { height: 44, backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.primaryAccent },
   filterTrigger: {
     flexDirection: 'row',
     alignItems: 'center',

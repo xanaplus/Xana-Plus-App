@@ -6,9 +6,12 @@ import { Button, Card, Chip, Icon, Screen, TopBar, Txt } from '@/components/ui';
 import { createPrescription, pickPrescriptionPhotos, prescriptionError, submitPrescription, uploadPrescriptionPhoto } from '@/features/prescriptions/api';
 import { ErrorNotice, Field, PhotoQueue } from '@/features/prescriptions/ui';
 import { useSession } from '@/store/session';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 export default function UploadPrescriptionScreen() {
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const { isAuthenticated } = useSession();
   const [assets, setAssets] = useState<ImagePickerAsset[]>([]);
@@ -70,7 +73,7 @@ export default function UploadPrescriptionScreen() {
   return <Screen padded contentStyle={styles.content}>
     <TopBar title="Upload prescription" subtitle="Prescription first, then a priced list to review" onBack={() => router.canGoBack() ? router.back() : router.replace('/pharmacy/prescriptions')} />
     <Card variant="tinted" padding={spacing.lg} style={styles.notice}>
-      <Icon name="shield" size={18} color="primaryContainer" />
+      <Icon name="shield" size={18} color="primaryAccent" />
       <Txt variant="bodySm" color="onSurfaceVariant" style={styles.noticeText}>Your prescription is private. It is shared with an authorised pharmacist for review. You will see the exact priced medicine list before confirming an order.</Txt>
     </Card>
     <PhotoQueue assets={assets} onRemove={uri => setAssets(current => current.filter(asset => asset.uri !== uri))} onCamera={() => void addPhotos(true)} onGallery={() => void addPhotos(false)} disabled={busy || assets.length >= 5} />
@@ -96,7 +99,7 @@ export default function UploadPrescriptionScreen() {
   </Screen>;
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.md, paddingBottom: spacing.giant }, notice: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
   noticeText: { flex: 1 }, card: { gap: spacing.md }, choiceRow: { flexDirection: 'row', gap: spacing.sm },
   consent: { flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start', paddingVertical: spacing.sm },

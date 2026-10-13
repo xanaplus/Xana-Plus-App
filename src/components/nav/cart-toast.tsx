@@ -8,7 +8,8 @@ import { Icon } from '@/components/ui/icon';
 import { Txt } from '@/components/ui/text';
 import { productById } from '@/data/catalog';
 import { useCart } from '@/store/cart';
-import { colors, elevation, layout, radius, spacing } from '@/theme';
+import { elevation, layout, radius, spacing } from '@/theme';
+import { useTheme } from '@/theme/provider';
 
 /** How long "Added to cart" stays up before sliding away. */
 const SHOW_MS = 2200;
@@ -18,6 +19,7 @@ const SHOW_MS = 2200;
  * with a shortcut to the cart. Sits above the tab bar and the checkout footers.
  */
 export function CartToast() {
+  const { colors } = useTheme();
   const { lastAdded, itemCount } = useCart();
   const router = useRouter();
   const pathname = usePathname();
@@ -48,9 +50,9 @@ export function CartToast() {
         entering={FadeInDown.duration(220)}
         exiting={FadeOutDown.duration(180)}
         accessibilityLiveRegion="polite"
-        style={[styles.toast, elevation.floating]}
+        style={[styles.toast, { backgroundColor: colors.inverseSurface }, elevation.floating]}
       >
-        <View style={styles.check}>
+        <View style={[styles.check, { backgroundColor: colors.primaryContainer }]}>
           <Icon name="check" size={16} color="onPrimary" />
         </View>
         <View style={styles.copy}>
@@ -82,9 +84,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     borderRadius: radius.lg,
-    backgroundColor: colors.inverseSurface,
   },
-  check: { width: 28, height: 28, borderRadius: radius.pill, backgroundColor: colors.primaryContainer, alignItems: 'center', justifyContent: 'center' },
+  check: { width: 28, height: 28, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center' },
   copy: { flex: 1, gap: 2 },
   action: { paddingVertical: spacing.xs },
 });

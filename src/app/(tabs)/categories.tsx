@@ -36,6 +36,8 @@ import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
 import { colors, elevation, layout, radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /** Sort keys behind the frame's sort row. */
 type SortKey = 'savings' | 'popular' | 'new' | 'organic';
@@ -214,6 +216,8 @@ const cardBadge = (product: Product, vertical: CategoryVertical): CardBadge | un
  * sub-category grid, the sort/filter row and its product sections.
  */
 export default function CategoriesRoute() {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const cart = useCart();
   const { user } = useSession();
@@ -353,7 +357,7 @@ export default function CategoriesRoute() {
               hitSlop={6}
               style={styles.locationPill}
             >
-              <Icon name="map-pin" size={14} color="primaryContainer" />
+              <Icon name="map-pin" size={14} color="primaryAccent" />
               <Txt variant="label" numberOfLines={1}>
                 {store.name.replace('Xana Plus ', '')}
               </Txt>
@@ -427,7 +431,7 @@ export default function CategoriesRoute() {
             onPress={() => openSearch(definition.label)}
             hitSlop={8}
           >
-            <Txt variant="label" color="primaryContainer">
+            <Txt variant="label" color="primaryAccent">
               Browse all
             </Txt>
           </Pressable>
@@ -634,6 +638,7 @@ function InfoBanner({
   subtitleTail?: string;
   onPress?: () => void;
 }) {
+  const styles = useThemeStyles(createStyles);
   const body = (
     <>
       <View style={styles.bannerGlyph}>
@@ -656,7 +661,7 @@ function InfoBanner({
           ) : null}
         </View>
       </View>
-      {onPress ? <Icon name="chevron-right" size={18} color="primaryContainer" /> : null}
+      {onPress ? <Icon name="chevron-right" size={18} color="primaryAccent" /> : null}
     </>
   );
 
@@ -680,6 +685,7 @@ function InfoBanner({
 
 /** Wholesale tier table: the frame prints both unit brackets under the price. */
 function BulkTiers({ product }: { product: Product }) {
+  const styles = useThemeStyles(createStyles);
   const minQty = product.wholesaleMinQty ?? 1;
   const bulkPrice = product.wholesalePrice ?? product.price;
 
@@ -690,8 +696,8 @@ function BulkTiers({ product }: { product: Product }) {
         <Txt variant="titleSm">{`${formatKes(product.price)} each`}</Txt>
       </View>
       <View style={[styles.tierRow, styles.tierRowBulk]}>
-        <Txt variant="label" color="primary">{`${minQty}+ units`}</Txt>
-        <Txt variant="titleSm" color="primary">{`${formatKes(bulkPrice)} each`}</Txt>
+        <Txt variant="label" color="primaryAccent">{`${minQty}+ units`}</Txt>
+        <Txt variant="titleSm" color="primaryAccent">{`${formatKes(bulkPrice)} each`}</Txt>
       </View>
     </View>
   );
@@ -715,6 +721,7 @@ function RailCard({
   onAdd: () => void;
   onStep: (quantity: number) => void;
 }) {
+  const styles = useThemeStyles(createStyles);
   const image = figmaAsset(product.image);
   const badge = cardBadge(product, vertical);
   const savingNote =
@@ -827,6 +834,7 @@ function GridCard({
   onPress: () => void;
   onAdd: () => void;
 }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={{ width }}>
       <ProductCard product={product} width={width} quantity={quantity} onPress={onPress} onAdd={onAdd} />
@@ -840,7 +848,7 @@ function GridCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   screenBody: { paddingTop: spacing.none, paddingBottom: spacing.none },
   scroll: { flex: 1 },
   page: { paddingBottom: spacing.colossal },

@@ -69,3 +69,11 @@ Sign-in, the live catalogue, saved orders, and account data depend on that proje
 - Older wholesale savings were not stored. Their new column remains null; do not fabricate a backfill using current BC prices or tiers.
 - Spending opens at All time to agree with the profile counter; period filters remain available.
 - The scoped order-savings migration and updated checkout function were explicitly applied/deployed. Prescription quotes, SMS, payments and existing order totals were not changed.
+
+## Appearance
+
+- Profile → Settings places Appearance above Fulfilment store. Options are Light, Dark and Use device setting; a new device defaults to its system preference.
+- Appearance is a device preference, available to guests and retained through sign-out. It is deliberately separate from synced account preferences.
+- Use the resolved semantic palette and memoized theme styles for screens and nested components. Keep store selection, product imagery and business logic independent of appearance.
+- `node scripts/tests/appearance-browser.mjs` checks guest-only theme changes, persistence, live device changes, contrast and store switching without login, SMS, orders or payments.
+- Native interface style is automatic. Changes to native app configuration require a new native build; web preview does not verify Android/iOS builds.

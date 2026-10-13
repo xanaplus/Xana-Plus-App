@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Icon, type IconName } from '@/components/ui/icon';
 import { Skeleton, type SkeletonShape } from '@/components/ui/skeleton';
 import { Txt } from '@/components/ui/text';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useTheme } from '@/theme/provider';
 
 export type ProgressBarProps = {
   /** 0 → 1. */
@@ -17,11 +18,12 @@ export type ProgressBarProps = {
 };
 
 /** Thin progress track — splash loader, OTP timer, order status. */
-export function ProgressBar({ value, height = 4, trackColor = colors.surfaceContainerHigh, fillColor = colors.primaryContainer, style }: ProgressBarProps) {
+export function ProgressBar({ value, height = 4, trackColor, fillColor, style }: ProgressBarProps) {
+  const { colors } = useTheme();
   const clamped = Math.min(1, Math.max(0, value));
   return (
-    <View style={[{ height, borderRadius: radius.pill, backgroundColor: trackColor }, style]}>
-      <View style={{ width: `${clamped * 100}%`, height, borderRadius: radius.pill, backgroundColor: fillColor }} />
+    <View style={[{ height, borderRadius: radius.pill, backgroundColor: trackColor ?? colors.surfaceContainerHigh }, style]}>
+      <View style={{ width: `${clamped * 100}%`, height, borderRadius: radius.pill, backgroundColor: fillColor ?? colors.primaryAccent }} />
     </View>
   );
 }
@@ -36,10 +38,11 @@ export type EmptyStateProps = {
 
 /** Centred placeholder used by empty search, empty cart and error states. */
 export function EmptyState({ icon, title, description, children, style }: EmptyStateProps) {
+  const { colors } = useTheme();
   return (
     <View style={[styles.empty, style]}>
-      <View style={styles.emptyIcon}>
-        <Icon name={icon} size={32} color="primaryContainer" />
+      <View style={[styles.emptyIcon, { backgroundColor: colors.mintSurface }]}>
+        <Icon name={icon} size={32} color="primaryAccent" />
       </View>
       <Txt variant="headlineSm" align="center">
         {title}
@@ -82,7 +85,6 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: radius.pill,
-    backgroundColor: colors.mintSurface,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -393,7 +393,7 @@ export default function StaffRoute() {
                   <Txt variant="label" color="onSurfaceVariant" style={styles.flex}>
                     {`If out of stock: ${order.substitution === 'similar' ? 'replace with similar' : order.substitution === 'refund' ? 'refund the item' : 'call the customer'}`}
                   </Txt>
-                  <Txt variant="titleLg" color="primary">
+                  <Txt variant="titleLg" color="primaryAccent">
                     {formatKes(Number(order.amount_due))}
                   </Txt>
                 </View>
@@ -479,7 +479,7 @@ export default function StaffRoute() {
                   <Txt variant="label" color="onSurfaceVariant" style={styles.flex}>
                     {row.refund_to === 'mpesa' ? 'Refund to M-Pesa' : 'Refund as Xana Club credit'}
                   </Txt>
-                  <Txt variant="titleLg" color="primary">
+                  <Txt variant="titleLg" color="primaryAccent">
                     {formatKes(Number(row.refund_estimate))}
                   </Txt>
                 </View>
@@ -543,7 +543,7 @@ export default function StaffRoute() {
                     {`“${row.notes}”`}
                   </Txt>
                 ) : null}
-                <Txt variant="label" color="primary">
+                <Txt variant="label" color="primaryAccent">
                   {formatKes(Number(row.price))}
                 </Txt>
                 {row.status === 'requested' ? (

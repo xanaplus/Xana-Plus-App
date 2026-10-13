@@ -19,17 +19,17 @@ export function SectionHeader({ title, actionLabel, onAction, icon, style }: Sec
   return (
     <View style={[styles.row, style]}>
       <View style={styles.titleRow}>
-        {icon ? <Icon name={icon} size={18} color="secondaryContainer" /> : null}
+        {icon ? <Icon name={icon} size={18} color="secondaryAccent" /> : null}
         <Txt variant="headlineSm" numberOfLines={1}>
           {title}
         </Txt>
       </View>
       {actionLabel ? (
         <Pressable accessibilityRole="button" onPress={onAction} hitSlop={8} style={styles.action}>
-          <Txt variant="label" color="primaryContainer">
+          <Txt variant="label" color="primaryAccent">
             {actionLabel}
           </Txt>
-          <Icon name="chevron-right" size={14} color="primaryContainer" />
+          <Icon name="chevron-right" size={14} color="primaryAccent" />
         </Pressable>
       ) : null}
     </View>

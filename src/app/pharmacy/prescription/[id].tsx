@@ -13,7 +13,9 @@ import { ErrorNotice, PhotoQueue, PrivatePhotos } from '@/features/prescriptions
 import { useFulfilment } from '@/store/fulfilment';
 import { useOrders } from '@/store/orders';
 import { useSession } from '@/store/session';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 function formatDate(value: string | null | undefined) {
   if (!value) return 'Not specified';
@@ -48,6 +50,7 @@ function backendMissing(error: unknown) {
 }
 
 function Detail({ label, value }: { label: string; value?: string | null }) {
+  const styles = useThemeStyles(createStyles);
   return <View style={styles.detail}>
     <Txt variant="caption" color="onSurfaceVariant">{label}</Txt>
     <Txt variant="bodySm">{value?.trim() || 'Not provided'}</Txt>
@@ -60,6 +63,8 @@ type PendingAction =
   | { kind: 'cancel-request' };
 
 export default function PrescriptionDetailScreen() {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -344,7 +349,7 @@ export default function PrescriptionDetailScreen() {
   return <Screen padded contentStyle={styles.content}>
     <TopBar title="Prescription details" subtitle="Private request" onBack={backToList} />
     {!isAuthenticated ? <Card variant="elevated" padding={spacing.lg} style={styles.stateCard}>
-      <Icon name="lock" size={22} color="primaryContainer" />
+      <Icon name="lock" size={22} color="primaryAccent" />
       <Txt variant="title">Sign in to view this request</Txt>
       <Txt variant="bodySm" color="onSurfaceVariant">Prescription details and photos are private to your account.</Txt>
       <Button label="Sign in" onPress={() => router.push('/login')} />
@@ -355,10 +360,10 @@ export default function PrescriptionDetailScreen() {
       <Button label="Back to prescriptions" onPress={backToList} />
     </Card> : loading && !record ? <Card variant="flat" padding={spacing.lg} style={styles.loadingCard}>
       <View style={styles.skeletonWide} /><View style={styles.skeletonShort} /><View style={styles.skeletonBlock} />
-      <ActivityIndicator accessibilityLabel="Loading prescription details" color={colors.primary} />
+      <ActivityIndicator accessibilityLabel="Loading prescription details" color={colors.primaryAccent} />
     </Card> : error && !record ? <View style={styles.stateCard}>
       {backendConfigMissing ? <Card variant="tinted" padding={spacing.lg} style={styles.configNotice}>
-        <Icon name="info" size={18} color="primaryContainer" />
+        <Icon name="info" size={18} color="primaryAccent" />
         <View style={styles.flex}>
           <Txt variant="label">Prescription service unavailable</Txt>
           <Txt variant="bodySm" color="onSurfaceVariant">The prescription service is unavailable in this environment. No request has been changed.</Txt>
@@ -375,17 +380,17 @@ export default function PrescriptionDetailScreen() {
           </View>
           <Badge label={STATUS_LABELS[record.status]} tone={statusTone(record.status)} />
           <Pressable accessibilityRole="button" accessibilityLabel="Refresh prescription details" accessibilityState={{ disabled: loading || busy }} disabled={loading || busy} onPress={() => void load()} hitSlop={8}>
-            <Txt variant="label" color="primaryContainer">Refresh</Txt>
+            <Txt variant="label" color="primaryAccent">Refresh</Txt>
           </Pressable>
         </View>
         <View style={styles.metaLine}><Icon name="calendar" size={16} color="onSurfaceVariant" /><Txt variant="bodySm" color="onSurfaceVariant">Created {new Date(record.created_at).toLocaleDateString('en-KE')}</Txt></View>
         {record.order_no ? <Pressable accessibilityRole="link" accessibilityLabel={`Open order ${record.order_no}`} onPress={() => router.push(`/orders/${encodeURIComponent(record.order_no!)}`)} style={styles.orderLine}>
-          <Icon name="receipt" size={17} color="primaryContainer" /><Txt variant="label" color="primaryContainer">View order {record.order_no}</Txt><Icon name="arrow-right" size={16} color="primaryContainer" />
+          <Icon name="receipt" size={17} color="primaryAccent" /><Txt variant="label" color="primaryAccent">View order {record.order_no}</Txt><Icon name="arrow-right" size={16} color="primaryAccent" />
         </Pressable> : null}
       </Card>
 
       {record.status === 'ordered' && record.order_no ? <Card variant="tinted" padding={spacing.lg} style={styles.orderSuccess}>
-        <Icon name="check-circle" size={20} color="primaryContainer" />
+        <Icon name="check-circle" size={20} color="primaryAccent" />
         <View style={styles.flex}>
           <Txt variant="label">Order recorded</Txt>
           <Txt variant="caption" color="onSurfaceVariant">Order {record.order_no} is linked to this prescription. Payment remains test/simulated in this flow.</Txt>
@@ -418,7 +423,7 @@ export default function PrescriptionDetailScreen() {
         </Card>
         <Button label={busy ? 'Submitting securely…' : 'Submit for pharmacist review'} size="lg" fullWidth disabled={busy || (!assets.length && !(record.files?.length))} onPress={() => void submitDraft()} />
       </> : <Card variant="elevated" padding={spacing.lg} style={styles.section}>
-        <View style={styles.sectionTitle}><Icon name="shield" size={18} color="primaryContainer" /><Txt variant="title">Prescription photos</Txt></View>
+        <View style={styles.sectionTitle}><Icon name="shield" size={18} color="primaryAccent" /><Txt variant="title">Prescription photos</Txt></View>
         <Txt variant="caption" color="onSurfaceVariant">Private to you and authorised pharmacy reviewers.</Txt>
         <PrivatePhotos files={record.files || []} />
       </Card>}
@@ -435,7 +440,7 @@ export default function PrescriptionDetailScreen() {
           eventsError ? <ErrorNotice message={eventsError} onRetry={() => void loadEvents(record.id)} /> :
           events.length === 0 ? <Txt variant="bodySm" color="onSurfaceVariant">No decision events are available for this request.</Txt> :
           [...events].reverse().map(event => <View key={event.id} style={styles.eventRow}>
-            <View style={styles.eventMarker}><Icon name="check-circle" size={17} color="primaryContainer" /></View>
+            <View style={styles.eventMarker}><Icon name="check-circle" size={17} color="primaryAccent" /></View>
             <View style={styles.flex}>
               <View style={styles.eventHeading}>
                 <Txt variant="label">{STATUS_LABELS[event.status]}</Txt>
@@ -558,6 +563,8 @@ export default function PrescriptionDetailScreen() {
 function InputField({ label, value, onChangeText, placeholder, keyboardType }: {
   label: string; value: string; onChangeText: (value: string) => void; placeholder: string; keyboardType?: 'default' | 'phone-pad';
 }) {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   return <View style={styles.inputField}>
     <Txt variant="label">{label}</Txt>
     <TextInput accessibilityLabel={label} value={value} onChangeText={onChangeText} placeholder={placeholder}
@@ -565,7 +572,7 @@ function InputField({ label, value, onChangeText, placeholder, keyboardType }: {
   </View>;
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.md, paddingBottom: spacing.giant },
   summary: { gap: spacing.md }, summaryHead: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
   flex: { flex: 1, gap: spacing.xs }, metaLine: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },

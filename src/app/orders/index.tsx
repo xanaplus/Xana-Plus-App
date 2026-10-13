@@ -21,7 +21,9 @@ import { productById } from '@/data/catalog';
 import { formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
 import { ORDER_STAGES, useOrders, type OrderStatus, type PlacedOrder } from '@/store/orders';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /** Screen 10 — Order History: active, delivered and cancelled orders. */
 
@@ -38,6 +40,7 @@ const STATUS_META: Record<OrderStatus, { label: string; tone: BadgeTone }> = {
 };
 
 export default function OrderHistoryScreen() {
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const cart = useCart();
   const { orders, historyLoading, historyError, retryHistory } = useOrders();
@@ -86,7 +89,7 @@ export default function OrderHistoryScreen() {
           accessibilityRole="summary"
           style={[styles.syncNotice, historyError ? styles.syncNoticeError : styles.syncNoticePending]}
         >
-          <Icon name="info" size={18} color={historyError ? 'error' : 'primaryContainer'} />
+          <Icon name="info" size={18} color={historyError ? 'error' : 'primaryAccent'} />
           <View style={styles.syncNoticeBody}>
             <Txt variant="caption" color={historyError ? 'error' : 'onSurfaceVariant'}>
               {historyError
@@ -134,7 +137,7 @@ export default function OrderHistoryScreen() {
 
               {order.substitutionNeeded ? (
                 <View style={styles.alert}>
-                  <Icon name="info" size={14} color="secondaryContainer" />
+                  <Icon name="info" size={14} color="secondaryAccent" />
                   <Txt variant="caption" color="onSurfaceVariant" style={styles.alertText}>
                     An item is out of stock and needs your decision.
                   </Txt>
@@ -179,7 +182,7 @@ export default function OrderHistoryScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.md, paddingBottom: spacing.giant },
   filter: { marginTop: spacing.sm },
   syncNotice: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, padding: spacing.md, borderRadius: radius.md },
@@ -202,6 +205,6 @@ const styles = StyleSheet.create({
   itemsText: { flex: 1 },
   progress: { gap: spacing.sm },
   progressTrack: { height: 6, borderRadius: radius.pill, backgroundColor: colors.surfaceContainerHigh, overflow: 'hidden' },
-  progressFill: { height: 6, borderRadius: radius.pill, backgroundColor: colors.primaryContainer },
+  progressFill: { height: 6, borderRadius: radius.pill, backgroundColor: colors.primaryAccent },
   actions: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
 });

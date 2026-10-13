@@ -4,7 +4,8 @@ import { StyleSheet, View } from 'react-native';
 
 import { Icon } from '@/components/ui/icon';
 import { Txt } from '@/components/ui/text';
-import { colors, spacing } from '@/theme';
+import { spacing } from '@/theme';
+import { useTheme } from '@/theme/provider';
 
 type ProductPhotoSource = number | { uri: string };
 
@@ -34,6 +35,7 @@ export function ProductPhoto({ source, productId, accessibilityLabel, variant }:
 }
 
 function ProductPhotoContent({ source, accessibilityLabel, variant }: ProductPhotoProps) {
+  const { colors } = useTheme();
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const available = source !== undefined && !failed;
@@ -58,7 +60,7 @@ function ProductPhotoContent({ source, accessibilityLabel, variant }: ProductPho
         />
       ) : null}
       {available && !loaded ? (
-        <View pointerEvents="none" style={styles.loading}>
+        <View pointerEvents="none" style={[styles.loading, { backgroundColor: colors.surfaceContainerLow }]}>
           <Icon name="store" size={variant === 'row' ? 18 : 26} color="outlineVariant" />
           {variant !== 'row' ? (
             <Txt variant="caption" color="outline" numberOfLines={1} style={styles.fallbackText}>
@@ -101,7 +103,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.xs,
-    backgroundColor: colors.surfaceContainerLow,
   },
   card: { padding: spacing.sm },
   row: { padding: spacing.xxs },

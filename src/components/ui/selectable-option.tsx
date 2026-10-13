@@ -3,7 +3,8 @@ import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'rea
 
 import { Icon, type IconName } from '@/components/ui/icon';
 import { Txt } from '@/components/ui/text';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useTheme } from '@/theme/provider';
 
 export type SelectableOptionProps = {
   title: string;
@@ -38,23 +39,27 @@ export function SelectableOption({
   trailing,
   style,
 }: SelectableOptionProps) {
+  const { colors } = useTheme();
   const noteColor = noteTone === 'danger' ? colors.error : noteTone === 'warning' ? colors.warningDeep : colors.onSurfaceVariant;
 
   return (
     <Pressable
       accessibilityRole="radio"
-      accessibilityState={{ selected, disabled: !!disabled }}
+      accessibilityLabel={description ? `${title}. ${description}` : title}
+      accessibilityState={{ checked: selected, disabled: !!disabled }}
+      aria-checked={selected}
       disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [
         styles.row,
-        selected ? styles.rowSelected : null,
+        { borderColor: colors.outlineSoft30, backgroundColor: colors.surface },
+        selected ? { borderColor: colors.primaryAccent, backgroundColor: colors.mintSubtle } : null,
         { opacity: disabled ? 0.5 : pressed ? 0.9 : 1 },
         style,
       ]}
     >
       {icon ? (
-        <View style={[styles.iconWrap, selected ? styles.iconWrapSelected : null]}>
+          <View style={[styles.iconWrap, { backgroundColor: selected ? colors.primaryContainer : colors.surfaceContainerLow }]}>
           <Icon name={icon} size={18} color={selected ? 'onPrimary' : 'onSurfaceVariant'} />
         </View>
       ) : null}
@@ -73,9 +78,9 @@ export function SelectableOption({
       </View>
       {trailing}
       {indicator === 'check' ? (
-        selected ? <Icon name="check-circle" size={20} color="primaryContainer" /> : <View style={styles.checkPlaceholder} />
+        selected ? <Icon name="check-circle" size={20} color="primaryAccent" /> : <View style={styles.checkPlaceholder} />
       ) : (
-        <View style={[styles.radio, selected ? styles.radioSelected : null]}>{selected ? <View style={styles.radioDot} /> : null}</View>
+        <View style={[styles.radio, { borderColor: selected ? colors.primaryAccent : colors.outline }]}>{selected ? <View style={[styles.radioDot, { backgroundColor: colors.primaryContainer }]} /> : null}</View>
       )}
     </Pressable>
   );
@@ -89,30 +94,23 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     borderRadius: radius.card,
     borderWidth: 1,
-    borderColor: colors.outlineSoft30,
-    backgroundColor: colors.surface,
   },
-  rowSelected: { borderColor: colors.primaryContainer, backgroundColor: colors.mintSubtle },
   iconWrap: {
     width: 36,
     height: 36,
     borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.surfaceContainerLow,
   },
-  iconWrapSelected: { backgroundColor: colors.primaryContainer },
   body: { flex: 1, gap: 2 },
   radio: {
     width: 20,
     height: 20,
     borderRadius: radius.pill,
     borderWidth: 2,
-    borderColor: colors.outline,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  radioSelected: { borderColor: colors.primaryContainer },
-  radioDot: { width: 10, height: 10, borderRadius: radius.pill, backgroundColor: colors.primaryContainer },
+  radioDot: { width: 10, height: 10, borderRadius: radius.pill },
   checkPlaceholder: { width: 20, height: 20 },
 });

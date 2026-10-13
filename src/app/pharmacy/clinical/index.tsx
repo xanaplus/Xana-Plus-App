@@ -5,10 +5,14 @@ import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { Chip, Icon, Screen, Txt, TopBar, TopBarAction } from '@/components/ui';
 import { CLINICAL_CATEGORY_LABELS, CLINICAL_SERVICES, type ClinicalCategory } from '@/data/clinical';
 import { useFulfilment } from '@/store/fulfilment';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /** Screen 1: Clinical Services Directory (FR-F.10). */
 export default function ClinicalDirectoryRoute() {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const { store } = useFulfilment();
   const [category, setCategory] = useState<ClinicalCategory | null>(null);
@@ -29,12 +33,12 @@ export default function ClinicalDirectoryRoute() {
 
       <View style={styles.inset}>
         <View style={styles.introBanner}>
-          <Icon name="shield" size={18} color="primary" />
+          <Icon name="shield" size={18} color="primaryAccent" />
           <View style={styles.flex}>
             <View style={styles.introHead}>
               <Txt variant="titleLg">In-Pharmacy Clinical Care</Txt>
               <View style={styles.ppbBadge}>
-                <Txt variant="labelSm" color="primary">PPB Certified</Txt>
+                <Txt variant="labelSm" color="primaryAccent">PPB Certified</Txt>
               </View>
             </View>
             <Txt variant="bodySm" color="onSurfaceVariant">
@@ -71,14 +75,14 @@ export default function ClinicalDirectoryRoute() {
           <View key={service.id} style={styles.card}>
             <View style={styles.cardHead}>
               <View style={styles.cardIcon}>
-                <Icon name={service.icon} size={20} color="primaryContainer" />
+                <Icon name={service.icon} size={20} color="primaryAccent" />
               </View>
               <View style={styles.flex}>
                 <View style={styles.cardTitleRow}>
                   <Txt variant="titleLg" style={styles.flex}>{service.name}</Txt>
                   {service.badge ? (
                     <View style={styles.badge}>
-                      <Txt variant="labelSm" color="primary">{service.badge}</Txt>
+                      <Txt variant="labelSm" color="primaryAccent">{service.badge}</Txt>
                     </View>
                   ) : null}
                 </View>
@@ -99,7 +103,7 @@ export default function ClinicalDirectoryRoute() {
             <View style={styles.priceRow}>
               <View>
                 <Txt variant="caption" color="onSurfaceVariant">{service.priceLabel}</Txt>
-                <Txt variant="titleLg" color="primary">{`KES ${service.price.toLocaleString('en-KE')}`}</Txt>
+                <Txt variant="titleLg" color="primaryAccent">{`KES ${service.price.toLocaleString('en-KE')}`}</Txt>
               </View>
               <Pressable
                 accessibilityRole="button"
@@ -141,7 +145,7 @@ export default function ClinicalDirectoryRoute() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.lg, paddingBottom: spacing.giant },
   inset: { marginHorizontal: spacing.lg },
   flex: { flex: 1 },

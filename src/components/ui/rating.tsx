@@ -14,7 +14,7 @@ export type RatingProps = {
 export function Rating({ value, reviewLabel }: RatingProps) {
   return (
     <View style={styles.row}>
-      <Icon name="star" size={14} color="secondaryContainer" />
+      <Icon name="star" size={14} color="secondaryAccent" />
       <Txt variant="label">{value.toFixed(1)}</Txt>
       <Txt variant="caption" color="outline">
         ·

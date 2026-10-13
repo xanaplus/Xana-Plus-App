@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Animated, Platform, StyleSheet, View, useWindowDimensions, type DimensionValue, type StyleProp, type ViewStyle } from 'react-native';
 
-import { colors, layout, radius, spacing } from '@/theme';
+import { layout, radius, spacing } from '@/theme';
+import { useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /**
  * Faint stand-ins shaped like the content that is loading, so a screen keeps
@@ -33,10 +35,12 @@ function usePulse() {
 }
 
 function Bar({ width, height = 12, round }: { width: DimensionValue; height?: number; round?: boolean }) {
+  const styles = useThemeStyles(createStyles);
   return <View style={[styles.bar, { width, height }, round ? { borderRadius: radius.pill } : null]} />;
 }
 
 function Header() {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.header}>
       <Bar width="42%" height={16} />
@@ -46,6 +50,7 @@ function Header() {
 }
 
 function ProductCardSkeleton({ width }: { width: number }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={[styles.card, { width }]}>
       <View style={styles.cardImage} />
@@ -61,6 +66,7 @@ function ProductCardSkeleton({ width }: { width: number }) {
 }
 
 function Rail() {
+  const styles = useThemeStyles(createStyles);
   return (
     <View>
       <Header />
@@ -74,6 +80,7 @@ function Rail() {
 }
 
 function Grid({ contentWidth }: { contentWidth: number }) {
+  const styles = useThemeStyles(createStyles);
   const cardWidth = (contentWidth - layout.gutter) / 2;
   return (
     <View>
@@ -88,6 +95,7 @@ function Grid({ contentWidth }: { contentWidth: number }) {
 }
 
 function Detail() {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.detail}>
       <View style={styles.hero} />
@@ -105,6 +113,7 @@ function Detail() {
 }
 
 function List() {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.list}>
       {Array.from({ length: 3 }, (_, index) => (
@@ -135,6 +144,7 @@ export type SkeletonProps = {
 
 /** The pulsing placeholder for one loading area. */
 export function Skeleton({ shape, inset, style }: SkeletonProps) {
+  const styles = useThemeStyles(createStyles);
   const pulse = usePulse();
   const { width } = useWindowDimensions();
   const contentWidth = Math.min(width, layout.maxContentWidth) - layout.screenMargin * 2;
@@ -154,7 +164,7 @@ export function Skeleton({ shape, inset, style }: SkeletonProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   root: { overflow: 'hidden', paddingVertical: spacing.sm },
   inset: { paddingHorizontal: layout.screenMargin },
   bar: { borderRadius: radius.sm, backgroundColor: colors.surfaceContainerLow },

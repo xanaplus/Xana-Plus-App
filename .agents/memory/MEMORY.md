@@ -8,3 +8,4 @@
 - [SMS safeguards](sms-policy.md) — owner-approved aggregate limits and demo exemption; staging approval is not live-rollout approval.
 - [Wholesale pricing](wholesale-pricing.md) — wholesale prices must come from BC and change at qualifying quantity thresholds.
 - [Live browser checks](live-browser-verification.md) — verify in-app cached transitions; hidden Expo screens and closing dialogs can cause misleading selector failures.
+- [Semantic appearance theming](dark-mode-theming.md) — shared light-color values cannot distinguish surfaces from action text; use reactive semantic palettes throughout the component tree.

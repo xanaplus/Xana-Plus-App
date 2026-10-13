@@ -3,7 +3,8 @@ import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleShee
 import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors, elevation, layout, radius, spacing } from '@/theme';
+import { elevation, layout, radius, spacing } from '@/theme';
+import { useTheme } from '@/theme/provider';
 
 import { Icon } from './icon';
 import { Txt } from './text';
@@ -32,6 +33,7 @@ const OPEN_SPRING = { damping: 26, stiffness: 260, mass: 0.9 };
 const CLOSE_TIMING = { duration: 200, easing: Easing.in(Easing.cubic) };
 
 export function BottomSheet({ visible, onClose, title, description, children, footer, scrollable, style }: BottomSheetProps) {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   // The backdrop fades while the sheet springs up; closing plays in reverse
   // before the modal unmounts, so the sheet never just vanishes.
@@ -61,11 +63,11 @@ export function BottomSheet({ visible, onClose, title, description, children, fo
       {/* A sheet with a text field (name, notes) rises above the keyboard instead of hiding behind it.
           Modals don't get the window's own keyboard resizing, so this is needed on Android too. */}
       <KeyboardAvoidingView behavior={Platform.OS === 'web' ? undefined : 'padding'} style={styles.root}>
-        <Animated.View style={[styles.scrim, scrimStyle]}>
+        <Animated.View style={[styles.scrim, { backgroundColor: colors.scrim }, scrimStyle]}>
           <Pressable accessibilityRole="button" accessibilityLabel="Close sheet" onPress={onClose} style={styles.fill} />
         </Animated.View>
-        <Animated.View style={[styles.sheet, elevation.sheet, { paddingBottom: insets.bottom + spacing.lg }, style, sheetStyle]}>
-          <View style={styles.handle} />
+        <Animated.View style={[styles.sheet, { backgroundColor: colors.surface }, elevation.sheet, { paddingBottom: insets.bottom + spacing.lg }, style, sheetStyle]}>
+          <View style={[styles.handle, { backgroundColor: colors.surfaceContainerHighest }]} />
           {title ? (
             <View style={styles.header}>
               <View style={styles.headerText}>
@@ -97,18 +99,17 @@ export function BottomSheet({ visible, onClose, title, description, children, fo
 
 const styles = StyleSheet.create({
   root: { flex: 1, justifyContent: 'flex-end', alignItems: 'center' },
-  scrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: colors.scrim },
+  scrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   fill: { flex: 1 },
   sheet: {
     width: '100%',
     maxWidth: layout.maxContentWidth,
-    backgroundColor: colors.surface,
     borderTopLeftRadius: radius.sheetTop,
     borderTopRightRadius: radius.sheetTop,
     paddingHorizontal: layout.screenMargin,
     paddingTop: spacing.md,
   },
-  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: radius.pill, backgroundColor: colors.surfaceContainerHighest, marginBottom: spacing.lg },
+  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: radius.pill, marginBottom: spacing.lg },
   header: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: spacing.lg, marginBottom: spacing.lg },
   headerText: { flex: 1, gap: spacing.xs },
   body: { gap: spacing.lg },

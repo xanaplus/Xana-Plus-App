@@ -3,7 +3,8 @@ import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'rea
 
 import { Txt } from '@/components/ui/text';
 import { figmaAsset } from '@/data/images';
-import { colors, elevation, layout, radius, spacing } from '@/theme';
+import { elevation, layout, radius, spacing } from '@/theme';
+import { useTheme } from '@/theme/provider';
 
 export type CategoryTileProps = {
   name: string;
@@ -20,6 +21,7 @@ export type CategoryTileProps = {
  * "Top Categories" grid and the Categories-tab sub-category grids.
  */
 export function CategoryTile({ name, image, selected, onPress, size = layout.categoryTileSize, style }: CategoryTileProps) {
+  const { colors } = useTheme();
   const source = figmaAsset(image);
 
   return (
@@ -34,12 +36,13 @@ export function CategoryTile({ name, image, selected, onPress, size = layout.cat
         style={[
           styles.frame,
           { width: size, height: size },
-          selected ? { borderColor: colors.primaryContainer, borderWidth: 2 } : null,
+          { backgroundColor: colors.surfaceContainerLow },
+          selected ? { borderColor: colors.primaryAccent, borderWidth: 2 } : null,
         ]}
       >
         {source ? <Image source={source} style={styles.image} contentFit="cover" transition={120} /> : null}
       </View>
-      <Txt variant="caption" align="center" numberOfLines={3} style={styles.label}>
+      <Txt variant="caption" align="center" numberOfLines={3} tint={colors.onSurface} style={styles.label}>
         {name}
       </Txt>
     </Pressable>
@@ -51,9 +54,8 @@ const styles = StyleSheet.create({
   frame: {
     borderRadius: radius.lg,
     overflow: 'hidden',
-    backgroundColor: colors.surfaceContainerLow,
     ...elevation.hairline,
   },
   image: { width: '100%', height: '100%' },
-  label: { color: colors.onSurface },
+  label: {},
 });

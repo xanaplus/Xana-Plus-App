@@ -22,7 +22,9 @@ import { successFeedback } from '@/lib/haptics';
 import { supabase } from '@/lib/supabase';
 import { unitPrice } from '@/store/cart';
 import { useOrders } from '@/store/orders';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 type Reason = 'wrong-item' | 'damaged' | 'expired' | 'no-longer-needed' | 'other';
 
@@ -41,6 +43,8 @@ const CLUB_CREDIT_BONUS = 0.05;
 
 /** Screen: Request a Return & Refund (FR-E.6) — reached from a delivered order. */
 export default function RequestReturnRoute() {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { orderById } = useOrders();
@@ -123,7 +127,7 @@ export default function RequestReturnRoute() {
         <Card variant="elevated" padding={spacing.lg} style={styles.confirmCard}>
           <View style={styles.confirmHead}>
             <View style={styles.confirmIcon}>
-              <Icon name="check-circle" size={22} color="primaryContainer" />
+              <Icon name="check-circle" size={22} color="primaryAccent" />
             </View>
             <View style={styles.flex}>
               <Txt variant="titleLg">Return request sent</Txt>
@@ -142,7 +146,7 @@ export default function RequestReturnRoute() {
           </Txt>
           <View style={styles.confirmTotal}>
             <Txt variant="label" color="onSurfaceVariant">Refund amount</Txt>
-            <Txt variant="headlineSm" color="primary">
+            <Txt variant="headlineSm" color="primaryAccent">
               {destination === 'mpesa' ? formatKes(refundEstimate) : `${formatKes(creditValue)} credit`}
             </Txt>
           </View>
@@ -209,7 +213,7 @@ export default function RequestReturnRoute() {
       {selectedLines.length > 0 ? (
         <View style={[styles.refundPill, styles.inset]}>
           <Txt variant="label" color="onSurfaceVariant">{`Refund estimate (${selectedLines.length} ${selectedLines.length === 1 ? 'item' : 'items'})`}</Txt>
-          <Txt variant="titleLg" color="primary">{formatKes(refundEstimate)}</Txt>
+          <Txt variant="titleLg" color="primaryAccent">{formatKes(refundEstimate)}</Txt>
         </View>
       ) : null}
 
@@ -252,7 +256,7 @@ export default function RequestReturnRoute() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   footer: { gap: spacing.sm },
   content: { gap: spacing.md, paddingBottom: spacing.giant },
   card: { gap: spacing.sm },

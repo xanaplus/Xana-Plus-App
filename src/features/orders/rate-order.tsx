@@ -6,7 +6,9 @@ import { track } from '@/lib/analytics';
 import { successFeedback } from '@/lib/haptics';
 import { supabase } from '@/lib/supabase';
 import { useSession } from '@/store/session';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /**
  * "How was your order?" on a delivered order: a thumb for the rider (or the
@@ -20,6 +22,8 @@ type Saved = { service: Thumb | null; packing: Thumb | null; missing_items: bool
 const MAX_COMMENT = 500;
 
 export function RateOrder({ orderNo, pickup }: { orderNo: string; pickup: boolean }) {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const { user } = useSession();
   const userId = user?.id;
   const [status, setStatus] = useState<'loading' | 'open' | 'sending' | 'done'>('loading');
@@ -68,7 +72,7 @@ export function RateOrder({ orderNo, pickup }: { orderNo: string; pickup: boolea
     return (
       <Card variant="elevated" padding={spacing.lg} style={styles.card}>
         <View style={styles.head}>
-          <Icon name="check-circle" size={18} color="primaryContainer" />
+          <Icon name="check-circle" size={18} color="primaryAccent" />
           <Txt variant="label">Thanks for rating this order</Txt>
         </View>
         {parts.length > 0 ? (
@@ -142,6 +146,7 @@ export function RateOrder({ orderNo, pickup }: { orderNo: string; pickup: boolea
 }
 
 function ThumbRow({ label, value, onChange }: { label: string; value: Thumb | null; onChange: (next: Thumb | null) => void }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.row}>
       <Txt variant="bodySm" style={styles.flex}>
@@ -165,7 +170,7 @@ function ThumbRow({ label, value, onChange }: { label: string; value: Thumb | nu
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   card: { gap: spacing.md },
   head: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },

@@ -2,7 +2,8 @@ import { Pressable, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle
 
 import { Icon, type IconName } from '@/components/ui/icon';
 import { Txt } from '@/components/ui/text';
-import { colors, elevation, radius, spacing } from '@/theme';
+import { elevation, radius, spacing } from '@/theme';
+import { useTheme } from '@/theme/provider';
 
 export type SegmentedOption<T extends string> = { value: T; label: string; icon?: IconName };
 
@@ -17,6 +18,7 @@ export type SegmentedProps<T extends string> = {
 
 /** Pill filter row: category verticals, order tabs, sort chips. */
 export function Segmented<T extends string>({ options, value, onChange, scrollable, style }: SegmentedProps<T>) {
+  const { colors } = useTheme();
   const pills = options.map(option => {
     const selected = option.value === value;
     return (
@@ -25,7 +27,7 @@ export function Segmented<T extends string>({ options, value, onChange, scrollab
         accessibilityRole="button"
         accessibilityState={{ selected }}
         onPress={() => onChange(option.value)}
-        style={[styles.pill, selected ? styles.pillSelected : null]}
+        style={[styles.pill, { backgroundColor: selected ? colors.primaryContainer : colors.surfaceContainerLow }, selected ? styles.pillSelected : null]}
       >
         {option.icon ? <Icon name={option.icon} size={14} color={selected ? 'onPrimary' : 'onSurfaceVariant'} /> : null}
         <Txt variant="label" tint={selected ? colors.onPrimary : colors.onSurfaceVariant}>
@@ -55,7 +57,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     height: 36,
     borderRadius: radius.pill,
-    backgroundColor: colors.surfaceContainerLow,
   },
-  pillSelected: { backgroundColor: colors.primaryContainer, ...elevation.hairline },
+  pillSelected: { ...elevation.hairline },
 });

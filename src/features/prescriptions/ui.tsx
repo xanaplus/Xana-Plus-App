@@ -4,12 +4,16 @@ import { Alert, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import type { ImagePickerAsset } from 'expo-image-picker';
 import { Button, Card, Icon, Txt } from '@/components/ui';
 import { prescriptionPhotoUrl, type PrescriptionFile } from './api';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 export function Field({ label, value, onChangeText, placeholder, multiline = false, keyboardType, editable = true }: {
   label: string; value: string; onChangeText: (value: string) => void; placeholder?: string;
   multiline?: boolean; keyboardType?: 'default' | 'phone-pad'; editable?: boolean;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   return <View style={styles.field}><Txt variant="label">{label}</Txt><TextInput accessibilityLabel={label}
     value={value} onChangeText={onChangeText} editable={editable} placeholder={placeholder} placeholderTextColor={colors.outline}
     multiline={multiline} keyboardType={keyboardType} textAlignVertical={multiline ? 'top' : 'center'}
@@ -19,8 +23,9 @@ export function Field({ label, value, onChangeText, placeholder, multiline = fal
 export function PhotoQueue({ assets, onRemove, onCamera, onGallery, disabled }: {
   assets: ImagePickerAsset[]; onRemove: (uri: string) => void; onCamera: () => void; onGallery: () => void; disabled?: boolean;
 }) {
+  const styles = useThemeStyles(createStyles);
   return <Card variant="elevated" padding={spacing.lg} style={styles.card}>
-    <View style={styles.titleRow}><Icon name="prescription" size={20} color="primaryContainer" /><Txt variant="label">Prescription photos</Txt></View>
+    <View style={styles.titleRow}><Icon name="prescription" size={20} color="primaryAccent" /><Txt variant="label">Prescription photos</Txt></View>
     <Txt variant="caption" color="onSurfaceVariant">Use a clear, complete image showing the prescriber, date and signature. Up to 5 images, 10 MB each.</Txt>
     <View style={styles.actions}><Button label="Take photo" size="sm" icon="scan" iconPosition="leading" onPress={onCamera} disabled={disabled} style={styles.flex} />
       <Button label="Choose photos" size="sm" variant="outline" onPress={onGallery} disabled={disabled} style={styles.flex} /></View>
@@ -34,6 +39,7 @@ export function PhotoQueue({ assets, onRemove, onCamera, onGallery, disabled }: 
 }
 
 export function PrivatePhotos({ files }: { files: PrescriptionFile[] }) {
+  const styles = useThemeStyles(createStyles);
   const [urls, setUrls] = useState<Record<string, string>>({});
   const [failed, setFailed] = useState<string[]>([]);
   useEffect(() => {
@@ -65,6 +71,7 @@ export function PrivatePhotos({ files }: { files: PrescriptionFile[] }) {
 }
 
 export function ErrorNotice({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  const styles = useThemeStyles(createStyles);
   return <View style={styles.error}><Txt variant="bodySm" color="error">{message}</Txt>{onRetry ? <Button label="Try again" size="sm" variant="outline" onPress={onRetry} /> : null}</View>;
 }
 
@@ -74,7 +81,7 @@ export function confirmCancel(onConfirm: () => void) {
   ]);
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   field: { gap: spacing.xs }, input: { minHeight: 46, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.outlineVariant, backgroundColor: colors.surfaceContainerLowest, paddingHorizontal: spacing.md, color: colors.onSurface, fontSize: 15 },
   multiline: { minHeight: 92, paddingTop: spacing.md }, card: { gap: spacing.md }, titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   actions: { flexDirection: 'row', gap: spacing.sm }, flex: { flex: 1 }, photoRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.xs },

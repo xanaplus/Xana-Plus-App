@@ -10,7 +10,9 @@ import {
 } from '@/features/prescriptions/api';
 import { ErrorNotice, PrivatePhotos } from '@/features/prescriptions/ui';
 import { useSession } from '@/store/session';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 type Access = 'checking' | 'allowed' | 'denied' | 'failed';
 type DraftLine = QuoteChoice & { name: string; unitPrice: number };
@@ -31,6 +33,8 @@ function tone(status: PrescriptionStatus): 'neutral' | 'info' | 'fresh' | 'warni
 }
 
 export default function PharmacyReviewScreen() {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const { isAuthenticated } = useSession();
   const { records, loading, error, refresh } = usePrescriptionList(true);
@@ -192,31 +196,31 @@ export default function PharmacyReviewScreen() {
   return <Screen padded contentStyle={styles.content}>
     <TopBar title="Pharmacy review" subtitle="Authorised reviewer workspace" onBack={() => router.replace('/(tabs)/pharmacy')} />
     {access === 'checking' ? <Card variant="flat" padding={spacing.lg} style={styles.state}>
-      <ActivityIndicator accessibilityLabel="Checking reviewer access" color={colors.primary} />
+      <ActivityIndicator accessibilityLabel="Checking reviewer access" color={colors.primaryAccent} />
       <Txt variant="bodySm" color="onSurfaceVariant">Checking pharmacy reviewer access…</Txt>
     </Card> : access === 'denied' ? <Card variant="elevated" padding={spacing.lg} style={styles.state}>
-      <Icon name="lock" size={22} color="primaryContainer" />
+      <Icon name="lock" size={22} color="primaryAccent" />
       <Txt variant="title">{isAuthenticated ? 'Reviewer access required' : 'Sign in required'}</Txt>
       <Txt variant="bodySm" color="onSurfaceVariant">{isAuthenticated ? 'This review queue is only available to accounts authorised by the pharmacy team.' : 'Sign in with an authorised pharmacy reviewer account to continue.'}</Txt>
       {!isAuthenticated ? <Button label="Sign in" onPress={() => router.push('/login')} /> : null}
       <Button label="Back to pharmacy" variant="outline" onPress={() => router.replace('/(tabs)/pharmacy')} />
     </Card> : access === 'failed' ? <View style={styles.state}>
-      {backendMissing ? <Card variant="tinted" padding={spacing.lg} style={styles.configNotice}><Icon name="info" size={18} color="primaryContainer" /><Txt variant="bodySm" color="onSurfaceVariant" style={styles.flex}>The authorised reviewer service is unavailable or not configured, so access cannot be confirmed.</Txt></Card> : null}
+      {backendMissing ? <Card variant="tinted" padding={spacing.lg} style={styles.configNotice}><Icon name="info" size={18} color="primaryAccent" /><Txt variant="bodySm" color="onSurfaceVariant" style={styles.flex}>The authorised reviewer service is unavailable or not configured, so access cannot be confirmed.</Txt></Card> : null}
       <ErrorNotice message={accessError || 'Reviewer access could not be checked.'} onRetry={() => void checkPermission()} />
       <Button label="Back to pharmacy" variant="outline" onPress={() => router.replace('/(tabs)/pharmacy')} />
     </View> : <>
       <Card variant="tinted" padding={spacing.lg} style={styles.notice}>
-        <Icon name="shield" size={18} color="primaryContainer" />
+        <Icon name="shield" size={18} color="primaryAccent" />
         <Txt variant="bodySm" color="onSurfaceVariant" style={styles.flex}>Private customer requests. Review actions are sent through the authorised prescription review service; no order or payment is placed here.</Txt>
       </Card>
-      {backendMissing ? <Card variant="tinted" padding={spacing.lg} style={styles.configNotice}><Icon name="info" size={18} color="primaryContainer" /><Txt variant="bodySm" color="onSurfaceVariant" style={styles.flex}>The prescription backend service is unavailable or not configured in this environment.</Txt></Card> : null}
+      {backendMissing ? <Card variant="tinted" padding={spacing.lg} style={styles.configNotice}><Icon name="info" size={18} color="primaryAccent" /><Txt variant="bodySm" color="onSurfaceVariant" style={styles.flex}>The prescription backend service is unavailable or not configured in this environment.</Txt></Card> : null}
       {error ? <>
         <Card variant="tinted" padding={spacing.md}><Txt variant="caption" color="onSurfaceVariant">Review requests could not be loaded. Retry to refresh the queue.</Txt></Card>
         <ErrorNotice message={error} onRetry={() => void refresh()} />
       </> : null}
-      {loading && records.length === 0 ? <Card variant="flat" padding={spacing.lg} style={styles.state}><ActivityIndicator accessibilityLabel="Loading review queue" color={colors.primary} /><Txt variant="bodySm" color="onSurfaceVariant">Loading requests…</Txt></Card> : null}
+      {loading && records.length === 0 ? <Card variant="flat" padding={spacing.lg} style={styles.state}><ActivityIndicator accessibilityLabel="Loading review queue" color={colors.primaryAccent} /><Txt variant="bodySm" color="onSurfaceVariant">Loading requests…</Txt></Card> : null}
       {!loading && !error && reviewableRecords.length === 0 ? <Card variant="elevated" padding={spacing.lg} style={styles.state}>
-        <Icon name="prescription" size={24} color="primaryContainer" />
+        <Icon name="prescription" size={24} color="primaryAccent" />
         <Txt variant="title">No requests in the queue</Txt>
         <Txt variant="bodySm" color="onSurfaceVariant">New customer submissions will appear here when the prescription service is available.</Txt>
         <Button label="Refresh queue" variant="outline" disabled={busy} onPress={() => void refresh()} />
@@ -231,7 +235,7 @@ export default function PharmacyReviewScreen() {
                 <Txt variant="caption" color="onSurfaceVariant">{new Date(record.created_at).toLocaleDateString('en-KE')} · {record.files?.length ?? 0} private photos</Txt>
               </View><Badge label={STATUS_LABELS[record.status]} tone={tone(record.status)} /></View>
               <Txt variant="caption" color="onSurfaceVariant">{record.doctor ? `Prescriber: ${record.doctor}` : 'Prescriber not provided'}</Txt>
-              <Txt variant="label" color="primaryContainer">{selectedId === record.id ? 'Selected for review' : 'Open request'}</Txt>
+              <Txt variant="label" color="primaryAccent">{selectedId === record.id ? 'Selected for review' : 'Open request'}</Txt>
             </Card>
           </Pressable>)}
         </View>
@@ -250,7 +254,7 @@ export default function PharmacyReviewScreen() {
         <Card variant="elevated" padding={spacing.lg} style={styles.section}>
           <Txt variant="title">Find catalogue medicines</Txt>
           <TextInput accessibilityLabel="Search live medicine catalogue" value={search} onChangeText={updateSearch} editable={!busy} placeholder="Search the live catalogue" placeholderTextColor={colors.outline} style={styles.input} />
-          {searching ? <ActivityIndicator accessibilityLabel="Searching catalogue" color={colors.primary} /> : null}
+          {searching ? <ActivityIndicator accessibilityLabel="Searching catalogue" color={colors.primaryAccent} /> : null}
           {catalogueError && !selected ? <ErrorNotice message={catalogueError} /> : null}
           {products.map(product => <View key={product.id} style={styles.productRow}>
             <View style={styles.flex}><Txt variant="label">{product.name}</Txt><Txt variant="caption" color="onSurfaceVariant">{product.id} · KSh {product.price.toLocaleString('en-KE', { minimumFractionDigits: 2 })} · In stock</Txt></View>
@@ -266,18 +270,18 @@ export default function PharmacyReviewScreen() {
                 <Txt variant="caption" color="onSurfaceVariant">Quantity</Txt>
                 <View style={styles.quantityActions}>
                   <Pressable accessibilityRole="button" accessibilityLabel={`Decrease ${line.name} quantity`} accessibilityState={{ disabled: busy || line.quantity <= 1 }} disabled={busy || line.quantity <= 1} onPress={() => updateLine(line.itemNo, { quantity: line.quantity - 1 })} style={styles.quantityButton}>
-                    <Icon name="minus" size={16} color="primaryContainer" />
+                    <Icon name="minus" size={16} color="primaryAccent" />
                   </Pressable>
                   <Txt variant="label">{line.quantity}</Txt>
                   <Pressable accessibilityRole="button" accessibilityLabel={`Increase ${line.name} quantity`} accessibilityState={{ disabled: busy || line.quantity >= 999 }} disabled={busy || line.quantity >= 999} onPress={() => updateLine(line.itemNo, { quantity: Math.min(999, line.quantity + 1) })} style={styles.quantityButton}>
-                    <Icon name="plus" size={16} color="primaryContainer" />
+                    <Icon name="plus" size={16} color="primaryAccent" />
                   </Pressable>
                 </View>
               </View>
               <TextInput accessibilityLabel={`Instructions for ${line.name}`} value={line.instructions} maxLength={500} editable={!busy} onChangeText={value => updateLine(line.itemNo, { instructions: value })} placeholder="Instructions for customer (optional)" placeholderTextColor={colors.outline} style={styles.input} />
             </View>
             <Pressable accessibilityRole="button" accessibilityLabel={`Remove ${line.name} from quote`} accessibilityState={{ disabled: busy }} disabled={busy} onPress={() => removeLine(line.itemNo)} style={styles.removeButton}>
-              <Txt variant="label" color="primaryContainer">Remove</Txt>
+              <Txt variant="label" color="primaryAccent">Remove</Txt>
             </Pressable>
           </View>)}
           {lines.length ? <View style={styles.totalPreview}>
@@ -299,7 +303,7 @@ export default function PharmacyReviewScreen() {
   </Screen>;
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.md, paddingBottom: spacing.giant },
   state: { gap: spacing.md, alignItems: 'flex-start' }, notice: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
   configNotice: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md }, flex: { flex: 1, gap: spacing.xs },

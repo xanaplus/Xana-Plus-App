@@ -6,10 +6,14 @@ import { Button, Card, Chip, Icon, Screen, SectionHeader, TopBar, Txt } from '@/
 import { productById } from '@/data/catalog';
 import { CONSULT_TOPICS, PHARMACIST, PPB_FOOTER } from '@/data/prescriptions';
 import { useRepeatScripts } from '@/features/account/sample-data';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /** Screen 08d — Pharmacy: Ask a Pharmacist (consultation intake). */
 export default function ConsultScreen() {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const [topic, setTopic] = useState<string | null>(null);
   const [shareMeds, setShareMeds] = useState(false);
@@ -60,7 +64,7 @@ export default function ConsultScreen() {
           </Txt>
           <View style={styles.onlineRow}>
             <View style={styles.onlineDot} />
-            <Txt variant="caption" color="primaryContainer">
+            <Txt variant="caption" color="primaryAccent">
               Online now · {PHARMACIST.responseTime}
             </Txt>
           </View>
@@ -69,7 +73,7 @@ export default function ConsultScreen() {
 
       {/* Privacy */}
       <Card variant="tinted" padding={spacing.lg} style={styles.privacy}>
-        <Icon name="lock" size={16} color="primaryContainer" />
+        <Icon name="lock" size={16} color="primaryAccent" />
         <Txt variant="caption" color="onSurfaceVariant" style={styles.privacyText}>
           This conversation is private. It is not shared with your household and does not appear in your order
           history.
@@ -129,7 +133,7 @@ export default function ConsultScreen() {
 
       {/* Emergency caution */}
       <Card variant="flat" padding={spacing.lg} style={styles.caution}>
-        <Icon name="alert" size={16} color="secondaryContainer" />
+        <Icon name="alert" size={16} color="secondaryAccent" />
         <Txt variant="caption" color="onSurfaceVariant" style={styles.cautionText}>
           This service is not for emergencies. For urgent symptoms call 999 or go to your nearest facility.
         </Txt>
@@ -146,7 +150,7 @@ export default function ConsultScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.md, paddingBottom: spacing.giant },
   sectionHead: { marginTop: spacing.sm },
   card: { gap: spacing.md },

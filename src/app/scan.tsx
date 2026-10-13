@@ -11,7 +11,9 @@ import type { Product } from '@/data/types';
 import { tapFeedback } from '@/lib/haptics';
 import { discountPercent, formatKesDecimal } from '@/lib/format';
 import { useCart } from '@/store/cart';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /**
  * Screen: Barcode Scanner (FR-B.7). The camera reads the barcode and the
@@ -30,6 +32,8 @@ type Lookup =
   | { state: 'error'; code: string };
 
 export default function ScanRoute() {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const cart = useCart();
@@ -71,7 +75,7 @@ export default function ScanRoute() {
   const scanning = lookup.state === 'scanning';
 
   return (
-    <Screen padded={false} edgeToEdgeTop backgroundColor={colors.inverseSurface} contentStyle={styles.content}>
+    <Screen padded={false} edgeToEdgeTop backgroundToken="inverseSurface" contentStyle={styles.content}>
       {/* Light clock and battery icons over the dark scanner. */}
       <StatusBar style="light" />
 
@@ -160,7 +164,7 @@ export default function ScanRoute() {
                 {[lookup.product.pack, `Barcode ${lookup.code}`].filter(Boolean).join(' · ')}
               </Txt>
               <View style={styles.priceRow}>
-                <Txt variant="priceLg" color="primary">
+                <Txt variant="priceLg" color="primaryAccent">
                   {formatKesDecimal(lookup.product.price)}
                 </Txt>
                 {lookup.product.wasPrice ? (
@@ -168,7 +172,7 @@ export default function ScanRoute() {
                     <Txt variant="priceStrike" color="onSurfaceVariant" style={styles.strike}>
                       {formatKesDecimal(lookup.product.wasPrice)}
                     </Txt>
-                    <Txt variant="labelSm" tint={colors.secondaryContainer}>
+                    <Txt variant="labelSm" tint={colors.secondaryAccent}>
                       {`-${discountPercent(lookup.product.price, lookup.product.wasPrice)}%`}
                     </Txt>
                   </>
@@ -196,7 +200,7 @@ export default function ScanRoute() {
               />
             </View>
             <Pressable accessibilityRole="button" onPress={scanAgain} style={styles.manualLink}>
-              <Txt variant="label" color="primaryContainer">
+              <Txt variant="label" color="primaryAccent">
                 Scan another item
               </Txt>
             </Pressable>
@@ -253,7 +257,7 @@ export default function ScanRoute() {
               Scan packaged groceries to check the price and whether Xana Plus Syokimau and Ruiru have it in stock.
             </Txt>
             <Pressable accessibilityRole="button" onPress={() => setTyping(true)} style={styles.manualLink}>
-              <Txt variant="label" color="primaryContainer">
+              <Txt variant="label" color="primaryAccent">
                 Having trouble scanning? Enter code manually
               </Txt>
             </Pressable>
@@ -264,7 +268,7 @@ export default function ScanRoute() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { flex: 1 },
   header: {
     flexDirection: 'row',
@@ -279,10 +283,10 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    backgroundColor: colors.white15,
   },
   headerButtonOn: { backgroundColor: colors.primaryContainer },
-  headerPill: { paddingHorizontal: spacing.md, height: 30, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.15)' },
+  headerPill: { paddingHorizontal: spacing.md, height: 30, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.white15 },
 
   viewfinderWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.xxl },
   tipBadge: {
@@ -294,7 +298,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     height: 32,
     borderRadius: radius.pill,
-    backgroundColor: 'rgba(0,0,0,0.45)',
+    backgroundColor: colors.scrimStrong,
   },
   reticle: { width: 240, height: 240 },
   corner: { position: 'absolute', width: 32, height: 32, borderColor: colors.primaryFixed },

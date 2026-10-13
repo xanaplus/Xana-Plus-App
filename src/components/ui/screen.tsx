@@ -2,7 +2,9 @@ import type { ReactNode } from 'react';
 import { ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors, elevation, layout, spacing } from '@/theme';
+import { elevation, layout, spacing } from '@/theme';
+import { useTheme } from '@/theme/provider';
+import type { ColorToken } from '@/theme';
 
 export type ScreenProps = {
   children: ReactNode;
@@ -11,6 +13,7 @@ export type ScreenProps = {
   /** Applies the 20pt frame side margin. */
   padded?: boolean;
   backgroundColor?: string;
+  backgroundToken?: ColorToken;
   contentStyle?: StyleProp<ViewStyle>;
   /** Pinned action bar under the scroll area (cart and checkout CTAs). */
   footer?: ReactNode;
@@ -35,14 +38,18 @@ export function Screen({
   children,
   scroll = true,
   padded = true,
-  backgroundColor = colors.background,
+  backgroundColor,
+  backgroundToken,
   contentStyle,
   footer,
   edgeToEdgeTop = false,
-  topInsetColor = colors.surface,
+  topInsetColor,
   bottomSpace,
   testID,
 }: ScreenProps) {
+  const { colors } = useTheme();
+  const pageBackground = backgroundToken ? colors[backgroundToken] : backgroundColor ?? colors.background;
+  const insetBackground = topInsetColor ?? colors.surface;
   const insets = useSafeAreaInsets();
   const content = [
     {
@@ -55,8 +62,8 @@ export function Screen({
   ];
 
   return (
-    <View testID={testID} style={[styles.root, { backgroundColor }]}>
-      {edgeToEdgeTop ? null : <View style={{ height: insets.top, alignSelf: 'stretch', backgroundColor: topInsetColor }} />}
+    <View testID={testID} style={[styles.root, { backgroundColor: pageBackground }]}>
+      {edgeToEdgeTop ? null : <View style={{ height: insets.top, alignSelf: 'stretch', backgroundColor: insetBackground }} />}
       <View style={styles.column}>
         {scroll ? (
           <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={content}>
@@ -65,7 +72,7 @@ export function Screen({
         ) : (
           <View style={[styles.flex, content]}>{children}</View>
         )}
-        {footer ? <View style={[styles.footer, { paddingBottom: insets.bottom + spacing.md }]}>{footer}</View> : null}
+        {footer ? <View style={[styles.footer, { paddingBottom: insets.bottom + spacing.md, backgroundColor: colors.surface, borderTopColor: colors.surfaceContainerHigh }]}>{footer}</View> : null}
       </View>
     </View>
   );
@@ -78,9 +85,7 @@ const styles = StyleSheet.create({
   footer: {
     paddingHorizontal: layout.screenMargin,
     paddingTop: spacing.md,
-    backgroundColor: colors.surface,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.surfaceContainerHigh,
     ...elevation.stickyTop,
   },
 });

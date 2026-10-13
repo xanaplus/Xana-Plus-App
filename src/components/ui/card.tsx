@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { colors, elevation, radius, spacing } from '@/theme';
+import { elevation, radius, spacing } from '@/theme';
+import { useTheme } from '@/theme/provider';
 
 export type CardProps = {
   children: ReactNode;
@@ -13,15 +14,15 @@ export type CardProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-const surfaces = {
-  elevated: { backgroundColor: colors.surface, borderWidth: 0 },
-  flat: { backgroundColor: colors.surfaceContainerLow, borderWidth: 0 },
-  outline: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.outlineSoft30 },
-  tinted: { backgroundColor: colors.mintSurface, borderWidth: 0 },
-} as const;
-
 /** Generic content container: white surface, 18pt radius, soft shadow. */
 export function Card({ children, variant = 'elevated', padding = spacing.lg, radiusSize = radius.card, onPress, style }: CardProps) {
+  const { colors } = useTheme();
+  const surfaces = {
+    elevated: { backgroundColor: colors.surface, borderWidth: 0 },
+    flat: { backgroundColor: colors.surfaceContainerLow, borderWidth: 0 },
+    outline: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.outlineSoft30 },
+    tinted: { backgroundColor: colors.mintSurface, borderWidth: 0 },
+  };
   const s = surfaces[variant];
   const body = [styles.card, { borderRadius: radiusSize, padding }, s, variant === 'elevated' ? elevation.card : null, style];
 
@@ -34,8 +35,9 @@ export function Card({ children, variant = 'elevated', padding = spacing.lg, rad
   );
 }
 
-export function Divider({ inset = 0, color = colors.surfaceContainerHigh }: { inset?: number; color?: string }) {
-  return <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: color, marginHorizontal: inset }} />;
+export function Divider({ inset = 0, color }: { inset?: number; color?: string }) {
+  const { colors } = useTheme();
+  return <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: color ?? colors.surfaceContainerHigh, marginHorizontal: inset }} />;
 }
 
 const styles = StyleSheet.create({

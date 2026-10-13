@@ -29,7 +29,9 @@ import { formatKesDecimal } from '@/lib/format';
 import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
-import { colors, elevation, gradients, layout, radius, spacing } from '@/theme';
+import { colors, elevation, layout, radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 import { isPharmacyReviewer } from '@/features/prescriptions/api';
 
 /** Clinical filter chips above the product groups — `null` shows every group. */
@@ -135,6 +137,8 @@ const ACCOUNT_REQUIRED = ['prescriptions', 'ask'];
 
 /** Screen 8a — Pharmacy & Wellness. */
 export default function PharmacyRoute() {
+  const { colors, gradients } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const cart = useCart();
   const { store } = useFulfilment();
@@ -237,7 +241,7 @@ export default function PharmacyRoute() {
               style={({ pressed }) => [styles.quickAction, pressed ? styles.pressed : null]}
             >
               <View style={styles.quickGlyph}>
-                <Icon name={action.icon} size={22} color="primary" />
+                <Icon name={action.icon} size={22} color="primaryAccent" />
               </View>
               <Txt variant="label" align="center" numberOfLines={2}>
                 {action.label}
@@ -294,10 +298,10 @@ export default function PharmacyRoute() {
       <View style={[styles.inset, styles.bottomBand]}>
         <LinearGradient colors={gradients.promoHero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.promo}>
           <View style={styles.promoGlyph}>
-            <Icon name="sparkle" size={20} color="primary" />
+            <Icon name="sparkle" size={20} color="primaryAccent" />
           </View>
           <Txt variant="label" style={styles.promoBody}>
-            <Txt variant="label" tint={colors.primary}>
+            <Txt variant="label" tint={colors.primaryAccent}>
               Free Skin Analysis This Week · Get a
             </Txt>
             {' personalised skincare consultation, free with any purchase.'}
@@ -308,10 +312,10 @@ export default function PharmacyRoute() {
             onPress={() => runAction('skin-analysis')}
             style={({ pressed }) => [styles.promoLink, pressed ? styles.pressed : null]}
           >
-            <Txt variant="label" color="primary">
+            <Txt variant="label" color="primaryAccent">
               Learn More
             </Txt>
-            <Icon name="arrow-right" size={16} color="primary" />
+            <Icon name="arrow-right" size={16} color="primaryAccent" />
           </Pressable>
         </LinearGradient>
 
@@ -400,6 +404,7 @@ function PharmacyCard({
   onPress: () => void;
   onAdd: () => void;
 }) {
+  const styles = useThemeStyles(createStyles);
   const image = figmaAsset(product.image);
 
   return (
@@ -426,7 +431,7 @@ function PharmacyCard({
           <Txt variant="label" color="outline">
             Price
           </Txt>
-          <Txt variant="titleLg" tint={colors.primary}>
+          <Txt variant="titleLg" tint={colors.primaryAccent}>
             {formatKesDecimal(product.price)}
           </Txt>
         </View>
@@ -452,7 +457,7 @@ function PharmacyCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.xxxl },
   inset: { marginHorizontal: layout.screenMargin },
   pressed: { opacity: 0.94 },
