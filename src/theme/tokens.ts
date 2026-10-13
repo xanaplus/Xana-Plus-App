@@ -101,24 +101,24 @@ export type GradientPalette = {
   pharmacy: readonly [string, string];
 };
 
-/** Dark surfaces are ink-green rather than neutral black, preserving Xana's
- * green identity while keeping prices and pharmacy details comfortably legible. */
+/** Near-black and charcoal surfaces; green is reserved for brand actions
+ * and small accents rather than tinting the whole dark interface. */
 export const darkColors: Palette = {
   ...colors,
-  background: '#101914',
-  surface: '#17221b',
-  surfaceDim: '#101914',
-  surfaceContainerLowest: '#0c1510',
-  surfaceContainerLow: '#1b2920',
-  surfaceContainer: '#203027',
-  surfaceContainerHigh: '#27382d',
-  surfaceContainerHighest: '#304237',
-  inverseSurface: '#e1e9e2',
-  inverseOnSurface: '#243128',
-  onSurface: '#e4ece5',
-  onSurfaceVariant: '#b5c6b8',
-  outline: '#91a795',
-  outlineVariant: '#43584a',
+  background: '#0c0c0c',
+  surface: '#151515',
+  surfaceDim: '#0e0e0e',
+  surfaceContainerLowest: '#090909',
+  surfaceContainerLow: '#1b1b1b',
+  surfaceContainer: '#202020',
+  surfaceContainerHigh: '#282828',
+  surfaceContainerHighest: '#323232',
+  inverseSurface: '#e8e8e8',
+  inverseOnSurface: '#252525',
+  onSurface: '#f2f2f2',
+  onSurfaceVariant: '#bfbfbf',
+  outline: '#9a9a9a',
+  outlineVariant: '#414141',
   primary: '#17643a',
   primaryAccent: '#8add9e',
   onPrimary: '#ffffff',
@@ -146,24 +146,24 @@ export const darkColors: Palette = {
   onErrorContainer: '#ffdad6',
   success: '#6fdbad',
   successStrong: '#86e6ba',
-  successContainer: '#124c35',
+  successContainer: '#202020',
   onSuccessContainer: '#a8f2ce',
   warning: '#ffc36b',
   warningStrong: '#f2a847',
   warningDeep: '#ffd08a',
-  mintSurface: '#193d2a',
-  mintSubtle: '#183b29',
-  mintPale: '#1d422b',
-  mintEdge: '#356d4b',
-  warmSurface: '#30271f',
+  mintSurface: '#202020',
+  mintSubtle: '#1c1c1c',
+  mintPale: '#252525',
+  mintEdge: '#454545',
+  warmSurface: '#262626',
   scrim: 'rgba(0, 0, 0, 0.66)',
-  white95: 'rgba(22, 34, 26, 0.96)',
-  white70: 'rgba(228, 236, 229, 0.72)',
-  white15: 'rgba(228, 236, 229, 0.15)',
+  white95: 'rgba(21, 21, 21, 0.96)',
+  white70: 'rgba(242, 242, 242, 0.72)',
+  white15: 'rgba(242, 242, 242, 0.15)',
   black05: 'rgba(255, 255, 255, 0.06)',
   scrimStrong: 'rgba(0, 0, 0, 0.65)',
   amberTint15: 'rgba(255, 189, 120, 0.15)',
-  outlineSoft30: 'rgba(145, 167, 149, 0.32)',
+  outlineSoft30: 'rgba(154, 154, 154, 0.32)',
 };
 
 export type ColorToken = keyof typeof colors;
@@ -183,11 +183,11 @@ export const gradients = {
 } as const;
 
 export const darkGradients: GradientPalette = {
-  promoHero: ['#25362b', '#283a2d', '#3c3b2b'] as const,
+  promoHero: ['#171717', '#222222', '#2b2b2b'] as const,
   flash: gradients.flash,
-  club: ['#064126', '#17643a'] as const,
-  mpesa: ['#193d2a', '#124c35'] as const,
-  pharmacy: ['#17643a', '#205d3b'] as const,
+  club: ['#151515', '#232323'] as const,
+  mpesa: ['#191919', '#242424'] as const,
+  pharmacy: ['#151515', '#242424'] as const,
 };
 
 /** 4pt spacing scale, matching the frames' padding / gap values. */

@@ -3,6 +3,12 @@ name: Semantic appearance theming
 description: Why XanaPlus dark mode must use reactive semantic palettes rather than remapping rendered color values.
 ---
 
+Dark mode should feel close to black, not green. Reserve green for brand actions and small highlights.
+
+**Why:** The user said the app's dark mode was too green and asked to make it closer to black.
+
+**How to apply:** Keep the main surfaces, cards and large dark-mode gradients neutral near-black/charcoal. Do not reintroduce a green tint across the dark interface.
+
 Use reactive semantic palette hooks and palette-specific styles for the whole component tree. Do not theme the app by reverse-mapping literal colors or cloning the children of the screen shell.
 
 **Why:** XanaPlus light tokens share color values for different meanings, including white surfaces and text over green actions. A literal-color lookup cannot distinguish them. A screen-level child transformer also misses styles produced inside nested components, press-state callbacks, modals and footers.

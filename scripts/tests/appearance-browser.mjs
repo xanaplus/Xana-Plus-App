@@ -45,6 +45,10 @@ try {
     assert.equal(channels?.length, 3, `Unexpected color: ${color}`);
     return channels.reduce((sum, value) => sum + value, 0) / 3;
   };
+  const assertNeutral = color => {
+    const channels = color.match(/[\d.]+/g).slice(0, 3).map(Number);
+    assert.ok(Math.max(...channels) - Math.min(...channels) <= 4, `Dark surface is tinted instead of neutral: ${color}`);
+  };
   const waitSurface = async (title, dark) => {
     await page.waitForFunction(({ title, dark }) => {
       const elements = [...document.querySelectorAll('div')].filter(node =>
@@ -106,11 +110,13 @@ try {
   await choice('Dark').click();
   await button('Done').click();
   await waitSurface('Profile', true);
+  assertNeutral(await surface('Profile'));
   assert.ok(lightness(await surface('Profile')) < lightness(originalLight), 'Profile surface did not change');
   await page.reload();
   await button('Settings').waitFor();
   await waitSurface('Profile', true);
   await assertReadable('Profile');
+  await page.screenshot({ path: '/tmp/xanaplus-dark-profile.png', fullPage: true });
   await openSettings();
   await assertReadable('Appearance');
   await assertReadable('Dark');
