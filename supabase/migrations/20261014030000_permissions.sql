@@ -33,7 +33,9 @@ create table if not exists public.role_permissions (
 alter table public.permissions enable row level security;
 alter table public.role_permissions enable row level security;
 revoke all on public.permissions from anon, authenticated;
+grant all on public.permissions to service_role;
 revoke all on public.role_permissions from anon, authenticated;
+grant all on public.role_permissions to service_role;
 grant select on public.permissions to authenticated;
 grant select on public.role_permissions to authenticated;
 

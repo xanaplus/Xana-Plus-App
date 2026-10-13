@@ -29,6 +29,7 @@ create unique index if not exists memberships_one_active
 
 alter table public.memberships enable row level security;
 revoke all on public.memberships from anon, authenticated;
+grant all on public.memberships to service_role;
 grant select on public.memberships to authenticated;
 
 drop policy if exists "Customers read their own memberships" on public.memberships;

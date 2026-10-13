@@ -29,6 +29,7 @@ on conflict (key) do update
 
 alter table public.roles enable row level security;
 revoke all on public.roles from anon, authenticated;
+grant all on public.roles to service_role;
 grant select on public.roles to authenticated;
 
 drop policy if exists "Signed-in users read roles" on public.roles;
@@ -116,6 +117,8 @@ create index if not exists role_changes_user_idx on public.role_changes (user_id
 
 alter table public.role_changes enable row level security;
 revoke all on public.role_changes from anon, authenticated;
+grant all on public.role_changes to service_role;
+grant usage on sequence public.role_changes_id_seq to service_role;
 grant select on public.role_changes to authenticated;
 
 drop policy if exists "Admins read role changes" on public.role_changes;
