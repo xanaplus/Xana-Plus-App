@@ -10,7 +10,8 @@ import { Txt } from '@/components/ui/text';
 import { figmaAsset } from '@/data/images';
 import type { Product, ProductBadge } from '@/data/types';
 import { discountPercent, formatKes } from '@/lib/format';
-import { colors, elevation, radius, spacing } from '@/theme';
+import { elevation, radius, spacing } from '@/theme';
+import { useTheme } from '@/theme/provider';
 
 const badgeTone: Record<ProductBadge, BadgeTone> = {
   discount: 'discount',
@@ -46,13 +47,14 @@ export type ProductCardProps = {
  * `<button>`, so the add control must be a sibling, never a child.
  */
 export function ProductCard({ product, width, quantity = 0, onPress, onAdd, style }: ProductCardProps) {
+  const { colors } = useTheme();
   const image = figmaAsset(product.image);
   const topBadge = product.badges?.[0];
   const press = usePressScale();
 
   return (
     <Animated.View style={[styles.card, width ? { width } : styles.flex, style, press.style]}>
-      <View style={styles.imageWrap}>
+      <View style={[styles.imageWrap, { backgroundColor: colors.surfaceContainerLow }]}>
         <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="card" />
         {topBadge ? (
           <View style={styles.badges}>
@@ -63,7 +65,7 @@ export function ProductCard({ product, width, quantity = 0, onPress, onAdd, styl
           </View>
         ) : null}
         {product.inStock === false ? (
-          <View style={styles.outOfStock}>
+          <View style={[styles.outOfStock, { backgroundColor: colors.white70 }]}>
             <Txt variant="labelSm">Out of stock</Txt>
           </View>
         ) : null}
@@ -95,7 +97,7 @@ export function ProductCard({ product, width, quantity = 0, onPress, onAdd, styl
           ) : null}
         </View>
         {product.inStock === false ? null : quantity > 0 ? (
-          <View style={styles.qtyPill}>
+          <View style={[styles.qtyPill, { backgroundColor: colors.primary }]}>
             <Txt variant="label" tint={colors.onPrimary}>
               {quantity}
             </Txt>
@@ -106,7 +108,7 @@ export function ProductCard({ product, width, quantity = 0, onPress, onAdd, styl
             accessibilityLabel={`Add ${product.name} to cart`}
             onPress={onAdd}
             hitSlop={6}
-            style={styles.addButton}
+            style={[styles.addButton, { backgroundColor: colors.primary }]}
           >
             <Icon name="plus" size={18} color="onPrimary" />
           </Pressable>
@@ -131,16 +133,17 @@ export type ProductRowProps = {
 
 /** Horizontal row used by search results and the cart's "Buy Again" rail. */
 export function ProductRow({ product, eyebrow, description, quantity = 0, onPress, onAdd, trailing, style }: ProductRowProps) {
+  const { colors } = useTheme();
   const image = figmaAsset(product.image);
 
   return (
-    <View style={[styles.row, style]}>
-      <View style={styles.rowImageWrap}>
+    <View style={[styles.row, { backgroundColor: colors.surface }, style]}>
+      <View style={[styles.rowImageWrap, { backgroundColor: colors.surfaceContainerLow }]}>
         <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="row" />
       </View>
       <View style={styles.rowBody}>
         {eyebrow ? (
-          <Txt variant="overline" color="primaryContainer" numberOfLines={1}>
+          <Txt variant="overline" color="primaryAccent" numberOfLines={1}>
             {eyebrow}
           </Txt>
         ) : null}
@@ -165,7 +168,7 @@ export function ProductRow({ product, eyebrow, description, quantity = 0, onPres
       <View style={styles.trailing}>
         {trailing ??
           (quantity > 0 ? (
-            <View style={styles.qtyPill}>
+            <View style={[styles.qtyPill, { backgroundColor: colors.primary }]}>
               <Txt variant="label" tint={colors.onPrimary}>
                 {quantity}
               </Txt>
@@ -176,7 +179,7 @@ export function ProductRow({ product, eyebrow, description, quantity = 0, onPres
               accessibilityLabel={`Add ${product.name} to cart`}
               onPress={onAdd}
               hitSlop={6}
-              style={styles.addButton}
+              style={[styles.addButton, { backgroundColor: colors.primary }]}
             >
               <Icon name="plus" size={18} color="onPrimary" />
             </Pressable>
@@ -193,7 +196,6 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: radius.xl,
     overflow: 'hidden',
-    backgroundColor: colors.surfaceContainerLow,
     marginBottom: spacing.sm,
   },
   badges: { position: 'absolute', top: spacing.sm, left: spacing.sm, flexDirection: 'row', gap: spacing.xs },
@@ -203,7 +205,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: colors.white70,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -215,7 +216,6 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: radius.pill,
-    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
     ...elevation.hairline,
@@ -225,7 +225,6 @@ const styles = StyleSheet.create({
     height: 34,
     paddingHorizontal: spacing.sm,
     borderRadius: radius.pill,
-    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -235,10 +234,9 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.md,
     borderRadius: radius.card,
-    backgroundColor: colors.surface,
     ...elevation.hairline,
   },
-  rowImageWrap: { width: 64, height: 64, borderRadius: radius.lg, overflow: 'hidden', backgroundColor: colors.surfaceContainerLow },
+  rowImageWrap: { width: 64, height: 64, borderRadius: radius.lg, overflow: 'hidden' },
   rowBody: { flex: 1, gap: 2 },
   rowFooter: { flexDirection: 'row', alignItems: 'baseline', gap: spacing.sm, marginTop: spacing.xxs },
   /** Card-wide tap target; rendered before the trailing control so the two are siblings. */

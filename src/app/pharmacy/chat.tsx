@@ -7,7 +7,9 @@ import { productById } from '@/data/catalog';
 import { PHARMACIST } from '@/data/prescriptions';
 import { useRepeatScripts } from '@/features/account/sample-data';
 import { formatKes } from '@/lib/format';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /** Screen 08e — Pharmacy: Consultation Chat. */
 
@@ -22,6 +24,8 @@ type Message = {
 const QUICK_REPLIES = ['Take it with meals?', 'Check drug interactions', 'Request prescription refill'];
 
 export default function ConsultationChatScreen() {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const scripts = useRepeatScripts();
   const router = useRouter();
   const params = useLocalSearchParams<{ topic?: string; message?: string; shareMeds?: string }>();
@@ -120,7 +124,7 @@ export default function ConsultationChatScreen() {
         onBack={() => (router.canGoBack() ? router.back() : router.replace('/pharmacy/consult'))}
         actions={
           <Pressable accessibilityRole="button" accessibilityLabel="Start voice consultation" style={styles.callButton}>
-            <Icon name="phone" size={16} color="primaryContainer" />
+            <Icon name="phone" size={16} color="primaryAccent" />
           </Pressable>
         }
       />
@@ -138,7 +142,7 @@ export default function ConsultationChatScreen() {
 
         {sharedMeds && scripts.length > 0 ? (
           <Card variant="tinted" padding={spacing.md} style={styles.contextCard}>
-            <Txt variant="labelSm" color="primaryContainer">
+            <Txt variant="labelSm" color="primaryAccent">
               SHARED WITH PHARMACIST
             </Txt>
             <View style={styles.contextChips}>
@@ -196,7 +200,7 @@ export default function ConsultationChatScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { flex: 1, gap: spacing.sm },
   callButton: {
     width: 32,

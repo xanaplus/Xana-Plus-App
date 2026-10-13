@@ -1,7 +1,8 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import { colors, type ColorToken } from '@/theme';
+import { type ColorToken } from '@/theme';
+import { useTheme } from '@/theme/provider';
 
 /**
  * Semantic icon names. Screens reference meaning ("cart", "mpesa"), never a
@@ -103,6 +104,7 @@ export type IconProps = {
 };
 
 export function Icon({ name, size = 20, color = 'onSurface' }: IconProps) {
+  const { colors } = useTheme();
   const [set, glyph] = glyphs[name];
   const tint = color in colors ? colors[color as ColorToken] : color;
   if (set === 'ion') {

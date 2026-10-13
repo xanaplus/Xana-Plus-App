@@ -2,7 +2,8 @@ import { BlurView } from 'expo-blur';
 import type { ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { colors, elevation, layout, radius, spacing } from '@/theme';
+import { elevation, layout, radius, spacing } from '@/theme';
+import { useTheme } from '@/theme/provider';
 
 import { Icon, type IconName } from './icon';
 import { Txt } from './text';
@@ -23,6 +24,7 @@ export type TopBarProps = {
 
 /** Fixed app bar: 64pt tall with a hairline under translucent variants. */
 export function TopBar({ title, subtitle, onBack, actions, translucent, centered, style }: TopBarProps) {
+  const { colors, resolved } = useTheme();
   // The status-bar gap belongs to <Screen>, which keeps it fixed while the page scrolls.
   const body = (
     <View style={[styles.bar, centered ? styles.barCentered : null]}>
@@ -55,7 +57,7 @@ export function TopBar({ title, subtitle, onBack, actions, translucent, centered
   if (!translucent) return <View style={[{ backgroundColor: colors.surface }, style]}>{body}</View>;
 
   return (
-    <BlurView intensity={Platform.OS === 'web' ? 0 : 24} tint="light" style={[styles.translucent, elevation.stickyTop, style]}>
+    <BlurView intensity={Platform.OS === 'web' ? 0 : 24} tint={resolved === 'dark' ? 'dark' : 'light'} style={[styles.translucent, { backgroundColor: colors.surface }, elevation.stickyTop, style]}>
       {body}
     </BlurView>
   );

@@ -29,7 +29,9 @@ import type { Deal, User } from '@/data/types';
 import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
-import { colors, elevation, gradients, layout, radius, spacing } from '@/theme';
+import { elevation, layout, radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /** Flash-drop countdown the hero opens on — 04:22:15 in the frame. */
 const FLASH_DROP_SECONDS = 4 * 3600 + 22 * 60 + 15;
@@ -56,12 +58,12 @@ const DEAL_ROUTES: Record<Deal['tone'], '/(tabs)/categories' | '/(tabs)/pharmacy
 };
 
 /** Tint per deal family, so the rail reads as three different aisles. */
-const DEAL_SURFACE: Record<Deal['tone'], string> = {
-  promo: colors.surface,
-  harvest: colors.mintPale,
-  wellness: colors.mintSurface,
-  breakfast: colors.surfaceContainerLow,
-};
+const dealSurface = (tone: Deal['tone'], palette: Palette) => ({
+  promo: palette.surface,
+  harvest: palette.mintPale,
+  wellness: palette.mintSurface,
+  breakfast: palette.surfaceContainerLow,
+})[tone];
 
 type Alert = { id: string; icon: IconName; title: string; body: string; time: string };
 
@@ -127,6 +129,8 @@ function clubStanding(points: number, tierName: User['clubTier']): { progress: n
  * micro-banner. The app bar is fixed above the scroll body.
  */
 export default function HomeRoute() {
+  const { colors, gradients } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const cart = useCart();
   const { user } = useSession();
@@ -165,7 +169,7 @@ export default function HomeRoute() {
               hitSlop={6}
               style={styles.locationPill}
             >
-              <Icon name="map-pin" size={14} color="primaryContainer" />
+              <Icon name="map-pin" size={14} color="primaryAccent" />
               <Txt variant="label" numberOfLines={1}>
                 {storeShortName}
               </Txt>
@@ -236,8 +240,8 @@ export default function HomeRoute() {
               {heroDeal.eyebrow ? <Badge label={heroDeal.eyebrow} tone="discount" /> : null}
               {heroDeal.tag ? <Chip label={heroDeal.tag} tone="outline" icon="flame" /> : null}
               <View style={styles.countdown}>
-                <Icon name="clock" size={12} color="secondary" />
-                <Txt variant="label" color="secondary">
+                <Icon name="clock" size={12} color="secondaryAccent" />
+                <Txt variant="label" color="secondaryAccent">
                   {formatCountdown(secondsLeft)}
                 </Txt>
               </View>
@@ -268,10 +272,10 @@ export default function HomeRoute() {
                 hitSlop={8}
                 style={styles.heroCta}
               >
-                <Txt variant="titleSm" color="primary">
+                <Txt variant="titleSm" color="primaryAccent">
                   {heroDeal.cta}
                 </Txt>
-                <Icon name="arrow-right" size={14} color="primary" />
+                <Icon name="arrow-right" size={14} color="primaryAccent" />
               </Pressable>
             </View>
           </LinearGradient>
@@ -424,7 +428,7 @@ export default function HomeRoute() {
             style={styles.mpesaBanner}
           >
             <View style={styles.mpesaGlyph}>
-              <Icon name="mpesa" size={20} color="primaryContainer" />
+              <Icon name="mpesa" size={20} color="primaryAccent" />
             </View>
             <View style={styles.mpesaCopy}>
               <Txt variant="title">1-Tap M-Pesa Checkout</Txt>
@@ -480,7 +484,7 @@ export default function HomeRoute() {
         {ALERTS.map(alert => (
           <View key={alert.id} style={styles.alertRow}>
             <View style={styles.alertIcon}>
-              <Icon name={alert.icon} size={18} color="primary" />
+              <Icon name={alert.icon} size={18} color="primaryAccent" />
             </View>
             <View style={styles.alertBody}>
               <Txt variant="title">{alert.title}</Txt>
@@ -500,7 +504,10 @@ export default function HomeRoute() {
 
 /** One Trending Deals card: offer badge, copy on the left, artwork on the right. */
 function DealCard({ deal, onPress }: { deal: Deal; onPress: () => void }) {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const art = figmaAsset(deal.image);
+  const surface = dealSurface(deal.tone, colors);
   const badge = deal.eyebrow
     ? { label: deal.eyebrow, tone: 'discount' as const }
     : deal.tag
@@ -512,12 +519,12 @@ function DealCard({ deal, onPress }: { deal: Deal; onPress: () => void }) {
       accessibilityRole="button"
       accessibilityLabel={deal.title}
       onPress={onPress}
-      style={[styles.deal, { backgroundColor: DEAL_SURFACE[deal.tone] }]}
+      style={[styles.deal, { backgroundColor: surface }]}
     >
       <View style={styles.dealArt}>
         {art ? <Image source={art} style={styles.heroImage} contentFit="cover" transition={120} /> : null}
         <LinearGradient
-          colors={[DEAL_SURFACE[deal.tone], colors.transparent]}
+          colors={[surface, colors.transparent]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.dealFade}
@@ -534,17 +541,17 @@ function DealCard({ deal, onPress }: { deal: Deal; onPress: () => void }) {
           </Txt>
         </View>
         <View style={styles.dealCta}>
-          <Txt variant="label" color="primary" numberOfLines={1}>
+          <Txt variant="label" color="primaryAccent" numberOfLines={1}>
             {deal.cta}
           </Txt>
-          <Icon name="arrow-right" size={14} color="primary" />
+          <Icon name="arrow-right" size={14} color="primaryAccent" />
         </View>
       </View>
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   screenBody: { paddingTop: spacing.none, paddingBottom: spacing.none },
   scroll: { flex: 1 },
   page: { paddingBottom: spacing.colossal },

@@ -30,6 +30,8 @@ import { useFulfilment } from '@/store/fulfilment';
 import { useOrders } from '@/store/orders';
 import { useSession } from '@/store/session';
 import { colors, radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /** "Buy Again" rail — recent-order items from Screen 5. */
 const BUY_AGAIN_IDS = ['sukuma-wiki', 'vitamin-c-1000mg', 'acacia-honey-500g'];
@@ -42,6 +44,8 @@ const SUBSTITUTION_COPY: Record<SubstitutionPreference, { title: string; descrip
 
 /** Screen 5 — Cart (Default State) and Screen 5a — Substitution Preference Sheet. */
 export default function CartRoute() {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const cart = useCart();
   const { slot, store } = useFulfilment();
@@ -96,7 +100,7 @@ export default function CartRoute() {
         </View>
         <View style={styles.expressChip}>
           <View style={styles.expressDot} />
-          <Txt variant="labelSm" color="primary">
+          <Txt variant="labelSm" color="primaryAccent">
             Nairobi Express
           </Txt>
         </View>
@@ -122,7 +126,7 @@ export default function CartRoute() {
         <Card variant="elevated" padding={spacing.lg} style={styles.inset}>
           <View style={styles.slotRow}>
             <View style={styles.slotIcon}>
-              <Icon name="delivery" size={20} color="primary" />
+              <Icon name="delivery" size={20} color="primaryAccent" />
             </View>
             <View style={styles.slotBody}>
               <Txt variant="title">{slot.window}</Txt>
@@ -155,15 +159,15 @@ export default function CartRoute() {
 
         {cart.summary.wholesaleSavings > 0 ? (
           <View style={[styles.inset, styles.savingsNote]}>
-            <Icon name="check-circle" size={16} color="primary" />
-            <Txt variant="labelSm" color="primary">
+            <Icon name="check-circle" size={16} color="primaryAccent" />
+            <Txt variant="labelSm" color="primaryAccent">
               Wholesale pricing applied. You’re saving {formatKes(cart.summary.wholesaleSavings)}
             </Txt>
           </View>
         ) : null}
 
         <Pressable accessibilityRole="button" onPress={() => setSheetOpen(true)} style={[styles.inset, styles.substitutionRow]}>
-          <Icon name="refresh" size={20} color="primaryContainer" />
+          <Icon name="refresh" size={20} color="primaryAccent" />
           <View style={styles.substitutionBody}>
             <Txt variant="title">If an item is unavailable</Txt>
             <Txt variant="caption" color="onSurfaceVariant">
@@ -262,6 +266,7 @@ function CartLineRow({
   onRemove: () => void;
   onPress: () => void;
 }) {
+  const styles = useThemeStyles(createStyles);
   const image = figmaAsset(product.image);
   const wholesale = price < product.price;
 
@@ -311,19 +316,20 @@ function CartLineRow({
 }
 
 function SummaryRow({ label, value, tone = 'default' }: { label: string; value: string; tone?: 'default' | 'primary' }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.summaryRow}>
       <Txt variant="bodySm" color="onSurfaceVariant" numberOfLines={2} style={styles.summaryLabel}>
         {label}
       </Txt>
-      <Txt variant="label" tint={tone === 'primary' ? colors.primary : colors.onSurface}>
+      <Txt variant="label" tint={tone === 'primary' ? colors.primaryAccent : colors.onSurface}>
         {value}
       </Txt>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.lg },
   inset: { marginHorizontal: 20 },
   avatar: { width: 32, height: 32, borderRadius: radius.pill, backgroundColor: colors.primaryContainer, alignItems: 'center', justifyContent: 'center' },

@@ -5,7 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon, type IconName } from '@/components/ui/icon';
 import { Txt } from '@/components/ui/text';
 import { useCart } from '@/store/cart';
-import { colors, elevation, layout, radius, spacing } from '@/theme';
+import { elevation, layout, radius, spacing } from '@/theme';
+import { useTheme } from '@/theme/provider';
 
 type TabMeta = { label: string; icon: IconName; /** Raised centre action. */ fab?: boolean };
 
@@ -20,11 +21,12 @@ const TAB_META: Record<string, TabMeta> = {
 
 /** Fixed bottom navigation with the raised green Pharmacy action. */
 export function TabBar({ state, navigation }: BottomTabBarProps) {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { itemCount } = useCart();
 
   return (
-    <View style={[styles.bar, { paddingBottom: insets.bottom, height: layout.tabBarHeight + insets.bottom }]}>
+    <View style={[styles.bar, { backgroundColor: colors.surface, borderTopColor: colors.surfaceContainerHigh, paddingBottom: insets.bottom, height: layout.tabBarHeight + insets.bottom }]}>
       {state.routes.map((route, index) => {
         const meta = TAB_META[route.name];
         if (!meta) return null;
@@ -46,10 +48,10 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
               onPress={onPress}
               style={styles.item}
             >
-              <View style={styles.fab}>
+                <View style={[styles.fab, { backgroundColor: colors.primaryContainer }]}>
                 <Icon name={meta.icon} size={22} color="onPrimary" />
               </View>
-              <Txt variant="tab" tint={focused ? colors.primaryContainer : colors.onSurface}>
+              <Txt variant="tab" tint={focused ? colors.primaryAccent : colors.onSurface}>
                 {meta.label}
               </Txt>
             </Pressable>
@@ -66,16 +68,16 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
             style={styles.item}
           >
             <View>
-              <Icon name={meta.icon} size={20} color={focused ? 'primaryContainer' : 'onSurfaceVariant'} />
+              <Icon name={meta.icon} size={20} color={focused ? 'primaryAccent' : 'onSurfaceVariant'} />
               {badge > 0 ? (
-                <View style={styles.badge}>
+                  <View style={[styles.badge, { backgroundColor: colors.secondaryContainer }]}>
                   <Txt variant="micro" tint={colors.onSecondary}>
                     {badge}
                   </Txt>
                 </View>
               ) : null}
             </View>
-            <Txt variant="tab" tint={focused ? colors.primaryContainer : colors.onSurface}>
+            <Txt variant="tab" tint={focused ? colors.primaryAccent : colors.onSurface}>
               {meta.label}
             </Txt>
           </Pressable>
@@ -89,9 +91,7 @@ const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.surfaceContainerHigh,
     paddingHorizontal: spacing.sm,
   },
   item: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.xxs, paddingTop: spacing.sm },
@@ -99,7 +99,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: radius.pill,
-    backgroundColor: colors.primaryContainer,
     alignItems: 'center',
     justifyContent: 'center',
     // Lifts the 44pt button so it takes the same 20pt as the other icons and all labels share one baseline.
@@ -114,7 +113,6 @@ const styles = StyleSheet.create({
     height: 16,
     paddingHorizontal: 3,
     borderRadius: radius.pill,
-    backgroundColor: colors.secondaryContainer,
     alignItems: 'center',
     justifyContent: 'center',
   },

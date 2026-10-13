@@ -9,7 +9,9 @@ import { AuthSheet } from '@/features/auth/auth-sheet';
 import { successFeedback } from '@/lib/haptics';
 import { supabase } from '@/lib/supabase';
 import { useSession } from '@/store/session';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 const TIME_SLOTS = ['09:30 AM', '10:15 AM', '11:00 AM', '02:30 PM', '04:00 PM', '05:15 PM'];
 
@@ -31,6 +33,8 @@ const upcomingDays = () => {
 
 /** Screen 2: Clinical Service Booking Detail (FR-F.10). */
 export default function ClinicalBookingRoute() {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const { serviceId } = useLocalSearchParams<{ serviceId: string }>();
   const service = clinicalServiceById(String(serviceId));
@@ -97,7 +101,7 @@ export default function ClinicalBookingRoute() {
         <TopBar title="Booking requested" onBack={goBack} />
         <Card variant="elevated" padding={spacing.lg} style={styles.confirmCard}>
           <View style={styles.confirmIcon}>
-            <Icon name="check-circle" size={28} color="primaryContainer" />
+            <Icon name="check-circle" size={28} color="primaryAccent" />
           </View>
           <Txt variant="titleLg">{service.name}</Txt>
           <Txt variant="bodySm" color="onSurfaceVariant">
@@ -149,7 +153,7 @@ export default function ClinicalBookingRoute() {
         <View style={styles.heroTop}>
           <Txt variant="caption" color="onSurfaceVariant">{`Preventive Care · ${service.durationMinutes} mins`}</Txt>
           <View style={styles.heroPrice}>
-            <Txt variant="titleLg" color="primary">{`KES ${service.price.toLocaleString('en-KE')}`}</Txt>
+            <Txt variant="titleLg" color="primaryAccent">{`KES ${service.price.toLocaleString('en-KE')}`}</Txt>
             <Txt variant="caption" color="onSurfaceVariant">Self-pay or M-Pesa</Txt>
           </View>
         </View>
@@ -232,7 +236,7 @@ export default function ClinicalBookingRoute() {
         <Divider />
         <View style={styles.totalRow}>
           <Txt variant="titleLg">Total Due</Txt>
-          <Txt variant="titleLg" color="primary">{`KES ${service.price.toLocaleString('en-KE')}`}</Txt>
+          <Txt variant="titleLg" color="primaryAccent">{`KES ${service.price.toLocaleString('en-KE')}`}</Txt>
         </View>
       </Card>
       <AuthSheet visible={signInOpen} onClose={() => setSignInOpen(false)} onSuccess={() => setSignInOpen(false)} />
@@ -241,6 +245,7 @@ export default function ClinicalBookingRoute() {
 }
 
 function SummaryLine({ label, value }: { label: string; value: string }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.summaryRow}>
       <Txt variant="bodySm" color="onSurfaceVariant" style={styles.flex} numberOfLines={2}>{label}</Txt>
@@ -249,7 +254,7 @@ function SummaryLine({ label, value }: { label: string; value: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.md, paddingBottom: spacing.giant },
   card: { gap: spacing.sm },
   flex: { flex: 1 },

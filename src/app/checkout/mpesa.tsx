@@ -9,7 +9,9 @@ import { placeOrderErrorMessage, useOrders } from '@/store/orders';
 import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
-import { colors, gradients, layout, radius, spacing } from '@/theme';
+import { layout, radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /** Seconds an M-Pesa STK prompt stays live before it has to be re-sent. */
 const STK_WINDOW_SECONDS = 60;
@@ -28,6 +30,8 @@ const maskPhone = (phone: string): string => {
  * shopper confirms, resends it or walks back to pick another payment method.
  */
 export default function MpesaPendingRoute() {
+  const { colors, gradients } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const cart = useCart();
   const fulfilment = useFulfilment();
@@ -138,13 +142,13 @@ export default function MpesaPendingRoute() {
       <LinearGradient colors={gradients.mpesa} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.panel}>
         <View style={styles.brandPill}>
           <View style={styles.brandDot} />
-          <Txt variant="labelSm" color="primary">
+          <Txt variant="labelSm" color="primaryAccent">
             Xana Pay via M-Pesa
           </Txt>
         </View>
 
         <View style={styles.glyph}>
-          <Icon name="mpesa" size={34} color="primaryContainer" />
+          <Icon name="mpesa" size={34} color="primaryAccent" />
         </View>
 
         <View style={styles.heading}>
@@ -164,7 +168,7 @@ export default function MpesaPendingRoute() {
         </View>
 
         <View style={styles.statusCard}>
-          <Icon name="clock" size={18} color="primaryContainer" />
+          <Icon name="clock" size={18} color="primaryAccent" />
           <View style={styles.flex}>
             <Txt variant="bodySm" color="onSurfaceVariant">
               {expired ? 'Prompt expired. Resend to try again.' : 'Waiting for confirmation...'}
@@ -172,7 +176,7 @@ export default function MpesaPendingRoute() {
             <ProgressBar value={secondsLeft / STK_WINDOW_SECONDS} style={styles.progress} />
           </View>
           <View style={styles.statusRight}>
-            <Txt variant="labelSm" color="primary" align="right">
+            <Txt variant="labelSm" color="primaryAccent" align="right">
               Xana Pay via M-Pesa
             </Txt>
             <Txt variant="caption" color="onSurfaceVariant" align="right">
@@ -189,7 +193,7 @@ export default function MpesaPendingRoute() {
             {steps.map((step, index) => (
               <View key={step} style={styles.step}>
                 <View style={styles.stepIndex}>
-                  <Txt variant="micro" color="primary">
+                  <Txt variant="micro" color="primaryAccent">
                     {index + 1}
                   </Txt>
                 </View>
@@ -215,7 +219,7 @@ export default function MpesaPendingRoute() {
                 setSecondsLeft(STK_WINDOW_SECONDS);
               }}
             >
-              <Txt variant="label" color="primary">
+              <Txt variant="label" color="primaryAccent">
                 Resend
               </Txt>
             </Pressable>
@@ -231,7 +235,7 @@ export default function MpesaPendingRoute() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.lg },
   flex: { flex: 1 },
   panel: {

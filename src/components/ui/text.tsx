@@ -1,6 +1,7 @@
 import { Text, type TextProps, type TextStyle } from 'react-native';
 
-import { colors, type as typeScale, type ColorToken, type TypeToken } from '@/theme';
+import { type as typeScale, type ColorToken, type TypeToken } from '@/theme';
+import { useTheme } from '@/theme/provider';
 
 export type TxtProps = TextProps & {
   /** Type ramp role. */
@@ -18,6 +19,7 @@ export type TxtProps = TextProps & {
  * palette stay in one place.
  */
 export function Txt({ variant = 'body', color = 'onSurface', tint, align, transform, style, ...rest }: TxtProps) {
+  const { colors } = useTheme();
   return (
     <Text
       {...rest}

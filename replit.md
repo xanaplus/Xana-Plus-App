@@ -52,3 +52,28 @@ Sign-in, the live catalogue, saved orders, and account data depend on that proje
 - Product and basket pricing share the checkout quantity-price resolver. Checkout rejects a supplied stale unit price and refreshes catalogue data for review before retry.
 - Prescription orders continue to use the pharmacist's fixed quote; this work does not change clinical quote pricing, SMS or simulated payments.
 - `node scripts/tests/wholesale-browser.mjs` checks real catalogue/PDP/basket interactions as a guest and never invokes login, SMS or order creation.
+
+## Customer catalogue visibility
+
+- The owner approved hiding the 60 item numbers in `docs/hide-from-website.csv` from both the website and app through their shared catalogue.
+- `products.show_on_website` is app-owned and defaults to true. Neither BC sync may write/reset it.
+- The public `catalogue` must retain its visibility filter, existing safe columns, wholesale tiers and regulatory rules in future view migrations.
+- The view is read-only for public clients. Keep the visibility flag and costs/margins private.
+- The scoped visibility migration was explicitly applied to the existing shared Supabase backend. No frontend publishing is required for this database change.
+- `node scripts/tests/catalogue-visibility.mjs` verifies exclusions/public permissions and runs only rollback-only database fixtures; it must never commit test changes.
+
+## Recorded savings
+
+- Profile Savings and Spending use recorded wholesale and promo discounts on non-cancelled orders, not the current basket or guessed delivery charges.
+- General checkout records the exact wholesale discount in `orders.wholesale_savings` and returns it for immediate display. History retains the saved value and line-price snapshots after reload.
+- Older wholesale savings were not stored. Their new column remains null; do not fabricate a backfill using current BC prices or tiers.
+- Spending opens at All time to agree with the profile counter; period filters remain available.
+- The scoped order-savings migration and updated checkout function were explicitly applied/deployed. Prescription quotes, SMS, payments and existing order totals were not changed.
+
+## Appearance
+
+- Profile → Settings places Appearance above Fulfilment store. Options are Light, Dark and Use device setting; a new device defaults to its system preference.
+- Appearance is a device preference, available to guests and retained through sign-out. It is deliberately separate from synced account preferences.
+- Use the resolved semantic palette and memoized theme styles for screens and nested components. Keep store selection, product imagery and business logic independent of appearance.
+- `node scripts/tests/appearance-browser.mjs` checks guest-only theme changes, persistence, live device changes, contrast and store switching without login, SMS, orders or payments.
+- Native interface style is automatic. Changes to native app configuration require a new native build; web preview does not verify Android/iOS builds.

@@ -27,11 +27,14 @@ import { ORDER_HISTORY, type OrderRecord } from '@/data/orders';
 import type { FulfilmentMode, PaymentMethodId, Product } from '@/data/types';
 import { NameSheet } from '@/features/account/name-sheet';
 import { formatCartCounts, formatKes } from '@/lib/format';
+import { recordedSavings } from '@/lib/order-savings';
 import { unitPrice, useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
 import { useOrders } from '@/store/orders';
 import { useSession } from '@/store/session';
-import { colors, elevation, gradients, layout, radius, spacing } from '@/theme';
+import { elevation, layout, radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles, type AppearanceChoice } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /** Xana Club tier ladder — the thresholds the rewards card measures against. */
 const CLUB_TIERS = [
@@ -240,6 +243,8 @@ function resolveOrder(order: OrderRecord): { items: { product: Product; quantity
  * treatment, Home's Xana Club gradient, and the shared card / list kit.
  */
 export default function ProfileRoute() {
+  const { appearance, setAppearance, appearanceSaving, appearanceError, retryAppearance, colors, gradients } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const cart = useCart();
   const { orders } = useOrders();
@@ -430,7 +435,7 @@ export default function ProfileRoute() {
                 <Txt variant="headlineSm" numberOfLines={1} style={styles.nameText}>
                   {user.name}
                 </Txt>
-                <Icon name="edit" size={16} color="primary" />
+                <Icon name="edit" size={16} color="primaryAccent" />
               </Pressable>
               <Txt variant="bodySm" color="onSurfaceVariant">
                 {user.phone}
@@ -521,7 +526,7 @@ export default function ProfileRoute() {
           <View style={styles.statsRow}>
             <Stat value={String(orders.length)} label="Orders" onPress={() => router.push('/orders')} />
             <View style={styles.statDivider} />
-            <Stat value={formatKes(cart.summary.wholesaleSavings)} label="Savings" onPress={() => router.push('/spending')} />
+            <Stat value={formatKes(recordedSavings(orders).totalSaved)} label="Savings" onPress={() => router.push('/spending')} />
             <View style={styles.statDivider} />
             <Stat value={String(isDemo ? REPEAT_SCRIPTS.length : 0)} label="Prescriptions" onPress={() => router.push('/pharmacy/prescriptions')} />
           </View>
@@ -531,7 +536,7 @@ export default function ProfileRoute() {
       <Card variant="elevated" padding={spacing.lg} style={styles.inset}>
         <View style={styles.fulfilmentHead}>
           <View style={styles.fulfilmentIcon}>
-            <Icon name={mode === 'delivery' ? 'delivery' : 'pickup'} size={20} color="primary" />
+            <Icon name={mode === 'delivery' ? 'delivery' : 'pickup'} size={20} color="primaryAccent" />
           </View>
           <View style={styles.fulfilmentText}>
             <Txt variant="title">Delivery or pickup</Txt>
@@ -542,7 +547,7 @@ export default function ProfileRoute() {
         </View>
         <Segmented options={MODE_OPTIONS} value={mode} onChange={setMode} />
         <Pressable accessibilityRole="button" accessibilityLabel="Change fulfilment store" onPress={() => setSheet('settings')} style={styles.storeRow}>
-          <Icon name="store" size={18} color="primaryContainer" />
+          <Icon name="store" size={18} color="primaryAccent" />
           <View style={styles.storeText}>
             <Txt variant="label" numberOfLines={1}>
               {store.name}
@@ -551,7 +556,7 @@ export default function ProfileRoute() {
               {store.address} · {store.phone}
             </Txt>
           </View>
-          <Txt variant="labelSm" color="primary">
+          <Txt variant="labelSm" color="primaryAccent">
             Change
           </Txt>
         </Pressable>
@@ -787,7 +792,7 @@ export default function ProfileRoute() {
             <Card variant="tinted" padding={spacing.lg} style={styles.cardStack}>
               <View style={styles.clubHead}>
                 <View style={styles.clubHeadText}>
-                  <Txt variant="overline" color="primary">
+                  <Txt variant="overline" color="primaryAccent">
                     Points balance
                   </Txt>
                   <Txt variant="display">{user.clubPoints.toLocaleString('en-KE')}</Txt>
@@ -806,7 +811,7 @@ export default function ProfileRoute() {
                   {index > 0 ? <Divider inset={spacing.lg} /> : null}
                   <View style={styles.tierRow}>
                     <View style={styles.rowIcon}>
-                      <Icon name="star" size={20} color={entry.tier === user.clubTier ? 'tertiaryContainer' : 'primaryContainer'} />
+                      <Icon name="star" size={20} color={entry.tier === user.clubTier ? 'tertiaryAccent' : 'primaryAccent'} />
                     </View>
                     <View style={styles.rowBody}>
                       <Txt variant="title">{entry.tier} tier</Txt>
@@ -826,7 +831,7 @@ export default function ProfileRoute() {
                   {index > 0 ? <Divider inset={spacing.lg} /> : null}
                   <View style={styles.tierRow}>
                     <View style={styles.rowIcon}>
-                      <Icon name={rule.icon} size={20} color="primaryContainer" />
+                      <Icon name={rule.icon} size={20} color="primaryAccent" />
                     </View>
                     <View style={styles.rowBody}>
                       <Txt variant="title">{rule.title}</Txt>
@@ -1013,10 +1018,40 @@ export default function ProfileRoute() {
         visible={sheet === 'settings'}
         onClose={closeSheet}
         title="Settings"
-        description="Choose the store that picks and packs your orders."
+        description="Set how Xana Plus looks and where your orders are fulfilled."
         footer={<Button label="Done" onPress={closeSheet} />}
         scrollable
       >
+        <SectionHeader title="Appearance" />
+        <Txt variant="caption" color="onSurfaceVariant">
+          Choose a look for this device. Your choice stays saved on this device, including when signed out.
+        </Txt>
+        {appearanceSaving || appearanceError ? (
+          <View accessibilityRole="summary" style={[styles.syncNotice, appearanceError ? styles.syncNoticeError : styles.syncNoticePending]}>
+            <Icon name="info" size={18} color={appearanceError ? 'error' : 'primaryAccent'} />
+            <View style={styles.syncNoticeBody}>
+              <Txt variant="caption" color={appearanceError ? 'error' : 'onSurfaceVariant'}>
+                {appearanceError ?? 'Saving appearance…'}
+              </Txt>
+              {appearanceError ? <Button label="Retry" size="sm" variant="outline" fullWidth={false} onPress={() => void retryAppearance()} /> : null}
+            </View>
+          </View>
+        ) : null}
+        {([
+          { value: 'light', title: 'Light', description: 'Always use the light appearance', icon: 'sparkle' },
+          { value: 'dark', title: 'Dark', description: 'Always use the dark appearance', icon: 'eye' },
+          { value: 'system', title: 'Use device setting', description: 'Follow your device appearance, including changes', icon: 'settings' },
+        ] as { value: AppearanceChoice; title: string; description: string; icon: IconName }[]).map(option => (
+          <SelectableOption
+            key={option.value}
+            title={option.title}
+            description={option.description}
+            icon={option.icon}
+            selected={appearance === option.value}
+            onPress={() => void setAppearance(option.value)}
+          />
+        ))}
+        <SectionHeader title="Fulfilment store" style={styles.cardStack} />
         {stores.map(entry => (
           <SelectableOption
             key={entry.id}
@@ -1044,6 +1079,7 @@ function PreferencesSyncFeedback({
   onRetry: () => void;
   style?: StyleProp<ViewStyle>;
 }) {
+  const styles = useThemeStyles(createStyles);
   if (!saving && !error) return null;
 
   return (
@@ -1051,7 +1087,7 @@ function PreferencesSyncFeedback({
       accessibilityRole="summary"
       style={[styles.syncNotice, error ? styles.syncNoticeError : styles.syncNoticePending, style]}
     >
-      <Icon name="info" size={18} color={error ? 'error' : 'primaryContainer'} />
+      <Icon name="info" size={18} color={error ? 'error' : 'primaryAccent'} />
       <View style={styles.syncNoticeBody}>
         <Txt variant="caption" color={error ? 'error' : 'onSurfaceVariant'}>
           {error ?? 'Saving your settings…'}
@@ -1078,6 +1114,7 @@ function SettingsRow({
   value?: string;
   onPress: () => void;
 }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <Pressable
       accessibilityRole="button"
@@ -1086,7 +1123,7 @@ function SettingsRow({
       style={({ pressed }) => [styles.row, pressed ? styles.rowPressed : null]}
     >
       <View style={styles.rowIcon}>
-        <Icon name={icon} size={20} color="primaryContainer" />
+        <Icon name={icon} size={20} color="primaryAccent" />
       </View>
       <View style={styles.rowBody}>
         <Txt variant="title" numberOfLines={1}>
@@ -1108,6 +1145,7 @@ function SettingsRow({
 
 /** Divider-separated rows inside one card — every list on this screen uses it. */
 function RowGroup({ rows, flat }: { rows: RowSpec[]; flat?: boolean }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <Card variant={flat ? 'flat' : 'elevated'} padding={spacing.none} style={flat ? undefined : styles.inset}>
       {rows.map((row, index) => (
@@ -1134,10 +1172,12 @@ function ToggleRow({
   value: boolean;
   onValueChange: (next: boolean) => void;
 }) {
+  const styles = useThemeStyles(createStyles);
+  const { colors: palette } = useTheme();
   return (
     <View style={styles.toggleRow}>
       <View style={styles.rowIcon}>
-        <Icon name={icon} size={20} color="primaryContainer" />
+        <Icon name={icon} size={20} color="primaryAccent" />
       </View>
       <View style={styles.rowBody}>
         <Txt variant="title">{title}</Txt>
@@ -1149,9 +1189,9 @@ function ToggleRow({
         value={value}
         onValueChange={onValueChange}
         accessibilityLabel={title}
-        trackColor={{ false: colors.surfaceContainerHighest, true: colors.primaryContainer }}
-        thumbColor={colors.surface}
-        ios_backgroundColor={colors.surfaceContainerHighest}
+        trackColor={{ false: palette.surfaceContainerHighest, true: palette.primaryContainer }}
+        thumbColor={palette.surface}
+        ios_backgroundColor={palette.surfaceContainerHighest}
       />
     </View>
   );
@@ -1159,6 +1199,7 @@ function ToggleRow({
 
 /** One past order: status, items and a reorder action. */
 function OrderBlock({ order, onReorder, onOpenProduct }: { order: OrderRecord; onReorder: () => void; onOpenProduct: (productId: string) => void }) {
+  const styles = useThemeStyles(createStyles);
   const { items, total, unitCount } = resolveOrder(order);
 
   return (
@@ -1202,6 +1243,7 @@ function OrderBlock({ order, onReorder, onOpenProduct }: { order: OrderRecord; o
 
 /** Quick stat: big number over its label. */
 function Stat({ value, label, onPress }: { value: string; label: string; onPress?: () => void }) {
+  const styles = useThemeStyles(createStyles);
   const body = (
     <>
       <Txt variant="headlineLg" numberOfLines={1}>
@@ -1211,7 +1253,7 @@ function Stat({ value, label, onPress }: { value: string; label: string; onPress
         <Txt variant="caption" color="onSurfaceVariant" align="center" numberOfLines={1}>
           {label}
         </Txt>
-        {onPress ? <Icon name="chevron-right" size={12} color="primaryContainer" /> : null}
+        {onPress ? <Icon name="chevron-right" size={12} color="primaryAccent" /> : null}
       </View>
     </>
   );
@@ -1225,7 +1267,7 @@ function Stat({ value, label, onPress }: { value: string; label: string; onPress
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.lg },
   inset: { marginHorizontal: layout.screenMargin },
   section: { gap: spacing.sm },

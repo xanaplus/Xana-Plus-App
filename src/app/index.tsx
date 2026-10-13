@@ -2,13 +2,17 @@ import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
-import { colors, layout, radius, spacing } from '@/theme';
+import { layout, radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /**
  * Screen 1 — splash. Light brand background, centred Xana LIFE lockup and the
  * three-dot loader, then straight into the tab shell.
  */
 export default function SplashRoute() {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
 
   useEffect(() => {
@@ -28,7 +32,7 @@ export default function SplashRoute() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' },
   logo: { width: 224, height: 176 },
   dots: { position: 'absolute', bottom: spacing.huge + layout.tabBarHeight, flexDirection: 'row', gap: spacing.sm },

@@ -2,7 +2,9 @@ import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'rea
 
 import { Icon } from '@/components/ui/icon';
 import { Txt } from '@/components/ui/text';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 export type QuantityStepperProps = {
   quantity: number;
@@ -20,6 +22,7 @@ export type QuantityStepperProps = {
 
 /** Quantity control used on the cart, checkout summary and product detail. */
 export function QuantityStepper({ quantity, onIncrement, onDecrement, size = 'regular', tone = 'plain', min = 1, suffix, style }: QuantityStepperProps) {
+  const styles = useThemeStyles(createStyles);
   const compact = size === 'compact';
   const button = compact ? 28 : 34;
   const iconSize = compact ? 14 : 16;
@@ -33,7 +36,7 @@ export function QuantityStepper({ quantity, onIncrement, onDecrement, size = 're
         onPress={onDecrement}
         style={[styles.button, { width: button, height: button, opacity: quantity <= min ? 0.4 : 1 }]}
       >
-        <Icon name="minus" size={iconSize} color={tone === 'brand' ? 'primary' : 'onSurface'} />
+        <Icon name="minus" size={iconSize} color={tone === 'brand' ? 'primaryAccent' : 'onSurface'} />
       </Pressable>
       <Txt variant={compact ? 'label' : 'title'} style={styles.count}>
         {quantity}
@@ -51,7 +54,7 @@ export function QuantityStepper({ quantity, onIncrement, onDecrement, size = 're
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   stepper: {
     flexDirection: 'row',
     alignItems: 'center',

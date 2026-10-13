@@ -106,6 +106,29 @@ beforeEach(() => {
 afterEach(async () => { if (root) await act(async () => root.unmount()); root = null; });
 
 describe('customer order isolation and persistence', () => {
+  it('reloads saved discounts and item prices rather than repricing historical savings', async () => {
+    mocks.tables.orders = {data:[{
+      ...savedOrder('XN-saved-discount'),wholesale_savings:'30',promo_discount:'5',
+      order_items:[{item_no:'item',quantity:6,unit_price:'155',line_total:'930'}],
+    }],error:null};
+    await act(async () => { root = create(ordersTree('A')); });
+    expect(orders.orders[0]).toMatchObject({
+      summary:{wholesaleSavings:30,promoDiscount:5},
+      lines:[{productId:'item',quantity:6,unitPrice:155,lineTotal:930}],
+    });
+  });
+  it('uses the returned savings immediately and keeps them after offline reload', async () => {
+    mocks.invoke.mockResolvedValue({data:{...reply.data,wholesaleSavings:30,items:[{itemNo:'item',quantity:1,unitPrice:100,lineTotal:100}]},error:null});
+    await act(async () => { root = create(ordersTree('A')); });
+    await act(async () => { await orders.placeOrder(input); });
+    expect(orders.orders[0].summary.wholesaleSavings).toBe(30);
+    const cached = mocks.save.mock.calls.filter(([key]) => key === 'orders').at(-1)[1];
+    await act(async () => root.unmount());
+    mocks.snapshot.orders = JSON.stringify(cached);
+    mocks.tables.orders = {data:null,error:{message:'offline'}};
+    await act(async () => { root = create(ordersTree('A')); });
+    expect(orders.orders[0].summary.wholesaleSavings).toBe(30);
+  });
   it('never shows a legacy cache to a signed-out customer', async () => {
     mocks.snapshot.orders = JSON.stringify([order('other')]);
     await act(async () => { root = create(ordersTree(null)); });

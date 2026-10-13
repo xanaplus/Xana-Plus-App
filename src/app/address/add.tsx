@@ -16,6 +16,8 @@ import { Button, Card, Chip, Icon, Screen, TopBar, Txt } from '@/components/ui';
 import type { Address } from '@/store/fulfilment';
 import { useFulfilment } from '@/store/fulfilment';
 import { colors, radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 const MAP_SIZE = 280;
 const ZONE_RADIUS = 90;
@@ -40,6 +42,8 @@ type AddressLabel = 'Home' | 'Work' | 'Other';
  * inside the dashed ring is Syokimau's delivery zone, outside it is not.
  */
 export default function AddAddressRoute() {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const { addAddress } = useFulfilment();
 
@@ -121,7 +125,7 @@ export default function AddAddressRoute() {
         <TopBar title="Address saved" onBack={goBack} />
         <Card variant="elevated" padding={spacing.lg} style={styles.confirmCard}>
           <View style={styles.confirmIcon}>
-            <Icon name="check-circle" size={28} color="primaryContainer" />
+            <Icon name="check-circle" size={28} color="primaryAccent" />
           </View>
           <Txt variant="titleLg">Saved to your addresses</Txt>
           <Txt variant="bodySm" color="onSurfaceVariant">
@@ -189,14 +193,14 @@ export default function AddAddressRoute() {
         </View>
 
         <Pressable accessibilityRole="button" onPress={useMyLocation} style={styles.locationLink}>
-          <Icon name="map-pin" size={14} color="primaryContainer" />
-          <Txt variant="label" color="primaryContainer">Use my location</Txt>
+          <Icon name="map-pin" size={14} color="primaryAccent" />
+          <Txt variant="label" color="primaryAccent">Use my location</Txt>
         </Pressable>
 
         {inZone ? (
           <View style={styles.zoneBanner}>
-            <Icon name="check-circle" size={14} color="primary" />
-            <Txt variant="labelSm" color="primary">Inside Xana Plus Syokimau zone · Express slots available</Txt>
+            <Icon name="check-circle" size={14} color="primaryAccent" />
+            <Txt variant="labelSm" color="primaryAccent">Inside Xana Plus Syokimau zone · Express slots available</Txt>
           </View>
         ) : (
           <View style={styles.zoneBannerWarn}>
@@ -265,6 +269,7 @@ function Field({
   placeholder: string;
   keyboardType?: 'default' | 'number-pad';
 }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.field}>
       <Txt variant="labelSm" color="onSurfaceVariant">{label.toUpperCase()}</Txt>
@@ -280,7 +285,7 @@ function Field({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.lg, paddingBottom: spacing.giant },
   inset: { marginHorizontal: spacing.lg },
   flex: { flex: 1 },
@@ -307,7 +312,7 @@ const styles = StyleSheet.create({
     left: CENTER - ZONE_RADIUS,
     borderWidth: 2,
     borderStyle: 'dashed',
-    borderColor: colors.primaryContainer,
+    borderColor: colors.primaryAccent,
   },
   hub: {
     position: 'absolute',

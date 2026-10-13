@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/brand/icon.png",
     "scheme": "xanaplus",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "backgroundColor": "#fcf9f8",
     "ios": {
       "supportsTablet": false,

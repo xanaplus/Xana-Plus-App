@@ -4,7 +4,9 @@ import { StyleSheet, View } from 'react-native';
 import { Card, Divider, LoadState, Segmented, Txt, type SegmentedOption } from '@/components/ui';
 import { formatKes } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /**
  * Staff tools → Insights: where shoppers drop off, crashes, order ratings and
@@ -63,6 +65,7 @@ async function fetchInsights(days: string): Promise<Insights | null> {
 }
 
 export function InsightsPanel() {
+  const styles = useThemeStyles(createStyles);
   const [range, setRange] = useState<'7' | '30'>('7');
   const [status, setStatus] = useState<'loading' | 'error' | 'ready'>('loading');
   const [data, setData] = useState<Insights | null>(null);
@@ -232,18 +235,19 @@ export function InsightsPanel() {
 }
 
 function Score({ label, good, poor }: { label: string; good: number; poor: number }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.rowHead}>
       <Txt variant="bodySm" style={styles.flex}>
         {label}
       </Txt>
-      <Txt variant="label" color="primary">{`${good} good`}</Txt>
+      <Txt variant="label" color="primaryAccent">{`${good} good`}</Txt>
       <Txt variant="label" color={poor > 0 ? 'error' : 'onSurfaceVariant'}>{`${poor} poor`}</Txt>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   stack: { gap: spacing.md },
   card: { gap: spacing.sm },
   flex: { flex: 1 },
@@ -251,6 +255,6 @@ const styles = StyleSheet.create({
   pct: { width: 40, textAlign: 'right' },
   funnelRow: { gap: spacing.xs },
   barTrack: { height: 8, borderRadius: radius.pill, backgroundColor: colors.surfaceContainerHigh, overflow: 'hidden' },
-  bar: { height: 8, borderRadius: radius.pill, backgroundColor: colors.primaryContainer },
+  bar: { height: 8, borderRadius: radius.pill, backgroundColor: colors.primaryAccent },
   item: { gap: spacing.xxs, paddingTop: spacing.xs },
 });

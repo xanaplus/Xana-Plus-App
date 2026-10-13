@@ -21,6 +21,7 @@ export const STORAGE_KEYS = {
   fulfilment: `${PREFIX}fulfilment.v1`,
   orders: `${PREFIX}orders.v2`,
   products: `${PREFIX}products.v1`,
+  appearance: `${PREFIX}appearance.v1`,
 } as const;
 
 export type StorageSnapshot = {
@@ -30,9 +31,10 @@ export type StorageSnapshot = {
   orders: string | null;
   /** Business Central products the shopper has seen, so a restored cart can price them offline. */
   products: string | null;
+  appearance: string | null;
 };
 
-const EMPTY_SNAPSHOT: StorageSnapshot = { session: null, cart: null, fulfilment: null, orders: null, products: null };
+const EMPTY_SNAPSHOT: StorageSnapshot = { session: null, cart: null, fulfilment: null, orders: null, products: null, appearance: null };
 
 let snapshot: StorageSnapshot = EMPTY_SNAPSHOT;
 
@@ -48,6 +50,7 @@ export async function loadSnapshot(): Promise<StorageSnapshot> {
       fulfilment: byKey[STORAGE_KEYS.fulfilment] ?? null,
       orders: byKey[STORAGE_KEYS.orders] ?? null,
       products: byKey[STORAGE_KEYS.products] ?? null,
+      appearance: byKey[STORAGE_KEYS.appearance] ?? null,
     };
   } catch {
     snapshot = EMPTY_SNAPSHOT;
@@ -76,4 +79,15 @@ export function parsePersisted<T>(raw: string | null | undefined, guard: Persist
 /** Fire-and-forget write; storage failures are silent by design. */
 export function save(key: string, value: unknown): void {
   AsyncStorage.setItem(key, JSON.stringify(value)).catch(() => {});
+}
+
+/** Explicitly awaited writes are used for settings that must report failure. */
+export async function saveWithResult(key: string, value: unknown): Promise<boolean> {
+  try {
+    await AsyncStorage.setItem(key, JSON.stringify(value));
+    if (key === STORAGE_KEYS.appearance) snapshot = { ...snapshot, appearance: JSON.stringify(value) };
+    return true;
+  } catch {
+    return false;
+  }
 }

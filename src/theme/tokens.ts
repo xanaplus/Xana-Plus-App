@@ -28,6 +28,7 @@ export const colors = {
 
   // ── Brand green ─────────────────────────────────────────────────────────
   primary: '#004f28',
+  primaryAccent: '#004f28',
   onPrimary: '#ffffff',
   primaryContainer: '#046938',
   onPrimaryContainer: '#90e6a8',
@@ -40,7 +41,8 @@ export const colors = {
 
   // ── Secondary amber ─────────────────────────────────────────────────────
   secondary: '#8d4f00',
-  onSecondary: '#ffffff',
+  secondaryAccent: '#8d4f00',
+  onSecondary: '#663800',
   secondaryContainer: '#fd9926',
   onSecondaryContainer: '#663800',
   secondaryFixed: '#ffdcc0',
@@ -50,6 +52,7 @@ export const colors = {
 
   // ── Tertiary gold ───────────────────────────────────────────────────────
   tertiary: '#6f5d00',
+  tertiaryAccent: '#6f5d00',
   onTertiary: '#ffffff',
   tertiaryContainer: '#c7a902',
   onTertiaryContainer: '#4b3e00',
@@ -79,10 +82,89 @@ export const colors = {
   transparent: 'transparent',
   white95: 'rgba(255, 255, 255, 0.95)',
   white70: 'rgba(255, 255, 255, 0.7)',
+  white15: 'rgba(255, 255, 255, 0.15)',
   black05: 'rgba(0, 0, 0, 0.05)',
+  scrimStrong: 'rgba(0, 0, 0, 0.45)',
+  visaBrand: '#1a1f71',
+  cardNetworkRed: '#eb001b',
+  cardNetworkAmber: '#f79e1b',
   amberTint15: 'rgba(253, 153, 38, 0.15)',
   outlineSoft30: 'rgba(190, 201, 190, 0.3)',
 } as const;
+
+export type Palette = { [K in keyof typeof colors]: string };
+export type GradientPalette = {
+  promoHero: readonly [string, string, string];
+  flash: readonly [string, string];
+  club: readonly [string, string];
+  mpesa: readonly [string, string];
+  pharmacy: readonly [string, string];
+};
+
+/** Near-black and charcoal surfaces; green is reserved for brand actions
+ * and small accents rather than tinting the whole dark interface. */
+export const darkColors: Palette = {
+  ...colors,
+  background: '#0c0c0c',
+  surface: '#151515',
+  surfaceDim: '#0e0e0e',
+  surfaceContainerLowest: '#090909',
+  surfaceContainerLow: '#1b1b1b',
+  surfaceContainer: '#202020',
+  surfaceContainerHigh: '#282828',
+  surfaceContainerHighest: '#323232',
+  inverseSurface: '#e8e8e8',
+  inverseOnSurface: '#252525',
+  onSurface: '#f2f2f2',
+  onSurfaceVariant: '#bfbfbf',
+  outline: '#9a9a9a',
+  outlineVariant: '#414141',
+  primary: '#17643a',
+  primaryAccent: '#8add9e',
+  onPrimary: '#ffffff',
+  primaryContainer: '#17643a',
+  onPrimaryContainer: '#a7efb7',
+  primaryFixed: '#9ff5b6',
+  primaryFixedDim: '#83d99c',
+  onPrimaryFixed: '#00210d',
+  onPrimaryFixedVariant: '#00522a',
+  inversePrimary: '#246b40',
+  surfaceTint: '#8add9e',
+  secondary: '#ffbd78',
+  secondaryAccent: '#ffbd78',
+  onSecondary: '#ffddb8',
+  secondaryContainer: '#70420d',
+  onSecondaryContainer: '#ffddb8',
+  tertiary: '#e8d46a',
+  tertiaryAccent: '#e8d46a',
+  onTertiary: '#393000',
+  tertiaryContainer: '#716000',
+  onTertiaryContainer: '#ffed9d',
+  error: '#ffb4ab',
+  onError: '#690005',
+  errorContainer: '#93000a',
+  onErrorContainer: '#ffdad6',
+  success: '#6fdbad',
+  successStrong: '#86e6ba',
+  successContainer: '#202020',
+  onSuccessContainer: '#a8f2ce',
+  warning: '#ffc36b',
+  warningStrong: '#f2a847',
+  warningDeep: '#ffd08a',
+  mintSurface: '#202020',
+  mintSubtle: '#1c1c1c',
+  mintPale: '#252525',
+  mintEdge: '#454545',
+  warmSurface: '#262626',
+  scrim: 'rgba(0, 0, 0, 0.66)',
+  white95: 'rgba(21, 21, 21, 0.96)',
+  white70: 'rgba(242, 242, 242, 0.72)',
+  white15: 'rgba(242, 242, 242, 0.15)',
+  black05: 'rgba(255, 255, 255, 0.06)',
+  scrimStrong: 'rgba(0, 0, 0, 0.65)',
+  amberTint15: 'rgba(255, 189, 120, 0.15)',
+  outlineSoft30: 'rgba(154, 154, 154, 0.32)',
+};
 
 export type ColorToken = keyof typeof colors;
 
@@ -99,6 +181,14 @@ export const gradients = {
   /** Pharmacy hero. */
   pharmacy: ['#046938', '#0c6d3b'] as const,
 } as const;
+
+export const darkGradients: GradientPalette = {
+  promoHero: ['#171717', '#222222', '#2b2b2b'] as const,
+  flash: gradients.flash,
+  club: ['#151515', '#232323'] as const,
+  mpesa: ['#191919', '#242424'] as const,
+  pharmacy: ['#151515', '#242424'] as const,
+};
 
 /** 4pt spacing scale, matching the frames' padding / gap values. */
 export const spacing = {

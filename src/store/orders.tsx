@@ -233,6 +233,8 @@ type PlaceOrderReply = {
   orderNo: string;
   createdAt: string;
   itemsSubtotal: number;
+  wholesaleSavings: number;
+  items?: { itemNo: string; quantity: number; unitPrice: number; lineTotal: number }[];
   promoDiscount: number;
   deliveryFee: number;
   platformFee: number;
@@ -253,13 +255,14 @@ type OrderRow = {
   store_name: string;
   substitution: SubstitutionPreference;
   items_subtotal: number | string;
+  wholesale_savings: number | string | null;
   promo_code: string | null;
   promo_discount: number | string;
   delivery_fee: number | string;
   platform_fee: number | string;
   total: number | string;
   points_earned: number;
-  order_items: { item_no: string; quantity: number }[];
+  order_items: { item_no: string; quantity: number; unit_price: number | string; line_total: number | string }[];
 };
 
 const displayDate = (iso: string): string => {
@@ -268,7 +271,10 @@ const displayDate = (iso: string): string => {
 };
 
 const fromRow = (row: OrderRow): PlacedOrder => {
-  const lines = row.order_items.map(item => ({ productId: item.item_no, quantity: item.quantity }));
+  const lines = row.order_items.map(item => ({
+    productId: item.item_no, quantity: item.quantity,
+    unitPrice: Number(item.unit_price), lineTotal: Number(item.line_total),
+  }));
   const itemsSubtotal = Number(row.items_subtotal);
   const deliveryFee = Number(row.delivery_fee);
   const platformFee = Number(row.platform_fee);
@@ -280,7 +286,7 @@ const fromRow = (row: OrderRow): PlacedOrder => {
     // The saved totals, not today's prices — what the customer was charged.
     summary: {
       itemsSubtotal,
-      wholesaleSavings: 0,
+      wholesaleSavings: Number(row.wholesale_savings ?? 0),
       deliveryFee,
       platformFee,
       promoCode: row.promo_code ?? undefined,
@@ -386,7 +392,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         const { data, error } = await supabase
           .from('orders')
           .select(
-            'order_no, created_at, status, is_test, payment_method, payment_reference, contact, address_line, slot_label, store_name, substitution, items_subtotal, promo_code, promo_discount, delivery_fee, platform_fee, total, points_earned, order_items(item_no, quantity)',
+            'order_no, created_at, status, is_test, payment_method, payment_reference, contact, address_line, slot_label, store_name, substitution, items_subtotal, wholesale_savings, promo_code, promo_discount, delivery_fee, platform_fee, total, points_earned, order_items(item_no, quantity, unit_price, line_total)',
           )
           // Staff accounts can read every order, so a customer's list must ask for its own explicitly.
           .eq('user_id', userId)
@@ -462,10 +468,10 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       id: data.orderNo,
       placed: displayDate(data.createdAt),
       status: 'received',
-      lines: input.lines,
+      lines: data.items?.map(item => ({ productId: item.itemNo, quantity: item.quantity, unitPrice: item.unitPrice, lineTotal: item.lineTotal })) ?? input.lines,
       summary: {
         itemsSubtotal: data.itemsSubtotal,
-        wholesaleSavings: 0,
+        wholesaleSavings: data.wholesaleSavings ?? 0,
         deliveryFee: data.deliveryFee,
         platformFee: data.platformFee,
         promoCode: input.promoCode,

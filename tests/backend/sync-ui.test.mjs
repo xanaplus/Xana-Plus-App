@@ -2,7 +2,7 @@ import React from 'react';
 import { act, create } from 'react-test-renderer';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const mocks = vi.hoisted(() => ({ session: {}, orders: {}, fulfilment: {} }));
+const mocks = vi.hoisted(() => ({ session: {}, orders: {}, fulfilment: {}, cartSavings: 0 }));
 vi.mock('react-native', () => ({
   View: 'View', Pressable: 'Pressable', Switch: 'Switch',
   StyleSheet: { create: value => value },
@@ -33,12 +33,13 @@ vi.mock('@/store/orders', () => ({
   ORDER_STAGES: [{ status: 'received', label: 'Received' }],
 }));
 vi.mock('@/store/cart', () => ({
-  useCart: () => ({ add: vi.fn(), summary: { wholesaleSavings: 0 } }), unitPrice: product => product.price,
+  useCart: () => ({ add: vi.fn(), summary: { wholesaleSavings: mocks.cartSavings } }), unitPrice: product => product.price,
 }));
 vi.mock('@/store/fulfilment', () => ({ useFulfilment: () => mocks.fulfilment }));
 
 import ProfileRoute from '@/app/(tabs)/profile';
 import OrderHistoryScreen from '@/app/orders/index';
+import SpendingScreen from '@/app/spending';
 
 let root;
 const render = async Screen => { await act(async () => { root = create(React.createElement(Screen)); }); };
@@ -69,6 +70,7 @@ beforeEach(() => {
     isDemo: false, isStaff: false,
   };
   mocks.orders = { orders: [], historyLoading: false, historyError: null, retryHistory: vi.fn() };
+  mocks.cartSavings = 0;
   mocks.fulfilment = {
     address: { line: 'Test address' }, addresses: [], hasAddress: false, mode: 'delivery',
     slot: { mode: 'delivery', label: 'Today', window: 'Test slot' },
@@ -79,6 +81,30 @@ beforeEach(() => {
 afterEach(async () => { if (root) await act(async () => root.unmount()); root = null; });
 
 describe('settings screen sync feedback', () => {
+  it('opens Spending at the same all-time recorded total without guessed delivery savings', async () => {
+    mocks.orders.orders = [
+      {id:'saved',placed:'06 Oct 2026',status:'delivered',lines:[],pointsEarned:1,summary:{wholesaleSavings:30,promoDiscount:5,total:100,unitCount:0}},
+      {id:'cancelled',placed:'06 Oct 2026',status:'cancelled',lines:[],pointsEarned:0,summary:{wholesaleSavings:500,promoDiscount:20,total:100,unitCount:0}},
+    ];
+    await render(SpendingScreen);
+    expect(root.root.findByType('Segmented').props.value).toBe('all');
+    expect(text()).toContain('KES 35');
+    expect(text()).not.toContain('KES 185');
+    expect(text()).not.toContain('Free delivery');
+  });
+  it('shows recorded savings with an empty basket, excludes cancelled orders and ignores basket changes', async () => {
+    mocks.orders.orders = [
+      {id:'first',placed:'06 Oct 2026',status:'delivered',lines:[],summary:{wholesaleSavings:30,promoDiscount:5,total:100,unitCount:0}},
+      {id:'cancelled',placed:'06 Oct 2026',status:'cancelled',lines:[],summary:{wholesaleSavings:500,promoDiscount:20,total:100,unitCount:0}},
+    ];
+    await render(ProfileRoute);
+    expect(text()).toContain('KES 35');
+    expect(text()).not.toContain('KES 555');
+    mocks.cartSavings = 999;
+    await update(ProfileRoute);
+    expect(text()).toContain('KES 35');
+    expect(text()).not.toContain('KES 999');
+  });
   it.each(['Notifications', 'Terms & Privacy'])('keeps failed settings visible in %s and after closing the sheet, with working retry and recovery', async sheet => {
     await render(ProfileRoute);
     await openSheet(sheet);

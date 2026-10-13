@@ -7,7 +7,9 @@ import { formatKesDecimal } from '@/lib/format';
 import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /**
  * Checkout — M-Pesa payment could not be completed.
@@ -44,6 +46,8 @@ const REASONS: { id: Reason; label: string; helper: string }[] = [
 const SLOT_HOLD_SECONDS = 12 * 60;
 
 export default function PaymentFailedScreen() {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const cart = useCart();
   const { mpesaNumber, setPaymentMethod, promo, pointsRedeemed } = useFulfilment();
@@ -101,7 +105,7 @@ export default function PaymentFailedScreen() {
             onPress={payOnDelivery}
           />
           <Pressable accessibilityRole="button" accessibilityLabel="Change payment method" onPress={() => router.replace('/checkout')}>
-            <Txt variant="label" color="primaryContainer" align="center">
+            <Txt variant="label" color="primaryAccent" align="center">
               Change payment method
             </Txt>
           </Pressable>
@@ -119,7 +123,7 @@ export default function PaymentFailedScreen() {
       {/* Headline — amber, and the reassurance comes first */}
       <View style={styles.hero}>
         <View style={styles.heroIcon}>
-          <Icon name="alert" size={26} color="secondaryContainer" />
+          <Icon name="alert" size={26} color="secondaryAccent" />
         </View>
         <Txt variant="headlineLg" align="center">
           Payment not completed
@@ -139,7 +143,7 @@ export default function PaymentFailedScreen() {
         ))}
       </View>
       <Card variant="flat" padding={spacing.lg} style={styles.helperCard}>
-        <Icon name="info" size={16} color="secondaryContainer" />
+        <Icon name="info" size={16} color="secondaryAccent" />
         <Txt variant="caption" color="onSurfaceVariant" style={styles.helperText}>
           {active.helper}
         </Txt>
@@ -190,7 +194,7 @@ export default function PaymentFailedScreen() {
           (step, index) => (
             <View key={step} style={styles.step}>
               <View style={styles.stepIndex}>
-                <Txt variant="micro" color="primary">
+                <Txt variant="micro" color="primaryAccent">
                   {index + 1}
                 </Txt>
               </View>
@@ -204,7 +208,7 @@ export default function PaymentFailedScreen() {
 
       {/* Slot hold — urgency without threat */}
       <View style={styles.hold}>
-        <Icon name="clock" size={14} color="primaryContainer" />
+        <Icon name="clock" size={14} color="primaryAccent" />
         <Txt variant="caption" color="onSurfaceVariant" style={styles.holdText}>
           {holdLeft > 0
             ? `Your 9:00 AM to 11:00 AM delivery slot is held for ${holdMinutes} more ${holdMinutes === 1 ? 'minute' : 'minutes'}.`
@@ -216,6 +220,7 @@ export default function PaymentFailedScreen() {
 }
 
 function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.row}>
       <Txt variant="bodySm" color="onSurfaceVariant" numberOfLines={1} style={styles.rowLabel}>
@@ -226,7 +231,7 @@ function Row({ label, value, strong }: { label: string; value: string; strong?: 
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.md, paddingBottom: spacing.xxl },
 
   hero: { alignItems: 'center', gap: spacing.sm, marginTop: spacing.lg, marginBottom: spacing.sm },

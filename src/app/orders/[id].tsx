@@ -22,7 +22,9 @@ import { RateOrder } from '@/features/orders/rate-order';
 import { formatKes, formatKesDecimal } from '@/lib/format';
 import { unitPrice } from '@/store/cart';
 import { ORDER_STAGES, useOrders } from '@/store/orders';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
+import { useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /**
  * Screens 09a / 09b — Order Status, with the Substitution Resolution sheet
@@ -49,6 +51,7 @@ const SUBSTITUTION_OPTIONS: { value: SubstitutionPreference; title: string; desc
 ];
 
 export default function OrderStatusScreen() {
+  const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { orderById, resolveSubstitution, advanceStatus } = useOrders();
@@ -111,7 +114,7 @@ export default function OrderStatusScreen() {
                     <View style={styles.connectorSpacer} />
                   )}
                 </View>
-                <Txt variant="caption" align="center" color={current ? 'primaryContainer' : 'onSurfaceVariant'} numberOfLines={2}>
+                <Txt variant="caption" align="center" color={current ? 'primaryAccent' : 'onSurfaceVariant'} numberOfLines={2}>
                   {s.label}
                 </Txt>
               </View>
@@ -120,7 +123,7 @@ export default function OrderStatusScreen() {
         </View>
 
         <View style={styles.eta}>
-          <Icon name="delivery" size={16} color="primaryContainer" />
+          <Icon name="delivery" size={16} color="primaryAccent" />
           <Txt variant="bodySm" style={styles.etaText}>
             {order.status === 'delivered'
               ? 'Delivered. Thank you for shopping with Xana Life.'
@@ -146,7 +149,7 @@ export default function OrderStatusScreen() {
       {order.substitutionNeeded ? (
         <Card variant="elevated" padding={spacing.lg} style={styles.alertCard}>
           <View style={styles.alertHead}>
-            <Icon name="info" size={16} color="secondaryContainer" />
+          <Icon name="info" size={16} color="secondaryAccent" />
             <Txt variant="label">{order.substitutionNeeded.held ? 'Item on hold' : 'Substitution needed'}</Txt>
           </View>
           <Txt variant="caption" color="onSurfaceVariant">
@@ -219,7 +222,7 @@ export default function OrderStatusScreen() {
         <Divider />
         <Line label="Total paid" value={formatKesDecimal(order.summary.total)} strong />
         <View style={styles.points}>
-          <Icon name="sparkle" size={14} color="primaryContainer" />
+          <Icon name="sparkle" size={14} color="primaryAccent" />
           <Txt variant="caption" color="onSurfaceVariant" style={styles.pointsText}>
             {order.pointsEarned} points credited to your Xana Club balance
           </Txt>
@@ -275,10 +278,11 @@ export default function OrderStatusScreen() {
 }
 
 function Row({ icon, label, value, note }: { icon: 'store' | 'delivery' | 'mpesa'; label: string; value: string; note?: string }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.detailRow}>
       <View style={styles.detailIcon}>
-        <Icon name={icon} size={16} color="primaryContainer" />
+        <Icon name={icon} size={16} color="primaryAccent" />
       </View>
       <View style={styles.detailText}>
         <Txt variant="caption" color="onSurfaceVariant">
@@ -298,19 +302,20 @@ function Row({ icon, label, value, note }: { icon: 'store' | 'delivery' | 'mpesa
 }
 
 function Line({ label, value, strong, tint }: { label: string; value: string; strong?: boolean; tint?: boolean }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.line}>
       <Txt variant={strong ? 'label' : 'bodySm'} color={strong ? 'onSurface' : 'onSurfaceVariant'} numberOfLines={1} style={styles.lineLabel}>
         {label}
       </Txt>
-      <Txt variant="label" color={tint ? 'primaryContainer' : 'onSurface'}>
+      <Txt variant="label" color={tint ? 'primaryAccent' : 'onSurface'}>
         {value}
       </Txt>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.md, paddingBottom: spacing.giant },
   card: { gap: spacing.md },
   sectionHead: { marginTop: spacing.sm },
@@ -320,7 +325,7 @@ const styles = StyleSheet.create({
   step: { flex: 1, gap: spacing.sm },
   stepTop: { flexDirection: 'row', alignItems: 'center' },
   connector: { flex: 1, height: 2, backgroundColor: colors.surfaceContainerHigh },
-  connectorDone: { backgroundColor: colors.primaryContainer },
+  connectorDone: { backgroundColor: colors.primaryAccent },
   connectorSpacer: { flex: 1 },
   dot: {
     width: 20,
@@ -333,7 +338,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dotDone: { backgroundColor: colors.primaryContainer, borderColor: colors.primaryContainer },
-  dotCurrent: { borderColor: colors.primary },
+  dotCurrent: { borderColor: colors.primaryAccent },
 
   eta: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   etaText: { flex: 1 },

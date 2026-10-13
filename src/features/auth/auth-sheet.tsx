@@ -4,7 +4,9 @@ import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { BottomSheet, Button, Icon, ProgressBar, Txt, type IconName } from '@/components/ui';
 import type { FunctionError } from '@/lib/supabase';
 import { useSession } from '@/store/session';
-import { colors, fonts, radius, spacing } from '@/theme';
+import { fonts, radius, spacing } from '@/theme';
+import { useTheme, useThemeStyles } from '@/theme/provider';
+import type { Palette } from '@/theme';
 
 /**
  * Screen 6a — Checkout (Login Sheet): the phone/OTP sign-in prompt opened from
@@ -90,6 +92,7 @@ const CHANNELS: { value: SignInChannel; label: string; icon: IconName }[] = [
 
 /** Inline failure note used by both steps — the design's error state. */
 function ErrorNote({ message }: { message: string }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.error} accessibilityLiveRegion="polite">
       <Icon name="alert" size={14} color="error" />
@@ -113,6 +116,8 @@ export function PhoneSignInForm({
   onSubmit?: () => void;
   error?: string;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const [focused, setFocused] = useState(false);
   const nextPrefix: PhonePrefix = value.prefix === '+254' ? '0' : '+254';
 
@@ -155,7 +160,7 @@ export function PhoneSignInForm({
       {error ? <ErrorNote message={error} /> : null}
 
       <View style={styles.helper}>
-        <Icon name="info" size={14} color="primaryContainer" />
+        <Icon name="info" size={14} color="primaryAccent" />
         <Txt variant="caption" color="onSurfaceVariant" style={styles.helperText}>
           {`We'll send a 6-digit ${value.channel === 'sms' ? 'SMS' : 'WhatsApp'} verification code.`}
         </Txt>
@@ -180,8 +185,8 @@ export function PhoneSignInForm({
                 <View style={[styles.radio, selected ? styles.radioSelected : null]}>
                   {selected ? <Icon name="check" size={10} color="onPrimary" /> : null}
                 </View>
-                <Icon name={channel.icon} size={15} color={selected ? 'primaryContainer' : 'onSurfaceVariant'} />
-                <Txt variant="label" color={selected ? 'primary' : 'onSurfaceVariant'}>
+                <Icon name={channel.icon} size={15} color={selected ? 'primaryAccent' : 'onSurfaceVariant'} />
+                <Txt variant="label" color={selected ? 'primaryAccent' : 'onSurfaceVariant'}>
                   {channel.label}
                 </Txt>
               </Pressable>
@@ -195,9 +200,10 @@ export function PhoneSignInForm({
 
 /** "Change number" link above the code cells (Screen 11). */
 export function ChangeNumberLink({ onPress }: { onPress: () => void }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <Pressable accessibilityRole="button" accessibilityLabel="Change number" hitSlop={8} onPress={onPress} style={styles.changeNumber}>
-      <Txt variant="label" color="primary">
+      <Txt variant="label" color="primaryAccent">
         Change number
       </Txt>
     </Pressable>
@@ -206,6 +212,7 @@ export function ChangeNumberLink({ onPress }: { onPress: () => void }) {
 
 /** The lock line under the primary action on the verification step. */
 export function OtpSecurityNote() {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.security}>
       <Icon name="lock" size={13} color="outline" />
@@ -240,6 +247,8 @@ export function OtpCodeField({
   autoFocus?: boolean;
   busy?: boolean;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   const [secondsLeft, setSecondsLeft] = useState(RESEND_SECONDS);
   const [focused, setFocused] = useState(false);
 
@@ -292,8 +301,8 @@ export function OtpCodeField({
         </Txt>
         {secondsLeft > 0 ? (
           <View style={styles.resendTimer}>
-            <Icon name="refresh" size={13} color="primaryContainer" />
-            <Txt variant="labelSm" tint={colors.primaryContainer}>
+            <Icon name="refresh" size={13} color="primaryAccent" />
+            <Txt variant="labelSm" tint={colors.primaryAccent}>
               {`Resend in ${formatCountdown(secondsLeft)}`}
             </Txt>
           </View>
@@ -308,20 +317,22 @@ export function OtpCodeField({
               onResend();
             }}
           >
-            <Txt variant="labelSm" color="primary">
+            <Txt variant="labelSm" color="primaryAccent">
               Resend code
             </Txt>
           </Pressable>
         )}
       </View>
 
-      <ProgressBar value={secondsLeft / RESEND_SECONDS} height={3} trackColor={colors.surfaceContainerHigh} fillColor={colors.primaryContainer} />
+      <ProgressBar value={secondsLeft / RESEND_SECONDS} height={3} trackColor={colors.surfaceContainerHigh} fillColor={colors.primaryAccent} />
     </View>
   );
 }
 
 /** Legal line under the sheet's primary action. */
 function TermsNote() {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
   return (
     <Txt variant="caption" color="onSurfaceVariant" align="center" style={styles.terms}>
       {"By continuing, you agree to Xana Life's"}{' '}
@@ -355,6 +366,7 @@ export function AuthSheet({ visible, onClose, onSuccess }: { visible: boolean; o
  * fires once the session is authenticated.
  */
 function SignInSheet({ onClose, onSuccess }: { onClose: () => void; onSuccess?: () => void }) {
+  const styles = useThemeStyles(createStyles);
   const { requestOtp, verify } = useSession();
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [phone, setPhone] = useState<PhoneInput>(EMPTY_PHONE_INPUT);
@@ -473,7 +485,7 @@ function SignInSheet({ onClose, onSuccess }: { onClose: () => void; onSuccess?: 
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Palette) => StyleSheet.create({
   form: { gap: spacing.md },
   field: {
     flexDirection: 'row',
@@ -487,7 +499,7 @@ const styles = StyleSheet.create({
     borderColor: colors.surfaceContainerHighest,
     backgroundColor: colors.surface,
   },
-  fieldFocused: { borderColor: colors.primaryContainer },
+  fieldFocused: { borderColor: colors.primaryAccent },
   prefix: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -514,7 +526,7 @@ const styles = StyleSheet.create({
     borderColor: colors.outlineSoft30,
     backgroundColor: colors.surface,
   },
-  channelSelected: { borderColor: colors.primaryContainer, backgroundColor: colors.mintSubtle },
+  channelSelected: { borderColor: colors.primaryAccent, backgroundColor: colors.mintSubtle },
   radio: {
     width: 18,
     height: 18,
@@ -524,7 +536,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  radioSelected: { borderColor: colors.primaryContainer, backgroundColor: colors.primaryContainer },
+  radioSelected: { borderColor: colors.primaryAccent, backgroundColor: colors.primaryContainer },
   error: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   errorText: { flexShrink: 1 },
   otp: { gap: spacing.md },
@@ -542,8 +554,8 @@ const styles = StyleSheet.create({
     borderColor: colors.surfaceContainerHighest,
     backgroundColor: colors.surface,
   },
-  cellActive: { borderWidth: 2, borderColor: colors.primaryContainer },
-  caret: { width: 2, height: 22, borderRadius: 1, backgroundColor: colors.primaryContainer },
+  cellActive: { borderWidth: 2, borderColor: colors.primaryAccent },
+  caret: { width: 2, height: 22, borderRadius: 1, backgroundColor: colors.primaryAccent },
   hiddenField: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, opacity: 0 },
   resendRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm },
   resendTimer: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
