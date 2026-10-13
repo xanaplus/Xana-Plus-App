@@ -23,7 +23,7 @@ export const deliverySlots: DeliverySlot[] = [
 export const homeCategoryTiles: Category[] = [
   { slug: 'meat-poultry', name: 'Meat & Poultry', image: 'meat-poultry', vertical: 'groceries' },
   { slug: 'bakery', name: 'Bakery (Xana Bread)', image: 'bakery', vertical: 'groceries' },
-  { slug: 'deli-cold-cuts', name: 'Deli & Cold Cuts', image: 'deli-cold-cuts', vertical: 'deli' },
+  { slug: 'deli-cold-cuts', name: 'Deli', image: 'deli-cold-cuts', vertical: 'deli' },
   { slug: 'pharmacy', name: 'Pharmacy', image: 'pharmacy', vertical: 'pharmacy', featured: true },
   { slug: 'cooking-oil', name: 'Cooking Oil', image: 'cooking-oil', vertical: 'groceries' },
   { slug: 'beverages', name: 'Beverages', image: 'beverages', vertical: 'groceries' },
@@ -742,17 +742,23 @@ export const verticals: VerticalDefinition[] = [
     subcategories: [
       { slug: 'cold-cuts', name: 'Cold Cuts & Cured Meats', image: 'cold-cuts-cured-meats' },
       { slug: 'cheese-counter', name: 'Cheese Counter', image: 'cheese-counter' },
-      { slug: 'rotisserie', name: 'Rotisserie & Hot Foods', image: 'rotisserie-hot-foods' },
+      { slug: 'deli-cold-cuts', name: 'Deli Kitchen', image: 'rotisserie-hot-foods' },
       { slug: 'olives-antipasti', name: 'Olives & Antipasti', image: 'olives-antipasti' },
     ],
     sections: [
       {
+        title: 'Deli Kitchen',
+        subtitle: 'Freshly prepared from our counter',
+        categorySlug: 'deli-cold-cuts',
+        query: { groups: [], deli: 'only' },
+      },
+      {
         title: 'Cold Cuts & Sausages',
         subtitle: 'From the chilled counter',
-        categorySlug: 'deli-cold-cuts',
-        query: shelf('meat-poultry', ['sausage', 'bacon', 'ham', 'salami', 'brawn', 'smokie', 'polony']),
+        categorySlug: 'cold-cuts',
+        query: { ...shelf('meat-poultry', ['sausage', 'bacon', 'ham', 'salami', 'brawn', 'smokie', 'polony']), deli: 'include' },
       },
-      { title: 'Cheese', subtitle: 'Sliced, grated & block', categorySlug: 'cheese-counter', query: shelf('dairy-eggs', ['cheese']) },
+      { title: 'Cheese', subtitle: 'Sliced, grated & block', categorySlug: 'cheese-counter', query: { ...shelf('dairy-eggs', ['cheese']), deli: 'include' } },
     ],
   },
   {
@@ -841,6 +847,9 @@ export const verticalBySlug = (slug: CategoryVertical): VerticalDefinition => ve
 export const shelfForTerm = (term: string): LiveQuery | undefined => {
   const wanted = term.trim().toLowerCase();
   const named = (name: string) => name.toLowerCase() === wanted;
+
+  // Keep the former Home tile's search link working as well.
+  if (['deli', 'deli & cold cuts', 'deli counter & kitchen'].includes(wanted)) return { groups: [], deli: 'only' };
 
   for (const vertical of verticals) {
     const section = vertical.sections.find(entry => named(entry.title));

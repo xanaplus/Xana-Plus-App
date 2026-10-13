@@ -74,6 +74,14 @@ Sign-in, the live catalogue, saved orders, and account data depend on that proje
 - Spending opens at All time to agree with the profile counter; period filters remain available.
 - The scoped order-savings migration and updated checkout function were explicitly applied/deployed. Prescription quotes, SMS, payments and existing order totals were not changed.
 
+## Deli catalogue and design previews
+
+- The Deli kitchen shelf reads the public catalogue across BC posting groups. Customer department mapping must not rewrite BC groups, prescription/age flags, prices, stock, wholesale tiers or visibility exclusions.
+- Existing cached Deli products are reclassified without discarding their offline financial data.
+- `npm run test:backend -- tests/backend/deli-catalogue.test.mjs` covers classification, cache restoration, shelf/search queries and regulatory/financial preservation. `node scripts/tests/deli-browser.mjs` checks guest-only Deli navigation and cached product restoration.
+- This is a frontend catalogue change; publish the updated app for live customers to receive it.
+- The separately managed mockup sandbox hosts user-requested design options only. Do not replace the Expo app or integrate prototype data without explicit approval. Its TypeScript configuration is independent of the Expo app's aliases.
+
 ## Appearance
 
 - Profile → Settings places Appearance above Fulfilment store. Options are Light, Dark and Use device setting; a new device defaults to its system preference.

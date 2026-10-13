@@ -3,6 +3,8 @@
 - [Temporary secret cleanup](temporary-secret-cleanup.md) — verify existence after deletion; an environment deletion acknowledgement may leave secrets intact.
 - [Restoring test dependencies](dependency-restoration.md) — restore locked React-compatible test packages rather than resolving newer minor peer requirements.
 - [Prescription-first ordering](prescription-workflow.md) — customers upload first; pharmacist review and pricing precede customer ordering.
+- [BC product categorization](bc-product-categorization.md) — all DEL-coded products belong under Deli; keep department presentation separate from prescription rules.
+- [Canvas preview setup](canvas-preview-setup.md) — automatic variants can precede sandbox setup; preserve their files and verify rendering, not just live frame state.
 - [V1 scope](v1-scope.md) — the user designated the Team Discussion Guide as V1 and the Super App PRD as the long-term goal.
 - [Screen test boundaries](screen-test-boundaries.md) — isolate native and live-data dependencies; assert visible primitives rather than serializing React element props.
 - [SMS safeguards](sms-policy.md) — owner-approved aggregate limits and demo exemption; staging approval is not live-rollout approval.

@@ -92,6 +92,9 @@ const packFromName = (name: string): string => {
   return matches ? matches[matches.length - 1] : '';
 };
 
+/** Owner-approved department rule; BC's regulatory flags remain independent. */
+const isDeliItem = (itemNo: string): boolean => itemNo.toUpperCase().startsWith('DEL');
+
 const toProduct = (row: CatalogueRow): Product => {
   const name = row.name?.trim() || row.item_no;
   return {
@@ -101,7 +104,7 @@ const toProduct = (row: CatalogueRow): Product => {
     price: Number(row.price),
     priceTiers: row.price_tiers ?? [],
     image: row.photo_url ?? '',
-    category: BC_GROUP_CATEGORY[row.category ?? ''] ?? 'general-merchandise',
+    category: isDeliItem(row.item_no) ? 'deli-cold-cuts' : BC_GROUP_CATEGORY[row.category ?? ''] ?? 'general-merchandise',
     rxRequired: row.requires_rx,
     ageRestricted: row.age_restricted,
     inStock: Number(row.stock) > 0,
@@ -132,7 +135,10 @@ const isProductList = (value: unknown): value is Product[] =>
 function hydrate() {
   if (hydrated) return;
   hydrated = true;
-  for (const product of parsePersisted(persisted().products, isProductList) ?? []) cache.set(product.id, product);
+  for (const product of parsePersisted(persisted().products, isProductList) ?? []) {
+    // Reclassify existing cache entries without dropping offline price/stock data.
+    cache.set(product.id, isDeliItem(product.id) ? { ...product, category: 'deli-cold-cuts' } : product);
+  }
 }
 
 function remember(products: Product[]): Product[] {
@@ -164,8 +170,8 @@ export const liveProductsByCategory = (slug: string): Product[] => {
 
 // ── Queries ──────────────────────────────────────────────────────────────────
 
-/** A shelf of products: BC groups, optionally narrowed to names containing any of `nameHas`. */
-export type LiveQuery = { groups: string[]; nameHas?: string[]; limit?: number };
+/** BC shelves exclude DEL items unless explicitly browsing the Deli department. */
+export type LiveQuery = { groups: string[]; nameHas?: string[]; limit?: number; deli?: 'only' | 'include' };
 
 /** Keeps search terms to letters and digits, so they can't break the PostgREST filter syntax. */
 const safeWords = (text: string): string[] =>
@@ -186,8 +192,14 @@ async function run(request: PromiseLike<{ data: unknown; error: { message: strin
  * In-stock products for a shelf: ones with a photo first, then best-stocked
  * first (BC has no sales ranking to sort by).
  */
-export function fetchShelf({ groups, nameHas, limit = 8 }: LiveQuery): Promise<Product[]> {
-  let request = supabase.from('catalogue').select(COLUMNS).in('category', groups).gt('stock', 0);
+export function fetchShelf({ groups, nameHas, limit = 8, deli }: LiveQuery): Promise<Product[]> {
+  let request = supabase.from('catalogue').select(COLUMNS).gt('stock', 0);
+  if (deli === 'only') {
+    request = request.ilike('item_no', 'DEL%');
+  } else {
+    request = request.in('category', groups);
+    if (deli !== 'include') request = request.not('item_no', 'ilike', 'DEL%');
+  }
   const words = (nameHas ?? []).flatMap(safeWords);
   if (words.length > 0) request = request.or(words.map(word => `name.ilike.*${word}*`).join(','));
   return run(request.order('has_photo', { ascending: false }).order('stock', { ascending: false }).limit(limit));
@@ -197,7 +209,12 @@ export function fetchShelf({ groups, nameHas, limit = 8 }: LiveQuery): Promise<P
 export function searchCatalogue(query: string, limit = 60): Promise<Product[]> {
   const words = safeWords(query);
   if (words.length === 0) return Promise.resolve([]);
-  const clauses = words.map(word => `or(name.ilike.*${word}*,category.ilike.*${word}*)`).join(',');
+  const clauses = words.map(word => {
+    const fields = [`name.ilike.*${word}*`, `category.ilike.*${word}*`];
+    if (word === 'deli') fields.push('item_no.ilike.DEL*');
+    else if (word.startsWith('del')) fields.push(`item_no.ilike.${word}*`);
+    return `or(${fields.join(',')})`;
+  }).join(',');
   return run(
     supabase
       .from('catalogue')
