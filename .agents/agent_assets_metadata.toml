@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "daxtsKmGBxyMrDQqJaour"
+uri = "file://generated-artifacts/videos/xanaplus-animated-introduction.mp4"
+type = "video"
+title = "XanaPlus — Animated Introduction"
+description = "24-second widescreen animation in 720p, featuring groceries, the Deli, and prescription upload with pharmacist review. Includes XanaPlus branding and captions; no narration."
+logical_id = "45863e4a-7937-48bc-b04c-eb7a7e7bd878"
+content_hash = "sha256:180ed1077963176fe056bff41a0e9bea8fe4aaa38f6feefa9d90194c16ffccd3"
+size = 948982
+mtime_ms = 1791957369158
+storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:bd0e4f7f-cde4-4dd5-b9c1-913240c718e5/45863e4a-7937-48bc-b04c-eb7a7e7bd878/a9b6d27b-294a-4a74-8e45-f06c1ee0ba95"
+storage_version_token = "1791957428852141"
+content_type = "video/mp4"
