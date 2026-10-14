@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import {
   Button,
@@ -19,10 +19,12 @@ import {
   type SegmentedOption,
 } from '@/components/ui';
 import { productById, verticalForProduct } from '@/data/catalog';
+import DepartmentDonut from '@/components/spending/department-donut';
 import { ORDER_HISTORY, orderMonthLabel, parseOrderDate } from '@/data/orders';
 import type { CategoryVertical } from '@/data/types';
 import { formatKes } from '@/lib/format';
 import { recordedSavings } from '@/lib/order-savings';
+import { spendingBreakdown } from '@/lib/spending-breakdown';
 import { unitPrice, useCart } from '@/store/cart';
 import { useOrders, type PlacedOrder } from '@/store/orders';
 import { useSession } from '@/store/session';
@@ -38,9 +40,8 @@ import type { Palette } from '@/theme';
  * separately: totals and discounts come from order snapshots; catalogue data
  * is used only to describe recognised line items.
  *
- * Charts are single-hue by design. The bars compare magnitudes of one measure
- * and carry their own text labels, so colour is not encoding identity and no
- * categorical palette is involved.
+ * Monthly bars compare paid order totals. The department donut compares recorded
+ * item amounts, separately from order-level fees and discounts.
  */
 
 type Period = '3m' | '6m' | 'all';
@@ -72,17 +73,6 @@ const VERTICAL_LABELS: Record<CategoryVertical, string> = {
   beauty: 'Beauty & Personal Care',
 };
 
-const VERTICAL_ICONS: Record<CategoryVertical, IconName> = {
-  groceries: 'cart',
-  pharmacy: 'pill',
-  deli: 'cart',
-  retail: 'cart',
-  wholesale: 'cart',
-  liquor: 'cart',
-  household: 'cart',
-  beauty: 'cart',
-};
-
 type DepartmentTotal = { vertical: CategoryVertical; total: number; units: number };
 type MonthTotal = { label: string; total: number };
 type RegularItem = { productId: string; name: string; pack: string; units: number; spent: number };
@@ -95,6 +85,8 @@ type Totals = {
   totalSaved: number;
   pointsEarned: number;
   departments: DepartmentTotal[];
+  unclassifiedSpend: number;
+  unpricedItems: number;
   months: MonthTotal[];
   regulars: RegularItem[];
   pharmacySpend: number;
@@ -102,6 +94,8 @@ type Totals = {
 
 function computeTotals(orders: PlacedOrder[]): Totals {
   let spent = 0;
+  let unclassifiedSpend = 0;
+  let unpricedItems = 0;
   const byVertical = new Map<CategoryVertical, DepartmentTotal>();
   const byMonth = new Map<string, number>();
   const byProduct = new Map<string, RegularItem>();
@@ -110,18 +104,24 @@ function computeTotals(orders: PlacedOrder[]): Totals {
     const isSampleOrder = SAMPLE_ORDER_IDS.has(order.id);
     for (const line of order.lines) {
       const product = productById(line.productId);
-      if (!product) continue;
 
       const lineTotal =
         line.lineTotal ??
         (line.unitPrice !== undefined
           ? line.unitPrice * line.quantity
-          : isSampleOrder
+          : isSampleOrder && product
             ? unitPrice(product, line.quantity) * line.quantity
             : null);
       // Older saved orders may not have line-price snapshots. Keep them in the
       // recorded order total, but don't re-price them from today's catalogue.
-      if (lineTotal === null) continue;
+      if (lineTotal === null) {
+        unpricedItems++;
+        continue;
+      }
+      if (!product) {
+        unclassifiedSpend += lineTotal;
+        continue;
+      }
 
       const vertical = verticalForProduct(product);
       const dept = byVertical.get(vertical) ?? { vertical, total: 0, units: 0 };
@@ -173,6 +173,8 @@ function computeTotals(orders: PlacedOrder[]): Totals {
     totalSaved: savings.totalSaved,
     pointsEarned: orders.reduce((sum, order) => sum + order.pointsEarned, 0),
     departments,
+    unclassifiedSpend,
+    unpricedItems,
     months,
     regulars,
     pharmacySpend: byVertical.get('pharmacy')?.total ?? 0,
@@ -200,13 +202,18 @@ export default function SpendingScreen() {
   }, [period, history]);
 
   const t = useMemo(() => computeTotals(orders), [orders]);
+  const breakdown = useMemo(() => spendingBreakdown([
+    ...t.departments.map(dept => ({ id: dept.vertical, label: VERTICAL_LABELS[dept.vertical], total: dept.total })),
+    ...(t.unclassifiedSpend > 0
+      ? [{ id: 'unclassified', label: 'Unclassified items', total: t.unclassifiedSpend }]
+      : []),
+  ]), [t]);
 
   const tier = user ? [...CLUB_TIERS].reverse().find(c => user.clubPoints >= c.from) ?? CLUB_TIERS[0] : CLUB_TIERS[0];
   const nextTier = CLUB_TIERS[CLUB_TIERS.findIndex(c => c.tier === tier.tier) + 1];
   const clubProgress = user && nextTier ? Math.min(1, Math.max(0, (user.clubPoints - tier.from) / (nextTier.from - tier.from))) : 1;
   const pointsToNext = user && nextTier ? Math.max(0, nextTier.from - user.clubPoints) : 0;
 
-  const deptMax = Math.max(...t.departments.map(d => d.total), 1);
   const monthMax = Math.max(...t.months.map(m => m.total), 1);
   const savedShare = t.spent > 0 ? t.totalSaved / (t.spent + t.totalSaved) : 0;
 
@@ -276,34 +283,19 @@ export default function SpendingScreen() {
             />
           </Card>
 
-          {/* Department split — single hue, labelled bars, tap through to the aisle */}
-          <SectionHeader title="Where it went" style={styles.sectionHead} />
+          {/* Composition is based on recorded item amounts, not guessed discount allocation. */}
+          <SectionHeader title="Spending by department" style={styles.sectionHead} />
           <Card variant="elevated" padding={spacing.lg}>
-            {t.departments.map((dept, index) => (
-              <Pressable
-                key={dept.vertical}
-                accessibilityRole="button"
-                accessibilityLabel={`${VERTICAL_LABELS[dept.vertical]}, ${formatKes(dept.total)}`}
-                onPress={() => router.push('/(tabs)/categories')}
-                style={[styles.deptRow, index === 0 ? null : styles.deptRowSpaced]}
-              >
-                <View style={styles.deptLabelRow}>
-                  <View style={styles.deptLabel}>
-                    <Icon name={VERTICAL_ICONS[dept.vertical]} size={14} color="onSurfaceVariant" />
-                    <Txt variant="label" numberOfLines={1}>
-                      {VERTICAL_LABELS[dept.vertical]}
-                    </Txt>
-                  </View>
-                  <Txt variant="label">{formatKes(dept.total)}</Txt>
-                </View>
-                <View style={styles.barTrack}>
-                  <View style={[styles.barFill, { width: `${Math.max(2, (dept.total / deptMax) * 100)}%` }]} />
-                </View>
-                <Txt variant="caption" color="onSurfaceVariant">
-                  {dept.units} {dept.units === 1 ? 'unit' : 'units'} · {Math.round((dept.total / t.spent) * 100)}% of spend
-                </Txt>
-              </Pressable>
-            ))}
+            <DepartmentDonut breakdown={breakdown} onDepartmentPress={id => {
+              if (id in VERTICAL_LABELS) router.push({
+                pathname: '/(tabs)/categories', params: { vertical: id, t: String(Date.now()) },
+              });
+            }} />
+            <Txt variant="caption" color="onSurfaceVariant" style={styles.breakdownNote}>
+              Recorded item totals before order-level fees and discounts.
+              {t.unclassifiedSpend > 0 ? ' Items without department details are grouped as unclassified.' : ''}
+              {t.unpricedItems > 0 ? ' Older items without saved prices are excluded; the monthly bars still include their order totals.' : ''}
+            </Txt>
           </Card>
 
           {/* Pharmacy is deliberately shown as one aggregate, never itemised. */}
@@ -458,12 +450,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   },
   savingText: { flex: 1, gap: spacing.xxs },
 
-  deptRow: { gap: spacing.sm },
-  deptRowSpaced: { marginTop: spacing.lg },
-  deptLabelRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm },
-  deptLabel: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flex: 1 },
-  barTrack: { height: 10, borderRadius: radius.xs, backgroundColor: colors.surfaceContainerHigh, overflow: 'hidden' },
-  barFill: { height: 10, borderRadius: radius.xs, backgroundColor: colors.primaryAccent },
+  breakdownNote: { marginTop: spacing.md },
 
   privacyCard: { marginTop: spacing.md, gap: spacing.sm },
   privacyHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },

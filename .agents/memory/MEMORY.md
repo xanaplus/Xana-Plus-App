@@ -11,3 +11,4 @@
 - [Wholesale pricing](wholesale-pricing.md) — wholesale prices must come from BC and change at qualifying quantity thresholds.
 - [Live browser checks](live-browser-verification.md) — verify in-app cached transitions; hidden Expo screens and closing dialogs can cause misleading selector failures.
 - [Semantic appearance theming](dark-mode-theming.md) — shared light-color values cannot distinguish surfaces from action text; use reactive semantic palettes throughout the component tree.
+- [Spending chart intent](spending-chart-design.md) — user approved monthly bars for comparison and a department donut for composition.

@@ -73,6 +73,8 @@ Sign-in, the live catalogue, saved orders, and account data depend on that proje
 - Older wholesale savings were not stored. Their new column remains null; do not fabricate a backfill using current BC prices or tiers.
 - Spending opens at All time to agree with the profile counter; period filters remain available.
 - The scoped order-savings migration and updated checkout function were explicitly applied/deployed. Prescription quotes, SMS, payments and existing order totals were not changed.
+- Monthly spending bars use paid order totals. The department donut uses recorded item amounts before order-level fees/discounts, not guessed allocations; unavailable departments are grouped as unclassified and missing legacy prices are disclosed.
+- `node scripts/tests/spending-donut-browser.mjs` renders the real component with isolated fixtures, without bypassing app auth or writing shared orders. It checks both themes, phone layouts, legend navigation, grouped departments, single-category and empty states.
 
 ## Deli catalogue and design previews
 
