@@ -107,8 +107,6 @@ async function loadProfile(userId: string): Promise<Profile | null> {
     .eq('id', userId)
     .maybeSingle();
   if (error || !data) return null;
-  // A row in `staff` is readable only by its owner, so this is empty for customers.
-  const { data: staffRow } = await supabase.from('staff').select('user_id').eq('user_id', userId).maybeSingle();
   const name = data.name?.trim() ?? '';
   return {
     user: {
@@ -120,7 +118,8 @@ async function loadProfile(userId: string): Promise<Profile | null> {
     },
     named: name !== '',
     preferences: (data.preferences as Preferences | null) ?? {},
-    isStaff: staffRow !== null,
+    // `role` is what the server's user_role() returns; customers can't change it.
+    isStaff: ['staff', 'pharmacist', 'admin'].includes(data.role),
   };
 }
 
