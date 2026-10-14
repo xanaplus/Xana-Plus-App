@@ -182,6 +182,21 @@ describe('order history screen sync feedback', () => {
     expect(text()).toContain('Updating your order history.');
   });
 
+  it('shows website pickup orders with their own stages instead of breaking the list', async () => {
+    const order = (id, status) => ({
+      id, placed: '14 Oct 2026', status, fulfilment: 'pickup', lines: [],
+      summary: { total: 500, unitCount: 0 }, storeName: 'Ruiru', slotLabel: 'Pickup',
+    });
+    mocks.orders.orders = [order('WB-100001', 'awaiting-payment'), order('WB-100002', 'ready'), order('WB-100003', 'collected')];
+    await render(OrderHistoryScreen);
+    expect(text()).toContain('Awaiting payment');
+    expect(text()).toContain('Ready to collect');
+    expect(text()).toContain('Collected');
+    const filters = root.root.findByType('Segmented').props.options.map(option => option.label);
+    expect(filters).toContain('Active (2)');
+    expect(filters).toContain('Completed (1)');
+  });
+
   it('does not keep the previous account error after switching to recovered history', async () => {
     mocks.orders.historyError = failedHistory;
     await render(OrderHistoryScreen);

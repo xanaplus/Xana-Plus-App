@@ -6,6 +6,14 @@ import { ORDER_HISTORY, type OrderLine } from '@/data/orders';
 import type { OrderSummary, PaymentMethodId, SubstitutionPreference } from '@/data/types';
 import { parsePersisted, persisted, save, STORAGE_KEYS } from '@/lib/storage';
 import { track } from '@/lib/analytics';
+import {
+  isCompleted,
+  stagesFor,
+  type Fulfilment,
+  type OrderPaymentMethod,
+  type OrderStatus,
+  type PaymentStatus,
+} from '@/lib/order-status';
 import { successFeedback } from '@/lib/haptics';
 import { supabase } from '@/lib/supabase';
 import { unitPrice } from '@/store/cart';
@@ -23,14 +31,16 @@ import { useSession } from '@/store/session';
  * The sample orders still advance on the device only.
  */
 
-export type OrderStatus = 'received' | 'shopping' | 'out-for-delivery' | 'delivered' | 'cancelled';
-
-export const ORDER_STAGES: { status: OrderStatus; label: string }[] = [
-  { status: 'received', label: 'Received' },
-  { status: 'shopping', label: 'Shopping' },
-  { status: 'out-for-delivery', label: 'Out for delivery' },
-  { status: 'delivered', label: 'Delivered' },
-];
+export {
+  isActiveOrder,
+  isCompleted,
+  ORDER_PAYMENT_LABEL,
+  ORDER_STAGES,
+  paymentNote,
+  PICKUP_STAGES,
+  stagesFor,
+} from '@/lib/order-status';
+export type { Fulfilment, OrderPaymentMethod, OrderStatus, PaymentStatus } from '@/lib/order-status';
 
 export type PlacedOrder = {
   id: string;
@@ -39,8 +49,13 @@ export type PlacedOrder = {
   status: OrderStatus;
   lines: OrderLine[];
   summary: OrderSummary;
-  paymentMethod: PaymentMethodId;
+  paymentMethod: OrderPaymentMethod;
   paymentReference?: string;
+  /** Missing on orders saved before 14 Oct 2026, which were all delivery. */
+  fulfilment?: Fulfilment;
+  paymentStatus?: PaymentStatus;
+  /** Shown at the counter to collect a pickup order. */
+  collectionCode?: string;
   contact: string;
   addressLine: string;
   slotLabel: string;
@@ -110,9 +125,11 @@ const SEED: PlacedOrder[] = ORDER_HISTORY.map((record, index) => {
   };
 });
 
-const STATUSES: readonly OrderStatus[] = ['received', 'shopping', 'out-for-delivery', 'delivered', 'cancelled'];
+const STATUSES: readonly OrderStatus[] = [
+  'awaiting-payment', 'received', 'shopping', 'ready', 'collected', 'out-for-delivery', 'delivered', 'cancelled',
+];
 const SUBSTITUTIONS: readonly SubstitutionPreference[] = ['similar', 'refund', 'call'];
-const PAYMENTS: readonly PaymentMethodId[] = ['mpesa', 'cod', 'card'];
+const PAYMENTS: readonly OrderPaymentMethod[] = ['mpesa', 'cod', 'card', 'dpo', 'counter'];
 
 const isPlacedOrder = (value: unknown): value is PlacedOrder => {
   if (typeof value !== 'object' || value === null) return false;
@@ -247,8 +264,11 @@ type OrderRow = {
   created_at: string;
   status: OrderStatus;
   is_test: boolean;
-  payment_method: PaymentMethodId;
+  payment_method: OrderPaymentMethod;
   payment_reference: string | null;
+  fulfilment: Fulfilment | null;
+  payment_status: PaymentStatus | null;
+  collection_code: string | null;
   contact: string;
   address_line: string;
   slot_label: string;
@@ -297,6 +317,9 @@ const fromRow = (row: OrderRow): PlacedOrder => {
     },
     paymentMethod: row.payment_method,
     paymentReference: row.payment_reference ?? undefined,
+    fulfilment: row.fulfilment ?? 'delivery',
+    paymentStatus: row.payment_status ?? undefined,
+    collectionCode: row.collection_code ?? undefined,
     contact: row.contact,
     addressLine: row.address_line,
     slotLabel: row.slot_label,
@@ -369,10 +392,26 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         { event: 'UPDATE', schema: 'public', table: 'orders', filter: `user_id=eq.${userId}` },
         payload => {
           if (generation !== accountGeneration.current || activeUserId.current !== userId) return;
-          const row = payload.new as { order_no?: string; status?: OrderStatus };
+          const row = payload.new as {
+            order_no?: string;
+            status?: OrderStatus;
+            payment_status?: PaymentStatus | null;
+            collection_code?: string | null;
+          };
           if (!row.order_no || !row.status || !STATUSES.includes(row.status)) return;
-          setOrders(prev => prev.map(o => (o.id === row.order_no ? { ...o, status: row.status as OrderStatus } : o)));
-          if (row.status === 'delivered' || row.status === 'cancelled') void refreshProfile();
+          setOrders(prev =>
+            prev.map(o =>
+              o.id === row.order_no
+                ? {
+                    ...o,
+                    status: row.status as OrderStatus,
+                    paymentStatus: row.payment_status ?? o.paymentStatus,
+                    collectionCode: row.collection_code ?? o.collectionCode,
+                  }
+                : o,
+            ),
+          );
+          if (isCompleted(row.status) || row.status === 'cancelled') void refreshProfile();
         },
       )
       .subscribe();
@@ -392,7 +431,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         const { data, error } = await supabase
           .from('orders')
           .select(
-            'order_no, created_at, status, is_test, payment_method, payment_reference, contact, address_line, slot_label, store_name, substitution, items_subtotal, wholesale_savings, promo_code, promo_discount, delivery_fee, platform_fee, total, points_earned, order_items(item_no, quantity, unit_price, line_total)',
+            'order_no, created_at, status, is_test, payment_method, payment_reference, fulfilment, payment_status, collection_code, contact, address_line, slot_label, store_name, substitution, items_subtotal, wholesale_savings, promo_code, promo_discount, delivery_fee, platform_fee, total, points_earned, order_items(item_no, quantity, unit_price, line_total)',
           )
           // Staff accounts can read every order, so a customer's list must ask for its own explicitly.
           .eq('user_id', userId)
@@ -510,8 +549,9 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         if (o.substitutionNeeded && !o.substitutionNeeded.held) {
           return { ...o, substitutionNeeded: { ...o.substitutionNeeded, held: true } };
         }
-        const index = ORDER_STAGES.findIndex(s => s.status === o.status);
-        const next = ORDER_STAGES[Math.min(index + 1, ORDER_STAGES.length - 1)];
+        const stages = stagesFor(o);
+        const index = stages.findIndex(s => s.status === o.status);
+        const next = stages[Math.min(index + 1, stages.length - 1)];
         return { ...o, status: next.status };
       }),
     );

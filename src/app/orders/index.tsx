@@ -20,20 +20,22 @@ import {
 import { productById } from '@/data/catalog';
 import { formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
-import { ORDER_STAGES, useOrders, type OrderStatus, type PlacedOrder } from '@/store/orders';
+import { isActiveOrder, isCompleted, stagesFor, type OrderStatus } from '@/lib/order-status';
+import { useOrders, type PlacedOrder } from '@/store/orders';
 import { radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
-/** Screen 10 — Order History: active, delivered and cancelled orders. */
+/** Screen 10 — Order History: active, completed and cancelled orders, from the app and the website. */
 
 type Filter = 'all' | 'active' | 'delivered' | 'cancelled';
 
-const ACTIVE_STATES: OrderStatus[] = ['received', 'shopping', 'out-for-delivery'];
-
 const STATUS_META: Record<OrderStatus, { label: string; tone: BadgeTone }> = {
+  'awaiting-payment': { label: 'Awaiting payment', tone: 'warning' },
   received: { label: 'Received', tone: 'warning' },
   shopping: { label: 'Shopper picking', tone: 'warning' },
+  ready: { label: 'Ready to collect', tone: 'info' },
+  collected: { label: 'Collected', tone: 'fresh' },
   'out-for-delivery': { label: 'Out for delivery', tone: 'info' },
   delivered: { label: 'Delivered', tone: 'fresh' },
   cancelled: { label: 'Cancelled', tone: 'neutral' },
@@ -49,8 +51,8 @@ export default function OrderHistoryScreen() {
   const counts = useMemo(
     () => ({
       all: orders.length,
-      active: orders.filter(o => ACTIVE_STATES.includes(o.status)).length,
-      delivered: orders.filter(o => o.status === 'delivered').length,
+      active: orders.filter(o => isActiveOrder(o.status)).length,
+      delivered: orders.filter(o => isCompleted(o.status)).length,
       cancelled: orders.filter(o => o.status === 'cancelled').length,
     }),
     [orders],
@@ -59,12 +61,12 @@ export default function OrderHistoryScreen() {
   const options: SegmentedOption<Filter>[] = [
     { value: 'all', label: `All (${counts.all})` },
     { value: 'active', label: `Active (${counts.active})` },
-    { value: 'delivered', label: `Delivered (${counts.delivered})` },
+    { value: 'delivered', label: `Completed (${counts.delivered})` },
   ];
 
   const visible = useMemo(() => {
-    if (filter === 'active') return orders.filter(o => ACTIVE_STATES.includes(o.status));
-    if (filter === 'delivered') return orders.filter(o => o.status === 'delivered');
+    if (filter === 'active') return orders.filter(o => isActiveOrder(o.status));
+    if (filter === 'delivered') return orders.filter(o => isCompleted(o.status));
     if (filter === 'cancelled') return orders.filter(o => o.status === 'cancelled');
     return orders;
   }, [orders, filter]);
@@ -113,9 +115,11 @@ export default function OrderHistoryScreen() {
         )
       ) : (
         visible.map((order, index) => {
-          const meta = STATUS_META[order.status];
-          const isActive = ACTIVE_STATES.includes(order.status);
-          const stage = ORDER_STAGES.findIndex(s => s.status === order.status);
+          // An unknown status from a newer server still shows, rather than breaking the list.
+          const meta = STATUS_META[order.status] ?? { label: String(order.status), tone: 'neutral' as BadgeTone };
+          const isActive = isActiveOrder(order.status);
+          const stages = stagesFor(order);
+          const stage = stages.findIndex(s => s.status === order.status);
           const names = order.lines
             .map(l => productById(l.productId)?.name)
             .filter(Boolean)
@@ -156,11 +160,11 @@ export default function OrderHistoryScreen() {
                 <View style={styles.progress}>
                   <View style={styles.progressTrack}>
                     <View
-                      style={[styles.progressFill, { width: `${((stage + 1) / ORDER_STAGES.length) * 100}%` }]}
+                      style={[styles.progressFill, { width: `${((stage + 1) / stages.length) * 100}%` }]}
                     />
                   </View>
                   <Txt variant="caption" color="onSurfaceVariant">
-                    {ORDER_STAGES[Math.max(0, stage)].label} · {order.slotLabel}
+                    {stage < 0 ? meta.label : stages[stage].label} · {order.slotLabel}
                   </Txt>
                 </View>
               ) : null}

@@ -8,7 +8,7 @@ export function recordedSavings(orders: readonly SavingsOrder[]) {
   let wholesale = 0;
   let promo = 0;
   for (const order of orders) {
-    if (order.status === 'cancelled') continue;
+    if (order.status === 'cancelled' || order.status === 'awaiting-payment') continue;
     wholesale += cents(order.summary.wholesaleSavings);
     promo += cents(order.summary.promoDiscount);
   }

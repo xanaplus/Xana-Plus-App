@@ -191,7 +191,7 @@ export default function SpendingScreen() {
   const [period, setPeriod] = useState<Period>('all');
 
   // Provider includes demo seed orders and saved orders with checkout snapshots.
-  const history = useMemo(() => placedOrders.filter(order => order.status !== 'cancelled'), [placedOrders]);
+  const history = useMemo(() => placedOrders.filter(order => order.status !== 'cancelled' && order.status !== 'awaiting-payment'), [placedOrders]);
 
   const orders = useMemo(() => {
     const months = PERIOD_MONTHS[period];

@@ -21,7 +21,8 @@ import type { SubstitutionPreference } from '@/data/types';
 import { RateOrder } from '@/features/orders/rate-order';
 import { formatKes, formatKesDecimal } from '@/lib/format';
 import { unitPrice } from '@/store/cart';
-import { ORDER_STAGES, useOrders } from '@/store/orders';
+import { isActiveOrder, isCompleted, ORDER_PAYMENT_LABEL, paymentNote, stagesFor } from '@/lib/order-status';
+import { useOrders } from '@/store/orders';
 import { radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
@@ -73,7 +74,13 @@ export default function OrderStatusScreen() {
     );
   }
 
-  const stage = ORDER_STAGES.findIndex(s => s.status === order.status);
+  const stages = stagesFor(order);
+  const stage = stages.findIndex(s => s.status === order.status);
+  const pickup = order.fulfilment === 'pickup';
+  const completed = isCompleted(order.status);
+  const moneyNote = paymentNote(order);
+  // Saved orders (app or website) carry isTest; only the demo's sample baskets don't.
+  const sample = order.isTest === undefined;
   const blockedProduct = order.substitutionNeeded ? productById(order.substitutionNeeded.productId) : undefined;
 
   const confirmSubstitution = () => {
@@ -92,13 +99,13 @@ export default function OrderStatusScreen() {
             LIVE FULFILMENT
           </Txt>
           <Badge
-            label={order.status === 'delivered' ? 'Complete' : order.status === 'cancelled' ? 'Cancelled' : 'Active'}
-            tone={order.status === 'delivered' ? 'fresh' : order.status === 'cancelled' ? 'neutral' : 'info'}
+            label={completed ? 'Complete' : order.status === 'cancelled' ? 'Cancelled' : order.status === 'awaiting-payment' ? 'Awaiting payment' : 'Active'}
+            tone={completed ? 'fresh' : order.status === 'cancelled' ? 'neutral' : order.status === 'awaiting-payment' ? 'warning' : 'info'}
           />
         </View>
 
         <View style={styles.stepper}>
-          {ORDER_STAGES.map((s, index) => {
+          {stages.map((s, index) => {
             const done = index <= stage;
             const current = index === stage;
             return (
@@ -108,7 +115,7 @@ export default function OrderStatusScreen() {
                   <View style={[styles.dot, done ? styles.dotDone : null, current ? styles.dotCurrent : null]}>
                     {done ? <Icon name="check" size={10} color="onPrimary" /> : null}
                   </View>
-                  {index < ORDER_STAGES.length - 1 ? (
+                  {index < stages.length - 1 ? (
                     <View style={[styles.connector, index < stage ? styles.connectorDone : null]} />
                   ) : (
                     <View style={styles.connectorSpacer} />
@@ -123,21 +130,42 @@ export default function OrderStatusScreen() {
         </View>
 
         <View style={styles.eta}>
-          <Icon name="delivery" size={16} color="primaryAccent" />
+          <Icon name={pickup ? 'store' : 'delivery'} size={16} color="primaryAccent" />
           <Txt variant="bodySm" style={styles.etaText}>
             {order.status === 'delivered'
               ? 'Delivered. Thank you for shopping with Xana Life.'
-              : order.status === 'cancelled'
-                ? 'Cancelled by the branch. Any Xana Club points you used have been returned.'
-                : `${ORDER_STAGES[Math.max(0, stage)].label} · ${order.slotLabel}`}
+              : order.status === 'collected'
+                ? 'Collected. Thank you for shopping with Xana Life.'
+                : order.status === 'cancelled'
+                  ? 'This order was cancelled. Any Xana Club points you used have been returned.'
+                  : order.status === 'awaiting-payment'
+                    ? 'Awaiting payment. We start on your order once it is paid.'
+                    : order.status === 'ready'
+                      ? `Ready to collect at ${order.storeName}.`
+                      : `${stages[Math.max(0, stage)].label} · ${order.slotLabel}`}
           </Txt>
         </View>
 
+        {order.status === 'ready' && order.collectionCode ? (
+          <View style={styles.eta}>
+            <Icon name="check" size={16} color="primaryAccent" />
+            <Txt variant="bodySm" style={styles.etaText}>
+              {`Collection code: ${order.collectionCode}. Show it at the counter.`}
+            </Txt>
+          </View>
+        ) : null}
+
+        {moneyNote ? (
+          <Txt variant="caption" color="onSurfaceVariant">
+            {moneyNote}
+          </Txt>
+        ) : null}
+
         {/* Saved orders are moved along by the branch in Staff tools; only the sample orders advance here. */}
-        {order.isTest ? (
-          order.status !== 'delivered' && order.status !== 'cancelled' ? (
+        {!sample ? (
+          isActiveOrder(order.status) ? (
             <Txt variant="caption" color="onSurfaceVariant">
-              This updates by itself as the branch packs and sends your order.
+              {pickup ? 'This updates by itself as the branch gets your order ready.' : 'This updates by itself as the branch packs and sends your order.'}
             </Txt>
           ) : null
         ) : order.status !== 'delivered' ? (
@@ -166,16 +194,16 @@ export default function OrderStatusScreen() {
       ) : null}
 
       {/* Delivery details */}
-      <SectionHeader title="Delivery" style={styles.sectionHead} />
+      <SectionHeader title={pickup ? 'Pickup' : 'Delivery'} style={styles.sectionHead} />
       <Card variant="elevated" padding={spacing.lg} style={styles.card}>
-        <Row icon="store" label="Address" value={order.addressLine} note={`${order.contact} · ${order.storeName}`} />
+        <Row icon="store" label={pickup ? 'Branch' : 'Address'} value={order.addressLine} note={`${order.contact} · ${order.storeName}`} />
         <Divider />
         <Row icon="delivery" label="Slot" value={order.slotLabel} />
         <Divider />
         <Row
           icon="mpesa"
           label="Payment"
-          value={order.paymentMethod === 'mpesa' ? 'M-Pesa' : order.paymentMethod === 'cod' ? 'Cash on delivery' : 'Card'}
+          value={ORDER_PAYMENT_LABEL[order.paymentMethod] ?? 'Card'}
           note={order.paymentReference ? `Ref: ${order.paymentReference}` : undefined}
         />
       </Card>
@@ -212,7 +240,7 @@ export default function OrderStatusScreen() {
       <SectionHeader title="Payment & charges" style={styles.sectionHead} />
       <Card variant="elevated" padding={spacing.lg} style={styles.card}>
         <Line label="Items subtotal" value={formatKesDecimal(order.summary.itemsSubtotal)} />
-        <Line label={`Delivery (${order.storeName})`} value={order.summary.deliveryFee === 0 ? 'Free' : formatKesDecimal(order.summary.deliveryFee)} />
+        <Line label={`${pickup ? 'Pickup' : 'Delivery'} (${order.storeName})`} value={order.summary.deliveryFee === 0 ? 'Free' : formatKesDecimal(order.summary.deliveryFee)} />
         {order.summary.promoDiscount ? (
           <Line label={`Promo code${order.summary.promoCode ? ` (${order.summary.promoCode})` : ''}`} value={`− ${formatKesDecimal(order.summary.promoDiscount)}`} tint />
         ) : null}
@@ -229,9 +257,9 @@ export default function OrderStatusScreen() {
         </View>
       </Card>
 
-      {order.status === 'delivered' ? <RateOrder orderNo={order.id} pickup={order.slotLabel.startsWith('Pickup')} /> : null}
+      {completed ? <RateOrder orderNo={order.id} pickup={pickup || order.slotLabel.startsWith('Pickup')} /> : null}
 
-      {order.status === 'delivered' ? (
+      {completed ? (
         <Button
           label="Request a return"
           variant="outline"

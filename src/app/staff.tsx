@@ -19,6 +19,7 @@ import {
 } from '@/components/ui';
 import { InsightsPanel } from '@/features/staff/insights';
 import { formatKes } from '@/lib/format';
+import { isActiveOrder, ORDER_PAYMENT_LABEL, type Fulfilment, type OrderStatus, type PaymentStatus } from '@/lib/order-status';
 import { supabase } from '@/lib/supabase';
 import { useSession } from '@/store/session';
 import { spacing } from '@/theme';
@@ -36,9 +37,12 @@ type OrderRow = {
   order_no: string;
   user_id: string | null;
   created_at: string;
-  status: 'received' | 'shopping' | 'out-for-delivery' | 'delivered' | 'cancelled';
+  status: OrderStatus;
   is_test: boolean;
   payment_method: string;
+  fulfilment: Fulfilment | null;
+  payment_status: PaymentStatus | null;
+  collection_code: string | null;
   contact: string;
   address_line: string;
   slot_label: string;
@@ -83,16 +87,39 @@ type Customer = { name: string | null; phone: string };
 
 type RatingRow = { order_no: string; service: 'up' | 'down' | null; packing: 'up' | 'down' | null; missing_items: boolean; comment: string | null };
 
-/** The next step for an order and the button that takes it there. */
-const NEXT_ORDER_STEP: Partial<Record<OrderRow['status'], { status: OrderRow['status']; label: string }>> = {
+type Step = { status: OrderStatus; label: string };
+
+/** The next step for a delivery order and the button that takes it there. */
+const NEXT_DELIVERY_STEP: Partial<Record<OrderStatus, Step>> = {
   received: { status: 'shopping', label: 'Start shopping' },
   shopping: { status: 'out-for-delivery', label: 'Out for delivery' },
   'out-for-delivery': { status: 'delivered', label: 'Mark delivered' },
 };
 
-const ORDER_STATUS: Record<OrderRow['status'], { label: string; tone: BadgeTone }> = {
+/** Pickup orders (website): the server allows these moves only. Unpaid orders wait for payment. */
+const NEXT_PICKUP_STEP: Partial<Record<OrderStatus, Step>> = {
+  received: { status: 'shopping', label: 'Start picking' },
+  shopping: { status: 'ready', label: 'Ready to collect' },
+  ready: { status: 'collected', label: 'Mark collected' },
+};
+
+const nextStep = (order: OrderRow): Step | undefined => {
+  if (order.fulfilment !== 'pickup') return NEXT_DELIVERY_STEP[order.status];
+  const next = NEXT_PICKUP_STEP[order.status];
+  // The server refuses "collected" until the order is paid; pay-at-pickup is recorded in the admin app.
+  if (next?.status === 'collected' && order.payment_status !== 'paid') return undefined;
+  return next;
+};
+
+/** Staff may cancel any open order except one still waiting for online payment (the server expires those). */
+const canCancel = (order: OrderRow) => OPEN_ORDER(order) && order.status !== 'awaiting-payment';
+
+const ORDER_STATUS: Record<OrderStatus, { label: string; tone: BadgeTone }> = {
+  'awaiting-payment': { label: 'AWAITING PAYMENT', tone: 'neutral' },
   received: { label: 'NEW', tone: 'warning' },
   shopping: { label: 'SHOPPING', tone: 'info' },
+  ready: { label: 'READY TO COLLECT', tone: 'info' },
+  collected: { label: 'COLLECTED', tone: 'fresh' },
   'out-for-delivery': { label: 'OUT FOR DELIVERY', tone: 'info' },
   delivered: { label: 'DELIVERED', tone: 'fresh' },
   cancelled: { label: 'CANCELLED', tone: 'neutral' },
@@ -120,12 +147,12 @@ const REASON_LABEL: Record<string, string> = {
   other: 'Other',
 };
 
-const PAYMENT_LABEL: Record<string, string> = { mpesa: 'M-Pesa', cod: 'Cash on delivery', card: 'Card' };
+const PAYMENT_LABEL: Record<string, string> = ORDER_PAYMENT_LABEL;
 
 const when = (iso: string) =>
   new Date(iso).toLocaleString('en-KE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 
-const OPEN_ORDER = (o: OrderRow) => o.status !== 'delivered' && o.status !== 'cancelled';
+const OPEN_ORDER = (o: OrderRow) => isActiveOrder(o.status);
 const OPEN_RETURN = (r: ReturnRow) => r.status === 'requested' || r.status === 'approved';
 const OPEN_BOOKING = (b: BookingRow) => b.status === 'requested' || b.status === 'confirmed';
 
@@ -154,7 +181,7 @@ async function fetchStaffData(): Promise<StaffData | null> {
     supabase
       .from('orders')
       .select(
-        'order_no, user_id, created_at, status, is_test, payment_method, contact, address_line, slot_label, store_name, substitution, total, amount_due, points_redeemed, points_earned, rx_reference, order_items(name, quantity)',
+        'order_no, user_id, created_at, status, is_test, payment_method, fulfilment, payment_status, collection_code, contact, address_line, slot_label, store_name, substitution, total, amount_due, points_redeemed, points_earned, rx_reference, order_items(name, quantity)',
       )
       .order('created_at', { ascending: false })
       .limit(100),
@@ -361,8 +388,9 @@ export default function StaffRoute() {
       {status === 'ready' && tab === 'orders'
         ? visibleOrders.map(order => {
             const key = `order:${order.order_no}`;
-            const next = NEXT_ORDER_STEP[order.status];
-            const badge = ORDER_STATUS[order.status];
+            const next = nextStep(order);
+            const badge = ORDER_STATUS[order.status] ?? { label: String(order.status).toUpperCase(), tone: 'neutral' as BadgeTone };
+            const pickup = order.fulfilment === 'pickup';
             return (
               <Card key={key} variant="elevated" padding={spacing.lg} style={styles.card}>
                 <View style={styles.head}>
@@ -370,6 +398,7 @@ export default function StaffRoute() {
                     {order.order_no}
                   </Txt>
                   {order.is_test ? <Badge label="TEST" tone="neutral" /> : null}
+                  {pickup ? <Badge label="PICKUP" tone="info" /> : null}
                   <Badge label={badge.label} tone={badge.tone} />
                 </View>
                 <Txt variant="caption" color="onSurfaceVariant">
@@ -407,26 +436,35 @@ export default function StaffRoute() {
                     {`Prescription ref: ${order.rx_reference}`}
                   </Txt>
                 ) : null}
-                {next ? (
+                {pickup && order.status === 'ready' && order.payment_status !== 'paid' ? (
+                  <Txt variant="caption" color="onSurfaceVariant">
+                    Not paid yet. Record the payment in the admin app, then mark it collected.
+                  </Txt>
+                ) : null}
+                {next || canCancel(order) ? (
                   <View style={styles.actions}>
-                    <Button
-                      label={next.label}
-                      size="sm"
-                      fullWidth={false}
-                      loading={busyKey === key}
-                      disabled={busyKey !== null}
-                      onPress={() => void setOrderStatus(order, next.status)}
-                      style={styles.flex}
-                    />
-                    <Button
-                      label={confirmKey === key ? 'Tap again to cancel' : 'Cancel order'}
-                      size="sm"
-                      variant={confirmKey === key ? 'danger' : 'outline'}
-                      fullWidth={false}
-                      disabled={busyKey !== null}
-                      onPress={() => (confirmKey === key ? void setOrderStatus(order, 'cancelled') : setConfirmKey(key))}
-                      style={styles.flex}
-                    />
+                    {next ? (
+                      <Button
+                        label={next.label}
+                        size="sm"
+                        fullWidth={false}
+                        loading={busyKey === key}
+                        disabled={busyKey !== null}
+                        onPress={() => void setOrderStatus(order, next.status)}
+                        style={styles.flex}
+                      />
+                    ) : null}
+                    {canCancel(order) ? (
+                      <Button
+                        label={confirmKey === key ? 'Tap again to cancel' : 'Cancel order'}
+                        size="sm"
+                        variant={confirmKey === key ? 'danger' : 'outline'}
+                        fullWidth={false}
+                        disabled={busyKey !== null}
+                        onPress={() => (confirmKey === key ? void setOrderStatus(order, 'cancelled') : setConfirmKey(key))}
+                        style={styles.flex}
+                      />
+                    ) : null}
                   </View>
                 ) : null}
                 {ratings[order.order_no] ? (
@@ -434,9 +472,9 @@ export default function StaffRoute() {
                     {`Customer rating: ${ratingLine(ratings[order.order_no])}`}
                   </Txt>
                 ) : null}
-                {order.status === 'out-for-delivery' && order.points_earned > 0 ? (
+                {(order.status === 'out-for-delivery' || (order.status === 'ready' && next)) && order.points_earned > 0 ? (
                   <Txt variant="caption" color="onSurfaceVariant">
-                    {`Marking delivered adds ${order.points_earned} points to the customer.`}
+                    {`Marking ${pickup ? 'collected' : 'delivered'} adds ${order.points_earned} points to the customer.`}
                   </Txt>
                 ) : null}
               </Card>
