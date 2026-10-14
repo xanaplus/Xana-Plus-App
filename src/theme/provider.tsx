@@ -1,11 +1,10 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react';
-import { useColorScheme } from 'react-native';
 
 import { STORAGE_KEYS, parsePersisted, persisted, saveWithResult } from '@/lib/storage';
 import { colors as lightColors, darkColors, gradients as lightGradients, darkGradients } from '@/theme/tokens';
 import type { GradientPalette, Palette } from '@/theme/tokens';
 
-export type AppearanceChoice = 'light' | 'dark' | 'system';
+export type AppearanceChoice = 'light' | 'dark';
 type ThemeContextValue = {
   appearance: AppearanceChoice;
   resolved: 'light' | 'dark';
@@ -18,11 +17,11 @@ type ThemeContextValue = {
 };
 
 const isAppearance = (value: unknown): value is AppearanceChoice =>
-  value === 'light' || value === 'dark' || value === 'system';
+  value === 'light' || value === 'dark';
 const appearanceGuard = (value: unknown): value is AppearanceChoice => isAppearance(value);
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 const FALLBACK_THEME: ThemeContextValue = {
-  appearance: 'system',
+  appearance: 'light',
   resolved: 'light',
   colors: lightColors,
   gradients: lightGradients,
@@ -33,15 +32,16 @@ const FALLBACK_THEME: ThemeContextValue = {
 };
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const systemScheme = useColorScheme();
   const saved = parsePersisted(persisted().appearance, appearanceGuard);
-  const [appearance, setAppearanceState] = useState<AppearanceChoice>(saved ?? 'system');
+  // Legacy "system" preferences resolve to the new light default.
+  // Preserve explicit light/dark choices without following OS changes.
+  const [appearance, setAppearanceState] = useState<AppearanceChoice>(saved ?? 'light');
   const [appearanceSaving, setAppearanceSaving] = useState(false);
   const [appearanceError, setAppearanceError] = useState<string | null>(null);
   const [failedChoice, setFailedChoice] = useState<AppearanceChoice | null>(null);
   const latestWrite = useRef(0);
   const writeQueue = useRef<Promise<boolean>>(Promise.resolve(true));
-  const resolved = appearance === 'system' ? (systemScheme === 'dark' ? 'dark' : 'light') : appearance;
+  const resolved = appearance;
 
   const persistChoice = useCallback(async (choice: AppearanceChoice) => {
     const request = ++latestWrite.current;

@@ -3,6 +3,12 @@ name: Semantic appearance theming
 description: Why XanaPlus dark mode must use reactive semantic palettes rather than remapping rendered color values.
 ---
 
+Do not reintroduce a follow-system option as part of future theming upgrades; the Light/Dark-only design is an explicit user requirement.
+
+**Why:** the user asked to "make light mode the default unless user changes to dark mode" and remove the follow-system setting.
+
+**How to apply:** preserve this decision when changing appearance settings or migrating preferences, rather than restoring framework-default system-following behaviour.
+
 Dark mode should feel close to black, not green. Reserve green for brand actions and small highlights.
 
 **Why:** The user said the app's dark mode was too green and asked to make it closer to black.

@@ -41,7 +41,7 @@ function Probe() {
       <span>{theme.appearance}</span>
       <span>{theme.resolved}</span>
       <button onClick={() => void theme.setAppearance('dark')}>dark</button>
-      <button onClick={() => void theme.setAppearance('system')}>system</button>
+      <button onClick={() => void theme.setAppearance('light')}>light</button>
       <button onClick={() => void theme.retryAppearance()}>retry</button>
       <span>{theme.appearanceError}</span>
       <span>{String(theme.appearanceSaving)}</span>
@@ -71,50 +71,53 @@ describe('device appearance preference', () => {
     appearance.scheme = 'light';
   });
 
-  it('defaults to system and updates both the palette and memoized styles live', async () => {
+  it('defaults to light and ignores changes to the device appearance', async () => {
     const root = await mount();
     const lightBackground = spans(root)[4];
-    expect(spans(root).slice(0, 2)).toEqual(['system', 'light']);
+    expect(spans(root).slice(0, 2)).toEqual(['light', 'light']);
     appearance.scheme = 'dark';
     await act(async () => root.update(<ThemeProvider><Probe /></ThemeProvider>));
-    expect(spans(root).slice(0, 2)).toEqual(['system', 'dark']);
-    expect(spans(root)[4]).not.toEqual(lightBackground);
+    expect(spans(root).slice(0, 2)).toEqual(['light', 'light']);
+    expect(spans(root)[4]).toEqual(lightBackground);
     await act(async () => root.unmount());
   });
 
-  it('honours explicit overrides and switches back to live device appearance', async () => {
+  it('updates palette and memoized styles only when the user chooses dark or light', async () => {
     const root = await mount();
+    const lightBackground = spans(root)[4];
     await act(async () => click(root, 0));
     appearance.scheme = 'light';
     await act(async () => root.update(<ThemeProvider><Probe /></ThemeProvider>));
     expect(spans(root).slice(0, 2)).toEqual(['dark', 'dark']);
+    expect(spans(root)[4]).not.toEqual(lightBackground);
     await act(async () => click(root, 1));
-    expect(spans(root).slice(0, 2)).toEqual(['system', 'light']);
+    expect(spans(root).slice(0, 2)).toEqual(['light', 'light']);
+    expect(spans(root)[4]).toEqual(lightBackground);
     await act(async () => root.unmount());
   });
 
-  it('persists and hydrates the explicit device choice after remount', async () => {
+  it.each(['dark', 'light'] as const)('persists and hydrates explicit %s after remount', async choice => {
     const root = await mount();
-    await act(async () => click(root, 0));
-    expect(storage.value).toBe('"dark"');
+    await act(async () => click(root, choice === 'dark' ? 0 : 1));
+    expect(storage.value).toBe(JSON.stringify(choice));
     await act(async () => root.unmount());
     const hydrated = await mount();
-    expect(spans(hydrated).slice(0, 2)).toEqual(['dark', 'dark']);
+    expect(spans(hydrated).slice(0, 2)).toEqual([choice, choice]);
     await act(async () => hydrated.unmount());
   });
 
-  it.each(['"sepia"', '{invalid json', '{}', 'false'])('rejects invalid saved appearance %s', async value => {
+  it.each(['"system"', '"sepia"', '{invalid json', '{}', 'false'])('uses light for legacy or invalid saved appearance %s', async value => {
     storage.value = value;
     appearance.scheme = 'dark';
     const root = await mount();
-    expect(spans(root).slice(0, 2)).toEqual(['system', 'dark']);
+    expect(spans(root).slice(0, 2)).toEqual(['light', 'light']);
     await act(async () => root.unmount());
   });
 
   it('uses light when the device does not expose an appearance preference', async () => {
     appearance.scheme = null;
     const root = await mount();
-    expect(spans(root).slice(0, 2)).toEqual(['system', 'light']);
+    expect(spans(root).slice(0, 2)).toEqual(['light', 'light']);
     await act(async () => root.unmount());
   });
 
@@ -135,15 +138,15 @@ describe('device appearance preference', () => {
     const root = await mount();
     storage.defer = true;
     await act(async () => { click(root, 0); click(root, 1); });
-    expect(spans(root).slice(0, 2)).toEqual(['system', 'light']);
+    expect(spans(root).slice(0, 2)).toEqual(['light', 'light']);
     expect(spans(root)[3]).toBe('true');
     expect(storage.writes.map(write => write.value)).toEqual(['"dark"']);
     await act(async () => storage.writes[0].reject());
     expect(spans(root)[2]).toBeNull();
     expect(spans(root)[3]).toBe('true');
-    expect(storage.writes.map(write => write.value)).toEqual(['"dark"', '"system"']);
+    expect(storage.writes.map(write => write.value)).toEqual(['"dark"', '"light"']);
     await act(async () => storage.writes[1].resolve());
-    expect(storage.value).toBe('"system"');
+    expect(storage.value).toBe('"light"');
     expect(spans(root)[2]).toBeNull();
     expect(spans(root)[3]).toBe('false');
     await act(async () => root.unmount());

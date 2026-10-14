@@ -1052,7 +1052,6 @@ export default function ProfileRoute() {
         {([
           { value: 'light', title: 'Light', description: 'Always use the light appearance', icon: 'sparkle' },
           { value: 'dark', title: 'Dark', description: 'Always use the dark appearance', icon: 'eye' },
-          { value: 'system', title: 'Use device setting', description: 'Follow your device appearance, including changes', icon: 'settings' },
         ] as { value: AppearanceChoice; title: string; description: string; icon: IconName }[]).map(option => (
           <SelectableOption
             key={option.value}

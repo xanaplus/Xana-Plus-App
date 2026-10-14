@@ -12,7 +12,7 @@ const errors = [];
 try {
   const context = await browser.newContext({
     viewport: { width: 402, height: 874 },
-    colorScheme: 'light',
+    colorScheme: 'dark',
   });
   const page = await context.newPage();
   page.on('pageerror', error => errors.push(error.message));
@@ -93,8 +93,9 @@ try {
   await waitSurface('Profile', false);
   const originalLight = await surface('Profile');
   await openSettings();
-  await choice('Use device setting').waitFor();
-  assert.equal(await choice('Use device setting').getAttribute('aria-checked'), 'true');
+  await choice('Light').waitFor();
+  assert.equal(await choice('Light').getAttribute('aria-checked'), 'true');
+  assert.equal(await page.getByRole('radio', { name: /Use device setting|Follow system/ }).count(), 0);
   const appearanceBox = await visibleText('Appearance').boundingBox();
   const storeBox = await visibleText('Fulfilment store').boundingBox();
   assert.ok(appearanceBox.y < storeBox.y, 'Appearance must precede store settings');
@@ -112,6 +113,8 @@ try {
   await waitSurface('Profile', true);
   assertNeutral(await surface('Profile'));
   assert.ok(lightness(await surface('Profile')) < lightness(originalLight), 'Profile surface did not change');
+  await page.emulateMedia({ colorScheme: 'light' });
+  await waitSurface('Profile', true); // Explicit Dark stays dark on a light OS.
   await page.reload();
   await button('Settings').waitFor();
   await waitSurface('Profile', true);
@@ -135,12 +138,19 @@ try {
   await waitSurface('Profile', false);
   await page.emulateMedia({ colorScheme: 'dark' });
   await waitSurface('Profile', false); // Explicit Light overrides the device.
-  await openSettings();
-  await choice('Use device setting').click();
-  await button('Done').click();
-  await waitSurface('Profile', true);
+  await page.reload();
+  await button('Settings').waitFor();
+  await waitSurface('Profile', false); // Explicit Light survives reload on a dark OS.
   await page.emulateMedia({ colorScheme: 'light' });
-  await waitSurface('Profile', false); // System preference follows live changes.
+  await waitSurface('Profile', false); // OS changes never change the app's choice.
+  await page.evaluate(() => localStorage.setItem('xanaplus.appearance.v1', '"system"'));
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.reload();
+  await button('Settings').waitFor();
+  await waitSurface('Profile', false); // Legacy system preference now defaults to Light.
+  await openSettings();
+  assert.equal(await choice('Light').getAttribute('aria-checked'), 'true');
+  await button('Done').click();
   await page.setViewportSize({ width: 1280, height: 900 });
   await openSettings();
   await page.screenshot({ path: '/tmp/xanaplus-light-settings-desktop.png', fullPage: true });
@@ -176,7 +186,7 @@ try {
   );
   await failureContext.close();
   assert.deepEqual(errors, [], 'Browser raised runtime errors');
-  console.log('PASS: guest Settings placement; Light/Dark/System; screen and tab updates; remembered choice after reload; live device changes; explicit override; save failure and retry; mobile and desktop layout. No login, SMS, payment or order.');
+  console.log('PASS: Light default on a dark OS; only Light/Dark choices; screen and tab updates; remembered explicit choices; ignored OS changes; legacy system preference fallback; save failure and retry; mobile and desktop layout. No login, SMS, payment or order.');
 } finally {
   await browser.close();
 }

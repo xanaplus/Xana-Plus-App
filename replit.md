@@ -95,10 +95,10 @@ Sign-in, the live catalogue, saved orders, and account data depend on that proje
 
 ## Appearance
 
-- Profile → Settings places Appearance above Fulfilment store. Options are Light, Dark and Use device setting; a new device defaults to its system preference.
+- Profile → Settings places Appearance above Fulfilment store. Options are Light and Dark only. Light is the default regardless of OS appearance; legacy "system" preferences fall back to Light, while explicit saved Light/Dark choices are preserved.
 - Appearance is a device preference, available to guests and retained through sign-out. It is deliberately separate from synced account preferences.
 - Use the resolved semantic palette and memoized theme styles for screens and nested components. Keep store selection, product imagery and business logic independent of appearance.
-- `node scripts/tests/appearance-browser.mjs` checks guest-only theme changes, persistence, live device changes, contrast and store switching without login, SMS, orders or payments.
+- `node scripts/tests/appearance-browser.mjs` checks guest-only theme changes, persistence, independence from OS changes, legacy system fallback, contrast and store switching without login, SMS, orders or payments.
 - Native interface style is automatic. Changes to native app configuration require a new native build; web preview does not verify Android/iOS builds.
 - Product cards/rows and category rails share a 44px “+ Add” pill. Optional pack and old-price slots must not shift adjacent card footers. Keep card navigation and add controls as sibling pressables, and preserve existing quantity/Rx/stock checks.
 - `node scripts/tests/product-card-browser.mjs` checks public card alignment and guest-local cart interactions in both themes without login, shared orders or payments.
