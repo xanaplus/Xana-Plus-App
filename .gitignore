@@ -52,3 +52,4 @@ example
 # generated native folders
 /ios
 /android
+/generated-artifacts/

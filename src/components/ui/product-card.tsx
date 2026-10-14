@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'rea
 import Animated from 'react-native-reanimated';
 
 import { Badge, type BadgeTone } from '@/components/ui/badge';
-import { Icon } from '@/components/ui/icon';
+import { ProductAddButton } from '@/components/ui/product-add-button';
 import { usePressScale } from '@/components/ui/pressable-scale';
 import { ProductPhoto } from '@/components/ui/product-photo';
 import { Txt } from '@/components/ui/text';
@@ -71,9 +71,13 @@ export function ProductCard({ product, width, quantity = 0, onPress, onAdd, styl
         ) : null}
       </View>
 
-      <Txt variant="caption" color="outline" numberOfLines={1}>
-        {product.pack}
-      </Txt>
+      <View style={styles.packSlot}>
+        {product.pack ? (
+          <Txt variant="caption" color="outline" numberOfLines={1}>
+            {product.pack}
+          </Txt>
+        ) : null}
+      </View>
       <Txt variant="titleSm" numberOfLines={2} style={styles.title}>
         {product.name}
       </Txt>
@@ -89,12 +93,16 @@ export function ProductCard({ product, width, quantity = 0, onPress, onAdd, styl
 
       <View style={styles.footer}>
         <View style={styles.priceBlock}>
-          <Txt variant="titleLg">{formatKes(product.price)}</Txt>
-          {product.wasPrice ? (
-            <Txt variant="priceStrike" color="outline" style={styles.strike}>
-              {formatKes(product.wasPrice)}
-            </Txt>
-          ) : null}
+          <Txt variant="titleLg" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.68}>
+            {formatKes(product.price)}
+          </Txt>
+          <View style={styles.strikeSlot}>
+            {product.wasPrice ? (
+              <Txt variant="priceStrike" color="outline" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.72} style={styles.strike}>
+                {formatKes(product.wasPrice)}
+              </Txt>
+            ) : null}
+          </View>
         </View>
         {product.inStock === false ? null : quantity > 0 ? (
           <View style={[styles.qtyPill, { backgroundColor: colors.primary }]}>
@@ -103,15 +111,7 @@ export function ProductCard({ product, width, quantity = 0, onPress, onAdd, styl
             </Txt>
           </View>
         ) : (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`Add ${product.name} to cart`}
-            onPress={onAdd}
-            hitSlop={6}
-            style={[styles.addButton, { backgroundColor: colors.primary }]}
-          >
-            <Icon name="plus" size={18} color="onPrimary" />
-          </Pressable>
+          <ProductAddButton productName={product.name} onPress={onAdd} />
         )}
       </View>
     </Animated.View>
@@ -174,15 +174,7 @@ export function ProductRow({ product, eyebrow, description, quantity = 0, onPres
               </Txt>
             </View>
           ) : (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Add ${product.name} to cart`}
-              onPress={onAdd}
-              hitSlop={6}
-              style={[styles.addButton, { backgroundColor: colors.primary }]}
-            >
-              <Icon name="plus" size={18} color="onPrimary" />
-            </Pressable>
+            <ProductAddButton productName={product.name} onPress={onAdd} />
           ))}
       </View>
     </View>
@@ -208,21 +200,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  packSlot: { height: 15 },
   title: { minHeight: 38 },
-  footer: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: spacing.sm, marginTop: spacing.xs },
-  priceBlock: { flexShrink: 1 },
+  footer: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.xs, marginTop: spacing.xs },
+  priceBlock: { minWidth: 0, flex: 1, minHeight: 44, justifyContent: 'center' },
+  strikeSlot: { height: 15 },
   strike: { textDecorationLine: 'line-through' },
-  addButton: {
-    width: 34,
-    height: 34,
-    borderRadius: radius.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...elevation.hairline,
-  },
   qtyPill: {
-    minWidth: 34,
-    height: 34,
+    minWidth: 44,
+    height: 44,
     paddingHorizontal: spacing.sm,
     borderRadius: radius.pill,
     alignItems: 'center',

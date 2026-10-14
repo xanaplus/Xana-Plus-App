@@ -22,6 +22,15 @@ These are public client configuration values and are included in Expo's client b
 
 Sign-in, the live catalogue, saved orders, and account data depend on that project's schema and Edge Functions. See `DEVELOPER_GUIDE.md` for current backend details; the README's statement that there is no backend is outdated.
 
+## Publishing
+
+- Keep the existing Autoscale target. Build with `npm run build:web`, then run `npm run start:production`.
+- The Expo single-page web export goes to `generated-artifacts/web`; generated output is ignored by Git and workspace upload and recreated by the publishing build.
+- The production server binds to `0.0.0.0` using `PORT` or 5000. It serves only the web export, supports Expo Router deep links and responds to `/` without waiting for Supabase or sign-in.
+- Do not use the Metro development workflow or a generic shell `$file` command for publishing. Keep the separate design sandbox out of the production app.
+- The two `EXPO_PUBLIC_SUPABASE_*` client settings must exist during the production build, because Expo embeds them in the client bundle. Never embed backend-only credentials.
+- `tests/backend/production-server.test.mjs` checks startup probes, deep links, assets, HEAD, missing files and path/write protections. Publishing settings changes require another user-initiated publish.
+
 ## Checks and limitations
 
 - `npm run typecheck` checks TypeScript.
@@ -91,3 +100,5 @@ Sign-in, the live catalogue, saved orders, and account data depend on that proje
 - Use the resolved semantic palette and memoized theme styles for screens and nested components. Keep store selection, product imagery and business logic independent of appearance.
 - `node scripts/tests/appearance-browser.mjs` checks guest-only theme changes, persistence, live device changes, contrast and store switching without login, SMS, orders or payments.
 - Native interface style is automatic. Changes to native app configuration require a new native build; web preview does not verify Android/iOS builds.
+- Product cards/rows and category rails share a 44px “+ Add” pill. Optional pack and old-price slots must not shift adjacent card footers. Keep card navigation and add controls as sibling pressables, and preserve existing quantity/Rx/stock checks.
+- `node scripts/tests/product-card-browser.mjs` checks public card alignment and guest-local cart interactions in both themes without login, shared orders or payments.

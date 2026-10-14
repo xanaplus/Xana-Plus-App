@@ -11,7 +11,6 @@ import {
   Chip,
   EmptyState,
   Icon,
-  IconButton,
   LoadState,
   NoticePill,
   ProductCard,
@@ -25,6 +24,7 @@ import {
   TopBar,
   TopBarAction,
 } from '@/components/ui';
+import { ProductAddButton } from '@/components/ui/product-add-button';
 import { ProductPhoto } from '@/components/ui/product-photo';
 import type { BadgeTone, IconName, SegmentedOption } from '@/components/ui';
 import { stores, verticalBySlug } from '@/data/catalog';
@@ -750,11 +750,11 @@ function RailCard({
       <Pressable accessibilityRole="button" accessibilityLabel={product.name} onPress={onPress} style={styles.railOverlay} />
 
       <View style={styles.railBody}>
-        <Txt variant="titleSm" numberOfLines={2}>
+        <Txt variant="titleSm" numberOfLines={2} style={styles.railTitle}>
           {product.name}
         </Txt>
         {PACK_LINE_VERTICALS.includes(vertical) ? (
-          <Txt variant="caption" color="outline" numberOfLines={1}>
+          <Txt variant="caption" color="outline" numberOfLines={1} style={styles.railPack}>
             {product.pack}
           </Txt>
         ) : null}
@@ -799,15 +799,7 @@ function RailCard({
                 style={styles.railStepper}
               />
             ) : (
-              <IconButton
-                name="plus"
-                accessibilityLabel={`Add ${product.name} to cart`}
-                onPress={onAdd}
-                size={34}
-                iconSize={18}
-                background={colors.primaryContainer}
-                color="onPrimary"
-              />
+              <ProductAddButton productName={product.name} onPress={onAdd} />
             )}
           </View>
         )}
@@ -948,7 +940,9 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   },
   railBadges: { position: 'absolute', top: spacing.sm, left: spacing.sm, right: spacing.sm, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.xs },
   railAge: { position: 'absolute', top: spacing.sm, right: spacing.sm },
-  railBody: { gap: spacing.xs, padding: spacing.md },
+  railBody: { gap: spacing.xs, padding: spacing.md, flex: 1 },
+  railTitle: { minHeight: 38 },
+  railPack: { minHeight: 15 },
   /** Card-wide tap target; rendered after the body so the stepper stays clickable. */
   railOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: spacing.sm, marginTop: spacing.xxs },
@@ -967,7 +961,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   tierRowBase: { backgroundColor: colors.surfaceContainerLow },
   tierRowBulk: { backgroundColor: colors.mintSurface },
 
-  railFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md, marginTop: spacing.sm },
+  railFooter: { minHeight: 44 + spacing.sm, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md, marginTop: 'auto', paddingTop: spacing.sm },
   railFooterEnd: { justifyContent: 'flex-end' },
   railStepper: { flex: 1, justifyContent: 'space-between' },
 

@@ -8,6 +8,10 @@
     "scheme": "xanaplus",
     "userInterfaceStyle": "automatic",
     "backgroundColor": "#fcf9f8",
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "ke.co.xana.xanaplus",

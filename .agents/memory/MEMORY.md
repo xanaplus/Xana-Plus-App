@@ -12,3 +12,5 @@
 - [Live browser checks](live-browser-verification.md) — verify in-app cached transitions; hidden Expo screens and closing dialogs can cause misleading selector failures.
 - [Semantic appearance theming](dark-mode-theming.md) — shared light-color values cannot distinguish surfaces from action text; use reactive semantic palettes throughout the component tree.
 - [Spending chart intent](spending-chart-design.md) — user approved monthly bars for comparison and a department donut for composition.
+- [Product card controls](product-card-controls.md) — user chose “+ Add” pills and aligned price/action rows for product cards.
+- [Expo publishing](expo-publishing.md) — a working Metro preview does not validate legacy publishing settings; verify the production export and HTTP startup probe.
