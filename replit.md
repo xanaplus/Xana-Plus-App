@@ -25,7 +25,7 @@ Sign-in, the live catalogue, saved orders, and account data depend on that proje
 ## Publishing
 
 - Keep the existing Autoscale target. Build with `npm run build:web`, then run `npm run start:production`.
-- The Expo single-page web export goes to `generated-artifacts/web`; generated output is ignored by Git and workspace upload and recreated by the publishing build.
+- The Expo single-page web export goes to `dist/`. It is Git-ignored but must NOT be deployment-ignored: publishing filters the image after the build, so ignoring the production output removes the files the server needs. Reserve deployment-ignored `generated-artifacts/` for disposable non-runtime outputs.
 - The production server binds to `0.0.0.0` using `PORT` or 5000. It serves only the web export, supports Expo Router deep links and responds to `/` without waiting for Supabase or sign-in.
 - Do not use the Metro development workflow or a generic shell `$file` command for publishing. Keep the separate design sandbox out of the production app.
 - The two `EXPO_PUBLIC_SUPABASE_*` client settings must exist during the production build, because Expo embeds them in the client bundle. Never embed backend-only credentials.

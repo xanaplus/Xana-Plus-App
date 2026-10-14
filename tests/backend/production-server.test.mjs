@@ -1,8 +1,8 @@
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { productionServer } from '../../scripts/serve-production.mjs';
+import { productionServer, WEB_BUILD_ROOT } from '../../scripts/serve-production.mjs';
 
 let root, server, base;
 beforeAll(async () => {
@@ -19,6 +19,16 @@ afterAll(async () => {
   rmSync(root, { recursive: true, force: true });
 });
 describe('production Expo web serving', () => {
+  it('builds into the server directory and retains it in the deployment package', () => {
+    const project = new URL('../../', import.meta.url);
+    const pkg = JSON.parse(readFileSync(new URL('package.json', project), 'utf8'));
+    const output = pkg.scripts['build:web'].match(/--output-dir\s+(\S+)/)[1];
+    expect(resolve(new URL(project).pathname, output)).toBe(resolve(WEB_BUILD_ROOT));
+    const excluded = readFileSync(new URL('.replitignore', project), 'utf8')
+      .split(/\r?\n/).map(line => line.trim()).filter(line => line && !line.startsWith('#'))
+      .map(line => line.replace(/^\/|\/$/g, ''));
+    expect(excluded.some(path => output === path || output.startsWith(`${path}/`))).toBe(false);
+  });
   it('responds to the startup probe with HTML and no cache', async () => {
     const res = await fetch(base);
     expect(res.status).toBe(200);

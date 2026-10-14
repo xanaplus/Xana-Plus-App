@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 import { extname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const DEFAULT_ROOT = fileURLToPath(new URL('../generated-artifacts/web/', import.meta.url));
+export const WEB_BUILD_ROOT = fileURLToPath(new URL('../dist/', import.meta.url));
 const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
@@ -16,7 +16,7 @@ const MIME = {
 };
 
 /** Serves only the exported Expo SPA; Supabase remains the existing backend. */
-export function productionServer(root = DEFAULT_ROOT) {
+export function productionServer(root = WEB_BUILD_ROOT) {
   root = resolve(root);
   const index = resolve(root, 'index.html');
   if (!existsSync(index)) throw new Error('Web build missing. Run npm run build:web before starting production.');
