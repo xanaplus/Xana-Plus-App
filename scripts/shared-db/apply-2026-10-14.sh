@@ -19,8 +19,11 @@ export SUPABASE_DB_PASSWORD="$(tr -d '[:space:]' < "$SECRETS/superbase-db-passwo
 
 echo "== 1. Database: what will be applied (should be only 20261014220000_lock_sign_in_identity)"
 npx supabase db push --dry-run
-read -r -p "Apply it? [y/N] " yes
-[[ "$yes" == "y" ]] || { echo "Stopped."; exit 1; }
+# Claude Code's "!" has no keyboard input, so pass --yes there after checking the list above.
+if [[ "${1:-}" != "--yes" ]]; then
+  read -r -p "Apply it? [y/N] " yes || yes=""
+  [[ "$yes" == "y" ]] || { echo "Stopped. Nothing was applied. Run again with --yes to apply."; exit 1; }
+fi
 npx supabase db push
 
 echo "== 2. Sign-in settings"
