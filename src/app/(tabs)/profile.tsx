@@ -150,6 +150,9 @@ const POINT_RULES: { icon: IconName; title: string; description: string }[] = [
   { icon: 'tag', title: 'Club Member Savings', description: 'Tiered wholesale savings from 6 units stack with your points' },
 ];
 
+/** The full policy Google Play requires a link to; the page itself is published on xanalife.com. */
+const PRIVACY_POLICY_URL = 'https://www.xanalife.com/pages/xana-plus-privacy';
+
 const PRIVACY_BLOCKS: { title: string; body: string }[] = [
   {
     title: 'Your account',
@@ -965,6 +968,15 @@ export default function ProfileRoute() {
             </Txt>
           </Card>
         ))}
+        <View style={styles.cardStack}>
+          <Button
+            label="Read the full privacy policy"
+            variant="outline"
+            icon="shield"
+            iconPosition="leading"
+            onPress={() => void Linking.openURL(PRIVACY_POLICY_URL)}
+          />
+        </View>
 
         {isAuthenticated ? (
           <View style={styles.cardStack}>
@@ -995,7 +1007,7 @@ export default function ProfileRoute() {
         }
       >
         <Txt variant="bodySm" color="onSurfaceVariant">
-          {`Your name, saved addresses, settings and ${
+          {`Your name, saved addresses, prescriptions, settings and ${
             user ? user.clubPoints.toLocaleString('en-KE') : 'your'
           } Xana Club points will be removed and you'll be signed out. Past orders stay in our records for accounting, without your name or address.`}
         </Txt>
