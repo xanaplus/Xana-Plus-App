@@ -21,5 +21,6 @@ can select a hidden source screen; icon text can also change accessible button n
 and dialog close animations outlive the click that dismissed them.
 
 **How to apply:** wait for backend responses and dialog closure, use role/label
-selectors appropriate to the rendered component, and log safe action/line identifiers
+selectors appropriate to the rendered component (including font-icon glyphs in
+button names rather than assuming an exact plain-text name), and log safe action/line identifiers
 without session values, raw backend errors or private page contents.

@@ -18,7 +18,7 @@ export type BottomSheetProps = {
   children: ReactNode;
   /** Sticky footer (primary action). */
   footer?: ReactNode;
-  /** Allows the body to scroll when content exceeds 70% of the viewport. */
+  /** Constrains the sheet to the viewport and scrolls only its body. */
   scrollable?: boolean;
   style?: StyleProp<ViewStyle>;
 };
@@ -66,7 +66,7 @@ export function BottomSheet({ visible, onClose, title, description, children, fo
         <Animated.View style={[styles.scrim, { backgroundColor: colors.scrim }, scrimStyle]}>
           <Pressable accessibilityRole="button" accessibilityLabel="Close sheet" onPress={onClose} style={styles.fill} />
         </Animated.View>
-        <Animated.View style={[styles.sheet, { backgroundColor: colors.surface }, elevation.sheet, { paddingBottom: insets.bottom + spacing.lg }, style, sheetStyle]}>
+        <Animated.View style={[styles.sheet, scrollable ? styles.scrollableSheet : null, { backgroundColor: colors.surface }, elevation.sheet, { paddingBottom: insets.bottom + spacing.lg }, style, sheetStyle]}>
           <View style={[styles.handle, { backgroundColor: colors.surfaceContainerHighest }]} />
           {title ? (
             <View style={styles.header}>
@@ -78,13 +78,13 @@ export function BottomSheet({ visible, onClose, title, description, children, fo
                   </Txt>
                 ) : null}
               </View>
-              <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={onClose} hitSlop={8}>
+              <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={onClose} style={styles.closeButton} hitSlop={8}>
                 <Icon name="close" size={20} color="onSurfaceVariant" />
               </Pressable>
             </View>
           ) : null}
           {scrollable ? (
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.body}>
+            <ScrollView style={styles.scrollBody} showsVerticalScrollIndicator contentContainerStyle={[styles.body, styles.scrollContent]}>
               {children}
             </ScrollView>
           ) : (
@@ -109,6 +109,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: layout.screenMargin,
     paddingTop: spacing.md,
   },
+  scrollableSheet: { maxHeight: '90%', flexShrink: 1 },
+  scrollBody: { flexShrink: 1, minHeight: 0 },
+  scrollContent: { paddingBottom: spacing.sm },
+  closeButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: radius.pill, marginBottom: spacing.lg },
   header: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: spacing.lg, marginBottom: spacing.lg },
   headerText: { flex: 1, gap: spacing.xs },

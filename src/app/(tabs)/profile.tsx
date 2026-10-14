@@ -916,7 +916,14 @@ export default function ProfileRoute() {
         <RowGroup rows={helpRows} flat />
       </BottomSheet>
 
-      <BottomSheet visible={sheet === 'terms'} onClose={closeSheet} title="Terms & Privacy" description="Sign-in, privacy settings and the short version of how we handle your data." scrollable>
+      <BottomSheet
+        visible={sheet === 'terms'}
+        onClose={closeSheet}
+        title="Terms & Privacy"
+        description="Sign-in, privacy settings and the short version of how we handle your data."
+        footer={<Button label="Back to Profile" variant="outline" icon="arrow-left" iconPosition="leading" onPress={closeSheet} />}
+        scrollable
+      >
         {isAuthenticated && user ? (
           <>
             <SectionHeader title="Sign-in details" />
