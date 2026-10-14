@@ -24,6 +24,7 @@ vi.mock('@/components/ui', () => {
   };
 });
 vi.mock('@/features/account/name-sheet', () => ({ NameSheet: () => null }));
+vi.mock('@/features/account/sign-in-details', () => ({ SignInDetails: () => null }));
 vi.mock('@/components/spending/department-donut', () => ({ default: () => null }));
 vi.mock('@/data/live-catalogue', () => ({
   groupsForCategory: () => [], liveProductById: () => undefined, liveProductsByCategory: () => [],

@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -23,7 +24,7 @@ describe('production Expo web serving', () => {
     const project = new URL('../../', import.meta.url);
     const pkg = JSON.parse(readFileSync(new URL('package.json', project), 'utf8'));
     const output = pkg.scripts['build:web'].match(/--output-dir\s+(\S+)/)[1];
-    expect(resolve(new URL(project).pathname, output)).toBe(resolve(WEB_BUILD_ROOT));
+    expect(resolve(fileURLToPath(project), output)).toBe(resolve(WEB_BUILD_ROOT));
     const excluded = readFileSync(new URL('.replitignore', project), 'utf8')
       .split(/\r?\n/).map(line => line.trim()).filter(line => line && !line.startsWith('#'))
       .map(line => line.replace(/^\/|\/$/g, ''));
