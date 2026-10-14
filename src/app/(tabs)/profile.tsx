@@ -26,6 +26,7 @@ import { deliverySlots, productById, stores } from '@/data/catalog';
 import { ORDER_HISTORY, type OrderRecord } from '@/data/orders';
 import type { FulfilmentMode, PaymentMethodId, Product } from '@/data/types';
 import { NameSheet } from '@/features/account/name-sheet';
+import { SignInDetails } from '@/features/account/sign-in-details';
 import { formatCartCounts, formatKes } from '@/lib/format';
 import { recordedSavings } from '@/lib/order-savings';
 import { unitPrice, useCart } from '@/store/cart';
@@ -928,15 +929,7 @@ export default function ProfileRoute() {
           <>
             <SectionHeader title="Sign-in details" />
             <Card variant="flat" padding={spacing.lg} style={styles.cardStack}>
-              <View style={styles.signInRow}>
-                <View>
-                  <Txt variant="title">{maskPhone(user.phone)}</Txt>
-                  <Txt variant="caption" color="onSurfaceVariant">
-                    Used to sign in and receive the M-Pesa prompt
-                  </Txt>
-                </View>
-                <Button label="Change number" size="sm" variant="outline" onPress={changeNumber} />
-              </View>
+              <SignInDetails maskedPhone={maskPhone(user.phone)} onChangeNumber={changeNumber} />
             </Card>
 
             <SectionHeader title="Privacy settings" style={styles.cardStack} />
@@ -1291,7 +1284,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   section: { gap: spacing.sm },
   /** Multi-line card bodies (sheets) need their own vertical rhythm. */
   cardStack: { gap: spacing.sm },
-  signInRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md },
   alertsDisabled: { opacity: 0.4 },
 
   identityRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },

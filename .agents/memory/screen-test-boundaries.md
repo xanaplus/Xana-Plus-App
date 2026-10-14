@@ -15,3 +15,14 @@ props can include circular renderer metadata, which is not customer-visible stat
 the actual screen logic; check loading, failure, retry, and recovery through the
 text and event handlers customers use. Keep these tests independent of shared
 backend credentials and SMS delivery.
+
+For signed-in-only layout checks, render the real focused component with its real
+shared UI primitives in an isolated browser fixture.
+
+**Why:** flex wrapping and font metrics need a browser, but verifying account-row
+clipping should not require a live login, account changes or SMS. Do not bypass
+production authentication just to expose the component.
+
+**How to apply:** use synthetic masked data, actual app fonts and style tokens;
+stub only context/native boundaries such as unused icons or animations. Clearly
+distinguish component verification from verification of the live signed-in page.
