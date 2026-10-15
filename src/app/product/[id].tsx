@@ -28,6 +28,7 @@ import type { CategoryVertical, Product } from '@/data/types';
 import { discountPercent, formatKes } from '@/lib/format';
 import { activePriceTiers, type PriceTier } from '@/lib/quantity-pricing';
 import { unitPrice, useCart } from '@/store/cart';
+import { useFulfilment } from '@/store/fulfilment';
 import { layout, radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
@@ -114,10 +115,7 @@ const AGE_NOTICE = '18+ only · Confirm your age at checkout';
 const RETURN_NOTE =
   'Unopened items can be returned within 24 hours for a full M-Pesa refund. Our shopper collects them from your door.';
 
-const EXPRESS_SERVICE = {
-  title: '30-Min Nairobi Express',
-  description: 'Fulfilled fresh from our Syokimau & Ruiru stores',
-};
+const EXPRESS_TITLE = '30-Min Nairobi Express';
 
 const PHARMACIST_SERVICE = {
   title: 'Collection or delivery after pharmacist approval',
@@ -231,6 +229,7 @@ function ProductDetail({ product }: { product: Product }) {
   const router = useRouter();
   const goBack = useBack();
   const cart = useCart();
+  const { store } = useFulfilment();
   const [quantity, setQuantity] = useState(() => Math.max(1, cart.quantityOf(product.id)));
 
   const isPharmacy = product.rxRequired === true || PHARMACY_CATEGORY[product.category] === true;
@@ -438,7 +437,7 @@ function ProductDetail({ product }: { product: Product }) {
             <View style={[styles.tierRow, quantity < tiers[0].minQty ? styles.tierRowActive : null]}>
               <View style={styles.tierLeft}>
               <Txt variant="title" color={quantity < tiers[0].minQty ? 'primaryAccent' : 'onSurface'}>
-                  {`1–${tiers[0].minQty - 1} units`}
+                  {tiers[0].minQty === 2 ? '1 unit' : `1–${tiers[0].minQty - 1} units`}
                 </Txt>
               </View>
               <View style={styles.tierRight}>
@@ -497,9 +496,9 @@ function ProductDetail({ product }: { product: Product }) {
                 <Icon name="delivery" size={20} color="primaryAccent" />
               </View>
               <View style={styles.serviceBody}>
-                <Txt variant="title">{EXPRESS_SERVICE.title}</Txt>
+                <Txt variant="title">{EXPRESS_TITLE}</Txt>
                 <Txt variant="bodySm" color="onSurfaceVariant">
-                  {EXPRESS_SERVICE.description}
+                  {`Packed fresh at ${store.name}, the store you shop from`}
                 </Txt>
               </View>
             </View>
