@@ -228,7 +228,9 @@ function ProductDetail({ product }: { product: Product }) {
   const goBack = useBack();
   const cart = useCart();
   const { store } = useFulfilment();
-  const [quantity, setQuantity] = useState(() => Math.max(1, cart.quantityOf(product.id)));
+  // The footer edits the cart line directly (Jumia-style), so the pricing card reads the cart too.
+  const inCart = cart.quantityOf(product.id);
+  const quantity = Math.max(1, inCart);
 
   const isPharmacy = product.rxRequired === true || PHARMACY_CATEGORY[product.category] === true;
   const [openSection, setOpenSection] = useState(isPharmacy ? SECTION.leaflet : '');
@@ -286,7 +288,7 @@ function ProductDetail({ product }: { product: Product }) {
   const toggle = (key: string) => setOpenSection(current => (current === key ? '' : key));
 
   const onAdd = () => {
-    cart.add(product.id, quantity);
+    cart.add(product.id, 1);
     if (product.rxRequired) router.push('/checkout');
   };
 
@@ -298,23 +300,28 @@ function ProductDetail({ product }: { product: Product }) {
         <View style={styles.footer}>
           {product.rxRequired ? <NoticePill label={RX_NOTICE} tone="danger" icon="prescription" /> : null}
           {product.ageRestricted ? <NoticePill label={AGE_NOTICE} tone="warning" icon="shield" /> : null}
-          <View style={styles.footerRow}>
-            <QuantityStepper
-              quantity={quantity}
-              min={1}
-              tone="brand"
-              onDecrement={() => setQuantity(current => Math.max(1, current - 1))}
-              onIncrement={() => setQuantity(current => current + 1)}
-            />
-            <Button
-              label={`Add to Cart · ${formatKes(lineTotal)}`}
-              icon="cart"
-              iconPosition="leading"
-              fullWidth={false}
-              style={styles.cta}
-              onPress={onAdd}
-            />
-          </View>
+          {/* Add to Cart adds one; after that − n + changes the cart line itself, one tap at a time, as on Jumia. */}
+          {inCart === 0 ? (
+            <Button label={`Add to Cart · ${formatKes(currentUnitPrice)}`} icon="cart" iconPosition="leading" onPress={onAdd} />
+          ) : (
+            <View style={styles.footerRow}>
+              <QuantityStepper
+                quantity={inCart}
+                min={0}
+                tone="brand"
+                onDecrement={() => cart.setQuantity(product.id, inCart - 1)}
+                onIncrement={() => cart.setQuantity(product.id, inCart + 1)}
+              />
+              <Button
+                label={`View Cart · ${formatKes(lineTotal)}`}
+                icon="cart"
+                iconPosition="leading"
+                fullWidth={false}
+                style={styles.cta}
+                onPress={() => router.push('/(tabs)/cart')}
+              />
+            </View>
+          )}
         </View>
       }
     >
@@ -431,7 +438,7 @@ function ProductDetail({ product }: { product: Product }) {
             <View style={styles.tierIntro}>
               <Txt variant="title">Quantity pricing</Txt>
               <Txt variant="bodySm" color="onSurfaceVariant">
-                {`${quantity} ${quantity === 1 ? 'unit' : 'units'} selected · ${formatKes(currentUnitPrice)} each`}
+                {`${quantity} ${quantity === 1 ? 'unit' : 'units'} ${inCart > 0 ? 'in your cart' : 'selected'} · ${formatKes(currentUnitPrice)} each`}
               </Txt>
             </View>
             <View style={[styles.tierRow, quantity < tiers[0].minQty ? styles.tierRowActive : null]}>
