@@ -43,7 +43,7 @@ describe('product card add pills', () => {
     const add = vi.fn(), open = vi.fn();
     const root = await mount(<ProductCard product={product} onAdd={add} onPress={open} />);
     const button = root.root.findByProps({ accessibilityLabel: `Add ${product.name} to cart` });
-    expect(root.root.findAllByType('text').flatMap(node => [node.props.children].flat(Infinity))).toContain('+ Add');
+    expect(button.findByType('icon').props.name).toBe('plus');
     await act(async () => button.props.onPress());
     expect(add).toHaveBeenCalledTimes(1);
     expect(open).not.toHaveBeenCalled();
@@ -86,8 +86,9 @@ describe('product card add pills', () => {
     const button = root.root.findByProps({ accessibilityLabel: `Add ${product.name} to cart` });
     const normal = Object.assign({}, ...button.props.style({ pressed: false }).filter(Boolean));
     const pressed = Object.assign({}, ...button.props.style({ pressed: true }).filter(Boolean));
-    expect(normal.height).toBeGreaterThanOrEqual(44);
-    expect(normal.minWidth).toBeGreaterThanOrEqual(44);
+    // A 36pt circle plus hitSlop on every side still gives a 44pt touch target.
+    expect(normal.height + button.props.hitSlop * 2).toBeGreaterThanOrEqual(44);
+    expect(normal.width + button.props.hitSlop * 2).toBeGreaterThanOrEqual(44);
     expect(normal.backgroundColor).toBe(darkColors.primary);
     expect(pressed.backgroundColor).toBe(darkColors.primary);
     await act(async () => root.unmount());

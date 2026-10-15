@@ -98,13 +98,12 @@ export function ProductCard({ product, width, quantity = 0, onPress, onAdd, styl
           <Txt variant="titleLg" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.68}>
             {formatKes(product.price)}
           </Txt>
-          <View style={styles.strikeSlot}>
-            {product.wasPrice ? (
-              <Txt variant="priceStrike" color="outline" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.72} style={styles.strike}>
-                {formatKes(product.wasPrice)}
-              </Txt>
-            ) : null}
-          </View>
+          {/* Only takes space when there is a was-price, so a lone price centres beside the + button. */}
+          {product.wasPrice ? (
+            <Txt variant="priceStrike" color="outline" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.72} style={styles.strike}>
+              {formatKes(product.wasPrice)}
+            </Txt>
+          ) : null}
         </View>
         {product.inStock === false ? null : quantity > 0 ? (
           <CardStepper productId={product.id} quantity={quantity} />
@@ -220,10 +219,9 @@ const styles = StyleSheet.create({
   title: { minHeight: 38 },
   footer: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.xs, marginTop: spacing.xs },
   priceBlock: { minWidth: 0, flex: 1, minHeight: 44, justifyContent: 'center' },
-  strikeSlot: { height: 15 },
   strike: { textDecorationLine: 'line-through' },
-  /** Tighter than the cart's stepper (~88pt) so the price keeps its room on a 168pt card. */
-  cardStepper: { gap: spacing.xs, paddingHorizontal: spacing.xxs },
+  /** Tighter than the cart's stepper (~88pt) so the price keeps its room on a 168pt card; 36pt tall like the + button. */
+  cardStepper: { gap: spacing.xs, paddingHorizontal: spacing.xxs, paddingVertical: spacing.xs },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

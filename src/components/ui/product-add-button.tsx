@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
-import { Txt } from '@/components/ui/text';
+import { Icon } from '@/components/ui/icon';
 import { radius } from '@/theme';
 import { useTheme } from '@/theme/provider';
 
@@ -11,7 +11,10 @@ export type ProductAddButtonProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-/** Compact, 44pt add action shared by product cards and category rails. */
+/**
+ * Round + add action shared by product cards and category rails (Instacart / Glovo style).
+ * 36pt to match the − n + counter that replaces it, with hitSlop keeping a 44pt touch target.
+ */
 export function ProductAddButton({ productName, onPress, disabled = false, style }: ProductAddButtonProps) {
   const { colors } = useTheme();
   const isDisabled = disabled || !onPress;
@@ -22,6 +25,7 @@ export function ProductAddButton({ productName, onPress, disabled = false, style
       accessibilityLabel={`Add ${productName} to cart`}
       disabled={isDisabled}
       onPress={onPress}
+      hitSlop={4}
       style={({ pressed }) => [
         styles.button,
         {
@@ -32,18 +36,15 @@ export function ProductAddButton({ productName, onPress, disabled = false, style
         style,
       ]}
     >
-      <Txt variant="buttonSm" tint={isDisabled ? colors.onSurfaceVariant : colors.onPrimary}>
-        + Add
-      </Txt>
+      <Icon name="plus" size={18} color={isDisabled ? 'onSurfaceVariant' : 'onPrimary'} />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    minWidth: 62,
-    height: 44,
-    paddingHorizontal: 9,
+    width: 36,
+    height: 36,
     borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
