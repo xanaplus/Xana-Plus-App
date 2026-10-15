@@ -57,29 +57,17 @@ type AlertKey =
 
 type AlertRow = { key: AlertKey; icon: IconName; title: string; description: string };
 
-/** Matches the "Notification Preferences" Figma frame — three sections, in order. */
+/**
+ * Only the alerts send-push actually sends. The Figma frame's other rows (payment issues,
+ * prescription status, repeat reminders, promotions, points) come back once those messages exist.
+ */
 const ALERT_SECTIONS: { title: string; rows: AlertRow[] }[] = [
   {
     title: 'ORDERS',
     rows: [
-      { key: 'orderConfirmed', icon: 'receipt', title: 'Order confirmed', description: 'Immediate confirmation and store packing updates' },
-      { key: 'outForDelivery', icon: 'delivery', title: 'Out for delivery', description: 'Live courier dispatch and GPS arrival notices' },
-      { key: 'delivered', icon: 'check-circle', title: 'Delivered', description: 'Proof of delivery and drop-off photo notifications' },
-      { key: 'paymentIssues', icon: 'mpesa', title: 'Payment issues', description: 'M-Pesa STK push timeout and retry notifications' },
-    ],
-  },
-  {
-    title: 'PHARMACY & HEALTH',
-    rows: [
-      { key: 'prescriptionStatus', icon: 'prescription', title: 'Prescription status updates', description: 'Pharmacist review, verification & dispensing alerts' },
-      { key: 'repeatReminders', icon: 'pill', title: 'Repeat medicine reminders', description: 'Timely refills before your chronic medication runs out' },
-    ],
-  },
-  {
-    title: 'OFFERS & REWARDS',
-    rows: [
-      { key: 'promotions', icon: 'tag', title: 'Promotions & flash drops', description: 'Supa Deals, weekly grocery discounts & flash sales' },
-      { key: 'loyaltyUpdates', icon: 'gift', title: 'Xana Club points & tier updates', description: 'Earned points, monthly savings breakdown & expiry warnings' },
+      { key: 'orderConfirmed', icon: 'receipt', title: 'Order confirmed', description: 'When we receive your order and start packing it' },
+      { key: 'outForDelivery', icon: 'delivery', title: 'Out for delivery', description: 'When your rider leaves the store' },
+      { key: 'delivered', icon: 'check-circle', title: 'Delivered', description: 'When your order arrives' },
     ],
   },
 ];
@@ -99,25 +87,16 @@ const DEFAULT_ALERTS: Record<AlertKey, boolean> = {
 
 type PrivacyKey = 'shareOrderHistoryForRx' | 'marketingMessages' | 'orderAndDeliveryUpdates' | 'usageAnalytics';
 
-/** Matches the "Account & Privacy" Figma frame's three toggle rows. */
+/**
+ * Only settings something obeys. The Figma frame's pharmacist-sharing and marketing rows come
+ * back once a pharmacist screen reads order history and marketing messages are sent.
+ */
 const PRIVACY_ROWS: { key: PrivacyKey; icon: IconName; title: string; description: string }[] = [
-  {
-    key: 'shareOrderHistoryForRx',
-    icon: 'prescription',
-    title: 'Share order history with pharmacist',
-    description: 'Enables the dispensing pharmacist to check for drug interactions with grocery items',
-  },
-  {
-    key: 'marketingMessages',
-    icon: 'tag',
-    title: 'Marketing & promotional messages',
-    description: 'Weekly Supa Deals, weekend discounts and fresh grocery arrivals via SMS or WhatsApp',
-  },
   {
     key: 'orderAndDeliveryUpdates',
     icon: 'delivery',
-    title: 'Order and delivery updates',
-    description: 'Real-time rider tracking, M-Pesa receipt confirmations and pharmacist review alerts',
+    title: 'Order text messages',
+    description: 'Receipts, collection codes and order updates by SMS. Turning this off stops all of them',
   },
   {
     key: 'usageAnalytics',
@@ -901,9 +880,9 @@ export default function ProfileRoute() {
         </View>
 
         <Txt variant="caption" color="onSurfaceVariant" style={styles.cardStack}>
-          {`SMS and WhatsApp order status updates are managed under your account phone number (${
+          {`Order text messages go to your account phone number (${
             user ? maskPhone(user.phone) : '+254 712 ••• •78'
-          }). Critical transactional and safety notifications cannot be disabled.`}
+          }). You can turn them off under Terms & Privacy.`}
         </Txt>
       </BottomSheet>
 
@@ -951,7 +930,13 @@ export default function ProfileRoute() {
                     title={row.title}
                     description={row.description}
                     value={privacy[row.key]}
-                    onValueChange={next => updatePreferences({ privacy: { [row.key]: next } })}
+                    onValueChange={next =>
+                      updatePreferences(
+                        row.key === 'orderAndDeliveryUpdates'
+                          ? { privacy: { [row.key]: next }, sms_opt_out: !next }
+                          : { privacy: { [row.key]: next } },
+                      )
+                    }
                   />
                 </View>
               ))}
