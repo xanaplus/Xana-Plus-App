@@ -349,7 +349,7 @@ export default function ProfileRoute() {
 
   const supportRows: RowSpec[] = [
     { key: 'help', icon: 'help', title: 'Help & Support', description: 'Chat with a pharmacist', onPress: () => setSheet('help') },
-    { key: 'terms', icon: 'shield', title: 'Terms & Privacy', description: 'Sign-in details, privacy settings & how we handle your data', onPress: () => setSheet('terms') },
+    { key: 'terms', icon: 'shield', title: 'Terms & Privacy', description: isAuthenticated ? 'Sign-in details, privacy settings & how we handle your data' : 'How we handle your data', onPress: () => setSheet('terms') },
   ];
 
   const helpRows: RowSpec[] = [
@@ -568,15 +568,20 @@ export default function ProfileRoute() {
         </View>
       ) : null}
 
-      <View style={styles.section}>
-        <SectionHeader title="Your account" style={styles.inset} />
-        <RowGroup rows={accountRows} />
-      </View>
+      {/* Orders, addresses, payments, rewards and alerts all belong to an account; guests see the Log in card instead. */}
+      {isAuthenticated ? (
+        <>
+          <View style={styles.section}>
+            <SectionHeader title="Your account" style={styles.inset} />
+            <RowGroup rows={accountRows} />
+          </View>
 
-      <View style={styles.section}>
-        <SectionHeader title="Rewards & alerts" icon="sparkle" style={styles.inset} />
-        <RowGroup rows={rewardRows} />
-      </View>
+          <View style={styles.section}>
+            <SectionHeader title="Rewards & alerts" icon="sparkle" style={styles.inset} />
+            <RowGroup rows={rewardRows} />
+          </View>
+        </>
+      ) : null}
 
       <View style={styles.section}>
         <SectionHeader title="Support & legal" style={styles.inset} />
