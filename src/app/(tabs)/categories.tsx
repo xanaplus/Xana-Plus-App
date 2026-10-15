@@ -694,7 +694,7 @@ function BulkTiers({ product }: { product: Product }) {
   return (
     <View style={styles.tiers}>
       <View style={[styles.tierRow, styles.tierRowBase]}>
-        <Txt variant="bodySm" color="onSurfaceVariant">{`1 to ${Math.max(1, minQty - 1)} units`}</Txt>
+        <Txt variant="bodySm" color="onSurfaceVariant">{minQty <= 2 ? '1 unit' : `1 to ${minQty - 1} units`}</Txt>
         <Txt variant="titleSm">{`${formatKes(product.price)} each`}</Txt>
       </View>
       <View style={[styles.tierRow, styles.tierRowBulk]}>
