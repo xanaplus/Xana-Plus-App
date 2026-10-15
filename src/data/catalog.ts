@@ -8,8 +8,8 @@ import type { Category, CategoryVertical, DeliverySlot, Deal, Product } from './
  */
 
 export const stores = [
-  { id: 'syokimau', name: 'Xana Plus Syokimau', address: 'Syokimau, Mombasa Road', phone: '+254 718 666 661' },
-  { id: 'ruiru', name: 'Xana Plus Ruiru', address: 'Ruiru, Kamakis', phone: '+254 718 666 662' },
+  { id: 'syokimau', name: 'Xana Plus Syokimau', address: 'Syokimau, Mombasa Road', phone: '+254 718 666 661', hours: '7am to 9pm' },
+  { id: 'ruiru', name: 'Xana Plus Ruiru', address: 'Ruiru, Kamakis', phone: '+254 718 666 662', hours: '7am to 9pm' },
 ] as const;
 
 export const deliverySlots: DeliverySlot[] = [

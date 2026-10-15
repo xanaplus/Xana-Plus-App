@@ -27,6 +27,8 @@ const defaultAddress: Address = {
 type PersistedFulfilment = {
   mode: FulfilmentMode;
   storeId: string;
+  /** The customer picked the store themselves (absent in data saved before 15 Oct 2026). */
+  storeChosen?: boolean;
   addressId: string;
   addresses: Address[];
   slotId: string;
@@ -85,9 +87,12 @@ const STORED = hydrateFulfilment() ?? {
 type FulfilmentContextValue = {
   mode: FulfilmentMode;
   setMode: (mode: FulfilmentMode) => void;
-  /** Selected pickup store id. */
+  /** The store the order is packed at (delivery) or collected from (pickup). */
   storeId: string;
+  /** Picks the store; this also counts as the customer having chosen it. */
   setStoreId: (id: string) => void;
+  /** False until the customer has picked a store; the app asks on first open and before ordering. */
+  storeChosen: boolean;
   store: (typeof stores)[number];
   address: Address;
   setAddress: (address: Address) => void;
@@ -132,7 +137,12 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
   const { user, isDemo } = useSession();
   const userId = user?.id ?? null;
   const [mode, setMode] = useState<FulfilmentMode>(STORED.mode);
-  const [storeId, setStoreId] = useState<string>(STORED.storeId);
+  const [storeId, setStoreIdState] = useState<string>(STORED.storeId);
+  const [storeChosen, setStoreChosen] = useState(STORED.storeChosen === true);
+  const setStoreId = useCallback((id: string) => {
+    setStoreIdState(id);
+    setStoreChosen(true);
+  }, []);
   const [savedAddresses, setAddresses] = useState<Address[]>(STORED.addresses);
   // The "Amina" sample address belongs to the demo account only; everyone else starts with none.
   const addresses = useMemo(
@@ -229,13 +239,14 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
     save(STORAGE_KEYS.fulfilment, {
       mode,
       storeId,
+      storeChosen,
       addressId,
       addresses: savedAddresses,
       slotId,
       paymentMethod,
       mpesaNumber: storedMpesaNumber,
     } satisfies PersistedFulfilment);
-  }, [mode, storeId, addressId, savedAddresses, slotId, paymentMethod, storedMpesaNumber]);
+  }, [mode, storeId, storeChosen, addressId, savedAddresses, slotId, paymentMethod, storedMpesaNumber]);
 
   const value = useMemo<FulfilmentContextValue>(
     () => ({
@@ -243,6 +254,7 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
       setMode,
       storeId,
       setStoreId,
+      storeChosen,
       store,
       address,
       setAddress,
@@ -266,7 +278,7 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
       promo,
       setPromo,
     }),
-    [mode, storeId, store, address, addresses, addAddress, removeAddress, hasAddress, slotId, slot, paymentMethod, mpesaNumber, pointsRedeemed, ageConfirmed, rxReference, promo],
+    [mode, storeId, setStoreId, storeChosen, store, address, addresses, addAddress, removeAddress, hasAddress, slotId, slot, paymentMethod, mpesaNumber, pointsRedeemed, ageConfirmed, rxReference, promo],
   );
 
   return <FulfilmentContext.Provider value={value}>{children}</FulfilmentContext.Provider>;

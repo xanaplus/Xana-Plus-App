@@ -39,6 +39,7 @@ import { useCart } from '@/store/cart';
 import { useFulfilment, type Address, type AppliedPromo } from '@/store/fulfilment';
 import { placeOrderErrorMessage, promoErrorMessage, useOrders, type PromoError } from '@/store/orders';
 import { useSession } from '@/store/session';
+import { StoreChooser, storeWithAllItems } from '@/features/store/store-chooser';
 import { colors, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
@@ -121,6 +122,11 @@ export default function CheckoutRoute() {
   const [promoDraft, setPromoDraft] = useState('');
   const [promoChecking, setPromoChecking] = useState(false);
   const [promoError, setPromoError] = useState<string | null>(null);
+  const [storeSheetOpen, setStoreSheetOpen] = useState(false);
+  /** Place Order was tapped before a store was picked: carry on once it is. */
+  const [payAfterStore, setPayAfterStore] = useState(false);
+  /** Items sold out at the chosen store, and another store that has them all. */
+  const [otherStore, setOtherStore] = useState<(typeof stores)[number] | null>(null);
 
   const method = PAYMENT_METHODS.find(entry => entry.id === fulfilment.paymentMethod) ?? PAYMENT_METHODS[0];
   const blockedItems = cart.items.filter(item => item.product.rxRequired);
@@ -204,7 +210,8 @@ export default function CheckoutRoute() {
     blockedItems.forEach(item => cart.remove(item.product.id));
   };
 
-  const placeOrder = async (confirmedAge = ageConfirmed) => {
+  /** `chosenStore` is the store just picked in this tap, before the screen has re-rendered with it. */
+  const placeOrder = async (confirmedAge = ageConfirmed, chosenStore = fulfilment.store) => {
     if (rxBlocked) {
       setPlaceError('Upload your prescription first. Confirm the pharmacist’s priced list from My prescriptions before ordering medicines.');
       return;
@@ -215,14 +222,15 @@ export default function CheckoutRoute() {
     }
     setPlacing(true);
     setPlaceError(null);
+    setOtherStore(null);
     const result = await orders.placeOrder({
       lines: cart.items.map(item => ({ productId: item.product.id, quantity: item.quantity })),
       paymentMethod: method.id,
       contact: orderAddress.contact,
       addressLine: orderAddress.line,
       slotLabel: fulfilment.slot.label,
-      storeName: fulfilment.store.name,
-      branchCode: fulfilment.store.id.toUpperCase(),
+      storeName: chosenStore.name,
+      branchCode: chosenStore.id.toUpperCase(),
       substitution: cart.substitution,
       pointsRedeemed: pointsUsed,
       ageConfirmed: confirmedAge,
@@ -237,6 +245,10 @@ export default function CheckoutRoute() {
         setPromoError(promoErrorMessage(result.error as PromoError, result.minSpend));
       }
       setPlaceError(placeOrderErrorMessage(result.error));
+      if (result.error === 'unavailable' && result.items) {
+        const quantities = Object.fromEntries(cart.items.map(item => [item.product.id, item.quantity]));
+        setOtherStore(await storeWithAllItems(result.items, quantities, chosenStore.id));
+      }
       return;
     }
     setPlaced({ method: method.id, total: amountDue });
@@ -286,24 +298,30 @@ export default function CheckoutRoute() {
   }, [itemsSubtotal, promoCode, signedIn, setPromo]);
 
   /** Alcohol in the basket: ask for the 18+ confirmation, then place the order. */
-  const payAfterAgeCheck = () => {
+  const payAfterAgeCheck = (chosenStore = fulfilment.store) => {
     // Just signed in with no saved address: stay on checkout, which now asks for one.
     if (fulfilment.mode === 'delivery' && !fulfilment.hasAddress) return;
     if (ageBlocked) {
       setSheet('age');
       return;
     }
-    void placeOrder();
+    void placeOrder(ageConfirmed, chosenStore);
   };
 
   /** Signed-out shoppers authenticate inline (Screen 6a) before the order is placed. */
-  const startPay = () => {
+  const startPay = (chosenStore?: (typeof stores)[number]) => {
+    // Before the first order: which store packs it (stock is checked there).
+    if (!chosenStore && !fulfilment.storeChosen) {
+      setPayAfterStore(true);
+      setStoreSheetOpen(true);
+      return;
+    }
     if (!session.user) {
       setPendingPay(true);
       setAuthOpen(true);
       return;
     }
-    payAfterAgeCheck();
+    payAfterAgeCheck(chosenStore);
   };
 
   const confirmAge = () => {
@@ -336,12 +354,26 @@ export default function CheckoutRoute() {
             size="lg"
             loading={placing}
             disabled={payDisabled || placing}
-            onPress={startPay}
+            onPress={() => startPay()}
           />
           {placeError ? (
             <Txt variant="caption" tint={colors.error} align="center">
               {placeError}
             </Txt>
+          ) : null}
+          {placeError && otherStore ? (
+            <Button
+              label={`Switch to ${otherStore.name.replace('Xana Plus ', '')}, it has them all`}
+              icon="store"
+              iconPosition="leading"
+              variant="tonal"
+              size="sm"
+              onPress={() => {
+                fulfilment.setStoreId(otherStore.id);
+                setOtherStore(null);
+                setPlaceError(null);
+              }}
+            />
           ) : null}
           {rxBlocked ? (
             <View style={styles.blockedNote}>
@@ -436,6 +468,23 @@ export default function CheckoutRoute() {
                 </Txt>
               </View>
             )}
+            {fulfilment.mode === 'delivery' ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Packed at ${fulfilment.store.name}, change store`}
+                hitSlop={6}
+                onPress={() => setStoreSheetOpen(true)}
+                style={styles.packedAt}
+              >
+                <Icon name="store" size={14} color="onSurfaceVariant" />
+                <Txt variant="caption" color="onSurfaceVariant" style={styles.flex}>
+                  {`Packed at our ${storeArea} store`}
+                </Txt>
+                <Txt variant="label" color="primaryAccent">
+                  Change store
+                </Txt>
+              </Pressable>
+            ) : null}
           </Card>
 
           <Card variant="outline" padding={spacing.lg} style={styles.inset}>
@@ -935,6 +984,21 @@ export default function CheckoutRoute() {
           ))}
       </BottomSheet>
 
+      <StoreChooser
+        visible={storeSheetOpen}
+        onClose={() => {
+          setStoreSheetOpen(false);
+          setPayAfterStore(false);
+        }}
+        onChosen={id => {
+          setOtherStore(null);
+          setPlaceError(null);
+          if (!payAfterStore) return;
+          setPayAfterStore(false);
+          startPay(stores.find(entry => entry.id === id));
+        }}
+      />
+
       <AuthSheet
         visible={authOpen}
         onClose={() => {
@@ -1002,6 +1066,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   cardHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexShrink: 1 },
   headerIcon: { width: 32, height: 32, borderRadius: radius.pill, backgroundColor: colors.mintSurface, alignItems: 'center', justifyContent: 'center' },
   changeLink: { paddingVertical: spacing.xs },
+  packedAt: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingTop: spacing.md },
   cardBody: { gap: spacing.xs, paddingTop: spacing.md },
   addressHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
 

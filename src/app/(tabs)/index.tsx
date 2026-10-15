@@ -17,15 +17,15 @@ import {
   Screen,
   SearchBar,
   SectionHeader,
-  SelectableOption,
   Txt,
   TopBar,
 } from '@/components/ui';
 import type { IconName } from '@/components/ui';
-import { heroDeal, homeCategoryTiles, stores, trendingDeals } from '@/data/catalog';
+import { heroDeal, homeCategoryTiles, trendingDeals } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
 import { groupsForCategory, useShelves } from '@/data/live-catalogue';
 import type { Deal, User } from '@/data/types';
+import { StoreChooser } from '@/features/store/store-chooser';
 import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
@@ -134,9 +134,10 @@ export default function HomeRoute() {
   const router = useRouter();
   const cart = useCart();
   const { user } = useSession();
-  const { store, storeId, setStoreId } = useFulfilment();
+  const { store, storeChosen } = useFulfilment();
   const [secondsLeft, setSecondsLeft] = useState(FLASH_DROP_SECONDS);
-  const [storeSheetOpen, setStoreSheetOpen] = useState(false);
+  // First open: ask which store they shop from (orders are packed and stock-checked there).
+  const [storeSheetOpen, setStoreSheetOpen] = useState(!storeChosen);
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [alertsUnread, setAlertsUnread] = useState(true);
   const { width } = useWindowDimensions();
@@ -441,27 +442,7 @@ export default function HomeRoute() {
         </View>
       </ScrollView>
 
-      <BottomSheet
-        visible={storeSheetOpen}
-        onClose={() => setStoreSheetOpen(false)}
-        title="Choose your store"
-        description="Prices, delivery fees and slots follow the store you shop from."
-        scrollable
-      >
-        {stores.map(entry => (
-          <SelectableOption
-            key={entry.id}
-            title={entry.name}
-            description={entry.address}
-            icon="store"
-            selected={entry.id === storeId}
-            onPress={() => {
-              setStoreId(entry.id);
-              setStoreSheetOpen(false);
-            }}
-          />
-        ))}
-      </BottomSheet>
+      <StoreChooser visible={storeSheetOpen} onClose={() => setStoreSheetOpen(false)} />
 
       <BottomSheet
         visible={alertsOpen}
