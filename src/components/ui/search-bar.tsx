@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, TextInput, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, Pressable, StyleSheet, TextInput, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { fonts, radius, spacing } from '@/theme';
 import { useTheme } from '@/theme/provider';
@@ -65,6 +65,7 @@ export function SearchBar({
 
 const styles = StyleSheet.create({
   field: {
+    minWidth: 0,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
@@ -72,7 +73,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     borderRadius: radius.pill,
   },
-  input: { flex: 1, padding: 0, fontSize: 14, fontFamily: fonts.regular },
+  // iOS browsers zoom focused inputs below 16px; leave user-controlled zoom enabled.
+  input: { flex: 1, minWidth: 0, padding: 0, fontSize: Platform.OS === 'web' ? 16 : 14, fontFamily: fonts.regular },
   inputPlaceholder: { fontFamily: fonts.regular },
   flex: { flex: 1 },
 });

@@ -15,3 +15,4 @@
 - [Product card controls](product-card-controls.md) — user chose “+ Add” pills and aligned price/action rows for product cards.
 - [Expo publishing](expo-publishing.md) — a working Metro preview does not validate legacy publishing settings; verify the production export and HTTP startup probe.
 - [Navigation intent](navigation-intent.md) — keep bottom navigation mobile-style on wider screens, aligned with the centered page content.
+- [Mobile browser scaling](mobile-browser-layout.md) — viewport emulation alone misses scaled grid overflow; preserve user zoom and use iOS-safe search input sizes.

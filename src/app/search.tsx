@@ -216,6 +216,7 @@ export default function SearchRoute() {
   const cart = useCart();
   const { store } = useFulfilment();
   const { width } = useWindowDimensions();
+  const [feedWidth, setFeedWidth] = useState<number | null>(null);
   // Arriving from a category tile prefills the field (e.g. /search?q=Cooking Oil).
   const { q } = useLocalSearchParams<{ q?: string }>();
   const [query, setQuery] = useState(typeof q === "string" && q.trim() ? q : DEFAULT_QUERY);
@@ -282,8 +283,10 @@ export default function SearchRoute() {
 
   const groups = useMemo(() => buildGroups(results), [results]);
 
-  const contentWidth = Math.min(width, layout.maxContentWidth) - layout.screenMargin * 2;
-  const tileWidth = (contentWidth - layout.gutter) / 2;
+  // Browser display scaling can make the feed narrower than window dimensions.
+  // Round down with one pixel of slack so fractional sizing cannot wrap column two.
+  const contentWidth = Math.min(width, feedWidth ?? width, layout.maxContentWidth) - layout.screenMargin * 2;
+  const tileWidth = Math.max(1, Math.floor((contentWidth - layout.gutter - 1) / 2));
   const storeShortName = store.name.replace('Xana Plus ', '');
 
   return (
@@ -377,6 +380,9 @@ export default function SearchRoute() {
 
       <ScrollView
         style={styles.feed}
+        onLayout={event => {
+          if (event.nativeEvent.layout.width > 0) setFeedWidth(event.nativeEvent.layout.width);
+        }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.feedBody}
