@@ -20,6 +20,7 @@ import {
   TopBar,
   TopBarAction,
 } from '@/components/ui';
+import { useTabBack } from '@/components/nav/use-tab-back';
 import { ProductPhoto } from '@/components/ui/product-photo';
 import { productsByIds } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
@@ -47,6 +48,7 @@ export default function CartRoute() {
   const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
+  const goBack = useTabBack();
   const cart = useCart();
   const { slot, store } = useFulfilment();
   const { user, isDemo } = useSession();
@@ -75,7 +77,7 @@ export default function CartRoute() {
         )
       }
     >
-      <TopBar
+      <TopBar onBack={goBack}
         title="Cart Checkout"
         actions={
           <>

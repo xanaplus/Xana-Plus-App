@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Linking, Pressable, StyleSheet, Switch, View, type StyleProp, type ViewStyle } from 'react-native';
 
+import { useTabBack } from '@/components/nav/use-tab-back';
 import {
   BottomSheet,
   Button,
@@ -234,6 +235,7 @@ export default function ProfileRoute() {
   const { appearance, setAppearance, appearanceSaving, appearanceError, retryAppearance, colors, gradients } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
+  const goBack = useTabBack();
   const cart = useCart();
   const { orders } = useOrders();
   const {
@@ -394,7 +396,7 @@ export default function ProfileRoute() {
 
   return (
     <Screen padded={false} contentStyle={styles.content}>
-      <TopBar title="Profile" actions={<TopBarAction name="settings" accessibilityLabel="Settings" onPress={() => setSheet('settings')} />} />
+      <TopBar title="Profile" onBack={goBack} actions={<TopBarAction name="settings" accessibilityLabel="Settings" onPress={() => setSheet('settings')} />} />
 
       {preferencesSaving || preferencesError ? (
         <PreferencesSyncFeedback

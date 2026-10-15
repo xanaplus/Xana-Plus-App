@@ -24,6 +24,7 @@ import {
   TopBar,
   TopBarAction,
 } from '@/components/ui';
+import { useTabBack } from '@/components/nav/use-tab-back';
 import { ProductAddButton } from '@/components/ui/product-add-button';
 import { ProductPhoto } from '@/components/ui/product-photo';
 import type { BadgeTone, IconName, SegmentedOption } from '@/components/ui';
@@ -219,6 +220,7 @@ export default function CategoriesRoute() {
   const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
+  const goBack = useTabBack();
   const cart = useCart();
   const { user } = useSession();
   const { store, storeId, setStoreId } = useFulfilment();
@@ -346,7 +348,7 @@ export default function CategoriesRoute() {
 
   return (
     <Screen scroll={false} padded={false} contentStyle={styles.screenBody}>
-      <TopBar
+      <TopBar onBack={goBack}
         title="Categories"
         actions={
           <>

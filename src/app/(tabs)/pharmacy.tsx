@@ -20,6 +20,7 @@ import {
   Txt,
   type IconName,
 } from '@/components/ui';
+import { useTabBack } from '@/components/nav/use-tab-back';
 import { ProductPhoto } from '@/components/ui/product-photo';
 import { pharmacyQuickActions, verticalBySlug } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
@@ -140,6 +141,7 @@ export default function PharmacyRoute() {
   const { colors, gradients } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
+  const goBack = useTabBack();
   const cart = useCart();
   const { store } = useFulfilment();
   const { isAuthenticated, user } = useSession();
@@ -208,7 +210,7 @@ export default function PharmacyRoute() {
     <Screen padded={false} contentStyle={styles.content}>
       {/* App bar, search field and quick actions sit flush; groups below are spaced. */}
       <View>
-        <TopBar
+        <TopBar onBack={goBack}
           title={vertical.label}
           subtitle={store.name}
           actions={

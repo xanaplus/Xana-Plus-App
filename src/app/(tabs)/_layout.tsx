@@ -8,7 +8,8 @@ import { TabBar } from '@/components/nav/tab-bar';
  */
 export default function TabsLayout() {
   return (
-    <Tabs screenOptions={{ headerShown: false, animation: 'shift' }} tabBar={props => <TabBar {...props} />}>
+    // "history" so a tab's back arrow returns to the tab you came from, not always Home.
+    <Tabs backBehavior="history" screenOptions={{ headerShown: false, animation: 'shift' }} tabBar={props => <TabBar {...props} />}>
       <Tabs.Screen name="index" options={{ title: 'Home' }} />
       <Tabs.Screen name="categories" options={{ title: 'Categories' }} />
       <Tabs.Screen name="pharmacy" options={{ title: 'Pharmacy' }} />
