@@ -55,19 +55,24 @@ type AlertKey =
   | 'promotions'
   | 'loyaltyUpdates';
 
-type AlertRow = { key: AlertKey; icon: IconName; title: string; description: string };
+/** One switch can cover several of send-push's alert keys; it reads on only when all of them are. */
+type AlertRow = { keys: AlertKey[]; icon: IconName; title: string; description: string };
 
 /**
- * Only the alerts send-push actually sends. The Figma frame's other rows (payment issues,
- * prescription status, repeat reminders, promotions, points) come back once those messages exist.
+ * Only the alerts send-push actually sends, as one "Order updates" switch like most retail apps.
+ * The Figma frame's other rows (payment issues, prescription status, repeat reminders,
+ * promotions, points) come back once those messages exist.
  */
 const ALERT_SECTIONS: { title: string; rows: AlertRow[] }[] = [
   {
     title: 'ORDERS',
     rows: [
-      { key: 'orderConfirmed', icon: 'receipt', title: 'Order confirmed', description: 'When we receive your order and start packing it' },
-      { key: 'outForDelivery', icon: 'delivery', title: 'Out for delivery', description: 'When your rider leaves the store' },
-      { key: 'delivered', icon: 'check-circle', title: 'Delivered', description: 'When your order arrives' },
+      {
+        keys: ['orderConfirmed', 'outForDelivery', 'delivered'],
+        icon: 'receipt',
+        title: 'Order updates',
+        description: 'When your order is being packed, on its way and delivered',
+      },
     ],
   },
 ];
@@ -279,7 +284,8 @@ export default function ProfileRoute() {
   };
 
   const closeSheet = () => setSheet(null);
-  const alertsOn = ALERT_ROWS.filter(row => alerts[row.key]).length;
+  const alertOn = (row: AlertRow) => row.keys.every(key => alerts[key]);
+  const alertsOn = pushEnabled ? ALERT_ROWS.filter(alertOn).length : 0;
 
   const changeNumber = () => {
     closeSheet();
@@ -336,7 +342,7 @@ export default function ProfileRoute() {
       icon: 'bell',
       title: 'Notifications',
       description: 'Order updates and offers',
-      value: `${alertsOn} of ${ALERT_ROWS.length} on`,
+      value: alertsOn === 0 ? 'Off' : alertsOn === ALERT_ROWS.length ? 'On' : `${alertsOn} of ${ALERT_ROWS.length} on`,
       onPress: () => setSheet('notifications'),
     },
   ];
@@ -863,14 +869,14 @@ export default function ProfileRoute() {
               <SectionHeader title={section.title} />
               <Card variant="flat" padding={spacing.none}>
                 {section.rows.map((row, index) => (
-                  <View key={row.key}>
+                  <View key={row.title}>
                     {index > 0 ? <Divider inset={spacing.lg} /> : null}
                     <ToggleRow
                       icon={row.icon}
                       title={row.title}
                       description={row.description}
-                      value={alerts[row.key]}
-                      onValueChange={next => updatePreferences({ alerts: { [row.key]: next } })}
+                      value={alertOn(row)}
+                      onValueChange={next => updatePreferences({ alerts: Object.fromEntries(row.keys.map(key => [key, next])) })}
                     />
                   </View>
                 ))}
