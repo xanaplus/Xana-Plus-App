@@ -37,7 +37,7 @@ import { formatKes, formatKesDecimal } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import { useCart } from '@/store/cart';
 import { useFulfilment, type Address, type AppliedPromo } from '@/store/fulfilment';
-import { placeOrderErrorMessage, promoErrorMessage, useOrders, type PromoError } from '@/store/orders';
+import { placeOrderErrorMessage, pointsEarned, promoErrorMessage, useOrders, type PromoError } from '@/store/orders';
 import { useSession } from '@/store/session';
 import { StoreChooser, storeWithAllItems } from '@/features/store/store-chooser';
 import { colors, layout, radius, spacing } from '@/theme';
@@ -53,8 +53,6 @@ const PAYMENT_METHODS: PaymentMethodCopy[] = [
   { id: 'card', title: 'Credit / Debit Card', icon: 'card', trust: 'Hosted Card Gateway', showsTotal: true },
 ];
 
-/** Xana Club returns 5% of the order value as points — KES 370 shows as 18 pts in Screen 6. */
-const CLUB_POINTS_RATE = 1 / 120;
 
 /** Redemption rate on the "Use Xana Club Points" frame: 10 points = KES 1. */
 const POINTS_PER_KES = 10;
@@ -154,7 +152,7 @@ export default function CheckoutRoute() {
   const pointsValue = pointsUsed / POINTS_PER_KES;
   const amountDue = Math.max(0, totalAfterPromo - pointsValue);
   const remainingPoints = availablePoints - pointsUsed;
-  const clubPoints = Math.floor(amountDue * CLUB_POINTS_RATE);
+  const clubPoints = pointsEarned(amountDue);
 
   const setPoints = (next: number) => fulfilment.setPointsRedeemed(Math.max(0, Math.min(next, maxRedeemable)));
 
@@ -595,6 +593,18 @@ export default function CheckoutRoute() {
                 </View>
                 <Icon name={pointsExpanded ? 'chevron-up' : 'chevron-down'} size={18} color="onSurfaceVariant" />
               </Pressable>
+
+              {/* One tap to spend them all, as on McDonald's and Jumia; the section below still allows other amounts. */}
+              {!pointsExpanded && pointsUsed === 0 && maxRedeemable > 0 ? (
+                <View style={styles.pointsPresets}>
+                  <Chip
+                    label={`Use ${maxRedeemable.toLocaleString('en-KE')} pts · save ${formatKes(maxRedeemable / POINTS_PER_KES)}`}
+                    icon="star"
+                    tone="mint"
+                    onPress={() => setPoints(maxRedeemable)}
+                  />
+                </View>
+              ) : null}
 
               {pointsExpanded ? (
                 <View style={styles.pointsBody}>

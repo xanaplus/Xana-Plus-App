@@ -25,6 +25,7 @@ import { heroDeal, homeCategoryTiles, trendingDeals } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
 import { groupsForCategory, useShelves } from '@/data/live-catalogue';
 import type { Deal, User } from '@/data/types';
+import { useBuyAgain } from '@/features/orders/buy-again';
 import { StoreChooser } from '@/features/store/store-chooser';
 import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
@@ -134,6 +135,7 @@ export default function HomeRoute() {
   const router = useRouter();
   const cart = useCart();
   const { user } = useSession();
+  const buyAgain = useBuyAgain();
   const { store, storeChosen } = useFulfilment();
   const [secondsLeft, setSecondsLeft] = useState(FLASH_DROP_SECONDS);
   // First open: ask which store they shop from (orders are packed and stock-checked there).
@@ -281,6 +283,25 @@ export default function HomeRoute() {
             </View>
           </LinearGradient>
         </View>
+
+        {/* Buy it again: past-order items near the top, as on Amazon and Instacart. Signed-in shoppers with orders only. */}
+        {user && buyAgain.length > 0 ? (
+          <View style={styles.section}>
+            <SectionHeader title="Buy it again" actionLabel="My Orders" onAction={() => router.push('/orders')} />
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.railBleed} contentContainerStyle={styles.rail}>
+              {buyAgain.map(product => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  width={layout.productCardWidth}
+                  quantity={cart.quantityOf(product.id)}
+                  onPress={() => router.push(`/product/${product.id}`)}
+                  onAdd={() => cart.add(product.id)}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        ) : null}
 
         {/* 4. Top Categories */}
         <View style={styles.section}>

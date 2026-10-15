@@ -22,20 +22,17 @@ import {
 } from '@/components/ui';
 import { useTabBack } from '@/components/nav/use-tab-back';
 import { ProductPhoto } from '@/components/ui/product-photo';
-import { productsByIds } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
 import type { Product, SubstitutionPreference } from '@/data/types';
+import { useBuyAgain } from '@/features/orders/buy-again';
 import { formatCartCounts, formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
-import { useOrders } from '@/store/orders';
+import { pointsEarned } from '@/store/orders';
 import { useSession } from '@/store/session';
 import { colors, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
-
-/** "Buy Again" rail — recent-order items from Screen 5. */
-const BUY_AGAIN_IDS = ['sukuma-wiki', 'vitamin-c-1000mg', 'acacia-honey-500g'];
 
 const SUBSTITUTION_COPY: Record<SubstitutionPreference, { title: string; description: string }> = {
   similar: { title: 'Replace with similar', description: 'We’ll swap in the closest matching brand or size' },
@@ -51,15 +48,13 @@ export default function CartRoute() {
   const goBack = useTabBack();
   const cart = useCart();
   const { slot, store } = useFulfilment();
-  const { user, isDemo } = useSession();
-  const { orders } = useOrders();
+  const { user } = useSession();
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const isEmpty = cart.itemCount === 0;
   const inCart = new Set(cart.lines.map(l => l.productId));
-  // The demo account keeps the sample picks; everyone else sees what they actually ordered before.
-  const pastIds = [...new Set(orders.filter(o => o.status !== 'cancelled').flatMap(o => o.lines.map(l => l.productId)))];
-  const buyAgain = productsByIds(isDemo ? BUY_AGAIN_IDS : pastIds.slice(0, 8)).filter(p => !inCart.has(p.id));
+  const buyAgain = useBuyAgain().filter(p => !inCart.has(p.id));
+  const earnable = pointsEarned(cart.summary.total);
 
   return (
     <Screen
@@ -214,7 +209,7 @@ export default function CartRoute() {
           <SummaryRow label="Wholesale savings already included" value={formatKes(cart.summary.wholesaleSavings)} tone="primary" />
         ) : null}
         <SummaryRow
-          label={`Delivery Fee (${store.name.replace('Xana Plus ', '')} / Ruiru)`}
+          label={`Delivery Fee (${store.name.replace('Xana Plus ', '')})`}
           value={cart.summary.deliveryFee === 0 ? 'Free' : formatKes(cart.summary.deliveryFee)}
         />
         {cart.summary.platformFee > 0 ? <SummaryRow label="Packaging fee" value={formatKes(cart.summary.platformFee)} /> : null}
@@ -223,6 +218,22 @@ export default function CartRoute() {
           <Txt variant="titleLg">To Pay</Txt>
           <Txt variant="display">{formatKes(cart.summary.total)}</Txt>
         </View>
+        {/* Points this order earns, before checkout (McDonald's, Jumia); guests are nudged to log in. */}
+        {earnable > 0 ? (
+          <Pressable
+            accessibilityRole={user ? 'text' : 'button'}
+            disabled={!!user}
+            onPress={() => router.push('/login')}
+            style={styles.pointsRow}
+          >
+            <Icon name="star" size={14} color="secondaryAccent" />
+            <Txt variant="label" color="secondaryAccent" style={styles.pointsText}>
+              {user
+                ? `You'll earn ${earnable} Xana Club ${earnable === 1 ? 'point' : 'points'}`
+                : `Log in to earn ${earnable} Xana Club ${earnable === 1 ? 'point' : 'points'} on this order`}
+            </Txt>
+          </Pressable>
+        ) : null}
       </Card>
       )}
 
@@ -388,4 +399,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   summaryRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: spacing.lg },
   summaryLabel: { flexShrink: 1 },
   totalRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: spacing.sm },
+  pointsRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingTop: spacing.xs },
+  pointsText: { flex: 1 },
 });

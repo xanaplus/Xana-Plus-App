@@ -75,6 +75,9 @@ const DELIVERY_FEE = 0;
 /** D-5: 1 Xana Club point per KES 120 spent. */
 const POINTS_PER_SHILLING = 1 / 120;
 
+/** Points an order of this amount earns; the cart and checkout show the same number. */
+export const pointsEarned = (amount: number): number => Math.floor(Math.max(0, amount) * POINTS_PER_SHILLING);
+
 /** Prices a set of lines against the live catalogue. */
 export function summariseLines(lines: OrderLine[]): OrderSummary {
   const priced = lines.flatMap(line => {
@@ -119,7 +122,7 @@ const SEED: PlacedOrder[] = ORDER_HISTORY.map((record, index) => {
     slotLabel: index === 0 ? 'Today, 9:00 AM to 11:00 AM' : 'Standard Express',
     storeName: index === 2 ? 'Xana Plus Ruiru' : 'Xana Plus Syokimau',
     substitution: 'similar' as SubstitutionPreference,
-    pointsEarned: Math.floor(summary.total * POINTS_PER_SHILLING),
+    pointsEarned: pointsEarned(summary.total),
     substitutionNeeded:
       index === 0 ? { productId: 'brookside-milk-500ml', shopperNote: '500ml pouch currently out of stock.' } : undefined,
   };
