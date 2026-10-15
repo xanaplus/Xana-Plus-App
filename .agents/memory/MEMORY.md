@@ -14,3 +14,4 @@
 - [Spending chart intent](spending-chart-design.md) — user approved monthly bars for comparison and a department donut for composition.
 - [Product card controls](product-card-controls.md) — user chose “+ Add” pills and aligned price/action rows for product cards.
 - [Expo publishing](expo-publishing.md) — a working Metro preview does not validate legacy publishing settings; verify the production export and HTTP startup probe.
+- [Navigation intent](navigation-intent.md) — keep bottom navigation mobile-style on wider screens, aligned with the centered page content.
