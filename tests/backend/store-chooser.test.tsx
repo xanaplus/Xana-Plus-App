@@ -12,6 +12,7 @@ vi.mock('@/components/ui', () => ({
   Button: 'Button',
   SelectableOption: 'SelectableOption',
 }));
+vi.mock('expo-image', () => ({ Image: { prefetch: vi.fn(() => Promise.resolve(true)) } }));
 vi.mock('@/store/fulfilment', () => ({ useFulfilment: () => mocks.fulfilment }));
 vi.mock('@/lib/supabase', () => ({
   supabase: { from: () => ({ select: () => ({ in: async () => ({ data: mocks.rows, error: null }) }) }) },

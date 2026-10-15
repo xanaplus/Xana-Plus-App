@@ -11,6 +11,7 @@ vi.mock('@/lib/storage', () => ({
   save: vi.fn(),
   STORAGE_KEYS: { products: 'products' },
 }));
+vi.mock('expo-image', () => ({ Image: { prefetch: vi.fn(() => Promise.resolve(true)) } }));
 vi.mock('@/lib/supabase', () => ({
   supabase: { from: table => {
     state.calls.push(['from', table]);

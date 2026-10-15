@@ -54,6 +54,7 @@ function ProductPhotoContent({ source, accessibilityLabel, variant }: ProductPho
           style={styles.image}
           contentFit="contain"
           contentPosition="center"
+          cachePolicy="memory-disk"
           transition={140}
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}

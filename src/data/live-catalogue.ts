@@ -1,3 +1,4 @@
+import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 
 import { parsePersisted, persisted, save, STORAGE_KEYS } from '@/lib/storage';
@@ -185,7 +186,11 @@ const safeWords = (text: string): string[] =>
 async function run(request: PromiseLike<{ data: unknown; error: { message: string } | null }>): Promise<Product[]> {
   const { data, error } = await request;
   if (error) throw new Error(error.message);
-  return remember(((data ?? []) as CatalogueRow[]).map(toProduct));
+  const rows = (data ?? []) as CatalogueRow[];
+  // The POS photo server is far away (~1 s per first photo), so start downloads now rather than when each card mounts.
+  const photos = rows.flatMap(row => (row.photo_url ? [row.photo_url] : []));
+  if (photos.length > 0) void Image.prefetch(photos, 'memory-disk').catch(() => undefined);
+  return remember(rows.map(toProduct));
 }
 
 /**
