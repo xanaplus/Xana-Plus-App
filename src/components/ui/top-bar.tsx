@@ -64,10 +64,29 @@ export function TopBar({ title, subtitle, onBack, actions, translucent, centered
 }
 
 /** Square glyph button for app-bar slots. */
-export function TopBarAction({ name, onPress, accessibilityLabel }: { name: IconName; onPress?: () => void; accessibilityLabel: string }) {
+export function TopBarAction({
+  name,
+  onPress,
+  accessibilityLabel,
+  badge,
+}: {
+  name: IconName;
+  onPress?: () => void;
+  accessibilityLabel: string;
+  /** Small count on the icon's corner (e.g. items in the cart); hidden when 0 or missing. */
+  badge?: number;
+}) {
+  const { colors } = useTheme();
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={onPress} hitSlop={6} style={styles.action}>
       <Icon name={name} size={20} color="onSurface" />
+      {badge ? (
+        <View style={[styles.badge, { backgroundColor: colors.primaryContainer, borderColor: colors.surface }]}>
+          <Txt variant="labelSm" tint={colors.onPrimary}>
+            {badge > 99 ? '99+' : String(badge)}
+          </Txt>
+        </View>
+      ) : null}
     </Pressable>
   );
 }
@@ -88,5 +107,17 @@ const styles = StyleSheet.create({
   actions: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   actionsCentered: { minWidth: 28, justifyContent: 'flex-end' },
   action: { width: layout.touchTarget, height: layout.touchTarget, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center' },
+  badge: {
+    position: 'absolute',
+    top: 4,
+    right: 2,
+    minWidth: 18,
+    height: 18,
+    paddingHorizontal: 4,
+    borderRadius: radius.pill,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   translucent: { overflow: 'hidden' },
 });

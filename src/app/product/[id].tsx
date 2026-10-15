@@ -232,7 +232,6 @@ function ProductDetail({ product }: { product: Product }) {
   const goBack = useBack();
   const cart = useCart();
   const [quantity, setQuantity] = useState(() => Math.max(1, cart.quantityOf(product.id)));
-  const [saved, setSaved] = useState(false);
 
   const isPharmacy = product.rxRequired === true || PHARMACY_CATEGORY[product.category] === true;
   const [openSection, setOpenSection] = useState(isPharmacy ? SECTION.leaflet : '');
@@ -356,10 +355,12 @@ function ProductDetail({ product }: { product: Product }) {
               void Share.share({ message: `${product.name}, ${formatKes(product.price)} on Xana Plus` }).catch(() => undefined);
             }}
           />
+          {/* Cart with its count, as on Amazon, Jumia and Instacart product pages. Replaces the heart, which saved nothing. */}
           <TopBarAction
-            name={saved ? 'heart-filled' : 'heart'}
-            accessibilityLabel={saved ? `Remove ${product.name} from saved items` : `Save ${product.name}`}
-            onPress={() => setSaved(current => !current)}
+            name="cart"
+            badge={cart.itemCount}
+            accessibilityLabel={cart.itemCount > 0 ? `View cart, ${cart.itemCount} ${cart.itemCount === 1 ? 'item' : 'items'}` : 'View cart'}
+            onPress={() => router.push('/(tabs)/cart')}
           />
         </View>
       </View>
