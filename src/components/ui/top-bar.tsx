@@ -1,11 +1,13 @@
 import { BlurView } from 'expo-blur';
 import type { ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import Animated from 'react-native-reanimated';
 
 import { elevation, layout, radius, spacing } from '@/theme';
 import { useTheme } from '@/theme/provider';
 
 import { Icon, type IconName } from './icon';
+import { useBump } from './motion';
 import { Txt } from './text';
 
 export type TopBarProps = {
@@ -77,15 +79,16 @@ export function TopBarAction({
   badge?: number;
 }) {
   const { colors } = useTheme();
+  const bump = useBump(badge ?? 0);
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={onPress} hitSlop={6} style={styles.action}>
       <Icon name={name} size={20} color="onSurface" />
       {badge ? (
-        <View style={[styles.badge, { backgroundColor: colors.primaryContainer, borderColor: colors.surface }]}>
+        <Animated.View style={[styles.badge, { backgroundColor: colors.primaryContainer, borderColor: colors.surface }, bump]}>
           <Txt variant="labelSm" tint={colors.onPrimary}>
             {badge > 99 ? '99+' : String(badge)}
           </Txt>
-        </View>
+        </Animated.View>
       ) : null}
     </Pressable>
   );

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { ZoomIn } from 'react-native-reanimated';
 
 import { Badge, type BadgeTone } from '@/components/ui/badge';
 import { ProductAddButton } from '@/components/ui/product-add-button';
@@ -123,7 +123,9 @@ export function ProductCard({ product, width, quantity = 0, onPress, onAdd, styl
 function CardStepper({ productId, quantity }: { productId: string; quantity: number }) {
   const cart = useCart();
   return (
-    <QuantityStepper
+    // Pops in where "+ Add" was, so the tap visibly turned into a counter.
+    <Animated.View entering={ZoomIn.duration(180)}>
+      <QuantityStepper
       quantity={quantity}
       min={0}
       size="compact"
@@ -131,7 +133,8 @@ function CardStepper({ productId, quantity }: { productId: string; quantity: num
       onIncrement={() => cart.setQuantity(productId, quantity + 1)}
       onDecrement={() => cart.setQuantity(productId, quantity - 1)}
       style={styles.cardStepper}
-    />
+      />
+    </Animated.View>
   );
 }
 

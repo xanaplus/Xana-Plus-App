@@ -101,7 +101,7 @@ export default function MpesaPendingRoute() {
     fulfilment.setPromo(null);
     fulfilment.setAgeConfirmed(false);
     fulfilment.setRxReference('');
-    router.replace(`/orders/${result.id}`);
+    router.replace({ pathname: '/orders/[id]', params: { id: result.id, placed: '1' } });
   };
 
   return (

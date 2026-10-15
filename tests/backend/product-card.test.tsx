@@ -14,7 +14,7 @@ vi.mock('react-native', () => ({
     flatten: (value: unknown[]) => Object.assign({}, ...[value].flat(Infinity).filter(Boolean)),
   },
 }));
-vi.mock('react-native-reanimated', () => ({ default: { View: 'div' } }));
+vi.mock('react-native-reanimated', () => ({ default: { View: 'div' }, ZoomIn: { duration: () => undefined } }));
 vi.mock('@/components/ui/pressable-scale', () => ({ usePressScale: () => ({ style: {}, onPressIn: vi.fn(), onPressOut: vi.fn() }) }));
 vi.mock('@/components/ui/badge', () => ({ Badge: 'badge' }));
 vi.mock('@/components/ui/icon', () => ({ Icon: 'icon' }));

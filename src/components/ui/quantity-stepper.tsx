@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 
 import { Icon } from '@/components/ui/icon';
 import { Txt } from '@/components/ui/text';
@@ -26,6 +28,10 @@ export function QuantityStepper({ quantity, onIncrement, onDecrement, size = 're
   const compact = size === 'compact';
   const button = compact ? 28 : 34;
   const iconSize = compact ? 14 : 16;
+  // The new number rises in on +, drops in on −; nothing moves on first show.
+  const [last, setLast] = useState({ quantity, rising: null as boolean | null });
+  if (last.quantity !== quantity) setLast({ quantity, rising: quantity > last.quantity });
+  const entering = last.rising === null ? undefined : (last.rising ? FadeInUp : FadeInDown).duration(140);
 
   return (
     <View style={[styles.stepper, style]}>
@@ -38,10 +44,12 @@ export function QuantityStepper({ quantity, onIncrement, onDecrement, size = 're
       >
         <Icon name="minus" size={iconSize} color={tone === 'brand' ? 'primaryAccent' : 'onSurface'} />
       </Pressable>
-      <Txt variant={compact ? 'label' : 'title'} style={styles.count}>
-        {quantity}
-        {suffix ? ` ${suffix}` : ''}
-      </Txt>
+      <Animated.View key={quantity} entering={entering}>
+        <Txt variant={compact ? 'label' : 'title'} style={styles.count}>
+          {quantity}
+          {suffix ? ` ${suffix}` : ''}
+        </Txt>
+      </Animated.View>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Increase quantity"

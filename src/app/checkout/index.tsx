@@ -37,6 +37,7 @@ import { formatKes, formatKesDecimal } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import { useCart } from '@/store/cart';
 import { useFulfilment, type Address, type AppliedPromo } from '@/store/fulfilment';
+import { OrderPlaced } from '@/features/orders/order-placed';
 import { placeOrderErrorMessage, pointsEarned, promoErrorMessage, useOrders, type PromoError } from '@/store/orders';
 import { useSession } from '@/store/session';
 import { StoreChooser, storeWithAllItems } from '@/features/store/store-chooser';
@@ -115,7 +116,7 @@ export default function CheckoutRoute() {
   const [phoneDraft, setPhoneDraft] = useState<PhoneInput>(EMPTY_PHONE_INPUT);
   const [authOpen, setAuthOpen] = useState(false);
   const [pendingPay, setPendingPay] = useState(false);
-  const [placed, setPlaced] = useState<{ method: PaymentMethodId; total: number } | null>(null);
+  const [placed, setPlaced] = useState<{ method: PaymentMethodId; total: number; points: number } | null>(null);
   const [pointsExpanded, setPointsExpanded] = useState(false);
   const [promoDraft, setPromoDraft] = useState('');
   const [promoChecking, setPromoChecking] = useState(false);
@@ -249,7 +250,7 @@ export default function CheckoutRoute() {
       }
       return;
     }
-    setPlaced({ method: method.id, total: amountDue });
+    setPlaced({ method: method.id, total: amountDue, points: clubPoints });
     cart.clear();
     session.spendPoints(pointsUsed);
     fulfilment.setPointsRedeemed(0);
@@ -955,9 +956,7 @@ export default function CheckoutRoute() {
 
       <BottomSheet visible={placed !== null} onClose={finishOrder} title={placedCopy.title} description={placedCopy.description}>
         <View style={styles.placedBody}>
-          <View style={styles.placedIcon}>
-            <Icon name="check-circle" size={30} color="primaryAccent" />
-          </View>
+          <OrderPlaced points={placed?.points ?? 0} />
           <View style={styles.sheetGroup}>
             <Txt variant="overline" color="onSurfaceVariant">
               Order total
@@ -1162,7 +1161,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   rxItemIcon: { width: 32, height: 32, borderRadius: radius.pill, backgroundColor: colors.mintSurface, alignItems: 'center', justifyContent: 'center' },
 
   placedBody: { gap: spacing.lg, alignItems: 'center' },
-  placedIcon: { width: 64, height: 64, borderRadius: radius.pill, backgroundColor: colors.mintSurface, alignItems: 'center', justifyContent: 'center' },
 
   marks: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   visa: { paddingHorizontal: spacing.sm, paddingVertical: 2, borderRadius: radius.xs, backgroundColor: colors.visaBrand },

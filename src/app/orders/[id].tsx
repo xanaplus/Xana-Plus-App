@@ -19,6 +19,7 @@ import {
 import { productById } from '@/data/catalog';
 import type { SubstitutionPreference } from '@/data/types';
 import { RateOrder } from '@/features/orders/rate-order';
+import { OrderPlaced } from '@/features/orders/order-placed';
 import { formatKes, formatKesDecimal } from '@/lib/format';
 import { unitPrice } from '@/store/cart';
 import { isActiveOrder, isCompleted, ORDER_PAYMENT_LABEL, paymentNote, stagesFor } from '@/lib/order-status';
@@ -54,7 +55,7 @@ const SUBSTITUTION_OPTIONS: { value: SubstitutionPreference; title: string; desc
 export default function OrderStatusScreen() {
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, placed } = useLocalSearchParams<{ id: string; placed?: string }>();
   const { orderById, resolveSubstitution, advanceStatus } = useOrders();
   const order = orderById(String(id));
 
@@ -91,6 +92,16 @@ export default function OrderStatusScreen() {
   return (
     <Screen padded contentStyle={styles.content}>
       <TopBar title={`Order #${order.id}`} subtitle={`${order.placed} · ${order.storeName}`} onBack={goBack} />
+
+      {/* Straight after M-Pesa checkout: the same "order placed" moment as the cash and card sheet. */}
+      {placed === '1' ? (
+        <Card variant="elevated" padding={spacing.lg} style={styles.card}>
+          <OrderPlaced points={order.pointsEarned} />
+          <Txt variant="headlineSm" align="center">
+            Order placed
+          </Txt>
+        </Card>
+      ) : null}
 
       {/* Fulfilment tracker */}
       <Card variant="elevated" padding={spacing.lg} style={styles.card}>

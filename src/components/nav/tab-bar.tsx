@@ -1,8 +1,10 @@
 import type { BottomTabBarProps } from 'expo-router/tabs';
 import { Pressable, StyleSheet, View } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon, type IconName } from '@/components/ui/icon';
+import { useBump } from '@/components/ui/motion';
 import { Txt } from '@/components/ui/text';
 import { useCart } from '@/store/cart';
 import { elevation, layout, radius, spacing } from '@/theme';
@@ -24,6 +26,7 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { itemCount } = useCart();
+  const bump = useBump(itemCount);
 
   return (
     <View style={[styles.bar, { backgroundColor: colors.surface, borderTopColor: colors.surfaceContainerHigh, paddingBottom: insets.bottom, height: layout.tabBarHeight + insets.bottom }]}>
@@ -70,11 +73,11 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
             <View>
               <Icon name={meta.icon} size={20} color={focused ? 'primaryAccent' : 'onSurfaceVariant'} />
               {badge > 0 ? (
-                  <View style={[styles.badge, { backgroundColor: colors.secondaryContainer }]}>
+                <Animated.View style={[styles.badge, { backgroundColor: colors.secondaryContainer }, bump]}>
                   <Txt variant="micro" tint={colors.onSecondary}>
                     {badge}
                   </Txt>
-                </View>
+                </Animated.View>
               ) : null}
             </View>
             <Txt variant="tab" tint={focused ? colors.primaryAccent : colors.onSurface}>
