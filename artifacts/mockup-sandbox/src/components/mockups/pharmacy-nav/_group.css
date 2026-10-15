@@ -1,0 +1,9 @@
+@font-face{font-family:Inter_400Regular;src:url('../../../../../../node_modules/@expo-google-fonts/inter/400Regular/Inter_400Regular.ttf')}
+@font-face{font-family:Inter_600SemiBold;src:url('../../../../../../node_modules/@expo-google-fonts/inter/600SemiBold/Inter_600SemiBold.ttf')}
+@font-face{font-family:Ionicons;src:url('../../../../../../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf')}
+@font-face{font-family:MaterialCommunityIcons;src:url('../../../../../../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf')}
+.nav-demo{min-height:100vh;box-sizing:border-box;font-family:Inter_400Regular,sans-serif;display:flex;flex-direction:column;justify-content:space-between}
+.nav-demo-controls{display:flex;align-items:center;justify-content:space-between;padding:22px 20px;font-size:12px}
+.nav-demo-controls button{font:inherit;border:1px solid currentColor;border-radius:7px;padding:6px 10px;background:transparent;cursor:pointer;opacity:.75}
+.nav-demo-note{padding:0 20px;font-size:12px;line-height:1.6;opacity:.65;max-width:340px}
+.nav-demo-stage{padding-top:32px;padding-bottom:16px}

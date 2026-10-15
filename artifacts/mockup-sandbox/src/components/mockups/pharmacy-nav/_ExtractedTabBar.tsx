@@ -1,0 +1,122 @@
+import type { BottomTabBarProps } from 'expo-router/tabs';
+import { Pressable, StyleSheet, View } from 'react-native-web';
+import { useSafeAreaInsets } from './_context';
+
+import { Icon, type IconName } from './_Icon';
+import { Txt } from './_Txt';
+import { useCart } from './_context';
+import { elevation, layout, radius, spacing } from './_theme';
+import { useTheme } from './_context';
+
+type TabMeta = { label: string; icon: IconName; /** Raised centre action. */ fab?: boolean };
+
+/** Matches the tab order used in Expo Router's `(tabs)` group. */
+const TAB_META: Record<string, TabMeta> = {
+  index: { label: 'Home', icon: 'home' },
+  categories: { label: 'Categories', icon: 'categories' },
+  pharmacy: { label: 'Pharmacy', icon: 'pharmacy', fab: true },
+  profile: { label: 'Profile', icon: 'profile' },
+  cart: { label: 'Cart', icon: 'cart' },
+};
+
+/** Fixed bottom navigation with the raised green Pharmacy action. */
+export function TabBar({ state, navigation }: BottomTabBarProps) {
+  const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const { itemCount } = useCart();
+
+  return (
+    <View style={[styles.bar, { backgroundColor: colors.surface, borderTopColor: colors.surfaceContainerHigh, paddingBottom: insets.bottom, height: layout.tabBarHeight + insets.bottom }]}>
+      {state.routes.map((route, index) => {
+        const meta = TAB_META[route.name];
+        if (!meta) return null;
+        const focused = state.index === index;
+        const badge = route.name === 'cart' ? itemCount : 0;
+
+        const onPress = () => {
+          const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+          if (!focused && !event.defaultPrevented) navigation.navigate(route.name);
+        };
+
+        if (meta.fab) {
+          return (
+            <Pressable
+              key={route.key}
+              accessibilityRole="button"
+              accessibilityLabel={meta.label}
+              accessibilityState={{ selected: focused }}
+              onPress={onPress}
+              style={styles.item}
+            >
+                <View style={[styles.fab, { backgroundColor: colors.primaryContainer }]}>
+                <Icon name={meta.icon} size={22} color="onPrimary" />
+              </View>
+              <Txt variant="tab" tint={focused ? colors.primaryAccent : colors.onSurface}>
+                {meta.label}
+              </Txt>
+            </Pressable>
+          );
+        }
+
+        return (
+          <Pressable
+            key={route.key}
+            accessibilityRole="button"
+            accessibilityLabel={meta.label}
+            accessibilityState={{ selected: focused }}
+            onPress={onPress}
+            style={styles.item}
+          >
+            <View>
+              <Icon name={meta.icon} size={20} color={focused ? 'primaryAccent' : 'onSurfaceVariant'} />
+              {badge > 0 ? (
+                  <View style={[styles.badge, { backgroundColor: colors.secondaryContainer }]}>
+                  <Txt variant="micro" tint={colors.onSecondary}>
+                    {badge}
+                  </Txt>
+                </View>
+              ) : null}
+            </View>
+            <Txt variant="tab" tint={focused ? colors.primaryAccent : colors.onSurface}>
+              {meta.label}
+            </Txt>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  bar: {
+    width: '100%',
+    maxWidth: layout.maxContentWidth,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: spacing.sm,
+  },
+  item: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.xxs, paddingTop: spacing.sm },
+  fab: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // Lifts the 44pt button so it takes the same 20pt as the other icons and all labels share one baseline.
+    marginTop: -24,
+    ...elevation.floating,
+  },
+  badge: {
+    position: 'absolute',
+    top: -6,
+    right: -10,
+    minWidth: 16,
+    height: 16,
+    paddingHorizontal: 3,
+    borderRadius: radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

@@ -47,6 +47,7 @@ export default defineConfig({
       : []),
   ],
   resolve: {
+    dedupe: ['react', 'react-dom'],
     alias: {
       '@': path.resolve(import.meta.dirname, 'src'),
     },
@@ -63,6 +64,11 @@ export default defineConfig({
     allowedHosts: true,
     fs: {
       strict: true,
+      allow: [
+        path.resolve(import.meta.dirname),
+        path.resolve(import.meta.dirname, '../../node_modules/@expo-google-fonts/inter'),
+        path.resolve(import.meta.dirname, '../../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts'),
+      ],
     },
   },
   preview: {
