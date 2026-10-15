@@ -44,12 +44,15 @@ export function QuantityStepper({ quantity, onIncrement, onDecrement, size = 're
       >
         <Icon name="minus" size={iconSize} color={tone === 'brand' ? 'primaryAccent' : 'onSurface'} />
       </Pressable>
-      <Animated.View key={quantity} entering={entering}>
-        <Txt variant={compact ? 'label' : 'title'} style={styles.count}>
-          {quantity}
-          {suffix ? ` ${suffix}` : ''}
-        </Txt>
-      </Animated.View>
+      {/* Clipped, so the rolling number stays inside the pill. */}
+      <View style={styles.countClip}>
+        <Animated.View key={quantity} entering={entering}>
+          <Txt variant={compact ? 'label' : 'title'} style={styles.count}>
+            {quantity}
+            {suffix ? ` ${suffix}` : ''}
+          </Txt>
+        </Animated.View>
+      </View>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Increase quantity"
@@ -73,5 +76,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   },
   button: { borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center' },
   brandButton: { backgroundColor: colors.primaryContainer },
+  countClip: { overflow: 'hidden' },
   count: { minWidth: 20, textAlign: 'center' },
 });
