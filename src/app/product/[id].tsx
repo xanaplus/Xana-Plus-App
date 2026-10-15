@@ -107,7 +107,6 @@ const PRODUCT_COPY: Record<string, ProductCopy> = {
 
 const BULK_BADGE = 'BULK SAVINGS';
 const PHARMACIST_REVIEW = 'Requires Pharmacist Review';
-const EXPRESS_NOTE = 'Available for 30-min Nairobi delivery';
 const UNAVAILABLE_NOTE = 'Currently unavailable. Check back soon';
 const REGULATED_NOTE = 'Fixed regulated retail price • Incl. VAT';
 const RX_NOTICE = 'Rx Required · Upload prescription at checkout';
@@ -115,7 +114,6 @@ const AGE_NOTICE = '18+ only · Confirm your age at checkout';
 const RETURN_NOTE =
   'Unopened items can be returned within 24 hours for a full M-Pesa refund. Our shopper collects them from your door.';
 
-const EXPRESS_TITLE = '30-Min Nairobi Express';
 
 const PHARMACIST_SERVICE = {
   title: 'Collection or delivery after pharmacist approval',
@@ -419,9 +417,11 @@ function ProductDetail({ product }: { product: Product }) {
               <Txt variant="label" color={inStock ? 'primaryAccent' : 'error'}>
                 {inStock ? 'In Stock' : 'Out of stock'}
               </Txt>
-              <Txt variant="bodySm" color="onSurfaceVariant">
-                {inStock ? `· ${EXPRESS_NOTE}` : `· ${UNAVAILABLE_NOTE}`}
-              </Txt>
+              {inStock ? null : (
+                <Txt variant="bodySm" color="onSurfaceVariant">
+                  {`· ${UNAVAILABLE_NOTE}`}
+                </Txt>
+              )}
             </View>
           )}
         </View>
@@ -496,9 +496,9 @@ function ProductDetail({ product }: { product: Product }) {
                 <Icon name="delivery" size={20} color="primaryAccent" />
               </View>
               <View style={styles.serviceBody}>
-                <Txt variant="title">{EXPRESS_TITLE}</Txt>
+                <Txt variant="title">{`Packed at ${store.name}`}</Txt>
                 <Txt variant="bodySm" color="onSurfaceVariant">
-                  {`Packed fresh at ${store.name}, the store you shop from`}
+                  Choose delivery or pickup, and a time, at checkout
                 </Txt>
               </View>
             </View>

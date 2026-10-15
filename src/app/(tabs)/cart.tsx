@@ -98,7 +98,7 @@ export default function CartRoute() {
         <View style={styles.expressChip}>
           <View style={styles.expressDot} />
           <Txt variant="labelSm" color="primaryAccent">
-            Nairobi Express
+            {store.name.replace('Xana Plus ', '')}
           </Txt>
         </View>
       </View>

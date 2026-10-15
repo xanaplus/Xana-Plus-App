@@ -17,7 +17,8 @@ import { quantityUnitPrice } from '../../../src/lib/quantity-pricing.ts';
  * App builds before this send only storeName, so the branch is read from it.
  */
 
-const PLATFORM_FEE = 20;
+/** No packaging fee (owner, 15 Oct 2026); the field stays so past orders still show theirs. */
+const PLATFORM_FEE = 0;
 const DELIVERY_FEE = 0;
 /** 10 points = KES 1 off. */
 const POINTS_PER_KES = 10;

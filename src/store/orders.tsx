@@ -70,7 +70,8 @@ export type PlacedOrder = {
   isTest?: boolean;
 };
 
-const PLATFORM_FEE = 20;
+/** No packaging fee (owner, 15 Oct 2026); the field stays so past orders still show theirs. */
+const PLATFORM_FEE = 0;
 const DELIVERY_FEE = 0;
 /** D-5: 1 Xana Club point per KES 120 spent. */
 const POINTS_PER_SHILLING = 1 / 120;
@@ -119,7 +120,7 @@ const SEED: PlacedOrder[] = ORDER_HISTORY.map((record, index) => {
     paymentReference: index === 0 ? 'QHL99120Z' : undefined,
     contact: 'Amina Odhiambo',
     addressLine: 'Apt 4B, Karura Springs, 2nd Parklands Ave, Nairobi',
-    slotLabel: index === 0 ? 'Today, 9:00 AM to 11:00 AM' : 'Standard Express',
+    slotLabel: index === 0 ? 'Today, 9:00 AM to 11:00 AM' : 'Standard Home Delivery',
     storeName: index === 2 ? 'Xana Plus Ruiru' : 'Xana Plus Syokimau',
     substitution: 'similar' as SubstitutionPreference,
     pointsEarned: pointsEarned(summary.total),

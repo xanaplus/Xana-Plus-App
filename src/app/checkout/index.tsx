@@ -899,7 +899,7 @@ export default function CheckoutRoute() {
         visible={sheet === 'slot'}
         onClose={closeSheet}
         title="Delivery slot"
-        description="Pick the window that suits you. Express arrives within 30 minutes."
+        description="Pick the window that suits you."
         scrollable
       >
         {deliverySlots.map(slot => (

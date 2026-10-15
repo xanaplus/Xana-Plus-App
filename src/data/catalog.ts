@@ -13,7 +13,6 @@ export const stores = [
 ] as const;
 
 export const deliverySlots: DeliverySlot[] = [
-  { id: 'express-30', label: 'Express 30 min', window: 'Within 30 minutes', mode: 'delivery' },
   { id: 'std-am', label: 'Standard Home Delivery', window: 'Tomorrow, 9:00 AM - 11:00 AM', mode: 'delivery', free: true },
   { id: 'std-pm', label: 'Standard Home Delivery', window: 'Tomorrow, 2:00 PM - 4:00 PM', mode: 'delivery', free: true },
   { id: 'pickup-syokimau', label: 'Pickup · Xana Plus Syokimau', window: 'Ready in 45 minutes', mode: 'pickup', free: true },

@@ -200,7 +200,7 @@ export default function AddAddressRoute() {
         {inZone ? (
           <View style={styles.zoneBanner}>
             <Icon name="check-circle" size={14} color="primaryAccent" />
-            <Txt variant="labelSm" color="primaryAccent">Inside Xana Plus Syokimau zone · Express slots available</Txt>
+            <Txt variant="labelSm" color="primaryAccent">Inside Xana Plus Syokimau zone · Delivery available</Txt>
           </View>
         ) : (
           <View style={styles.zoneBannerWarn}>

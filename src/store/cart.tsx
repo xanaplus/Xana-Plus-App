@@ -9,7 +9,8 @@ import { track } from '@/lib/analytics';
 import { tapFeedback } from '@/lib/haptics';
 
 const DELIVERY_FEE = 0;
-const PLATFORM_FEE = 20;
+/** No packaging fee (owner, 15 Oct 2026); the field stays so past orders still show theirs. */
+const PLATFORM_FEE = 0;
 /** Pickup and orders above this value ship free. */
 const FREE_DELIVERY_THRESHOLD = 1000;
 

@@ -79,7 +79,7 @@ const STORED = hydrateFulfilment() ?? {
   storeId: stores[0].id,
   addressId: defaultAddress.id,
   addresses: [defaultAddress],
-  slotId: deliverySlots[1].id,
+  slotId: deliverySlots[0].id,
   paymentMethod: 'mpesa' as PaymentMethodId,
   mpesaNumber: defaultAddress.phone,
 };
@@ -223,7 +223,7 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
   const [promo, setPromo] = useState<AppliedPromo | null>(null);
 
   const store = useMemo(() => stores.find(s => s.id === storeId) ?? stores[0], [storeId]);
-  const slot = useMemo(() => deliverySlots.find(s => s.id === slotId) ?? deliverySlots[1], [slotId]);
+  const slot = useMemo(() => deliverySlots.find(s => s.id === slotId) ?? deliverySlots[0], [slotId]);
 
   const address = useMemo<Address>(
     () =>

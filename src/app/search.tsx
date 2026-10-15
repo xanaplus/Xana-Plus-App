@@ -119,34 +119,6 @@ const DEPARTMENTS: { id: Department; title: string; subLabel?: string }[] = [
   { id: 'pharmacy', title: 'PHARMACY & WELLNESS', subLabel: 'Dispatched from Licensed Pharmacist counter' },
 ];
 
-/**
- * Aisles that ride the 30-minute express run. Pharmacy lines are dispensed at
- * the licensed pharmacist counter and depot-picked bulk cartons are excluded.
- */
-const EXPRESS_AISLES: Record<string, true> = {
-  'fresh-produce': true,
-  'dairy-eggs': true,
-  'meat-poultry': true,
-  'cooking-oil': true,
-  'rice-grains': true,
-  'sugar-baking': true,
-  snacks: true,
-  beverages: true,
-  'frozen-foods': true,
-  household: true,
-  'cleaning-products': true,
-  liquor: true,
-  rotisserie: true,
-  'cheese-counter': true,
-  'cold-cuts': true,
-  'olives-antipasti': true,
-  bakery: true,
-  staples: true,
-  spices: true,
-  'home-care': true,
-  'tissue-sanitary': true,
-};
-
 /** Each suggestion chip searches the catalogue term behind its design label. */
 const SUGGESTION_TERMS: Record<string, string> = {
   'Fresh Milk': 'Milk',
@@ -227,7 +199,6 @@ export default function SearchRoute() {
   const [sortBy, setSortBy] = useState<SortBy>('relevance');
   const [departments, setDepartments] = useState<CategoryVertical[]>([]);
   const [inStockOnly, setInStockOnly] = useState(false);
-  const [expressOnly, setExpressOnly] = useState(false);
   const [priceBand, setPriceBand] = useState<PriceBand | null>(null);
 
   const trimmed = query.trim();
@@ -252,13 +223,12 @@ export default function SearchRoute() {
   const base = live.data;
 
   const activeFilterCount =
-    departments.length + (inStockOnly ? 1 : 0) + (expressOnly ? 1 : 0) + (priceBand ? 1 : 0) + (sortBy !== 'relevance' ? 1 : 0);
+    departments.length + (inStockOnly ? 1 : 0) + (priceBand ? 1 : 0) + (sortBy !== 'relevance' ? 1 : 0);
 
   const clearFilters = () => {
     setSortBy('relevance');
     setDepartments([]);
     setInStockOnly(false);
-    setExpressOnly(false);
     setPriceBand(null);
   };
 
@@ -270,7 +240,6 @@ export default function SearchRoute() {
     const filtered = base.filter(product => {
       if (departments.length > 0 && !departments.includes(verticalForProduct(product))) return false;
       if (inStockOnly && product.inStock === false) return false;
-      if (expressOnly && (product.inStock === false || EXPRESS_AISLES[product.category] !== true)) return false;
       if (band && !band.test(product.price)) return false;
       return true;
     });
@@ -279,7 +248,7 @@ export default function SearchRoute() {
     if (sortBy === 'price-desc') return [...filtered].sort((a, b) => b.price - a.price);
     if (sortBy === 'newest') return [...filtered].sort((a, b) => (b.badges?.includes('new') ? 1 : 0) - (a.badges?.includes('new') ? 1 : 0));
     return filtered;
-  }, [base, sortBy, departments, inStockOnly, expressOnly, priceBand]);
+  }, [base, sortBy, departments, inStockOnly, priceBand]);
 
   const groups = useMemo(() => buildGroups(results), [results]);
 
@@ -503,10 +472,9 @@ export default function SearchRoute() {
         <Divider />
 
         <View style={styles.filterSection}>
-          <Txt variant="overline" color="onSurfaceVariant">AVAILABILITY & SPEED</Txt>
+          <Txt variant="overline" color="onSurfaceVariant">AVAILABILITY</Txt>
           <View style={styles.filterChips}>
             <Chip label="In stock only" selected={inStockOnly} onPress={() => setInStockOnly(v => !v)} />
-            <Chip label="Express delivery only" selected={expressOnly} onPress={() => setExpressOnly(v => !v)} />
           </View>
         </View>
 
