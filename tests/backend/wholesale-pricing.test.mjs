@@ -77,6 +77,26 @@ describe('actual checkout handler uses BC tiers',()=>{
     const h=checkout([row]);expect((await h.run([{itemNo:row.item_no,quantity:3},{itemNo:row.item_no,quantity:3}])).status).toBe(400);
     expect((await checkout([{...row,stock:5}]).run([{itemNo:row.item_no,quantity:6}])).status).toBe(409);
   });
+  it('sends the order from the picked store and checks stock there',async()=>{
+    const stocked={...row,stock:100,stock_by_location:{RUIRU:2,SYOKIMAU:50}};
+    let h=checkout([stocked]);
+    expect((await h.run([{itemNo:row.item_no,quantity:6}],{branchCode:'RUIRU'})).body).toMatchObject({error:'unavailable',items:[row.item_no]});
+    expect(h.saved.headers).toHaveLength(0);
+    h=checkout([stocked]);
+    expect((await h.run([{itemNo:row.item_no,quantity:6}],{branchCode:'syokimau'})).status).toBe(200);
+    expect(h.saved.headers[0].branch_code).toBe('SYOKIMAU');
+    // Before the branch's first stock sync its stock is unknown (null): fall back to the total.
+    h=checkout([{...row,stock:100,stock_by_location:{RUIRU:null}}]);
+    expect((await h.run([{itemNo:row.item_no,quantity:6}],{branchCode:'RUIRU'})).status).toBe(200);
+  });
+  it('reads the branch from the store name for app builds that do not send it, and refuses unknown branches',async()=>{
+    let h=checkout([row]);await h.run([{itemNo:row.item_no,quantity:1}],{storeName:'Xana Plus Ruiru'});
+    expect(h.saved.headers[0].branch_code).toBe('RUIRU');
+    h=checkout([row]);await h.run([{itemNo:row.item_no,quantity:1}],{storeName:'Xana Plus Syokimau'});
+    expect(h.saved.headers[0].branch_code).toBe('SYOKIMAU');
+    h=checkout([row]);expect((await h.run([{itemNo:row.item_no,quantity:1}],{branchCode:'NAIROBI'})).body.error).toBe('invalid_order');
+    expect(h.saved.headers).toHaveLength(0);
+  });
   it('does not allow wholesale pricing to bypass pharmacist approval',async()=>{
     const h=checkout([{...row,requires_rx:true}]);expect((await h.run([{itemNo:row.item_no,quantity:6}],{rxSupplied:true,rxReference:'typed'})).body.error).toBe('rx_missing');
     expect(h.saved.headers).toHaveLength(0);

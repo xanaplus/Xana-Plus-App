@@ -222,6 +222,7 @@ export default function CheckoutRoute() {
       addressLine: orderAddress.line,
       slotLabel: fulfilment.slot.label,
       storeName: fulfilment.store.name,
+      branchCode: fulfilment.store.id.toUpperCase(),
       substitution: cart.substitution,
       pointsRedeemed: pointsUsed,
       ageConfirmed: confirmedAge,

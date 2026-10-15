@@ -178,6 +178,8 @@ export type PlaceOrderInput = {
   addressLine: string;
   slotLabel: string;
   storeName: string;
+  /** The picked store as a branch code (SYOKIMAU, RUIRU); the order leaves from there. */
+  branchCode: string;
   substitution: SubstitutionPreference;
   pointsRedeemed: number;
   ageConfirmed: boolean;
@@ -229,7 +231,7 @@ export const placeOrderErrorMessage = (error: PlaceOrderError): string => {
     case 'signed_out':
       return 'Please sign in again to place your order.';
     case 'unavailable':
-      return 'Some items have just sold out. Remove them from your cart and try again.';
+      return 'Some items have just sold out at your chosen store. Remove them, or pick another store, and try again.';
     case 'age_unconfirmed':
       return 'Confirm you are 18 or over to buy alcohol.';
     case 'rx_missing':
@@ -477,6 +479,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         addressLine: input.addressLine,
         slotLabel: input.slotLabel,
         storeName: input.storeName,
+        branchCode: input.branchCode,
         substitution: input.substitution,
         pointsRedeemed: input.pointsRedeemed,
         ageConfirmed: input.ageConfirmed,

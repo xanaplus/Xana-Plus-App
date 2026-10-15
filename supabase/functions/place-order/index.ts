@@ -3,7 +3,7 @@ import { quantityUnitPrice } from '../../../src/lib/quantity-pricing.ts';
 
 /**
  * POST (signed in) { lines: [{ itemNo, quantity }], paymentMethod, contact,
- * addressLine, slotLabel, storeName, substitution, pointsRedeemed,
+ * addressLine, slotLabel, storeName, branchCode?, substitution, pointsRedeemed,
  * ageConfirmed, rxSupplied, rxReference?, promoCode? } → { orderNo, ... }.
  *
  * Every line is re-priced from the catalogue here; the app's prices are never
@@ -11,6 +11,10 @@ import { quantityUnitPrice } from '../../../src/lib/quantity-pricing.ts';
  * until M-Pesa is real. Points spent are taken off here; points earned are
  * added by staff_set_order_status() when the order is delivered. A promo code
  * is re-checked by promo_quote() against this subtotal and comes off the items.
+ *
+ * Orders leave from the store the customer picked (owner, 15 Oct 2026): it is saved
+ * as branch_code (BC posting needs a location) and stock is checked at that branch.
+ * App builds before this send only storeName, so the branch is read from it.
  */
 
 const PLATFORM_FEE = 20;
@@ -24,6 +28,12 @@ const MAX_QUANTITY = 999;
 
 const PAYMENT_METHODS = ['mpesa', 'cod', 'card'];
 const SUBSTITUTIONS = ['similar', 'refund', 'call'];
+/** The app's stores, as stock_locations codes. Syokimau is the app's default store. */
+const BRANCHES = ['SYOKIMAU', 'RUIRU'];
+const branchFor = (code: string | null, storeName: string | null): string | null => {
+  if (code) return BRANCHES.includes(code.toUpperCase()) ? code.toUpperCase() : null;
+  return /ruiru/i.test(storeName ?? '') ? 'RUIRU' : 'SYOKIMAU';
+};
 
 type Line = { itemNo: string; quantity: number; expectedUnitPrice?: number };
 
@@ -55,6 +65,7 @@ Deno.serve(async request => {
   const addressLine = text(body.addressLine);
   const slotLabel = text(body.slotLabel);
   const storeName = text(body.storeName);
+  const branchCode = branchFor(text(body.branchCode, 20), storeName);
   const pointsRedeemed = Number.isInteger(body.pointsRedeemed) && body.pointsRedeemed > 0 ? body.pointsRedeemed : 0;
   const promoCode = text(body.promoCode, 30)?.toUpperCase() ?? null;
 
@@ -65,23 +76,26 @@ Deno.serve(async request => {
     new Set(lines.map(line => line.itemNo)).size !== lines.length ||
     !paymentMethod || !PAYMENT_METHODS.includes(paymentMethod) ||
     !substitution || !SUBSTITUTIONS.includes(substitution) ||
-    !contact || !addressLine || !slotLabel || !storeName
+    !contact || !addressLine || !slotLabel || !storeName || !branchCode
   ) {
     return reply(400, { error: 'invalid_order' });
   }
 
-  // Price and check every line against the catalogue as it is now.
+  // Price and check every line against the catalogue as it is now, with stock at the
+  // chosen branch (the total across branches until that branch's first stock sync).
   const itemNos = [...new Set(lines.map(line => line.itemNo))];
   const { data: rows, error: catalogueError } = await db
     .from('catalogue')
-    .select('item_no, name, price, stock, requires_rx, age_restricted, price_tiers')
+    .select('item_no, name, price, stock, stock_by_location, requires_rx, age_restricted, price_tiers')
     .in('item_no', itemNos);
   if (catalogueError) return reply(500, { error: 'server_error' });
 
   const byNo = new Map((rows ?? []).map(row => [row.item_no as string, row]));
   const unavailable = itemNos.filter(no => {
     const row = byNo.get(no);
-    return !row || Number(row.stock) < lines.find(line => line.itemNo === no)!.quantity;
+    const atBranch = row?.stock_by_location?.[branchCode];
+    const stock = typeof atBranch === 'number' ? atBranch : Number(row?.stock);
+    return !row || stock < lines.find(line => line.itemNo === no)!.quantity;
   });
   if (unavailable.length > 0) return reply(409, { error: 'unavailable', items: unavailable });
 
@@ -145,6 +159,7 @@ Deno.serve(async request => {
         address_line: addressLine,
         slot_label: slotLabel,
         store_name: storeName,
+        branch_code: branchCode,
         substitution,
         items_subtotal: itemsSubtotal,
         wholesale_savings: wholesaleSavings,
