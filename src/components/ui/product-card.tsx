@@ -6,10 +6,12 @@ import { Badge, type BadgeTone } from '@/components/ui/badge';
 import { ProductAddButton } from '@/components/ui/product-add-button';
 import { usePressScale } from '@/components/ui/pressable-scale';
 import { ProductPhoto } from '@/components/ui/product-photo';
+import { QuantityStepper } from '@/components/ui/quantity-stepper';
 import { Txt } from '@/components/ui/text';
 import { figmaAsset } from '@/data/images';
 import type { Product, ProductBadge } from '@/data/types';
 import { discountPercent, formatKes } from '@/lib/format';
+import { useCart } from '@/store/cart';
 import { elevation, radius, spacing } from '@/theme';
 import { useTheme } from '@/theme/provider';
 
@@ -105,16 +107,31 @@ export function ProductCard({ product, width, quantity = 0, onPress, onAdd, styl
           </View>
         </View>
         {product.inStock === false ? null : quantity > 0 ? (
-          <View style={[styles.qtyPill, { backgroundColor: colors.primary }]}>
-            <Txt variant="label" tint={colors.onPrimary}>
-              {quantity}
-            </Txt>
-          </View>
+          <CardStepper productId={product.id} quantity={quantity} />
         ) : (
           <ProductAddButton productName={product.name} onPress={onAdd} />
         )}
       </View>
     </Animated.View>
+  );
+}
+
+/**
+ * Once an item is in the cart its Add button becomes − n +, as on Instacart and Glovo,
+ * so shoppers change amounts without opening the product. − at 1 takes it out.
+ */
+function CardStepper({ productId, quantity }: { productId: string; quantity: number }) {
+  const cart = useCart();
+  return (
+    <QuantityStepper
+      quantity={quantity}
+      min={0}
+      size="compact"
+      tone="brand"
+      onIncrement={() => cart.setQuantity(productId, quantity + 1)}
+      onDecrement={() => cart.setQuantity(productId, quantity - 1)}
+      style={styles.cardStepper}
+    />
   );
 }
 
@@ -168,11 +185,7 @@ export function ProductRow({ product, eyebrow, description, quantity = 0, onPres
       <View style={styles.trailing}>
         {trailing ??
           (quantity > 0 ? (
-            <View style={[styles.qtyPill, { backgroundColor: colors.primary }]}>
-              <Txt variant="label" tint={colors.onPrimary}>
-                {quantity}
-              </Txt>
-            </View>
+            <CardStepper productId={product.id} quantity={quantity} />
           ) : (
             <ProductAddButton productName={product.name} onPress={onAdd} />
           ))}
@@ -206,14 +219,8 @@ const styles = StyleSheet.create({
   priceBlock: { minWidth: 0, flex: 1, minHeight: 44, justifyContent: 'center' },
   strikeSlot: { height: 15 },
   strike: { textDecorationLine: 'line-through' },
-  qtyPill: {
-    minWidth: 44,
-    height: 44,
-    paddingHorizontal: spacing.sm,
-    borderRadius: radius.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  /** Tighter than the cart's stepper (~88pt) so the price keeps its room on a 168pt card. */
+  cardStepper: { gap: spacing.xs, paddingHorizontal: spacing.xxs },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

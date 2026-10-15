@@ -19,6 +19,9 @@ vi.mock('@/components/ui/pressable-scale', () => ({ usePressScale: () => ({ styl
 vi.mock('@/components/ui/badge', () => ({ Badge: 'badge' }));
 vi.mock('@/components/ui/icon', () => ({ Icon: 'icon' }));
 vi.mock('@/components/ui/product-photo', () => ({ ProductPhoto: 'photo' }));
+vi.mock('@/components/ui/quantity-stepper', () => ({ QuantityStepper: 'stepper' }));
+const cart = vi.hoisted(() => ({ setQuantity: vi.fn() }));
+vi.mock('@/store/cart', () => ({ useCart: () => cart }));
 vi.mock('@/components/ui/text', () => ({ Txt: 'text' }));
 vi.mock('@/data/images', () => ({ figmaAsset: () => undefined }));
 vi.mock('@/theme/provider', () => ({
@@ -50,8 +53,11 @@ describe('product card add pills', () => {
   it('keeps the quantity replacement and recorded current/previous prices', async () => {
     const root = await mount(<ProductCard product={{ ...product, wasPrice: 160 }} quantity={2} onAdd={vi.fn()} />);
     expect(root.root.findAllByProps({ accessibilityLabel: `Add ${product.name} to cart` })).toHaveLength(0);
+    const stepper = root.root.findByType('stepper');
+    expect(stepper.props.quantity).toBe(2);
+    await act(async () => stepper.props.onDecrement());
+    expect(cart.setQuantity).toHaveBeenCalledWith(product.id, 1);
     const text = root.root.findAllByType('text').flatMap(node => [node.props.children].flat(Infinity));
-    expect(text).toContain(2);
     expect(text).toContain('KES 139');
     expect(text).toContain('KES 160');
     await act(async () => root.unmount());
