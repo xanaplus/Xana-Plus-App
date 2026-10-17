@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Xana Plus — How the App Categorises Products</title>
+<style>
+  @page { size: A4; margin: 10mm 13mm 12mm; }
+  :root { --green: #046938; --ink: #1d2320; --muted: #5b6660; --rule: #dfe5e1; --tint: #f3f7f4; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; color: var(--ink); font-size: 8.5pt; line-height: 1.36; }
+  header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--green); padding-bottom: 2.5mm; margin-bottom: 3.5mm; }
+  header img { width: 24mm; }
+  h1 { font-size: 15pt; line-height: 1.2; margin: 0; color: var(--green); font-weight: 600; }
+  .date { color: var(--muted); font-size: 8.5pt; }
+  h2 { font-size: 10.5pt; color: var(--green); margin: 2.8mm 0 1.2mm; font-weight: 600; }
+  p { margin: 0 0 1.8mm; }
+  .lead { font-size: 9.2pt; }
+  .note { background: var(--tint); border-left: 3px solid var(--green); padding: 2mm 3mm; margin: 2mm 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 8pt; }
+  th { text-align: left; background: var(--tint); color: var(--green); font-weight: 600; }
+  th, td { padding: 0.8mm 1.8mm; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  td.dept { font-weight: 600; white-space: nowrap; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  ul { margin: 0 0 1.8mm; padding-left: 4.5mm; } li { margin-bottom: 0.8mm; }
+  code { font-family: Consolas, monospace; font-size: 7.8pt; background: var(--tint); padding: 0 1mm; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>How the Xana Plus app categorises products</h1>
+    <div class="date">For William, website team · 17 October 2026</div>
+  </div>
+  <img src="../management-review/logo.svg" alt="Xana">
+</header>
+
+<p class="lead">The app sorts every product by one Business Central field: the <b>Inventory Posting Group</b>. Each group maps to an app department and shelf. For example, Panadol is in <code>OVER THE COUNTER</code>, so it shows under Pharmacy → Over the Counter. Item Category Code and Gen. Prod. Posting Group are not used. We suggest the website uses the same grouping, so a product sits in the same place on both.</p>
+
+<div class="note"><b>Pharmacy photo rule (from the pharmacy team).</b> Items in <code>GENERAL</code>, <code>CHRONIC</code> and <code>CONTROLLED</code> must be listed <b>without photos, on the app and on the website</b>. They can still be sold. The app now hides those photos itself (857 items had one). Could the shared <code>catalogue</code> view return <code>photo_url = null</code> and <code>has_photo = false</code> for these three groups, so the website hides them too? Photos stay for OVER THE COUNTER, COSMETICS &amp; BEAUTY P and SUPPLEMENT.</div>
+
+<h2>Which BC group goes where</h2>
+<div class="cols">
+<table>
+  <tr><th>Department</th><th>Shelf</th><th>BC Inventory Posting Group</th></tr>
+  <tr><td class="dept" rowspan="6">Pharmacy</td><td>Medicines <i>(no photos)</i></td><td>GENERAL</td></tr>
+  <tr><td>Over the Counter</td><td>OVER THE COUNTER</td></tr>
+  <tr><td>Chronic Care <i>(no photos)</i></td><td>CHRONIC</td></tr>
+  <tr><td>Controlled Medicines <i>(no photos)</i></td><td>CONTROLLED</td></tr>
+  <tr><td>Vitamins &amp; Supplements</td><td>SUPPLEMENT</td></tr>
+  <tr><td>Cosmetics &amp; Beauty</td><td>COSMETICS &amp; BEAUTY P <i>(pharmacy only)</i></td></tr>
+  <tr><td class="dept" rowspan="4">Household</td><td>Cleaning &amp; Laundry</td><td>SOAPS &amp; DETERGENTS</td></tr>
+  <tr><td>Tissue &amp; Sanitary</td><td>SANITARIES&amp; DIAPERS</td></tr>
+  <tr><td>Kitchen &amp; Household</td><td>CUTLERY AND HOUSEHOL, PLASTICS</td></tr>
+  <tr><td>Fresheners &amp; Pest Control</td><td>AIRFRESHNERS, INSECTICIDES, SHOE CARE</td></tr>
+  <tr><td class="dept">Liquor</td><td>Beer &amp; Cider, Wine &amp; Spirits</td><td>WINES &amp; SPIRITS</td></tr>
+</table>
+<table>
+  <tr><th>Department</th><th>Shelf</th><th>BC Inventory Posting Group</th></tr>
+  <tr><td class="dept" rowspan="9">Groceries</td><td>Fresh Produce</td><td>FRUITS AND VEGETABLE</td></tr>
+  <tr><td>Dairy &amp; Eggs</td><td>MILK PRODUCTSS, DAIRIES</td></tr>
+  <tr><td>Meat &amp; Poultry</td><td>MEAT PRODUCTS</td></tr>
+  <tr><td>Bakery</td><td>BREADS &amp; BREAD SPREA</td></tr>
+  <tr><td>Beverages</td><td>BEVERAGES, WATER, SOFTDRINKS AND JUICE</td></tr>
+  <tr><td>Staples &amp; Cereals</td><td>FOODSTUFFS, GROCERIES &amp; CEREALS</td></tr>
+  <tr><td>Snacks</td><td>SNACKS &amp; BISCUITS, CONFECTIONARIES</td></tr>
+  <tr><td>Spices &amp; Flavours</td><td>SPICES &amp; FLAVOURS</td></tr>
+  <tr><td>Cooking Oil</td><td>COOKING OILS &amp; FATS</td></tr>
+  <tr><td class="dept" rowspan="5">Retail</td><td>Beauty &amp; Hair</td><td>RETBEAU (retail beauty)</td></tr>
+  <tr><td>Oral Care</td><td>ORAL CARE</td></tr>
+  <tr><td>Books &amp; Stationery</td><td>STATIONARY</td></tr>
+  <tr><td>Baby Products</td><td>BABY PRODUCTS</td></tr>
+  <tr><td>General Merchandise</td><td>CLOTHING, LUGGAGE, and any item with no group</td></tr>
+</table>
+</div>
+<p style="margin-top:1.5mm;color:var(--muted)">Retail also lists some everyday grocery and household shelves (cooking oil, cleaning, soft drinks, staples) so retail shoppers find them in one place. BC has no "Household" or "Beauty" department of its own; the app builds both from the groups above.</p>
+
+<h2>The exceptions</h2>
+<ul>
+  <li><b>Deli</b> goes by item number: any item whose number starts with <code>DEL</code> is Deli, whatever its group.</li>
+  <li><b>Wholesale</b> is picked by pack words in the name: "box", "outer", "carton", "ctn", "bale", "crate".</li>
+  <li><b>Some shelves split one group by name words:</b> Liquor into Beer &amp; Cider ("lager", "stout"…) and Wine &amp; Spirits ("whisky", "gin"…); the Deli meat and cheese counters by "sausage", "bacon", "cheese"…</li>
+  <li><b>Prescription needed:</b> group <code>CONTROLLED</code>, or an item number starting with <code>CONTR</code>. <b>18+:</b> group <code>WINES &amp; SPIRITS</code>.</li>
+  <li><b>What shows at all:</b> active, price above zero and <code>show_on_website</code> (the <code>catalogue</code> view). Shelves list in-stock items only; search lists everything, in stock first.</li>
+</ul>
+
+<h2>For the website</h2>
+<ul>
+  <li>If the website uses the same grouping, the mapping lives in the app repo: <code>BC_GROUP_CATEGORY</code> in <code>src/data/live-catalogue.ts</code> and the shelves in <code>verticals</code>, <code>src/data/catalog.ts</code>. We are happy to move it into a shared table if that is easier for you.</li>
+  <li>If the website already groups differently, please tell us how, so the two can match.</li>
+  <li>A product in the wrong place is fixed in BC by changing its Inventory Posting Group; the next morning's sync (06:30) moves it. The back office is already working through known cases, for example Ariel and Golden Fry oil in FOODSTUFFS.</li>
+</ul>
+
+</body>
+</html>
