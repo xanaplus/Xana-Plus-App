@@ -22,21 +22,22 @@ import { ProductPhoto } from '@/components/ui/product-photo';
 import { popularSearches, shelfForTerm, stores, verticalForProduct } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
 import { fetchShelf, searchCatalogue, useLive } from '@/data/live-catalogue';
+import type { PriceBand, ResultOptions, ResultSort } from '@/data/live-catalogue';
 import type { CategoryVertical, Product, ProductBadge } from '@/data/types';
-import { discountPercent, formatKesDecimal } from '@/lib/format';
+import { discountPercent, formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
 import { colors, elevation, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
-type SortBy = 'relevance' | 'price-asc' | 'price-desc' | 'newest';
+type SortBy = ResultSort;
 
+/** BC has no "new" flag, so there is no Newest. */
 const SORT_BY_OPTIONS: { value: SortBy; label: string }[] = [
   { value: 'relevance', label: 'Relevance' },
   { value: 'price-asc', label: 'Price: Low to High' },
   { value: 'price-desc', label: 'Price: High to Low' },
-  { value: 'newest', label: 'Newest' },
 ];
 
 /** The six departments FR-B.1 defines — matches the Filter & Sort frame's chips. */
@@ -49,12 +50,10 @@ const DEPARTMENT_OPTIONS: { value: CategoryVertical; label: string }[] = [
   { value: 'liquor', label: 'Liquor' },
 ];
 
-type PriceBand = 'under-500' | '500-1500' | 'over-1500';
-
-const PRICE_BANDS: { value: PriceBand; label: string; test: (price: number) => boolean }[] = [
-  { value: 'under-500', label: 'Under KES 500', test: p => p < 500 },
-  { value: '500-1500', label: 'KES 500 to 1,500', test: p => p >= 500 && p <= 1500 },
-  { value: 'over-1500', label: 'Over KES 1,500', test: p => p > 1500 },
+const PRICE_BANDS: { value: PriceBand; label: string }[] = [
+  { value: 'under-500', label: 'Under KES 500' },
+  { value: '500-1500', label: 'KES 500 to 1,500' },
+  { value: 'over-1500', label: 'Over KES 1,500' },
 ];
 
 /** Opens blank; the Figma frame showed a sample "milk" query. */
@@ -106,7 +105,7 @@ const CATEGORY_META: Record<string, CategoryMeta> = {
   'general-merchandise': { label: 'General Merchandise', aisle: 'Aisle 10 · General', department: 'grocery' },
   'beauty-personal-care': { label: 'Beauty & Hair', aisle: 'Aisle 11 · Beauty', department: 'grocery' },
   'oral-care': { label: 'Oral Care', aisle: 'Aisle 11 · Beauty', department: 'grocery' },
-  'skin-care': { label: 'Skin & Dermatology', aisle: 'Pharmacist counter', department: 'pharmacy' },
+  'skin-care': { label: 'Cosmetics & Beauty', aisle: 'Pharmacist counter', department: 'pharmacy' },
   medicines: { label: 'Medicines', aisle: 'Pharmacist counter', department: 'pharmacy' },
   'otc-medicines': { label: 'Over the Counter', aisle: 'Pharmacist counter', department: 'pharmacy' },
   'chronic-care': { label: 'Chronic Care', aisle: 'Pharmacist counter', department: 'pharmacy' },
@@ -191,7 +190,8 @@ export default function SearchRoute() {
   const [feedWidth, setFeedWidth] = useState<number | null>(null);
   // Arriving from a category tile prefills the field (e.g. /search?q=Cooking Oil).
   const { q } = useLocalSearchParams<{ q?: string }>();
-  const [query, setQuery] = useState(typeof q === "string" && q.trim() ? q : DEFAULT_QUERY);
+  const arrivedWithQuery = typeof q === "string" && q.trim() !== "";
+  const [query, setQuery] = useState(arrivedWithQuery ? q : DEFAULT_QUERY);
   /** Bumped by the mic affordance to re-focus the field (voice search is mocked). */
   const [fieldKey, setFieldKey] = useState(0);
 
@@ -199,6 +199,7 @@ export default function SearchRoute() {
   const [sortBy, setSortBy] = useState<SortBy>('relevance');
   const [departments, setDepartments] = useState<CategoryVertical[]>([]);
   const [inStockOnly, setInStockOnly] = useState(false);
+  const [noRx, setNoRx] = useState(false);
   const [priceBand, setPriceBand] = useState<PriceBand | null>(null);
 
   const trimmed = query.trim();
@@ -211,44 +212,43 @@ export default function SearchRoute() {
   }, [trimmed]);
 
   // A name the app links here (tile, aisle, "See All") opens that shelf; anything typed is a text search.
+  // Shelves only ever hold in-stock items, so "In stock only" is offered for typed searches alone.
+  const shelf = shelfForTerm(settled);
+  const options: ResultOptions = { sort: sortBy, priceBand, inStockOnly: inStockOnly && !shelf, noRx };
   const live = useLive(
-    `search:${settled.toLowerCase()}`,
-    () => {
-      const shelf = shelfForTerm(settled);
-      return shelf ? fetchShelf({ ...shelf, limit: RESULT_LIMIT }) : searchCatalogue(settled, RESULT_LIMIT);
-    },
+    `search:${settled.toLowerCase()}:${JSON.stringify(options)}`,
+    () => (shelf ? fetchShelf({ ...shelf, limit: RESULT_LIMIT }, options) : searchCatalogue(settled, RESULT_LIMIT, options)),
     NO_RESULTS,
   );
   const searching = settled !== trimmed || live.status === 'loading';
   const base = live.data;
 
   const activeFilterCount =
-    departments.length + (inStockOnly ? 1 : 0) + (priceBand ? 1 : 0) + (sortBy !== 'relevance' ? 1 : 0);
+    departments.length + (inStockOnly && !shelf ? 1 : 0) + (noRx ? 1 : 0) + (priceBand ? 1 : 0) + (sortBy !== 'relevance' ? 1 : 0);
 
   const clearFilters = () => {
     setSortBy('relevance');
     setDepartments([]);
     setInStockOnly(false);
+    setNoRx(false);
     setPriceBand(null);
   };
 
   const toggleDepartment = (value: CategoryVertical) =>
     setDepartments(current => (current.includes(value) ? current.filter(v => v !== value) : [...current, value]));
 
-  const results = useMemo(() => {
-    const band = priceBand ? PRICE_BANDS.find(b => b.value === priceBand) : null;
-    const filtered = base.filter(product => {
-      if (departments.length > 0 && !departments.includes(verticalForProduct(product))) return false;
-      if (inStockOnly && product.inStock === false) return false;
-      if (band && !band.test(product.price)) return false;
-      return true;
-    });
-
-    if (sortBy === 'price-asc') return [...filtered].sort((a, b) => a.price - b.price);
-    if (sortBy === 'price-desc') return [...filtered].sort((a, b) => b.price - a.price);
-    if (sortBy === 'newest') return [...filtered].sort((a, b) => (b.badges?.includes('new') ? 1 : 0) - (a.badges?.includes('new') ? 1 : 0));
-    return filtered;
-  }, [base, sortBy, departments, inStockOnly, priceBand]);
+  // Sort, price, stock and prescription are applied by the database; departments narrow what came back.
+  const results = useMemo(
+    () => (departments.length > 0 ? base.filter(product => departments.includes(verticalForProduct(product))) : base),
+    [base, departments],
+  );
+  // Only worth offering when the results span departments; no counts, as they would only cover the loaded page.
+  const presentDepartments = useMemo(
+    () => DEPARTMENT_OPTIONS.filter(option => base.some(product => verticalForProduct(product) === option.value)),
+    [base],
+  );
+  const sortLabel = SORT_BY_OPTIONS.find(option => option.value === sortBy)?.label ?? 'Sort';
+  const priceLabel = PRICE_BANDS.find(band => band.value === priceBand)?.label;
 
   const groups = useMemo(() => buildGroups(results), [results]);
 
@@ -272,7 +272,7 @@ export default function SearchRoute() {
           </View>
           <View style={styles.cartCopy}>
             <Txt variant="titleSm" tint={colors.inverseOnSurface} numberOfLines={1}>
-              {formatKesDecimal(cart.summary.total)}
+              {formatKes(cart.summary.total)}
             </Txt>
             <Txt variant="caption" tint={colors.white70} numberOfLines={1}>
               {`${cart.itemCount} ${cart.itemCount === 1 ? 'item' : 'items'} in cart · ${storeShortName}`}
@@ -305,7 +305,8 @@ export default function SearchRoute() {
               value={query}
               onChangeText={setQuery}
               placeholder="Search groceries, meds & more"
-              autoFocus
+              // Results first when a tile or See All brought a query; the keyboard only for typing.
+              autoFocus={!arrivedWithQuery || fieldKey > 0}
               style={styles.field}
               trailingIcon={hasQuery ? 'close' : 'mic'}
               onTrailingPress={hasQuery ? () => setQuery('') : () => setFieldKey(key => key + 1)}
@@ -313,22 +314,56 @@ export default function SearchRoute() {
           </View>
         </View>
 
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Filter and sort"
-          onPress={() => setFilterOpen(true)}
-          style={styles.filterTrigger}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          style={styles.quickRow}
+          contentContainerStyle={styles.quickTrack}
         >
-          <Icon name="sort" size={16} color="onSurfaceVariant" />
-          <Txt variant="label">Filter & Sort</Txt>
-          {activeFilterCount > 0 ? (
-            <View style={styles.filterCount}>
-              <Txt variant="micro" tint={colors.onPrimary}>
-                {activeFilterCount}
-              </Txt>
-            </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Filter and sort"
+            onPress={() => setFilterOpen(true)}
+            style={styles.filterTrigger}
+          >
+            <Icon name="sort" size={16} color="onSurfaceVariant" />
+            <Txt variant="label">Filter & Sort</Txt>
+            {activeFilterCount > 0 ? (
+              <View style={styles.filterCount}>
+                <Txt variant="micro" tint={colors.onPrimary}>
+                  {activeFilterCount}
+                </Txt>
+              </View>
+            ) : null}
+          </Pressable>
+          {/* Quick filters: an active one shows a cross and clears on tap; Sort and Price open the sheet to choose. */}
+          <Chip
+            label={sortBy === 'relevance' ? 'Sort' : sortLabel}
+            icon={sortBy === 'relevance' ? undefined : 'close'}
+            selected={sortBy !== 'relevance'}
+            onPress={() => (sortBy === 'relevance' ? setFilterOpen(true) : setSortBy('relevance'))}
+          />
+          <Chip
+            label={priceLabel ?? 'Price'}
+            icon={priceLabel ? 'close' : undefined}
+            selected={!!priceLabel}
+            onPress={() => (priceLabel ? setPriceBand(null) : setFilterOpen(true))}
+          />
+          {!shelf ? (
+            <Chip label="In stock" icon={inStockOnly ? 'close' : undefined} selected={inStockOnly} onPress={() => setInStockOnly(v => !v)} />
           ) : null}
-        </Pressable>
+          <Chip label="No prescription needed" icon={noRx ? 'close' : undefined} selected={noRx} onPress={() => setNoRx(v => !v)} />
+          {departments.map(value => (
+            <Chip
+              key={value}
+              label={DEPARTMENT_OPTIONS.find(option => option.value === value)?.label ?? value}
+              icon="close"
+              selected
+              onPress={() => toggleDepartment(value)}
+            />
+          ))}
+        </ScrollView>
 
         <View style={styles.meta}>
           <Txt variant="caption" color="outline" numberOfLines={1} style={styles.metaText}>
@@ -336,7 +371,9 @@ export default function SearchRoute() {
               ? 'Start typing to search the catalogue'
               : searching
                 ? `Searching for "${trimmed}"…`
-                : `Showing ${results.length} results for "${trimmed}"`}
+                : base.length >= RESULT_LIMIT
+                  ? `Showing the first ${results.length} for "${trimmed}"`
+                  : `Showing ${results.length} results for "${trimmed}"`}
           </Txt>
           <View style={styles.storeChip}>
             <View style={styles.storeDot} />
@@ -362,7 +399,7 @@ export default function SearchRoute() {
           <LoadState status="error" onRetry={live.retry} />
         ) : results.length === 0 ? (
           <>
-            {hasQuery ? <NoResults query={trimmed} matched={base.length} /> : null}
+            {hasQuery ? <NoResults query={trimmed} filtered={activeFilterCount > 0} onClear={clearFilters} /> : null}
             <PopularSearches onPick={label => setQuery(SUGGESTION_TERMS[label] ?? label)} />
             <ContactBranch store={store} />
           </>
@@ -451,30 +488,31 @@ export default function SearchRoute() {
 
         <Divider />
 
-        <View style={styles.filterSection}>
-          <Txt variant="overline" color="onSurfaceVariant">DEPARTMENT</Txt>
-          <View style={styles.filterChips}>
-            {DEPARTMENT_OPTIONS.map(option => {
-              const count = base.filter(product => verticalForProduct(product) === option.value).length;
-              if (count === 0) return null;
-              return (
-                <Chip
-                  key={option.value}
-                  label={`${option.label} (${count})`}
-                  selected={departments.includes(option.value)}
-                  onPress={() => toggleDepartment(option.value)}
-                />
-              );
-            })}
-          </View>
-        </View>
+        {presentDepartments.length > 1 ? (
+          <>
+            <View style={styles.filterSection}>
+              <Txt variant="overline" color="onSurfaceVariant">DEPARTMENT</Txt>
+              <View style={styles.filterChips}>
+                {presentDepartments.map(option => (
+                  <Chip
+                    key={option.value}
+                    label={option.label}
+                    selected={departments.includes(option.value)}
+                    onPress={() => toggleDepartment(option.value)}
+                  />
+                ))}
+              </View>
+            </View>
 
-        <Divider />
+            <Divider />
+          </>
+        ) : null}
 
         <View style={styles.filterSection}>
           <Txt variant="overline" color="onSurfaceVariant">AVAILABILITY</Txt>
           <View style={styles.filterChips}>
-            <Chip label="In stock only" selected={inStockOnly} onPress={() => setInStockOnly(v => !v)} />
+            {!shelf ? <Chip label="In stock only" selected={inStockOnly} onPress={() => setInStockOnly(v => !v)} /> : null}
+            <Chip label="No prescription needed" selected={noRx} onPress={() => setNoRx(v => !v)} />
           </View>
         </View>
 
@@ -600,9 +638,9 @@ function ResultTile({
       {/* Card-wide tap target; a sibling of the add control, never its parent. */}
       <Pressable accessibilityRole="button" accessibilityLabel={product.name} onPress={onPress} style={styles.tileOverlay} />
 
-      <View style={styles.tileFoot}>
-        <Txt variant="titleLg" numberOfLines={1} style={styles.tilePrice}>
-          {formatKesDecimal(product.price)}
+      <View style={[styles.tileFoot, quantity > 0 && product.inStock !== false && styles.tileFootStacked]}>
+        <Txt variant="titleLg" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.68} style={styles.tilePrice}>
+          {formatKes(product.price)}
         </Txt>
         {product.inStock === false ? (
           <Txt variant="labelSm" color="outline">
@@ -637,9 +675,10 @@ function ResultTile({
  * `matched` is how many hits the query had before the active chip filtered them
  * out, which switches the copy from "nothing matched" to "nothing fits the filter".
  */
-function NoResults({ query, matched }: { query: string; matched: number }) {
+/** Filters now run in the database, so an empty page with filters on offers to clear them. */
+function NoResults({ query, filtered, onClear }: { query: string; filtered: boolean; onClear: () => void }) {
   const styles = useThemeStyles(createStyles);
-  const filteredOut = matched > 0;
+  const filteredOut = filtered;
 
   return (
     <View style={styles.empty}>
@@ -658,9 +697,10 @@ function NoResults({ query, matched }: { query: string; matched: number }) {
       </Txt>
       <Txt variant="bodySm" color="onSurfaceVariant" align="center" style={styles.emptyBody}>
         {filteredOut
-          ? `We found ${matched} ${matched === 1 ? 'result' : 'results'} for "${query}", but none fit the chip you picked. Choose another filter to see them.`
+          ? `Nothing for "${query}" fits the filters you picked. Clear them to see everything.`
           : `We couldn't find matches for "${query}". Try checking your spelling or searching for a broader term in groceries or pharmacy.`}
       </Txt>
+      {filteredOut ? <Button label="Clear filters" variant="outline" onPress={onClear} /> : null}
     </View>
   );
 }
@@ -747,13 +787,20 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   },
   inputWrap: { flex: 1 },
   field: { height: 44, backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.primaryAccent },
+  quickRow: {
+    flexGrow: 0,
+    marginBottom: spacing.md,
+  },
+  quickTrack: {
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: layout.screenMargin,
+  },
   filterTrigger: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
     gap: spacing.xs,
-    marginHorizontal: layout.screenMargin,
-    marginBottom: spacing.md,
     paddingHorizontal: spacing.md,
     height: 36,
     borderRadius: radius.pill,
@@ -843,6 +890,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
 
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: layout.gutter },
   tile: {
+    // Fills its row, so both cards in a row are the same height.
+    flexGrow: 1,
     padding: spacing.md,
     borderRadius: radius.xl,
     backgroundColor: colors.surface,
@@ -873,17 +922,19 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   tileBadge: { position: 'absolute', top: spacing.sm, left: spacing.sm },
   tileName: { minHeight: 38 },
   tileOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
+  /** One line, pinned to the card's foot, so both cards in a row line up (as on the shelf cards). */
   tileFoot: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'space-between',
-    columnGap: spacing.sm,
-    rowGap: spacing.sm,
-    marginTop: spacing.xs,
+    gap: spacing.xs,
+    marginTop: 'auto',
+    paddingTop: spacing.xs,
   },
-  /** Keeps "KES 1,280.00" intact; the stepper wraps under it rather than squeezing. */
-  tilePrice: { flexShrink: 0 },
+  /** The − n + control is too wide to share the line, so the price sits above it. */
+  tileFootStacked: { flexDirection: 'column', alignItems: 'stretch', gap: spacing.sm },
+  /** A long price ("KES 1,280.00") shrinks a little to fit beside the +. */
+  tilePrice: { flexShrink: 1, minWidth: 0 },
   addButton: {
     width: 34,
     height: 34,

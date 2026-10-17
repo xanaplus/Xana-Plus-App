@@ -12,6 +12,7 @@ import { useSession } from '@/store/session';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { formatKes } from '@/lib/format';
 
 const TIME_SLOTS = ['09:30 AM', '10:15 AM', '11:00 AM', '02:30 PM', '04:00 PM', '05:15 PM'];
 
@@ -108,7 +109,7 @@ export default function ClinicalBookingRoute() {
             {`${confirmed.branch} · ${confirmed.when}`}
           </Txt>
           <Txt variant="bodySm" color="onSurfaceVariant">
-            {`Total due: KES ${service.price.toLocaleString('en-KE')} · pay at clinic or via M-Pesa`}
+            {`Total due: ${formatKes(service.price)} · pay at clinic or via M-Pesa`}
           </Txt>
           <Txt variant="caption" color="onSurfaceVariant">
             {`Reference ${confirmed.ref} · the branch will call to confirm your slot.`}
@@ -134,7 +135,7 @@ export default function ClinicalBookingRoute() {
             </Txt>
           ) : null}
           <Button
-            label={saving ? 'Sending…' : `Confirm Booking · KES ${service.price.toLocaleString('en-KE')}`}
+            label={saving ? 'Sending…' : `Confirm Booking · ${formatKes(service.price)}`}
             icon="check-circle"
             iconPosition="leading"
             size="lg"
@@ -153,7 +154,7 @@ export default function ClinicalBookingRoute() {
         <View style={styles.heroTop}>
           <Txt variant="caption" color="onSurfaceVariant">{`Preventive Care · ${service.durationMinutes} mins`}</Txt>
           <View style={styles.heroPrice}>
-            <Txt variant="titleLg" color="primaryAccent">{`KES ${service.price.toLocaleString('en-KE')}`}</Txt>
+            <Txt variant="titleLg" color="primaryAccent">{formatKes(service.price)}</Txt>
             <Txt variant="caption" color="onSurfaceVariant">Self-pay or M-Pesa</Txt>
           </View>
         </View>
@@ -229,14 +230,14 @@ export default function ClinicalBookingRoute() {
 
       <Card variant="outline" padding={spacing.lg} style={styles.card}>
         <Txt variant="titleLg">Booking Breakdown</Txt>
-        <SummaryLine label="Service" value={`${service.name} · KES ${service.price.toLocaleString('en-KE')}`} />
+        <SummaryLine label="Service" value={`${service.name} · ${formatKes(service.price)}`} />
         <SummaryLine label="Location" value={branch.name} />
         <SummaryLine label="Date & Time" value={`${day.label === 'TODAY' ? 'Today' : day.day} ${day.date} at ${slot}`} />
         <SummaryLine label="Attending" value="Licensed Clinical Pharmacist" />
         <Divider />
         <View style={styles.totalRow}>
           <Txt variant="titleLg">Total Due</Txt>
-          <Txt variant="titleLg" color="primaryAccent">{`KES ${service.price.toLocaleString('en-KE')}`}</Txt>
+          <Txt variant="titleLg" color="primaryAccent">{formatKes(service.price)}</Txt>
         </View>
       </Card>
       <AuthSheet visible={signInOpen} onClose={() => setSignInOpen(false)} onSuccess={() => setSignInOpen(false)} />

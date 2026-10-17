@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useMemo, useRef, useState } from 'react';
+import { StyleSheet, View, useWindowDimensions } from 'react-native';
 
 import {
   Button,
@@ -20,6 +20,7 @@ import {
 } from '@/components/ui';
 import { productById, verticalForProduct } from '@/data/catalog';
 import DepartmentDonut from '@/components/spending/department-donut';
+import { useRevealProgress } from '@/components/spending/use-reveal';
 import { ORDER_HISTORY, orderMonthLabel, parseOrderDate } from '@/data/orders';
 import type { CategoryVertical } from '@/data/types';
 import { formatKes } from '@/lib/format';
@@ -181,6 +182,18 @@ function computeTotals(orders: PlacedOrder[]): Totals {
   };
 }
 
+type RevealedChart = 'donut' | 'months';
+
+/** A chart plays once its top passes this far down the visible area. */
+const REVEAL_LINE = 0.85;
+
+/** Bars rise left to right, slightly staggered, all finishing with the reveal. */
+const barRise = (progress: number, index: number, count: number) => {
+  const step = count > 1 ? Math.min(0.08, 0.4 / (count - 1)) : 0;
+  const start = index * step;
+  return Math.min(1, Math.max(0, (progress - start) / (1 - step * (count - 1))));
+};
+
 export default function SpendingScreen() {
   const { colors, gradients } = useTheme();
   const styles = useThemeStyles(createStyles);
@@ -189,6 +202,24 @@ export default function SpendingScreen() {
   const { user } = useSession();
   const { orders: placedOrders } = useOrders();
   const [period, setPeriod] = useState<Period>('all');
+
+  // Each chart draws in once, when most of the way up the screen (as on Revolut and Apple Fitness).
+  const { height: windowHeight } = useWindowDimensions();
+  const chartTops = useRef<Partial<Record<RevealedChart, number>>>({});
+  const view = useRef({ offset: 0, height: windowHeight });
+  const [revealed, setRevealed] = useState<Record<RevealedChart, boolean>>({ donut: false, months: false });
+  const checkReveal = () => {
+    const line = view.current.offset + view.current.height * REVEAL_LINE;
+    const due = (Object.keys(chartTops.current) as RevealedChart[]).filter(
+      chart => !revealed[chart] && (chartTops.current[chart] ?? Infinity) < line,
+    );
+    if (due.length > 0) setRevealed(current => ({ ...current, ...Object.fromEntries(due.map(chart => [chart, true])) }));
+  };
+  const placeChart = (chart: RevealedChart) => (y: number) => {
+    chartTops.current[chart] = y;
+    checkReveal();
+  };
+  const monthsProgress = useRevealProgress(revealed.months);
 
   // Provider includes demo seed orders and saved orders with checkout snapshots.
   const history = useMemo(() => placedOrders.filter(order => order.status !== 'cancelled' && order.status !== 'awaiting-payment'), [placedOrders]);
@@ -221,6 +252,10 @@ export default function SpendingScreen() {
     <Screen
       padded
       contentStyle={styles.content}
+      onScroll={(offset, height) => {
+        view.current = { offset, height };
+        checkReveal();
+      }}
     >
       <TopBar
         title="Savings & Spending"
@@ -285,8 +320,8 @@ export default function SpendingScreen() {
 
           {/* Composition is based on recorded item amounts, not guessed discount allocation. */}
           <SectionHeader title="Spending by department" style={styles.sectionHead} />
-          <Card variant="elevated" padding={spacing.lg}>
-            <DepartmentDonut breakdown={breakdown} onDepartmentPress={id => {
+          <Card variant="elevated" padding={spacing.lg} onLayout={event => placeChart('donut')(event.nativeEvent.layout.y)}>
+            <DepartmentDonut breakdown={breakdown} revealed={revealed.donut} onDepartmentPress={id => {
               if (id in VERTICAL_LABELS) router.push({
                 pathname: '/(tabs)/categories', params: { vertical: id, t: String(Date.now()) },
               });
@@ -314,15 +349,20 @@ export default function SpendingScreen() {
 
           {/* Trend */}
           <SectionHeader title="Month by month" style={styles.sectionHead} />
-          <Card variant="elevated" padding={spacing.lg}>
+          <Card variant="elevated" padding={spacing.lg} onLayout={event => placeChart('months')(event.nativeEvent.layout.y)}>
             <View style={styles.monthChart}>
-              {t.months.map(month => (
+              {t.months.map((month, index) => (
                 <View key={month.label} style={styles.monthCol}>
                   <Txt variant="caption" color="onSurfaceVariant" numberOfLines={1}>
                     {formatKes(month.total)}
                   </Txt>
                   <View style={styles.monthBarWrap}>
-                    <View style={[styles.monthBar, { height: `${Math.max(4, (month.total / monthMax) * 100)}%` }]} />
+                    <View
+                      style={[
+                        styles.monthBar,
+                        { height: `${Math.max(4, (month.total / monthMax) * 100) * barRise(monthsProgress, index, t.months.length)}%` },
+                      ]}
+                    />
                   </View>
                   <Txt variant="caption" color="onSurfaceVariant" numberOfLines={1}>
                     {month.label.split(' ')[0]}

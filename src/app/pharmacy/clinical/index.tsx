@@ -8,6 +8,7 @@ import { useFulfilment } from '@/store/fulfilment';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { formatKes } from '@/lib/format';
 
 /** Screen 1: Clinical Services Directory (FR-F.10). */
 export default function ClinicalDirectoryRoute() {
@@ -103,7 +104,7 @@ export default function ClinicalDirectoryRoute() {
             <View style={styles.priceRow}>
               <View>
                 <Txt variant="caption" color="onSurfaceVariant">{service.priceLabel}</Txt>
-                <Txt variant="titleLg" color="primaryAccent">{`KES ${service.price.toLocaleString('en-KE')}`}</Txt>
+                <Txt variant="titleLg" color="primaryAccent">{formatKes(service.price)}</Txt>
               </View>
               <Pressable
                 accessibilityRole="button"

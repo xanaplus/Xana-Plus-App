@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
+import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
 import {
   Badge,
   BottomSheet,
@@ -26,7 +27,7 @@ import { pharmacyQuickActions, verticalBySlug } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
 import { useShelves } from '@/data/live-catalogue';
 import type { Product } from '@/data/types';
-import { formatKesDecimal } from '@/lib/format';
+import { formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
@@ -35,15 +36,10 @@ import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { isPharmacyReviewer } from '@/features/prescriptions/api';
 
-/** Clinical filter chips above the product groups — `null` shows every group. */
+/** Filter chips above the product groups, one per pharmacy group — `null` shows every group. */
 const PHARMACY_FILTERS: readonly { label: string; categorySlug: string | null }[] = [
   { label: 'All Pharmacy', categorySlug: null },
-  { label: 'Pain Relief', categorySlug: 'pain-relief' },
-  { label: 'Vitamins & Supplements', categorySlug: 'vitamins-supplements' },
-  { label: 'First Aid', categorySlug: 'first-aid' },
-  { label: 'Baby Health', categorySlug: 'baby-health' },
-  { label: 'Personal Care', categorySlug: 'personal-care' },
-  { label: 'Wellness Devices', categorySlug: 'wellness-devices' },
+  ...verticalBySlug('pharmacy').sections.map(section => ({ label: section.title, categorySlug: section.categorySlug })),
 ];
 
 type IntakeChoice = { id: string; title: string; description: string; icon: IconName };
@@ -138,6 +134,7 @@ const ACCOUNT_REQUIRED = ['prescriptions', 'ask'];
 
 /** Screen 8a — Pharmacy & Wellness. */
 export default function PharmacyRoute() {
+  const scrollTop = useTabScrollTop();
   const { colors, gradients } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
@@ -207,7 +204,7 @@ export default function PharmacyRoute() {
   };
 
   return (
-    <Screen padded={false} contentStyle={styles.content}>
+    <Screen padded={false} contentStyle={styles.content} scrollRef={scrollTop}>
       {/* App bar, search field and quick actions sit flush; groups below are spaced. */}
       <View>
         <TopBar onBack={goBack}
@@ -278,7 +275,7 @@ export default function PharmacyRoute() {
       {sections.map(section => (
         <View key={section.title} style={[styles.inset, styles.section]}>
           <View style={styles.sectionHead}>
-            <SectionHeader title={section.title} actionLabel="See All" onAction={() => router.push('/search')} />
+            <SectionHeader title={section.title} actionLabel="See All" onAction={() => router.push({ pathname: '/search', params: { q: section.title } })} />
             <Txt variant="bodySm" color="onSurfaceVariant">
               {section.subtitle}
             </Txt>
@@ -434,7 +431,7 @@ function PharmacyCard({
             Price
           </Txt>
           <Txt variant="titleLg" tint={colors.primaryAccent}>
-            {formatKesDecimal(product.price)}
+            {formatKes(product.price)}
           </Txt>
         </View>
         {quantity > 0 ? (

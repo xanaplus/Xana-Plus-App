@@ -13,6 +13,7 @@ vi.mock('react-native', () => ({
   useWindowDimensions: () => ({ width: 320, height: 874 }),
 }));
 vi.mock('react-native-svg', () => ({ default: 'svg', Circle: 'circle' }));
+vi.mock('@/components/spending/use-reveal', () => ({ useRevealProgress: () => 1 }));
 vi.mock('@/components/ui', () => ({ Txt: 'text' }));
 vi.mock('@/theme/provider', () => ({
   useTheme: () => ({ colors: state.dark ? darkColors : colors, resolved: state.dark ? 'dark' : 'light' }),

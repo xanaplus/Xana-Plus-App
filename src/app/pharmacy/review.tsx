@@ -13,6 +13,7 @@ import { useSession } from '@/store/session';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { formatKes } from '@/lib/format';
 
 type Access = 'checking' | 'allowed' | 'denied' | 'failed';
 type DraftLine = QuoteChoice & { name: string; unitPrice: number };
@@ -257,7 +258,7 @@ export default function PharmacyReviewScreen() {
           {searching ? <ActivityIndicator accessibilityLabel="Searching catalogue" color={colors.primaryAccent} /> : null}
           {catalogueError && !selected ? <ErrorNotice message={catalogueError} /> : null}
           {products.map(product => <View key={product.id} style={styles.productRow}>
-            <View style={styles.flex}><Txt variant="label">{product.name}</Txt><Txt variant="caption" color="onSurfaceVariant">{product.id} · KSh {product.price.toLocaleString('en-KE', { minimumFractionDigits: 2 })} · In stock</Txt></View>
+            <View style={styles.flex}><Txt variant="label">{product.name}</Txt><Txt variant="caption" color="onSurfaceVariant">{product.id} · {formatKes(product.price)} · In stock</Txt></View>
             <Button label={lines.some(line => line.itemNo === product.id) ? 'Added' : 'Add'} size="sm" variant="outline" disabled={busy || lines.some(line => line.itemNo === product.id)} onPress={() => addProduct(product)} />
           </View>)}
           {search.trim().length >= 2 && !searching && products.length === 0 && !catalogueError ? <Txt variant="caption" color="onSurfaceVariant">No in-stock catalogue matches. Try another search.</Txt> : null}
@@ -265,7 +266,7 @@ export default function PharmacyReviewScreen() {
           {lines.map(line => <View key={line.itemNo} style={styles.lineEditor}>
             <View style={styles.flex}>
               <Txt variant="label">{line.name}</Txt>
-              <Txt variant="caption" color="onSurfaceVariant">KSh {line.unitPrice.toLocaleString('en-KE', { minimumFractionDigits: 2 })} each</Txt>
+              <Txt variant="caption" color="onSurfaceVariant">{formatKes(line.unitPrice)} each</Txt>
               <View style={styles.quantity}>
                 <Txt variant="caption" color="onSurfaceVariant">Quantity</Txt>
                 <View style={styles.quantityActions}>
@@ -286,7 +287,7 @@ export default function PharmacyReviewScreen() {
           </View>)}
           {lines.length ? <View style={styles.totalPreview}>
             <Txt variant="caption" color="onSurfaceVariant">Current catalogue subtotal · prices rechecked when quote is saved</Txt>
-            <Txt variant="title">KSh {quoteTotal.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Txt>
+            <Txt variant="title">{formatKes(quoteTotal)}</Txt>
           </View> : null}
           <View style={styles.inputField}><Txt variant="label">Quote expiry date</Txt><TextInput accessibilityLabel="Quote expiry date" value={expiry} onChangeText={setExpiry} editable={!busy} placeholder="YYYY-MM-DD" placeholderTextColor={colors.outline} style={styles.input} /></View>
           <View style={styles.inputField}><Txt variant="label">Reviewer note or decline reason</Txt><TextInput accessibilityLabel="Reviewer note" value={note} onChangeText={setNote} editable={!busy} maxLength={1000} multiline textAlignVertical="top" placeholder="Write the real review note for the customer" placeholderTextColor={colors.outline} style={[styles.input, styles.multiline]} /></View>

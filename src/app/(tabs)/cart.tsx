@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
+import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
 import {
   BottomSheet,
   Button,
@@ -42,6 +43,7 @@ const SUBSTITUTION_COPY: Record<SubstitutionPreference, { title: string; descrip
 
 /** Screen 5 — Cart (Default State) and Screen 5a — Substitution Preference Sheet. */
 export default function CartRoute() {
+  const scrollTop = useTabScrollTop();
   const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
@@ -58,6 +60,7 @@ export default function CartRoute() {
 
   return (
     <Screen
+      scrollRef={scrollTop}
       padded={false}
       contentStyle={styles.content}
       footer={

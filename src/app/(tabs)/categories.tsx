@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 
+import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
 import {
   Badge,
   BottomSheet,
@@ -97,7 +98,6 @@ const VERTICAL_ORDER: CategoryVertical[] = [
   'liquor',
   'groceries',
   'household',
-  'beauty',
 ];
 
 const VERTICAL_OPTIONS: SegmentedOption<CategoryVertical>[] = VERTICAL_ORDER.map(slug => {
@@ -125,7 +125,7 @@ const GRID_VERTICALS: CategoryVertical[] = ['retail', 'groceries', 'household'];
 const SECTION_ACTION: Partial<Record<CategoryVertical, string>> = { wholesale: 'View all' };
 
 /** Aisles whose frame cards print the pack line under the product name. */
-const PACK_LINE_VERTICALS: CategoryVertical[] = ['deli', 'wholesale', 'pharmacy', 'beauty'];
+const PACK_LINE_VERTICALS: CategoryVertical[] = ['deli', 'wholesale', 'pharmacy'];
 
 /** Mirrors the kit's badge vocabulary for the aisle cards. */
 const BADGE_COPY: Record<ProductBadge, CardBadge> = {
@@ -225,7 +225,8 @@ export default function CategoriesRoute() {
   const { user } = useSession();
   const { store, storeId, setStoreId } = useFulfilment();
   const { width } = useWindowDimensions();
-  const scrollRef = useRef<ScrollView>(null);
+  // Also scrolls back to the top when the Categories tab is tapped again.
+  const scrollRef = useTabScrollTop();
   /** Home's Top Categories open a department and, where it has one, that category's product row. */
   const { vertical: verticalParam, focus, t: openedAt } = useLocalSearchParams<{ vertical?: string; focus?: string; t?: string }>();
   const chipBarHeight = useRef(0);

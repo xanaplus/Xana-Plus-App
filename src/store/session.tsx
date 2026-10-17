@@ -27,8 +27,6 @@ export type Preferences = {
   pushEnabled?: boolean;
   alerts?: Record<string, boolean>;
   privacy?: Record<string, boolean>;
-  /** Read by the website team's order SMS sender (outbox-send); true stops every customer SMS. */
-  sms_opt_out?: boolean;
 };
 
 type PersistedSession = { user: User | null; lastSeenAt: number };

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Button, Icon, ProgressBar, Screen, TopBar, Txt } from '@/components/ui';
-import { formatKesDecimal } from '@/lib/format';
+import { formatKes } from '@/lib/format';
 import { placeOrderErrorMessage, useOrders } from '@/store/orders';
 import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
@@ -55,7 +55,7 @@ export default function MpesaPendingRoute() {
   const steps = [
     'Unlock your phone',
     'Enter your 4-digit M-Pesa PIN',
-    `Press OK to complete ${formatKesDecimal(amountDue)} payment`,
+    `Press OK to complete ${formatKes(amountDue)} payment`,
   ];
 
   /** Back to checkout without touching the basket — the shopper can switch method. */
@@ -111,7 +111,7 @@ export default function MpesaPendingRoute() {
       footer={
         <View style={styles.footer}>
           <Button
-            label={`I've paid · ${formatKesDecimal(amountDue)}`}
+            label={`I've paid · ${formatKes(amountDue)}`}
             icon="check-circle"
             iconPosition="leading"
             size="lg"

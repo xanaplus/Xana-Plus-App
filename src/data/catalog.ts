@@ -31,7 +31,7 @@ export const homeCategoryTiles: Category[] = [
   { slug: 'fresh-produce', name: 'Fresh Produce', image: 'fresh-produce', vertical: 'groceries' },
   { slug: 'dairy-eggs', name: 'Dairy & Eggs', image: 'dairy-eggs', vertical: 'groceries' },
   { slug: 'cleaning-household', name: 'Cleaning & Household', image: 'cleaning-household', vertical: 'household' },
-  { slug: 'beauty-personal-care', name: 'Beauty & Personal Care', image: 'beauty-personal-care', vertical: 'beauty' },
+  { slug: 'beauty-personal-care', name: 'Beauty & Personal Care', image: 'beauty-personal-care', vertical: 'retail' },
   { slug: 'books-stationery', name: 'Books & Stationery', image: 'books-stationery', vertical: 'retail' },
   { slug: 'baby-products', name: 'Baby Products', image: 'baby-products', vertical: 'retail' },
   { slug: 'retail-wholesale', name: 'Retail & Wholesale', image: 'retail-wholesale', vertical: 'wholesale' },
@@ -701,6 +701,8 @@ export const verticals: VerticalDefinition[] = [
       { slug: 'sugar-baking', name: 'Sugar & Baking', image: 'sugar-and-baking' },
       { slug: 'liquor', name: 'Beer & Cider', image: 'liquor' },
       { slug: 'liquor', name: 'Wine & Spirits', image: 'liquor' },
+      { slug: 'beauty-personal-care', name: 'Beauty & Hair', image: 'beauty-personal-care' },
+      { slug: 'oral-care', name: 'Oral Care', image: 'sensodyne-rapid-relief' },
     ],
     sections: [
       { title: 'Cooking Oil', subtitle: 'Oils and fats', categorySlug: 'cooking-oil', query: shelf('cooking-oil') },
@@ -710,6 +712,9 @@ export const verticals: VerticalDefinition[] = [
       { title: 'Books & Stationery', subtitle: 'School and office supplies', categorySlug: 'books-stationery', query: shelf('books-stationery') },
       { title: 'Baby Products', subtitle: 'Feeding, bathing & care', categorySlug: 'baby-products', query: shelf('baby-products') },
       { title: 'General Merchandise', subtitle: 'Accessories, bags & more', categorySlug: 'general-merchandise', query: shelf('general-merchandise') },
+      // RETBEAU is retail beauty (17 Oct 2026); COSMETICS & BEAUTY P stays with Pharmacy.
+      { title: 'Beauty & Hair', subtitle: 'Lotions, hair care & fragrance', categorySlug: 'beauty-personal-care', query: shelf('beauty-personal-care') },
+      { title: 'Oral Care', subtitle: 'Toothpaste, brushes & mouthwash', categorySlug: 'oral-care', query: shelf('oral-care') },
     ],
   },
   {
@@ -765,20 +770,21 @@ export const verticals: VerticalDefinition[] = [
     label: 'Pharmacy',
     title: 'Pharmacy Essentials',
     subcategories: [
-      { slug: 'pain-relief', name: 'Pain Relief', image: 'pain-relief' },
+      // The pharmacy team's own groups (BC Inventory Posting Group, 17 Oct 2026).
+      { slug: 'medicines', name: 'Medicines', image: 'pharmacy' },
+      { slug: 'otc-medicines', name: 'Over the Counter', image: 'pain-relief' },
+      { slug: 'chronic-care', name: 'Chronic Care', image: 'wellness-devices' },
+      { slug: 'controlled-medicines', name: 'Controlled Medicines', image: 'pharmacy' },
       { slug: 'vitamins-supplements', name: 'Vitamins & Supplements', image: 'vitamins-supplements' },
-      { slug: 'first-aid', name: 'First Aid', image: 'first-aid-wound-care' },
-      { slug: 'baby-health', name: 'Baby Health', image: 'baby-products' },
-      { slug: 'personal-care', name: 'Personal Care', image: 'beauty-personal-care' },
-      { slug: 'wellness-devices', name: 'Wellness Devices', image: 'wellness-devices' },
+      { slug: 'skin-care', name: 'Cosmetics & Beauty', image: 'beauty-personal-care' },
     ],
     sections: [
       { title: 'Medicines', subtitle: 'Dispensed by our pharmacists', categorySlug: 'medicines', query: shelf('medicines') },
       { title: 'Over the Counter', subtitle: 'Everyday remedies', categorySlug: 'otc-medicines', query: shelf('otc-medicines') },
       { title: 'Vitamins & Supplements', subtitle: 'Immunity, vitality & bone health', categorySlug: 'vitamins-supplements', query: shelf('vitamins-supplements') },
       { title: 'Chronic Care', subtitle: 'Blood pressure, diabetes & heart', categorySlug: 'chronic-care', query: shelf('chronic-care') },
-      { title: 'Skin & Dermatology', subtitle: 'Dermatologist-recommended care', categorySlug: 'skin-care', query: shelf('skin-care') },
-      { title: 'Oral Care', subtitle: 'Toothpaste, brushes & mouthwash', categorySlug: 'oral-care', query: shelf('oral-care') },
+      { title: 'Controlled Medicines', subtitle: 'Prescription needed', categorySlug: 'controlled-medicines', query: shelf('controlled-medicines') },
+      { title: 'Cosmetics & Beauty', subtitle: 'Skin care from the pharmacy', categorySlug: 'skin-care', query: shelf('skin-care') },
     ],
   },
   {
@@ -818,20 +824,6 @@ export const verticals: VerticalDefinition[] = [
       { title: 'Tissue & Sanitary', subtitle: 'Tissue, diapers & pads', categorySlug: 'tissue-sanitary', query: shelf('tissue-sanitary') },
       { title: 'Kitchen & Household', subtitle: 'Cutlery, plastics & storage', categorySlug: 'household', query: shelf('household') },
       { title: 'Air Fresheners & Pest Control', subtitle: 'Fresheners, insecticides & shoe care', categorySlug: 'home-care', query: shelf('home-care') },
-    ],
-  },
-  {
-    slug: 'beauty',
-    label: 'Beauty',
-    title: 'Beauty & Personal Care',
-    subcategories: [
-      { slug: 'beauty-personal-care', name: 'Beauty & Personal Care', image: 'beauty-personal-care' },
-      { slug: 'personal-care', name: 'Personal Care', image: 'sebamed-gentle-wash' },
-    ],
-    sections: [
-      { title: 'Beauty & Hair', subtitle: 'Lotions, hair care & fragrance', categorySlug: 'beauty-personal-care', query: shelf('beauty-personal-care') },
-      { title: 'Skin Care', subtitle: 'Dermatologist-favourite brands', categorySlug: 'skin-care', query: shelf('skin-care') },
-      { title: 'Oral Care', subtitle: 'Toothpaste, brushes & mouthwash', categorySlug: 'oral-care', query: shelf('oral-care') },
     ],
   },
 ];
@@ -892,7 +884,6 @@ const VERTICAL_PRIORITY: CategoryVertical[] = [
   'liquor',
   'groceries',
   'household',
-  'beauty',
   'wholesale',
   'retail',
 ];

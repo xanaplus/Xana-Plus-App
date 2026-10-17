@@ -9,11 +9,15 @@ import { useTheme } from '@/theme/provider';
  * glyph or icon-set name, so glyph swaps stay local to this map.
  */
 const glyphs = {
-  home: ['ion', 'home'],
+  home: ['ion', 'home-outline'],
+  'home-filled': ['ion', 'home'],
   categories: ['mci', 'view-grid-outline'],
+  'categories-filled': ['mci', 'view-grid'],
   pharmacy: ['mci', 'medical-bag'],
   profile: ['ion', 'person-outline'],
+  'profile-filled': ['ion', 'person'],
   cart: ['ion', 'cart-outline'],
+  'cart-filled': ['ion', 'cart'],
 
   search: ['ion', 'search'],
   mic: ['ion', 'mic-outline'],

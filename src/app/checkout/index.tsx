@@ -33,7 +33,7 @@ import {
   type PhoneInput,
 } from '@/features/auth/auth-sheet';
 import { track } from '@/lib/analytics';
-import { formatKes, formatKesDecimal } from '@/lib/format';
+import { formatKes } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import { useCart } from '@/store/cart';
 import { useFulfilment, type Address, type AppliedPromo } from '@/store/fulfilment';
@@ -159,7 +159,7 @@ export default function CheckoutRoute() {
 
   // Alcohol doesn't disable the button: tapping it asks for the 18+ confirmation (the 'age' sheet).
   const payDisabled = empty || rxBlocked || payBlockedByAddress;
-  const payLabel = method.showsTotal ? `Place Order · ${formatKesDecimal(amountDue)}` : 'Place Order';
+  const payLabel = method.showsTotal ? `Place Order · ${formatKes(amountDue)}` : 'Place Order';
   const storeArea = fulfilment.store.name.replace('Xana Plus ', '');
   const phoneError = phoneDraft.digits.length === 9 && !isValidPhone(phoneDraft) ? PHONE_INVALID_MESSAGE : null;
 

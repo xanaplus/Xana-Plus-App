@@ -40,6 +40,7 @@ export {
   PICKUP_STAGES,
   stagesFor,
 } from '@/lib/order-status';
+import { formatKes } from '@/lib/format';
 export type { Fulfilment, OrderPaymentMethod, OrderStatus, PaymentStatus } from '@/lib/order-status';
 
 export type PlacedOrder = {
@@ -215,7 +216,7 @@ export const promoErrorMessage = (error: PromoError, minSpend?: number): string 
     case 'promo_expired':
       return 'This code has expired or has not started yet.';
     case 'promo_min_spend':
-      return minSpend ? `This code needs items worth KES ${minSpend.toLocaleString('en-KE')} or more.` : 'Add a few more items to use this code.';
+      return minSpend ? `This code needs items worth ${formatKes(minSpend)} or more.` : 'Add a few more items to use this code.';
     case 'promo_used':
       return 'You have already used this code.';
     case 'promo_limit':

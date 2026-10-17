@@ -16,6 +16,7 @@ import { useSession } from '@/store/session';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { formatKes } from '@/lib/format';
 
 function formatDate(value: string | null | undefined) {
   if (!value) return 'Not specified';
@@ -477,11 +478,11 @@ export default function PrescriptionDetailScreen() {
             <Txt variant="caption" color="onSurfaceVariant">Quantity {line.quantity} · {line.item_no}</Txt>
             {line.instructions ? <Txt variant="caption" color="onSurfaceVariant">{line.instructions}</Txt> : null}
           </View>
-          <Txt variant="label">KSh {Number(line.unit_price).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} each</Txt>
+          <Txt variant="label">{formatKes(Number(line.unit_price))} each</Txt>
         </View>)}
         <View style={styles.quoteTotal}>
           <Txt variant="label">Quoted subtotal</Txt>
-          <Txt variant="title">KSh {record.quote_lines.reduce((sum, line) => sum + Number(line.unit_price) * line.quantity, 0).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Txt>
+          <Txt variant="title">{formatKes(record.quote_lines.reduce((sum, line) => sum + Number(line.unit_price) * line.quantity, 0))}</Txt>
         </View>
         <View style={styles.expiry}><Icon name="clock" size={16} color="onSurfaceVariant" /><Txt variant="caption" color="onSurfaceVariant">Quote expiry: {formatDate(record.valid_until)}</Txt></View>
         {isQuoted ? <View style={styles.checkout}>

@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Linking, Pressable, StyleSheet, Switch, View, type StyleProp, type ViewStyle } from 'react-native';
 
+import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
 import { useTabBack } from '@/components/nav/use-tab-back';
 import {
   BottomSheet,
@@ -95,15 +96,10 @@ type PrivacyKey = 'shareOrderHistoryForRx' | 'marketingMessages' | 'orderAndDeli
 
 /**
  * Only settings something obeys. The Figma frame's pharmacist-sharing and marketing rows come
- * back once a pharmacist screen reads order history and marketing messages are sent.
+ * back once a pharmacist screen reads order history and marketing messages are sent. There is no
+ * order-texts switch: receipts and collection codes go to every customer (website team, 17 Oct 2026).
  */
 const PRIVACY_ROWS: { key: PrivacyKey; icon: IconName; title: string; description: string }[] = [
-  {
-    key: 'orderAndDeliveryUpdates',
-    icon: 'delivery',
-    title: 'Order text messages',
-    description: 'Receipts, collection codes and order updates by SMS. Turning this off stops all of them',
-  },
   {
     key: 'usageAnalytics',
     icon: 'info',
@@ -232,6 +228,7 @@ function resolveOrder(order: OrderRecord): { items: { product: Product; quantity
  * treatment, Home's Xana Club gradient, and the shared card / list kit.
  */
 export default function ProfileRoute() {
+  const scrollTop = useTabScrollTop();
   const { appearance, setAppearance, appearanceSaving, appearanceError, retryAppearance, colors, gradients } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
@@ -395,7 +392,7 @@ export default function ProfileRoute() {
   const activeSlot = slot.mode === mode ? slot : (deliverySlots.find(entry => entry.mode === mode) ?? slot);
 
   return (
-    <Screen padded={false} contentStyle={styles.content}>
+    <Screen padded={false} contentStyle={styles.content} scrollRef={scrollTop}>
       <TopBar title="Profile" onBack={goBack} actions={<TopBarAction name="settings" accessibilityLabel="Settings" onPress={() => setSheet('settings')} />} />
 
       {preferencesSaving || preferencesError ? (
@@ -944,11 +941,7 @@ export default function ProfileRoute() {
                     description={row.description}
                     value={privacy[row.key]}
                     onValueChange={next =>
-                      updatePreferences(
-                        row.key === 'orderAndDeliveryUpdates'
-                          ? { privacy: { [row.key]: next }, sms_opt_out: !next }
-                          : { privacy: { [row.key]: next } },
-                      )
+                      updatePreferences({ privacy: { [row.key]: next } })
                     }
                   />
                 </View>

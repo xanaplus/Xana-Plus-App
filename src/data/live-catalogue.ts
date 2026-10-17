@@ -93,6 +93,15 @@ const packFromName = (name: string): string => {
   return matches ? matches[matches.length - 1] : '';
 };
 
+/**
+ * Pharmacy's rule (17 Oct 2026): items in these BC groups are listed without a
+ * photo, on the app and the website. The slugs are the app categories they map to.
+ */
+const NO_PHOTO_GROUPS = new Set(['GENERAL', 'CHRONIC', 'CONTROLLED']);
+const NO_PHOTO_CATEGORIES = new Set(['medicines', 'chronic-care', 'controlled-medicines']);
+const photoOf = (row: CatalogueRow): string | null =>
+  NO_PHOTO_GROUPS.has(row.category?.trim().toUpperCase() ?? '') ? null : row.photo_url;
+
 /** Owner-approved department rule; BC's regulatory flags remain independent. */
 const isDeliItem = (itemNo: string): boolean => itemNo.toUpperCase().startsWith('DEL');
 
@@ -104,7 +113,7 @@ const toProduct = (row: CatalogueRow): Product => {
     pack: packFromName(name),
     price: Number(row.price),
     priceTiers: row.price_tiers ?? [],
-    image: row.photo_url ?? '',
+    image: photoOf(row) ?? '',
     category: isDeliItem(row.item_no) ? 'deli-cold-cuts' : BC_GROUP_CATEGORY[row.category ?? ''] ?? 'general-merchandise',
     rxRequired: row.requires_rx,
     ageRestricted: row.age_restricted,
@@ -138,7 +147,8 @@ function hydrate() {
   hydrated = true;
   for (const product of parsePersisted(persisted().products, isProductList) ?? []) {
     // Reclassify existing cache entries without dropping offline price/stock data.
-    cache.set(product.id, isDeliItem(product.id) ? { ...product, category: 'deli-cold-cuts' } : product);
+    const kept = NO_PHOTO_CATEGORIES.has(product.category) ? { ...product, image: '' } : product;
+    cache.set(product.id, isDeliItem(product.id) ? { ...kept, category: 'deli-cold-cuts' } : kept);
   }
 }
 
@@ -174,6 +184,36 @@ export const liveProductsByCategory = (slug: string): Product[] => {
 /** BC shelves exclude DEL items unless explicitly browsing the Deli department. */
 export type LiveQuery = { groups: string[]; nameHas?: string[]; limit?: number; deli?: 'only' | 'include' };
 
+export type ResultSort = 'relevance' | 'price-asc' | 'price-desc';
+export type PriceBand = 'under-500' | '500-1500' | 'over-1500';
+
+/** Search-screen filters, applied by the database so they cover every match, not just the first page. */
+export type ResultOptions = { sort?: ResultSort; priceBand?: PriceBand | null; inStockOnly?: boolean; noRx?: boolean };
+
+/** The few query-builder methods the filters use, so they fit any catalogue request. */
+type Refinable<T> = {
+  lt(column: string, value: number): T;
+  lte(column: string, value: number): T;
+  gt(column: string, value: number): T;
+  gte(column: string, value: number): T;
+  eq(column: string, value: boolean): T;
+  order(column: string, options: { ascending: boolean }): T;
+};
+
+const refine = <T extends Refinable<T>>(request: T, { priceBand, inStockOnly, noRx }: ResultOptions): T => {
+  let refined = request;
+  if (priceBand === 'under-500') refined = refined.lt('price', 500);
+  if (priceBand === '500-1500') refined = refined.gte('price', 500).lte('price', 1500);
+  if (priceBand === 'over-1500') refined = refined.gt('price', 1500);
+  if (inStockOnly) refined = refined.gt('stock', 0);
+  if (noRx) refined = refined.eq('requires_rx', false);
+  return refined;
+};
+
+/** A price sort goes first; the usual ordering breaks ties. */
+const ordered = <T extends Refinable<T>>(request: T, sort: ResultSort | undefined): T =>
+  sort === 'price-asc' || sort === 'price-desc' ? request.order('price', { ascending: sort === 'price-asc' }) : request;
+
 /** Keeps search terms to letters and digits, so they can't break the PostgREST filter syntax. */
 const safeWords = (text: string): string[] =>
   text
@@ -188,7 +228,7 @@ async function run(request: PromiseLike<{ data: unknown; error: { message: strin
   if (error) throw new Error(error.message);
   const rows = (data ?? []) as CatalogueRow[];
   // The POS photo server is far away (~1 s per first photo), so start downloads now rather than when each card mounts.
-  const photos = rows.flatMap(row => (row.photo_url ? [row.photo_url] : []));
+  const photos = rows.flatMap(row => { const photo = photoOf(row); return photo ? [photo] : []; });
   if (photos.length > 0) void Image.prefetch(photos, 'memory-disk').catch(() => undefined);
   return remember(rows.map(toProduct));
 }
@@ -197,7 +237,7 @@ async function run(request: PromiseLike<{ data: unknown; error: { message: strin
  * In-stock products for a shelf: ones with a photo first, then best-stocked
  * first (BC has no sales ranking to sort by).
  */
-export function fetchShelf({ groups, nameHas, limit = 8, deli }: LiveQuery): Promise<Product[]> {
+export function fetchShelf({ groups, nameHas, limit = 8, deli }: LiveQuery, options: ResultOptions = {}): Promise<Product[]> {
   let request = supabase.from('catalogue').select(COLUMNS).gt('stock', 0);
   if (deli === 'only') {
     request = request.ilike('item_no', 'DEL%');
@@ -207,11 +247,11 @@ export function fetchShelf({ groups, nameHas, limit = 8, deli }: LiveQuery): Pro
   }
   const words = (nameHas ?? []).flatMap(safeWords);
   if (words.length > 0) request = request.or(words.map(word => `name.ilike.*${word}*`).join(','));
-  return run(request.order('has_photo', { ascending: false }).order('stock', { ascending: false }).limit(limit));
+  return run(ordered(refine(request, options), options.sort).order('has_photo', { ascending: false }).order('stock', { ascending: false }).limit(limit));
 }
 
 /** Free-text search: every word must appear in the name or the BC group. In-stock first, then ones with a photo. */
-export function searchCatalogue(query: string, limit = 60): Promise<Product[]> {
+export function searchCatalogue(query: string, limit = 60, options: ResultOptions = {}): Promise<Product[]> {
   const words = safeWords(query);
   if (words.length === 0) return Promise.resolve([]);
   const clauses = words.map(word => {
@@ -221,10 +261,7 @@ export function searchCatalogue(query: string, limit = 60): Promise<Product[]> {
     return `or(${fields.join(',')})`;
   }).join(',');
   return run(
-    supabase
-      .from('catalogue')
-      .select(COLUMNS)
-      .or(`and(${clauses})`)
+    ordered(refine(supabase.from('catalogue').select(COLUMNS).or(`and(${clauses})`), options), options.sort)
       .order('in_stock', { ascending: false })
       .order('has_photo', { ascending: false })
       .order('stock', { ascending: false })

@@ -50,6 +50,8 @@ import type { Palette } from '@/theme';
 const PHARMACY_CATEGORY: Record<string, true> = Object.fromEntries([
   ...verticalBySlug('pharmacy').subcategories.map(sub => [sub.slug, true] as const),
   ['digestive-health', true] as const,
+  // Sample-catalogue aisles the Pharmacy tab listed before 17 Oct 2026.
+  ...['pain-relief', 'first-aid', 'baby-health', 'personal-care', 'wellness-devices'].map(slug => [slug, true] as const),
   ...LIVE_PHARMACY_CATEGORIES.map(slug => [slug, true] as const),
 ]);
 

@@ -3,15 +3,19 @@ import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
 import { Txt } from '@/components/ui';
-import { formatKes, formatKesDecimal } from '@/lib/format';
+import { formatKes } from '@/lib/format';
 import type { SpendingBreakdown, SpendingSegment } from '@/lib/spending-breakdown';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
+import { useRevealProgress } from './use-reveal';
+
 type DepartmentDonutProps = {
   breakdown: SpendingBreakdown;
   onDepartmentPress?: (id: string) => void;
+  /** When given, the ring draws in once it turns true (the screen sets it as the chart scrolls into view). */
+  revealed?: boolean;
 };
 
 type DonutEntry = SpendingSegment & { colorKey: string; isOther?: boolean };
@@ -19,31 +23,46 @@ const NAVIGABLE_DEPARTMENTS = new Set([
   'groceries', 'deli', 'pharmacy', 'retail', 'wholesale', 'liquor', 'household', 'beauty',
 ]);
 
+/**
+ * One fixed colour per department, so no two ever share one. The order is the ring order:
+ * it is a tested colour-blind-safe sequence (dataviz palette, adjacent pairs checked in
+ * light and dark), so slices are drawn in this order, whatever their size.
+ */
+const DEPARTMENT_ORDER = ['pharmacy', 'deli', 'household', 'wholesale', 'beauty', 'groceries', 'liquor', 'retail'];
+
 const LIGHT_COLORS: Record<string, string> = {
-  groceries: '#176B50',
-  deli: '#C46A28',
-  pharmacy: '#9B4B55',
-  other: '#5A7186',
+  pharmacy: '#2a78d6',
+  deli: '#eb6834',
+  household: '#1baf7a',
+  wholesale: '#eda100',
+  beauty: '#e87ba4',
+  groceries: '#008300',
+  liquor: '#6250d6',
+  retail: '#e34948',
 };
 
 const DARK_COLORS: Record<string, string> = {
-  groceries: '#70C9A2',
-  deli: '#F0AE72',
-  pharmacy: '#E69BA4',
-  other: '#A8C0D4',
+  pharmacy: '#3987e5',
+  deli: '#d95926',
+  household: '#199e70',
+  wholesale: '#c98500',
+  beauty: '#d55181',
+  groceries: '#008300',
+  liquor: '#9085e9',
+  retail: '#e66767',
 };
 
-const FALLBACK_LIGHT = ['#3C7890', '#9A7430', '#796A9A', '#4A806D', '#AF6655'];
-const FALLBACK_DARK = ['#86C4D8', '#E1C078', '#B5A5D8', '#9BD1B7', '#E5A697'];
+/** "Other departments" and anything unexpected stay neutral grey, drawn last. */
+const NEUTRAL = { light: '#8b8a84', dark: '#8f8e88' };
 
 function colorForId(id: string, dark: boolean) {
-  const named = (dark ? DARK_COLORS : LIGHT_COLORS)[id.toLowerCase()];
-  if (named) return named;
-  let hash = 0;
-  for (let index = 0; index < id.length; index += 1) hash = (hash * 31 + id.charCodeAt(index)) >>> 0;
-  const palette = dark ? FALLBACK_DARK : FALLBACK_LIGHT;
-  return palette[hash % palette.length];
+  return (dark ? DARK_COLORS : LIGHT_COLORS)[id.toLowerCase()] ?? (dark ? NEUTRAL.dark : NEUTRAL.light);
 }
+
+const ringRank = (id: string) => {
+  const rank = DEPARTMENT_ORDER.indexOf(id.toLowerCase());
+  return rank < 0 ? DEPARTMENT_ORDER.length : rank;
+};
 
 function buildEntries(segments: SpendingSegment[]): DonutEntry[] {
   return segments.map(segment => ({
@@ -59,13 +78,16 @@ function percent(value: number, total: number) {
   return `${exact > 0 && exact < 1 ? '<1' : Math.round(exact)}%`;
 }
 
-const money = (value: number) => Number.isInteger(value) ? formatKes(value) : formatKesDecimal(value);
+const money = formatKes;
 
-export default function DepartmentDonut({ breakdown, onDepartmentPress }: DepartmentDonutProps) {
+export default function DepartmentDonut({ breakdown, onDepartmentPress, revealed }: DepartmentDonutProps) {
   const { colors, resolved } = useTheme();
   const styles = useThemeStyles(createStyles);
   const { width: windowWidth } = useWindowDimensions();
   const [otherExpanded, setOtherExpanded] = useState(false);
+  // Without `revealed` the ring is simply drawn, as before.
+  const sweep = useRevealProgress(revealed ?? false);
+  const progress = revealed === undefined ? 1 : sweep;
   const dark = resolved === 'dark';
   const total = Math.max(0, Number.isFinite(breakdown.total) ? breakdown.total : 0);
   const entries = useMemo(() => buildEntries(breakdown.segments ?? []), [breakdown.segments]);
@@ -81,11 +103,13 @@ export default function DepartmentDonut({ breakdown, onDepartmentPress }: Depart
   const chartParts = useMemo(() => {
     if (isEmpty) return [];
     let elapsed = 0;
-    return entries.map(entry => {
+    // The ring follows DEPARTMENT_ORDER; the list below keeps biggest first.
+    return [...entries].sort((a, b) => ringRank(a.id) - ringRank(b.id)).map(entry => {
       const fraction = entry.total / chartTotal;
       const arcLength = fraction * circumference;
       const gap = entries.length === 1 ? 0 : Math.min(2.5, arcLength * 0.16);
-      const visibleLength = Math.max(0, arcLength - gap);
+      // The ring sweeps round clockwise: each slice grows once the sweep reaches it.
+      const visibleLength = Math.min(Math.max(0, arcLength - gap), Math.max(0, progress * circumference - elapsed));
       const part = {
         ...entry,
         dashArray: `${visibleLength} ${circumference - visibleLength}`,
@@ -94,23 +118,10 @@ export default function DepartmentDonut({ breakdown, onDepartmentPress }: Depart
       elapsed += arcLength;
       return part;
     });
-  }, [entries, chartTotal, circumference, isEmpty]);
+  }, [entries, chartTotal, circumference, isEmpty, progress]);
 
   return (
     <View style={styles.container}>
-      <View style={styles.heading}>
-        <View style={styles.headingCopy}>
-          <Txt variant="titleLg">Where it went</Txt>
-          <Txt variant="caption" color="onSurfaceVariant">Recorded department spending</Txt>
-        </View>
-        {!isEmpty ? (
-          <View style={styles.recordedTag}>
-            <View style={styles.recordedDot} />
-            <Txt variant="micro" color="onSurfaceVariant">RECORDED</Txt>
-          </View>
-        ) : null}
-      </View>
-
       {isEmpty ? (
         <View style={styles.emptyState} accessibilityRole="text">
           <View style={styles.emptyRing}>
@@ -156,11 +167,10 @@ export default function DepartmentDonut({ breakdown, onDepartmentPress }: Depart
               ))}
             </Svg>
             <View pointerEvents="none" style={styles.centerLabel}>
-              <Txt variant="caption" color="onSurfaceVariant" align="center">ITEM SPENDING</Txt>
+              <Txt variant="caption" color="onSurfaceVariant" align="center">Total</Txt>
               <Txt variant="display" numberOfLines={1} adjustsFontSizeToFit style={[styles.centerMoney, moneyStyle]}>
                 {money(total)}
               </Txt>
-              <Txt variant="caption" color="onSurfaceVariant" align="center">across departments</Txt>
             </View>
           </View>
 
@@ -174,7 +184,7 @@ export default function DepartmentDonut({ breakdown, onDepartmentPress }: Depart
                   <View style={[styles.swatch, { backgroundColor: colorForId(entry.colorKey, dark) }]} />
                   <View style={styles.legendText}>
                     <Txt variant="label" numberOfLines={2}>{entry.label}</Txt>
-                    <Txt variant="caption" color="onSurfaceVariant">{share} of item spending</Txt>
+                    <Txt variant="caption" color="onSurfaceVariant">{share}</Txt>
                   </View>
                   <Txt variant="label" style={styles.legendAmount}>{money(entry.total)}</Txt>
                 </>
@@ -220,9 +230,6 @@ export default function DepartmentDonut({ breakdown, onDepartmentPress }: Depart
 
                   {hasMembers && otherExpanded ? (
                     <View style={styles.membersList}>
-                      <Txt variant="caption" color="onSurfaceVariant" style={styles.membersHeading}>
-                        INCLUDED DEPARTMENTS
-                      </Txt>
                       {entry.members?.map(member => (
                         NAVIGABLE_DEPARTMENTS.has(member.id) && onDepartmentPress ? (
                           <Pressable
@@ -260,9 +267,6 @@ export default function DepartmentDonut({ breakdown, onDepartmentPress }: Depart
               );
             })}
           </View>
-          <Txt variant="caption" color="onSurfaceVariant" style={styles.disclaimer}>
-            Percentages use total item spending. Department colours stay consistent when you change periods.
-          </Txt>
         </>
       )}
     </View>
@@ -271,18 +275,6 @@ export default function DepartmentDonut({ breakdown, onDepartmentPress }: Depart
 
 const createStyles = (colors: Palette) => StyleSheet.create({
   container: { gap: spacing.md },
-  heading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm },
-  headingCopy: { flex: 1, gap: spacing.xxs },
-  recordedTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: radius.pill,
-    backgroundColor: colors.surfaceContainerLow,
-  },
-  recordedDot: { width: 6, height: 6, borderRadius: radius.pill, backgroundColor: colors.primaryAccent },
   chartArea: { alignSelf: 'center', alignItems: 'center', justifyContent: 'center' },
   centerLabel: {
     position: 'absolute',
@@ -329,10 +321,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     borderLeftWidth: 2,
     borderLeftColor: colors.outlineVariant,
   },
-  membersHeading: { marginBottom: spacing.xs },
   memberRow: { minHeight: 42, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.xs },
   memberName: { flex: 1 },
   memberValue: { alignItems: 'flex-end', gap: 1 },
-  disclaimer: { lineHeight: 16 },
   pressed: { opacity: 0.68 },
 });

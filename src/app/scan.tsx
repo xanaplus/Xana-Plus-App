@@ -9,7 +9,7 @@ import { Button, Icon, Screen, Txt } from '@/components/ui';
 import { fetchProductByBarcode } from '@/data/live-catalogue';
 import type { Product } from '@/data/types';
 import { tapFeedback } from '@/lib/haptics';
-import { discountPercent, formatKesDecimal } from '@/lib/format';
+import { discountPercent, formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
@@ -165,12 +165,12 @@ export default function ScanRoute() {
               </Txt>
               <View style={styles.priceRow}>
                 <Txt variant="priceLg" color="primaryAccent">
-                  {formatKesDecimal(lookup.product.price)}
+                  {formatKes(lookup.product.price)}
                 </Txt>
                 {lookup.product.wasPrice ? (
                   <>
                     <Txt variant="priceStrike" color="onSurfaceVariant" style={styles.strike}>
-                      {formatKesDecimal(lookup.product.wasPrice)}
+                      {formatKes(lookup.product.wasPrice)}
                     </Txt>
                     <Txt variant="labelSm" tint={colors.secondaryAccent}>
                       {`-${discountPercent(lookup.product.price, lookup.product.wasPrice)}%`}

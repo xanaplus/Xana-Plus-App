@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({ session: {}, orders: {}, fulfilment: {}, cartS
 vi.mock('react-native', () => ({
   View: 'View', Pressable: 'Pressable', Switch: 'Switch',
   StyleSheet: { create: value => value },
+  useWindowDimensions: () => ({ width: 390, height: 844 }),
   Linking: { openURL: vi.fn() },
 }));
 vi.mock('react-native-reanimated', () => ({
@@ -26,6 +27,8 @@ vi.mock('@/components/ui', () => {
 vi.mock('@/features/account/name-sheet', () => ({ NameSheet: () => null }));
 vi.mock('@/features/account/sign-in-details', () => ({ SignInDetails: () => null }));
 vi.mock('@/components/spending/department-donut', () => ({ default: () => null }));
+vi.mock('@/components/spending/use-reveal', () => ({ useRevealProgress: () => 1 }));
+vi.mock('@/components/nav/use-tab-scroll-top', () => ({ useTabScrollTop: () => ({ current: null }) }));
 vi.mock('@/data/live-catalogue', () => ({
   groupsForCategory: () => [], liveProductById: () => undefined, liveProductsByCategory: () => [],
 }));

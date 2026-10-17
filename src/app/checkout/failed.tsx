@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Badge, Button, Card, Chip, Divider, Icon, Screen, TopBar, Txt } from '@/components/ui';
-import { formatKesDecimal } from '@/lib/format';
+import { formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
@@ -89,7 +89,7 @@ export default function PaymentFailedScreen() {
         <View style={styles.footer}>
           {!exhausted ? (
             <Button
-              label={`Resend M-Pesa Request · ${formatKesDecimal(amountDue)}`}
+              label={`Resend M-Pesa Request · ${formatKes(amountDue)}`}
               icon="refresh"
               iconPosition="leading"
               size="lg"
@@ -157,7 +157,7 @@ export default function PaymentFailedScreen() {
           </Txt>
           <Badge label={`Attempt ${attempt} of 3`} tone={exhausted ? 'warning' : 'neutral'} />
         </View>
-        <Row label="Total to pay" value={formatKesDecimal(amountDue)} strong />
+        <Row label="Total to pay" value={formatKes(amountDue)} strong />
         <Divider />
         <Row label="M-Pesa number" value={masked} />
         <Row label="Items" value={`${cart.summary.itemCount} · ${cart.summary.unitCount} units`} />
@@ -190,7 +190,7 @@ export default function PaymentFailedScreen() {
         WHEN THE PROMPT ARRIVES
       </Txt>
       <Card variant="elevated" padding={spacing.lg} style={styles.instructions}>
-        {['Unlock your phone', 'Enter your 4-digit M-Pesa PIN', `Press OK to complete ${formatKesDecimal(amountDue)} payment`].map(
+        {['Unlock your phone', 'Enter your 4-digit M-Pesa PIN', `Press OK to complete ${formatKes(amountDue)} payment`].map(
           (step, index) => (
             <View key={step} style={styles.step}>
               <View style={styles.stepIndex}>

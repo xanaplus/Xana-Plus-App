@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 
+import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
 import {
   Badge,
   BottomSheet,
@@ -130,6 +131,7 @@ function clubStanding(points: number, tierName: User['clubTier']): { progress: n
  * micro-banner. The app bar is fixed above the scroll body.
  */
 export default function HomeRoute() {
+  const scrollTop = useTabScrollTop();
   const { colors, gradients } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
@@ -206,7 +208,7 @@ export default function HomeRoute() {
         }
       />
 
-      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false} contentContainerStyle={styles.page}>
+      <ScrollView ref={scrollTop} style={styles.scroll} showsVerticalScrollIndicator={false} contentContainerStyle={styles.page}>
         {/* 2. Search trigger */}
         <View style={[styles.inset, styles.searchSection, styles.searchRow]}>
           <SearchBar

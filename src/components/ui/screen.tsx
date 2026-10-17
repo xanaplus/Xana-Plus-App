@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react';
-import { ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import type { ReactNode, RefObject } from 'react';
+import { ScrollView, StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { elevation, layout, spacing } from '@/theme';
@@ -27,6 +27,10 @@ export type ScreenProps = {
   topInsetColor?: string;
   /** Trailing spacer for screens with a floating element at the bottom. */
   bottomSpace?: number;
+  /** Called as the page scrolls: how far down it is and how tall the visible area is. */
+  onScroll?: (offsetY: number, viewportHeight: number) => void;
+  /** The scroll view, for tabs that jump back to the top when tapped again. */
+  scrollRef?: RefObject<ScrollView | null>;
   testID?: string;
 };
 
@@ -45,6 +49,8 @@ export function Screen({
   edgeToEdgeTop = false,
   topInsetColor,
   bottomSpace,
+  onScroll,
+  scrollRef,
   testID,
 }: ScreenProps) {
   const { colors } = useTheme();
@@ -66,7 +72,19 @@ export function Screen({
       {edgeToEdgeTop ? null : <View style={{ height: insets.top, alignSelf: 'stretch', backgroundColor: insetBackground }} />}
       <View style={styles.column}>
         {scroll ? (
-          <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={content}>
+          <ScrollView
+            ref={scrollRef}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={content}
+            scrollEventThrottle={onScroll ? 64 : undefined}
+            onScroll={
+              onScroll
+                ? (event: NativeSyntheticEvent<NativeScrollEvent>) =>
+                    onScroll(event.nativeEvent.contentOffset.y, event.nativeEvent.layoutMeasurement.height)
+                : undefined
+            }
+          >
             {children}
           </ScrollView>
         ) : (
