@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
-const [src, out] = process.argv.slice(2);
+const [src, out, label = "Xana Plus · What the App Does · 23 September 2026"] = process.argv.slice(2);
 const chrome = spawn('C:/Program Files/Google/Chrome/Application/chrome.exe', ['--headless=new', '--remote-debugging-port=9334', '--user-data-dir=' + out + '.profile', 'about:blank']);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 await sleep(2500);
@@ -12,7 +12,7 @@ ws.addEventListener('message', e => { const m = JSON.parse(e.data); pending.get(
 const send = (method, params = {}) => new Promise(r => { const i = ++id; pending.set(i, r); ws.send(JSON.stringify({ id: i, method, params })); });
 await send('Page.navigate', { url: 'file:///' + src });
 await sleep(3000);
-const footer = `<div style="width:100%;font:8px Segoe UI,Arial;color:#5b6660;padding:0 16mm;display:flex;justify-content:space-between"><span>Xana Plus · What the App Does · 23 September 2026</span><span class="pageNumber"></span></div>`;
+const footer = `<div style="width:100%;font:8px Segoe UI,Arial;color:#5b6660;padding:0 16mm;display:flex;justify-content:space-between"><span>${label}</span><span class="pageNumber"></span></div>`;
 const r = await send('Page.printToPDF', { printBackground: true, preferCSSPageSize: true, displayHeaderFooter: true, headerTemplate: '<div></div>', footerTemplate: footer });
 writeFileSync(out, Buffer.from(r.result.data, 'base64'));
 console.log('written', out);
