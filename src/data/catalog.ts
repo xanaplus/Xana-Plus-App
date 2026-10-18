@@ -26,7 +26,6 @@ export const homeCategoryTiles: Category[] = [
   { slug: 'pharmacy', name: 'Pharmacy', image: 'pharmacy', vertical: 'pharmacy', featured: true },
   { slug: 'cooking-oil', name: 'Cooking Oil', image: 'cooking-oil', vertical: 'groceries' },
   { slug: 'beverages', name: 'Beverages', image: 'beverages', vertical: 'groceries' },
-  { slug: 'liquor', name: 'Liquor', image: 'liquor', vertical: 'liquor' },
   { slug: 'frozen-foods', name: 'Frozen Foods', image: 'frozen-foods', vertical: 'groceries' },
   { slug: 'fresh-produce', name: 'Fresh Produce', image: 'fresh-produce', vertical: 'groceries' },
   { slug: 'dairy-eggs', name: 'Dairy & Eggs', image: 'dairy-eggs', vertical: 'groceries' },
@@ -569,16 +568,6 @@ const products: Product[] = [
     inStock: true,
   },
   {
-    id: 'tusker-lager-500ml',
-    name: 'Tusker Lager 500ml',
-    pack: '500ml Bottle · 4.2% ABV',
-    price: 250,
-    image: 'liquor',
-    category: 'liquor',
-    ageRestricted: true,
-    inStock: true,
-  },
-  {
     id: 'cooking-oil-2l',
     name: 'Fresh Fri Cooking Oil 2L',
     pack: '2L Bottle',
@@ -699,8 +688,6 @@ export const verticals: VerticalDefinition[] = [
       { slug: 'beverages', name: 'Soft Drinks & Water', image: 'beverages' },
       { slug: 'rice-grains', name: 'Rice & Grains', image: 'rice-grains' },
       { slug: 'sugar-baking', name: 'Sugar & Baking', image: 'sugar-and-baking' },
-      { slug: 'liquor', name: 'Beer & Cider', image: 'liquor' },
-      { slug: 'liquor', name: 'Wine & Spirits', image: 'liquor' },
       { slug: 'beauty-personal-care', name: 'Beauty & Hair', image: 'beauty-personal-care' },
       { slug: 'oral-care', name: 'Oral Care', image: 'sensodyne-rapid-relief' },
     ],
@@ -788,29 +775,6 @@ export const verticals: VerticalDefinition[] = [
     ],
   },
   {
-    slug: 'liquor',
-    label: 'Liquor',
-    title: 'Liquor Essentials',
-    subcategories: [
-      { slug: 'liquor', name: 'Beer & Cider', image: 'liquor' },
-      { slug: 'liquor', name: 'Wine & Spirits', image: 'liquor' },
-    ],
-    sections: [
-      {
-        title: 'Beer & Cider',
-        subtitle: 'Chilled and ready to deliver',
-        categorySlug: 'beer-cider',
-        query: shelf('liquor', ['beer', 'lager', 'cider', 'stout', 'tusker', 'guinness']),
-      },
-      {
-        title: 'Wine & Spirits',
-        subtitle: 'Wine, whisky, gin & more',
-        categorySlug: 'liquor',
-        query: shelf('liquor', ['wine', 'whisky', 'whiskey', 'vodka', 'gin', 'brandy', 'rum', 'liqueur', 'tequila']),
-      },
-    ],
-  },
-  {
     slug: 'household',
     label: 'Household',
     title: 'Household & Cleaning',
@@ -881,7 +845,6 @@ export const searchSortOptions = ['Sort: Relevance', 'Category', 'In Stock Only'
 const VERTICAL_PRIORITY: CategoryVertical[] = [
   'pharmacy',
   'deli',
-  'liquor',
   'groceries',
   'household',
   'wholesale',

@@ -40,14 +40,13 @@ const SORT_BY_OPTIONS: { value: SortBy; label: string }[] = [
   { value: 'price-desc', label: 'Price: High to Low' },
 ];
 
-/** The six departments FR-B.1 defines — matches the Filter & Sort frame's chips. */
+/** The departments FR-B.1 defines, less Liquor (not sold online since 17 Oct 2026) — matches the Filter & Sort frame's chips. */
 const DEPARTMENT_OPTIONS: { value: CategoryVertical; label: string }[] = [
   { value: 'groceries', label: 'Groceries' },
   { value: 'pharmacy', label: 'Pharmacy' },
   { value: 'deli', label: 'Deli' },
   { value: 'retail', label: 'Retail' },
   { value: 'wholesale', label: 'Wholesale' },
-  { value: 'liquor', label: 'Liquor' },
 ];
 
 const PRICE_BANDS: { value: PriceBand; label: string }[] = [

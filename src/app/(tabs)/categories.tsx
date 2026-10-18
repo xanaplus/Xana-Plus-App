@@ -89,13 +89,12 @@ const PHARMACY_SCOPES: { key: PharmacyScope; label: string }[] = [
 /** Glyphs the frames print on the Wholesale and Pharmacy chips. */
 const VERTICAL_ICONS: Partial<Record<CategoryVertical, IconName>> = { wholesale: 'cart', pharmacy: 'pill' };
 
-/** Chip order from every frame: Retail, Wholesale, Deli, Pharmacy, Liquor, Groceries, Household, Beauty. */
+/** Chip order from every frame, less Liquor (not sold online since 17 Oct 2026): Retail, Wholesale, Deli, Pharmacy, Groceries, Household. */
 const VERTICAL_ORDER: CategoryVertical[] = [
   'retail',
   'wholesale',
   'deli',
   'pharmacy',
-  'liquor',
   'groceries',
   'household',
 ];
