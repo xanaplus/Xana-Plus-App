@@ -53,3 +53,7 @@ example
 /ios
 /android
 /generated-artifacts/
+
+# Documents stay local; the repo is public
+*.pdf
+*.pdf.profile/
