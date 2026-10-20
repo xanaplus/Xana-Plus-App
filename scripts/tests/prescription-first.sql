@@ -130,7 +130,7 @@ begin
     and unit_price=123.45 and quantity=2 and line_total=246.90)
     then raise exception 'TEST FAIL: exact quoted lines'; end if;
   if not exists(select 1 from public.orders where id=v_order and items_subtotal=246.90
-    and platform_fee=20 and total=266.90 and amount_due=266.90)
+    and platform_fee=0 and total=246.90 and amount_due=246.90)
     then raise exception 'TEST FAIL: exact quoted totals'; end if;
   if (select count(*) from public.prescription_events where prescription_id=current_setting('rx.test_id')::uuid)<7
     then raise exception 'TEST FAIL: audit history'; end if;
