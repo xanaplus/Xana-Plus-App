@@ -6,6 +6,7 @@ import { ORDER_HISTORY, type OrderLine } from '@/data/orders';
 import type { OrderSummary, PaymentMethodId, SubstitutionPreference } from '@/data/types';
 import { parsePersisted, persisted, save, STORAGE_KEYS } from '@/lib/storage';
 import { track } from '@/lib/analytics';
+import { lineTotal } from '@/lib/quantity-pricing';
 import {
   isCompleted,
   stagesFor,
@@ -86,7 +87,7 @@ export function summariseLines(lines: OrderLine[]): OrderSummary {
     const product = productById(line.productId);
     if (!product) return [];
     const paid = unitPrice(product, line.quantity);
-    return [{ product, quantity: line.quantity, unitPrice: paid, lineTotal: paid * line.quantity }];
+    return [{ product, quantity: line.quantity, unitPrice: paid, lineTotal: lineTotal(paid, line.quantity) }];
   });
 
   const itemsSubtotal = priced.reduce((sum, i) => sum + i.lineTotal, 0);

@@ -18,8 +18,12 @@ export function activePriceTiers(tiers: readonly PriceTier[] = [], date = pricin
   ).sort((a, b) => a.minQty - b.minQty || a.unitPrice - b.unitPrice);
 }
 
-/** BC best eligible price; thresholds count units of this item only. */
+/** BC best eligible price, exactly as BC has it (create_order() accepts only that); thresholds count units of this item only. */
 export function quantityUnitPrice(basePrice: number, quantity: number, tiers: readonly PriceTier[] = [], date = pricingDate()): number {
   const eligible = activePriceTiers(tiers, date).filter(tier => quantity >= tier.minQty);
-  return Math.round(Math.min(basePrice, ...eligible.map(tier => tier.unitPrice)) * 100) / 100;
+  return Math.min(basePrice, ...eligible.map(tier => tier.unitPrice));
 }
+
+/** Only the line total is rounded to the cent, as create_order() and the website do. */
+export const lineTotal = (unitPrice: number, quantity: number): number =>
+  Math.round(unitPrice * quantity * 100) / 100;

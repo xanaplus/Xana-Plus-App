@@ -1,5 +1,5 @@
 import { adminClient, preflight, reply } from '../_shared/otp.ts';
-import { quantityUnitPrice } from '../../../src/lib/quantity-pricing.ts';
+import { lineTotal, quantityUnitPrice } from '../../../src/lib/quantity-pricing.ts';
 
 /**
  * POST (signed in) { lines: [{ itemNo, quantity }], paymentMethod, contact,
@@ -108,7 +108,7 @@ Deno.serve(async request => {
       name: row.name ?? line.itemNo,
       unit_price: unitPrice,
       quantity: line.quantity,
-      line_total: unitPrice * line.quantity,
+      line_total: lineTotal(unitPrice, line.quantity),
       requires_rx: row.requires_rx === true,
       age_restricted: row.age_restricted === true,
     };

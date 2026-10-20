@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState, useSyncExternalStore, type ReactNode } from 'react';
 
 import { productById } from '@/data/catalog';
-import { quantityUnitPrice } from '@/lib/quantity-pricing';
+import { lineTotal, quantityUnitPrice } from '@/lib/quantity-pricing';
 import { catalogueVersion, subscribeCatalogue } from '@/data/live-catalogue';
 import type { CartLine, OrderSummary, Product, SubstitutionPreference } from '@/data/types';
 import { parsePersisted, persisted, save, STORAGE_KEYS } from '@/lib/storage';
@@ -137,7 +137,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const product = liveProducts.get(line.productId) ?? productById(line.productId);
         if (!product) return [];
         const price = unitPrice(product, line.quantity);
-        return [{ product, quantity: line.quantity, unitPrice: price, lineTotal: price * line.quantity }];
+        return [{ product, quantity: line.quantity, unitPrice: price, lineTotal: lineTotal(price, line.quantity) }];
       }),
     [state.lines, liveProducts],
   );

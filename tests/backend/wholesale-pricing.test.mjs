@@ -3,7 +3,7 @@ import vm from 'node:vm';
 import { webcrypto } from 'node:crypto';
 import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
-import { activePriceTiers, pricingDate, quantityUnitPrice } from '../../src/lib/quantity-pricing.ts';
+import { activePriceTiers, lineTotal, pricingDate, quantityUnitPrice } from '../../src/lib/quantity-pricing.ts';
 
 const tiers = [{ minQty: 6, unitPrice: 155 }, { minQty: 24, unitPrice: 145 }];
 describe('BC per-product quantity prices', () => {
@@ -19,6 +19,11 @@ describe('BC per-product quantity prices', () => {
   it('ignores expired and not-yet-started rules, including boundary dates correctly', () => {
     const rules = [{ minQty:6,unitPrice:130,endsOn:'2026-10-07' },{minQty:6,unitPrice:120,startsOn:'2026-10-09'},{minQty:6,unitPrice:155,startsOn:'2026-10-08',endsOn:'2026-10-08'}];
     expect(quantityUnitPrice(160,6,rules,'2026-10-08')).toBe(155);
+  });
+  it('keeps BC prices exact and rounds only the line total', () => {
+    expect(quantityUnitPrice(83.83333,1)).toBe(83.83333);
+    expect(lineTotal(83.83333,3)).toBe(251.5);
+    expect(lineTotal(14.1512,7)).toBe(99.06);
   });
   it('uses Nairobi dates around midnight', () => {
     expect(pricingDate(new Date('2026-10-07T21:01:00Z'))).toBe('2026-10-08');
@@ -48,7 +53,7 @@ function checkout(rows) {
     },
   };
   const helpers={adminClient:()=>db,preflight:()=>null,reply:(status,body)=>Response.json(body,{status})};
-  const context={exports:{},Request,Response,Intl,Date,Math,Number,Map,Set,crypto:webcrypto,Deno:{serve:fn=>{handler=fn;}},require:path=>path.includes('quantity-pricing')?{quantityUnitPrice}:helpers};
+  const context={exports:{},Request,Response,Intl,Date,Math,Number,Map,Set,crypto:webcrypto,Deno:{serve:fn=>{handler=fn;}},require:path=>path.includes('quantity-pricing')?{lineTotal,quantityUnitPrice}:helpers};
   vm.runInNewContext(compile('supabase/functions/place-order/index.ts'),context);
   return {saved, async run(lines, extra={}) {
     const response=await handler(new Request('https://test.invalid',{method:'POST',headers:{Authorization:'Bearer synthetic'},body:JSON.stringify({
