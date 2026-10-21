@@ -46,9 +46,17 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Xana Plus uses the camera to scan product barcodes.",
+          "cameraPermission": "Xana Plus uses the camera to scan product barcodes and to photograph your prescription for our pharmacist.",
           "microphonePermission": false,
           "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Xana Plus opens your photos so you can choose a picture of your prescription for our pharmacist to review.",
+          "cameraPermission": "Xana Plus uses the camera to scan product barcodes and to photograph your prescription for our pharmacist.",
+          "microphonePermission": false
         }
       ]
     ],
