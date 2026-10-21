@@ -26,6 +26,7 @@ import {
 } from '@/components/ui';
 import { deliverySlots, productById, stores } from '@/data/catalog';
 import { ORDER_HISTORY, type OrderRecord } from '@/data/orders';
+import { PHARMACY_CONTACTS, whatsappLink } from '@/data/pharmacy-contacts';
 import type { FulfilmentMode, PaymentMethodId, Product } from '@/data/types';
 import { NameSheet } from '@/features/account/name-sheet';
 import { SignInDetails } from '@/features/account/sign-in-details';
@@ -365,9 +366,10 @@ export default function ProfileRoute() {
       key: 'pharmacist',
       icon: 'message',
       title: 'Chat with a pharmacist',
-      description: 'Ask about dosage, stock or refills',
+      description: 'On WhatsApp: dosage, stock or refills',
       onPress: () => {
-        void Linking.openURL(`https://wa.me/${store.phone.replace(/\D/g, '')}`);
+        const line = PHARMACY_CONTACTS.find(contact => contact.storeId === store.id) ?? PHARMACY_CONTACTS[0];
+        void Linking.openURL(whatsappLink(line));
       },
     },
     {

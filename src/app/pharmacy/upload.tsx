@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import type { ImagePickerAsset } from 'expo-image-picker';
@@ -18,7 +18,9 @@ export default function UploadPrescriptionScreen() {
   const [patientName, setPatientName] = useState('');
   const [kind, setKind] = useState<'myself' | 'dependant'>('myself');
   const [doctor, setDoctor] = useState('');
-  const [notes, setNotes] = useState('');
+  // Opened from a prescription-only item: name it for the pharmacist who quotes it.
+  const { item } = useLocalSearchParams<{ item?: string }>();
+  const [notes, setNotes] = useState(item ? `For: ${item}` : '');
   const [consent, setConsent] = useState(false);
   const [draftId, setDraftId] = useState('');
   const [busy, setBusy] = useState(false);

@@ -23,6 +23,8 @@ vi.mock('@/components/ui/quantity-stepper', () => ({ QuantityStepper: 'stepper' 
 const cart = vi.hoisted(() => ({ setQuantity: vi.fn() }));
 vi.mock('@/store/cart', () => ({ useCart: () => cart }));
 vi.mock('@/components/ui/text', () => ({ Txt: 'text' }));
+const router = vi.hoisted(() => ({ push: vi.fn() }));
+vi.mock('expo-router', () => ({ router }));
 vi.mock('@/data/images', () => ({ figmaAsset: () => undefined }));
 vi.mock('@/theme/provider', () => ({
   useTheme: () => ({ colors: state.dark ? darkColors : colors }),
@@ -60,6 +62,17 @@ describe('product card add pills', () => {
     const text = root.root.findAllByType('text').flatMap(node => [node.props.children].flat(Infinity));
     expect(text).toContain('KES 139');
     expect(text).toContain('KES 160');
+    await act(async () => root.unmount());
+  });
+  it('sends prescription-only items to the upload flow instead of the cart', async () => {
+    const add = vi.fn();
+    const root = await mount(<ProductCard product={{ ...product, rxRequired: true }} onAdd={add} />);
+    expect(root.root.findAllByProps({ accessibilityLabel: `Add ${product.name} to cart` })).toHaveLength(0);
+    const button = root.root.findByProps({ accessibilityLabel: `Prescription needed for ${product.name}. Upload a prescription` });
+    expect(button.findByType('icon').props.name).toBe('prescription');
+    await act(async () => button.props.onPress());
+    expect(add).not.toHaveBeenCalled();
+    expect(router.push).toHaveBeenCalledWith({ pathname: '/pharmacy/upload', params: { item: product.name } });
     await act(async () => root.unmount());
   });
   it('does not expose an add action for sold-out cards', async () => {

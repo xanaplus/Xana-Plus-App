@@ -64,6 +64,7 @@ const glyphs = {
   user: ['ion', 'person-circle-outline'],
   phone: ['ion', 'call-outline'],
   message: ['ion', 'chatbubble-ellipses-outline'],
+  whatsapp: ['ion', 'logo-whatsapp'],
   'thumbs-up': ['ion', 'thumbs-up-outline'],
   'thumbs-down': ['ion', 'thumbs-down-outline'],
   'thumbs-up-filled': ['ion', 'thumbs-up'],

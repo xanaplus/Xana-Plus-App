@@ -22,6 +22,7 @@ import {
   type IconName,
 } from '@/components/ui';
 import { useTabBack } from '@/components/nav/use-tab-back';
+import { ProductAddButton } from '@/components/ui/product-add-button';
 import { ProductPhoto } from '@/components/ui/product-photo';
 import { pharmacyQuickActions, verticalBySlug } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
@@ -35,6 +36,7 @@ import { colors, elevation, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { isPharmacyReviewer } from '@/features/prescriptions/api';
+import { PharmacistWhatsAppSheet } from '@/features/pharmacy/whatsapp-sheet';
 
 /** Filter chips above the product groups, one per pharmacy group — `null` shows every group. */
 const PHARMACY_FILTERS: readonly { label: string; categorySlug: string | null }[] = [
@@ -146,6 +148,7 @@ export default function PharmacyRoute() {
   const [openIntake, setOpenIntake] = useState<string | null>(null);
   const [choice, setChoice] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [askOpen, setAskOpen] = useState(false);
   const [reviewerCheck, setReviewerCheck] = useState<{ userId: string; allowed: boolean } | null>(null);
 
   useEffect(() => {
@@ -326,9 +329,9 @@ export default function PharmacyRoute() {
             <Txt variant="headlineSm">Ask a Pharmacist</Txt>
           </View>
           <Txt variant="bodySm" color="onSurfaceVariant">
-            Free, confidential clinical consultation via WhatsApp or real-time in-app chat.
+            Free and confidential. Message one of our pharmacies on WhatsApp, no account needed.
           </Txt>
-          <Button label="Chat with Pharmacist" icon="message" iconPosition="leading" onPress={() => runAction('ask')} />
+          <Button label="Ask a pharmacist on WhatsApp" icon="whatsapp" iconPosition="leading" onPress={() => setAskOpen(true)} />
         </Card>
 
         <View style={styles.licence}>
@@ -384,6 +387,7 @@ export default function PharmacyRoute() {
           )
         ) : null}
       </BottomSheet>
+      <PharmacistWhatsAppSheet visible={askOpen} onClose={() => setAskOpen(false)} />
     </Screen>
   );
 }
@@ -440,6 +444,8 @@ function PharmacyCard({
               {quantity}
             </Txt>
           </View>
+        ) : product.rxRequired ? (
+          <ProductAddButton productName={product.name} rxRequired />
         ) : (
           <Pressable
             accessibilityRole="button"

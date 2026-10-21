@@ -18,6 +18,7 @@ import {
   Txt,
 } from '@/components/ui';
 import type { BadgeTone } from '@/components/ui';
+import { ProductAddButton } from '@/components/ui/product-add-button';
 import { ProductPhoto } from '@/components/ui/product-photo';
 import { popularSearches, shelfForTerm, stores, verticalForProduct } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
@@ -653,6 +654,8 @@ function ResultTile({
             size="compact"
             tone="brand"
           />
+        ) : product.rxRequired ? (
+          <ProductAddButton productName={product.name} rxRequired />
         ) : (
           <Pressable
             accessibilityRole="button"

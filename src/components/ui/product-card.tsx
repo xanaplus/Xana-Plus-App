@@ -108,7 +108,7 @@ export function ProductCard({ product, width, quantity = 0, onPress, onAdd, styl
         {product.inStock === false ? null : quantity > 0 ? (
           <CardStepper productId={product.id} quantity={quantity} />
         ) : (
-          <ProductAddButton productName={product.name} onPress={onAdd} />
+          <ProductAddButton productName={product.name} onPress={onAdd} rxRequired={product.rxRequired} />
         )}
       </View>
     </Animated.View>
@@ -189,7 +189,7 @@ export function ProductRow({ product, eyebrow, description, quantity = 0, onPres
           (quantity > 0 ? (
             <CardStepper productId={product.id} quantity={quantity} />
           ) : (
-            <ProductAddButton productName={product.name} onPress={onAdd} />
+            <ProductAddButton productName={product.name} onPress={onAdd} rxRequired={product.rxRequired} />
           ))}
       </View>
     </View>

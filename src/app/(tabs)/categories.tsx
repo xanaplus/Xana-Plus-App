@@ -801,7 +801,7 @@ function RailCard({
                 style={styles.railStepper}
               />
             ) : (
-              <ProductAddButton productName={product.name} onPress={onAdd} />
+              <ProductAddButton productName={product.name} onPress={onAdd} rxRequired={product.rxRequired} />
             )}
           </View>
         )}
