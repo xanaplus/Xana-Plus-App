@@ -14,6 +14,7 @@ import {
   Icon,
   LoadState,
   ProductCard,
+  ProductRow,
   ProgressBar,
   Screen,
   SearchBar,
@@ -290,18 +291,33 @@ export default function HomeRoute() {
         {user && buyAgain.length > 0 ? (
           <View style={styles.section}>
             <SectionHeader title="Buy it again" actionLabel="My Orders" onAction={() => router.push('/orders')} />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.railBleed} contentContainerStyle={styles.rail}>
-              {buyAgain.map(product => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  width={layout.productCardWidth}
-                  quantity={cart.quantityOf(product.id)}
-                  onPress={() => router.push(`/product/${product.id}`)}
-                  onAdd={() => cart.add(product.id)}
-                />
-              ))}
-            </ScrollView>
+            {/* One or two items fill the width as rows; a lone card in a rail left the right side empty. */}
+            {buyAgain.length < 3 ? (
+              <View style={styles.buyAgainList}>
+                {buyAgain.map(product => (
+                  <ProductRow
+                    key={product.id}
+                    product={product}
+                    quantity={cart.quantityOf(product.id)}
+                    onPress={() => router.push(`/product/${product.id}`)}
+                    onAdd={() => cart.add(product.id)}
+                  />
+                ))}
+              </View>
+            ) : (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.railBleed} contentContainerStyle={styles.rail}>
+                {buyAgain.map(product => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    width={layout.productCardWidth}
+                    quantity={cart.quantityOf(product.id)}
+                    onPress={() => router.push(`/product/${product.id}`)}
+                    onAdd={() => cart.add(product.id)}
+                  />
+                ))}
+              </ScrollView>
+            )}
           </View>
         ) : null}
 
@@ -693,6 +709,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   clubAction: { flexDirection: 'row', alignItems: 'center', gap: spacing.xxs },
 
   rail: { gap: spacing.md, paddingHorizontal: layout.screenMargin, paddingTop: spacing.sm },
+  buyAgainList: { gap: spacing.sm, paddingTop: spacing.sm },
   /** Rails sit inside a padded section but scroll edge to edge. */
   railBleed: { marginHorizontal: -layout.screenMargin },
 

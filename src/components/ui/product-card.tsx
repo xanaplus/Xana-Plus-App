@@ -152,10 +152,11 @@ export type ProductRowProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-/** Horizontal row used by search results and the cart's "Buy Again" rail. */
+/** Horizontal row used by search results, the cart's "Buy Again" rail and Home's short Buy it again list. */
 export function ProductRow({ product, eyebrow, description, quantity = 0, onPress, onAdd, trailing, style }: ProductRowProps) {
   const { colors } = useTheme();
   const image = figmaAsset(product.image);
+  const available = useStoreStock().inStock(product);
 
   return (
     <View style={[styles.row, { backgroundColor: colors.surface }, style]}>
@@ -188,7 +189,11 @@ export function ProductRow({ product, eyebrow, description, quantity = 0, onPres
 
       <View style={styles.trailing}>
         {trailing ??
-          (quantity > 0 ? (
+          (!available ? (
+            <Txt variant="labelSm" color="outline">
+              Out of stock
+            </Txt>
+          ) : quantity > 0 ? (
             <CardStepper productId={product.id} quantity={quantity} />
           ) : (
             <ProductAddButton productName={product.name} onPress={onAdd} rxRequired={product.rxRequired} />
