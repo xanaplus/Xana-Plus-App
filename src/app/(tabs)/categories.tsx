@@ -41,8 +41,8 @@ import { colors, elevation, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
-/** Sort keys behind the frame's sort row. */
-type SortKey = 'savings' | 'popular' | 'new' | 'organic';
+/** Sort keys behind the sort row. BC items carry no was-price, rating or "new" badge, so the row sorts on price. */
+type SortKey = 'top' | 'price-asc' | 'price-desc';
 /** Pharmacy's frame swaps the sort row for prescription-status filters. */
 type PharmacyScope = 'all' | 'otc' | 'rx';
 
@@ -57,27 +57,12 @@ const RAIL_PEEK = 1.3;
 const GRID_SHELF_SIZE = 4;
 const RAIL_SHELF_SIZE = 8;
 
-const ESSENTIAL_SORT_CHIPS: SortChip[] = [
-  { key: 'savings', label: 'Best savings', icon: 'percent' },
-  { key: 'popular', label: 'Most popular' },
-  { key: 'new', label: 'New' },
+/** Same sorts as Search. "Top picks" keeps the server's photo-first, in-stock order. */
+const SORT_CHIPS: SortChip[] = [
+  { key: 'top', label: 'Top picks' },
+  { key: 'price-asc', label: 'Price: low to high' },
+  { key: 'price-desc', label: 'Price: high to low' },
 ];
-
-/** Sort row per frame — Groceries trades "New" for "Organic & Fresh". */
-const SORT_CHIPS: Record<CategoryVertical, SortChip[]> = {
-  retail: ESSENTIAL_SORT_CHIPS,
-  wholesale: ESSENTIAL_SORT_CHIPS,
-  deli: ESSENTIAL_SORT_CHIPS,
-  pharmacy: ESSENTIAL_SORT_CHIPS,
-  liquor: ESSENTIAL_SORT_CHIPS,
-  household: ESSENTIAL_SORT_CHIPS,
-  beauty: ESSENTIAL_SORT_CHIPS,
-  groceries: [
-    { key: 'savings', label: 'Best savings', icon: 'percent' },
-    { key: 'popular', label: 'Most popular' },
-    { key: 'organic', label: 'Organic & Fresh' },
-  ],
-};
 
 /** Screen 3e filters the pharmacy aisle by prescription status. */
 const PHARMACY_SCOPES: { key: PharmacyScope; label: string }[] = [
@@ -168,13 +153,9 @@ const LIQUOR_NOTICE = {
 } as const;
 
 const SORTERS: Record<SortKey, (a: Product, b: Product) => number> = {
-  savings: (a, b) =>
-    (b.wasPrice ? discountPercent(b.price, b.wasPrice) : 0) - (a.wasPrice ? discountPercent(a.price, a.wasPrice) : 0),
-  popular: (a, b) => (b.rating ?? 0) - (a.rating ?? 0) || (b.reviewCount ?? 0) - (a.reviewCount ?? 0),
-  new: (a, b) => Number(b.badges?.includes('new') ?? false) - Number(a.badges?.includes('new') ?? false),
-  organic: (a, b) =>
-    Number(b.badges?.some(badge => badge === 'organic' || badge === 'fresh') ?? false) -
-    Number(a.badges?.some(badge => badge === 'organic' || badge === 'fresh') ?? false),
+  top: () => 0,
+  'price-asc': (a, b) => a.price - b.price,
+  'price-desc': (a, b) => b.price - a.price,
 };
 
 /** Applies the sort row and the filter sheet, in the order the frames ask for. */
@@ -233,7 +214,7 @@ export default function CategoriesRoute() {
   const pendingFocus = useRef<string | null>(null);
 
   const [vertical, setVertical] = useState<CategoryVertical>('retail');
-  const [sort, setSort] = useState<SortKey>('savings');
+  const [sort, setSort] = useState<SortKey>('top');
   const [scope, setScope] = useState<PharmacyScope>('all');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [storeSheetOpen, setStoreSheetOpen] = useState(false);
@@ -244,7 +225,7 @@ export default function CategoriesRoute() {
   const isPharmacy = vertical === 'pharmacy';
   const isLiquor = vertical === 'liquor';
   const showsGrid = GRID_VERTICALS.includes(vertical);
-  const sortKey: SortKey = isPharmacy ? 'savings' : sort;
+  const sortKey: SortKey = isPharmacy ? 'top' : sort;
   const filters: FilterState = { sort: sortKey, scope, inStockOnly, priceCap };
   const filtersActive = inStockOnly || priceCap !== null;
 
@@ -272,7 +253,7 @@ export default function CategoriesRoute() {
   const selectVertical = (next: CategoryVertical) => {
     if (next === vertical) return;
     setVertical(next);
-    setSort('savings');
+    setSort('top');
     setScope('all');
     setInStockOnly(false);
     setPriceCap(null);
@@ -287,7 +268,7 @@ export default function CategoriesRoute() {
     const next = VERTICAL_ORDER.find(slug => slug === verticalParam);
     if (next && next !== vertical) {
       setVertical(next);
-      setSort('savings');
+      setSort('top');
       setScope('all');
       setInStockOnly(false);
       setPriceCap(null);
@@ -327,7 +308,7 @@ export default function CategoriesRoute() {
                 onPress={() => setScope(entry.key)}
               />
             ))
-          : SORT_CHIPS[vertical].map(chip => (
+          : SORT_CHIPS.map(chip => (
               <Chip
                 key={chip.key}
                 label={chip.label}
