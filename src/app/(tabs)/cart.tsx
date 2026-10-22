@@ -1,5 +1,5 @@
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
@@ -23,15 +23,17 @@ import {
 } from '@/components/ui';
 import { useTabBack } from '@/components/nav/use-tab-back';
 import { ProductPhoto } from '@/components/ui/product-photo';
+import { stores } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
+import { fetchProducts } from '@/data/live-catalogue';
 import type { Product, SubstitutionPreference } from '@/data/types';
 import { useBuyAgain } from '@/features/orders/buy-again';
 import { formatCartCounts, formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
-import { useFulfilment } from '@/store/fulfilment';
+import { inStockAt, useFulfilment, useStoreStock } from '@/store/fulfilment';
 import { pointsEarned } from '@/store/orders';
 import { useSession } from '@/store/session';
-import { colors, radius, spacing } from '@/theme';
+import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
@@ -49,7 +51,8 @@ export default function CartRoute() {
   const router = useRouter();
   const goBack = useTabBack();
   const cart = useCart();
-  const { slot, store } = useFulfilment();
+  const { slot, store, storeId, setStoreId } = useFulfilment();
+  const { inStock, storeShortName } = useStoreStock();
   const { user } = useSession();
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -57,6 +60,23 @@ export default function CartRoute() {
   const inCart = new Set(cart.lines.map(l => l.productId));
   const buyAgain = useBuyAgain().filter(p => !inCart.has(p.id));
   const earnable = pointsEarned(cart.summary.total);
+
+  // Fresh BC stock each time the cart opens, so a line that sold out at this store shows before checkout.
+  const lineKey = cart.lines.map(l => l.productId).join(',');
+  useFocusEffect(
+    useCallback(() => {
+      if (lineKey) void fetchProducts(lineKey.split(',')).catch(() => undefined);
+    }, [lineKey]),
+  );
+
+  // place-order refuses these, so they are flagged here, as Instacart does, instead of failing at payment.
+  const unavailable = cart.items.filter(item => !inStock(item.product));
+  const otherStore = unavailable.length
+    ? stores.find(entry =>
+        entry.id !== storeId &&
+        cart.items.every(item => (item.product.stockByStore?.[entry.id.toUpperCase()] ?? 0) >= item.quantity || (!item.product.stockByStore && inStockAt(item.product, entry.id))),
+      )
+    : undefined;
 
   return (
     <Screen
@@ -66,10 +86,11 @@ export default function CartRoute() {
       footer={
         isEmpty ? undefined : (
           <Button
-            label={`Checkout · ${formatKes(cart.summary.total)}.00`}
+            label={unavailable.length ? 'Remove sold-out items to continue' : `Checkout · ${formatKes(cart.summary.total)}.00`}
             icon="cart"
             iconPosition="leading"
             size="lg"
+            disabled={unavailable.length > 0}
             onPress={() => router.push('/checkout')}
           />
         )
@@ -140,6 +161,26 @@ export default function CartRoute() {
           </View>
         </Card>
 
+        {unavailable.length ? (
+          <View style={[styles.inset, styles.soldOut]}>
+            <Icon name="alert" size={18} color="error" />
+            <View style={styles.soldOutBody}>
+              <Txt variant="label" tint={colors.error}>
+                {`${unavailable.length === 1 ? '1 item is' : `${unavailable.length} items are`} out of stock at ${storeShortName}`}
+              </Txt>
+              <Txt variant="caption" color="onSurfaceVariant">
+                Remove {unavailable.length === 1 ? 'it' : 'them'} to check out{otherStore ? `, or shop from ${otherStore.name.replace('Xana Plus ', '')}, which has everything in your cart` : ''}.
+              </Txt>
+              <View style={styles.soldOutActions}>
+                <Button label="Remove sold-out items" size="sm" variant="outline" onPress={() => unavailable.forEach(item => cart.remove(item.product.id))} />
+                {otherStore ? (
+                  <Button label={`Switch to ${otherStore.name.replace('Xana Plus ', '')}`} size="sm" onPress={() => setStoreId(otherStore.id)} />
+                ) : null}
+              </View>
+            </View>
+          </View>
+        ) : null}
+
         <View style={styles.inset}>
           {cart.items.map(item => (
             // Removing a line fades it out and the rest slide up to close the gap.
@@ -148,6 +189,7 @@ export default function CartRoute() {
               product={item.product}
               quantity={item.quantity}
               unitPrice={item.unitPrice}
+              soldOutAt={inStock(item.product) ? undefined : storeShortName}
               onIncrement={() => cart.increment(item.product.id)}
               onDecrement={() => cart.decrement(item.product.id)}
               onRemove={() => cart.remove(item.product.id)}
@@ -269,6 +311,7 @@ function CartLineRow({
   product,
   quantity,
   unitPrice: price,
+  soldOutAt,
   onIncrement,
   onDecrement,
   onRemove,
@@ -277,11 +320,14 @@ function CartLineRow({
   product: Product;
   quantity: number;
   unitPrice: number;
+  /** Store short name when this line is out of stock there. */
+  soldOutAt?: string;
   onIncrement: () => void;
   onDecrement: () => void;
   onRemove: () => void;
   onPress: () => void;
 }) {
+  const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const image = figmaAsset(product.image);
   const wholesale = price < product.price;
@@ -310,6 +356,11 @@ function CartLineRow({
         <Txt variant="caption" color="onSurfaceVariant" numberOfLines={2}>
           {product.pack}
         </Txt>
+        {soldOutAt ? (
+          <Txt variant="labelSm" tint={colors.error}>
+            {`Out of stock at ${soldOutAt}`}
+          </Txt>
+        ) : null}
         <View style={styles.lineFooter}>
           <View style={styles.linePrices}>
             <Txt variant="titleLg">{formatKes(price * quantity)}</Txt>
@@ -332,6 +383,7 @@ function CartLineRow({
 }
 
 function SummaryRow({ label, value, tone = 'default' }: { label: string; value: string; tone?: 'default' | 'primary' }) {
+  const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.summaryRow}>
@@ -372,6 +424,9 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   lineFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm, marginTop: spacing.xxs },
   linePrices: { flexDirection: 'row', alignItems: 'baseline', gap: spacing.sm, flexShrink: 1 },
   strike: { textDecorationLine: 'line-through' },
+  soldOut: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, backgroundColor: colors.errorContainer },
+  soldOutBody: { flex: 1, gap: spacing.xs },
+  soldOutActions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.xs },
   savingsNote: {
     flexDirection: 'row',
     alignItems: 'center',

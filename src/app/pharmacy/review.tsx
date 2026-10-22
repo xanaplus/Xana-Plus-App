@@ -9,6 +9,7 @@ import {
   STATUS_LABELS, usePrescriptionList, type Prescription, type PrescriptionStatus, type QuoteChoice,
 } from '@/features/prescriptions/api';
 import { ErrorNotice, PrivatePhotos } from '@/features/prescriptions/ui';
+import { useStoreStock } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
@@ -38,6 +39,7 @@ export default function PharmacyReviewScreen() {
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const { isAuthenticated } = useSession();
+  const { inStock } = useStoreStock();
   const { records, loading, error, refresh } = usePrescriptionList(true);
   const [access, setAccess] = useState<Access>('checking');
   const [accessError, setAccessError] = useState('');
@@ -93,7 +95,7 @@ export default function PharmacyReviewScreen() {
       setSearching(true);
       void searchCatalogue(term, 24).then(found => {
         if (active) setProducts(found.filter(item =>
-          item.inStock && !item.ageRestricted && LIVE_PHARMACY_CATEGORIES.includes(item.category) &&
+          inStock(item) && !item.ageRestricted && LIVE_PHARMACY_CATEGORIES.includes(item.category) &&
           item.category !== 'controlled-medicines',
         ));
       }).catch(cause => {
@@ -103,7 +105,7 @@ export default function PharmacyReviewScreen() {
       });
     }, 250);
     return () => { active = false; clearTimeout(timer); };
-  }, [search]);
+  }, [search, inStock]);
 
   const updateSearch = (value: string) => {
     setSearch(value);

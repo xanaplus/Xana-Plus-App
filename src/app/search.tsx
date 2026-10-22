@@ -27,8 +27,8 @@ import type { PriceBand, ResultOptions, ResultSort } from '@/data/live-catalogue
 import type { CategoryVertical, Product, ProductBadge } from '@/data/types';
 import { discountPercent, formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
-import { useFulfilment } from '@/store/fulfilment';
-import { colors, elevation, layout, radius, spacing } from '@/theme';
+import { useFulfilment, useStoreStock } from '@/store/fulfilment';
+import { elevation, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
@@ -604,6 +604,7 @@ function ResultTile({
   onDecrement: () => void;
 }) {
   const styles = useThemeStyles(createStyles);
+  const available = useStoreStock().inStock(product);
   const badge = product.badges?.[0];
   const image = figmaAsset(product.image);
 
@@ -638,11 +639,11 @@ function ResultTile({
       {/* Card-wide tap target; a sibling of the add control, never its parent. */}
       <Pressable accessibilityRole="button" accessibilityLabel={product.name} onPress={onPress} style={styles.tileOverlay} />
 
-      <View style={[styles.tileFoot, quantity > 0 && product.inStock !== false && styles.tileFootStacked]}>
+      <View style={[styles.tileFoot, quantity > 0 && available && styles.tileFootStacked]}>
         <Txt variant="titleLg" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.68} style={styles.tilePrice}>
           {formatKes(product.price)}
         </Txt>
-        {product.inStock === false ? (
+        {!available ? (
           <Txt variant="labelSm" color="outline">
             Out of stock
           </Txt>
@@ -679,6 +680,7 @@ function ResultTile({
  */
 /** Filters now run in the database, so an empty page with filters on offers to clear them. */
 function NoResults({ query, filtered, onClear }: { query: string; filtered: boolean; onClear: () => void }) {
+  const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const filteredOut = filtered;
 

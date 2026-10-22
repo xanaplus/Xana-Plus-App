@@ -41,17 +41,17 @@ import { OrderPlaced } from '@/features/orders/order-placed';
 import { placeOrderErrorMessage, pointsEarned, promoErrorMessage, useOrders, type PromoError } from '@/store/orders';
 import { useSession } from '@/store/session';
 import { StoreChooser, storeWithAllItems } from '@/features/store/store-chooser';
-import { colors, layout, radius, spacing } from '@/theme';
+import { layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
 /** Payment rows in the order Screen 6 stacks them. */
-type PaymentMethodCopy = { id: PaymentMethodId; title: string; icon: IconName; trust: string; showsTotal: boolean };
+type PaymentMethodCopy = { id: PaymentMethodId; title: string; icon: IconName; showsTotal: boolean };
 
 const PAYMENT_METHODS: PaymentMethodCopy[] = [
-  { id: 'mpesa', title: 'M-Pesa', icon: 'mpesa', trust: 'Instant M-Pesa Prompt', showsTotal: true },
-  { id: 'cod', title: 'Cash on Delivery', icon: 'cash', trust: 'Cash on Delivery', showsTotal: false },
-  { id: 'card', title: 'Credit / Debit Card', icon: 'card', trust: 'Hosted Card Gateway', showsTotal: true },
+  { id: 'mpesa', title: 'M-Pesa', icon: 'mpesa', showsTotal: true },
+  { id: 'cod', title: 'Cash on Delivery', icon: 'cash', showsTotal: false },
+  { id: 'card', title: 'Credit / Debit Card', icon: 'card', showsTotal: true },
 ];
 
 
@@ -243,7 +243,15 @@ export default function CheckoutRoute() {
         setPromo(null);
         setPromoError(promoErrorMessage(result.error as PromoError, result.minSpend));
       }
-      setPlaceError(placeOrderErrorMessage(result.error));
+      // Name what sold out, so the shopper knows which line to remove.
+      const soldOut = result.error === 'unavailable' && result.items
+        ? cart.items.filter(item => result.items?.includes(item.product.id)).map(item => item.product.name)
+        : [];
+      setPlaceError(
+        soldOut.length
+          ? `Out of stock at ${chosenStore.name.replace('Xana Plus ', '')}: ${soldOut.join(', ')}. Remove ${soldOut.length === 1 ? 'it' : 'them'} from your cart, or pick another store. You have not been charged.`
+          : placeOrderErrorMessage(result.error),
+      );
       if (result.error === 'unavailable' && result.items) {
         const quantities = Object.fromEntries(cart.items.map(item => [item.product.id, item.quantity]));
         setOtherStore(await storeWithAllItems(result.items, quantities, chosenStore.id));
@@ -389,12 +397,6 @@ export default function CheckoutRoute() {
               </Txt>
             </View>
           ) : null}
-          <View style={styles.trust}>
-            <Icon name="lock" size={12} color="outline" />
-            <Txt variant="caption" color="onSurfaceVariant">
-              {`256-bit Encrypted · ${method.trust}`}
-            </Txt>
-          </View>
         </View>
       }
     >
@@ -1026,6 +1028,7 @@ export default function CheckoutRoute() {
 
 /** One line of the order summary breakdown. */
 function SummaryLine({ label, value, tone = 'default' }: { label: string; value: string; tone?: 'default' | 'primary' }) {
+  const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.summaryRow}>
@@ -1041,6 +1044,7 @@ function SummaryLine({ label, value, tone = 'default' }: { label: string; value:
 
 /** Visa / Mastercard marks on the card row. Card-network colours are brand assets, not palette tokens. */
 function CardMarks() {
+  const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.marks}>
@@ -1170,5 +1174,4 @@ const createStyles = (colors: Palette) => StyleSheet.create({
 
   footer: { gap: spacing.sm },
   blockedNote: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs },
-  trust: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs },
 });

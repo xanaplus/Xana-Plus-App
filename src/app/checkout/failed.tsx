@@ -109,12 +109,6 @@ export default function PaymentFailedScreen() {
               Change payment method
             </Txt>
           </Pressable>
-          <View style={styles.trust}>
-            <Icon name="lock" size={12} color="outline" />
-            <Txt variant="caption" color="onSurfaceVariant">
-              256-bit Encrypted · Safaricom M-Pesa
-            </Txt>
-          </View>
         </View>
       }
     >
@@ -272,5 +266,4 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   holdText: { flex: 1 },
 
   footer: { gap: spacing.sm },
-  trust: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs },
 });

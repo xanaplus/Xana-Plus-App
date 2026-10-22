@@ -210,18 +210,6 @@ export function ChangeNumberLink({ onPress }: { onPress: () => void }) {
   );
 }
 
-/** The lock line under the primary action on the verification step. */
-export function OtpSecurityNote() {
-  const styles = useThemeStyles(createStyles);
-  return (
-    <View style={styles.security}>
-      <Icon name="lock" size={13} color="outline" />
-      <Txt variant="caption" color="outline">
-        Safe & secure 256-bit encryption · Xana Life Nairobi
-      </Txt>
-    </View>
-  );
-}
 
 /**
  * Six single-character cells driven by one invisible but focusable field: taps
@@ -453,7 +441,6 @@ function SignInSheet({ onClose, onSuccess }: { onClose: () => void; onSuccess?: 
                 loading={busy}
                 onPress={() => void confirmCode()}
               />
-              <OtpSecurityNote />
             </>
           )}
         </View>
@@ -559,15 +546,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   hiddenField: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, opacity: 0 },
   resendRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm },
   resendTimer: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  security: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    paddingTop: spacing.md,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.surfaceContainerHigh,
-  },
   changeNumber: { alignSelf: 'flex-start' },
   otpStep: { gap: spacing.md },
   footer: { gap: spacing.lg },

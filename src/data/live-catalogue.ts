@@ -21,6 +21,7 @@ type CatalogueRow = {
   name: string | null;
   price: number | string;
   stock: number | string;
+  stock_by_location: Record<string, number | null> | null;
   category: string | null;
   requires_rx: boolean;
   age_restricted: boolean;
@@ -28,7 +29,7 @@ type CatalogueRow = {
   price_tiers: Product['priceTiers'];
 };
 
-const COLUMNS = 'item_no,name,price,stock,category,requires_rx,age_restricted,photo_url,price_tiers';
+const COLUMNS = 'item_no,name,price,stock,stock_by_location,category,requires_rx,age_restricted,photo_url,price_tiers';
 
 /** App category slug for every BC inventory posting group (the `category` column). */
 export const BC_GROUP_CATEGORY: Record<string, string> = {
@@ -118,6 +119,9 @@ const toProduct = (row: CatalogueRow): Product => {
     rxRequired: row.requires_rx,
     ageRestricted: row.age_restricted,
     inStock: Number(row.stock) > 0,
+    stockByStore: Object.fromEntries(
+      Object.entries(row.stock_by_location ?? {}).map(([branch, units]) => [branch.toUpperCase(), Number(units ?? 0)]),
+    ),
   };
 };
 

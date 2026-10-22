@@ -32,7 +32,7 @@ import { formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
-import { colors, elevation, layout, radius, spacing } from '@/theme';
+import { elevation, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { isPharmacyReviewer } from '@/features/prescriptions/api';
@@ -407,6 +407,7 @@ function PharmacyCard({
   onPress: () => void;
   onAdd: () => void;
 }) {
+  const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const image = figmaAsset(product.image);
 

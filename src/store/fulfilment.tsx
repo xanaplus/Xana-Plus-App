@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { deliverySlots, stores } from '@/data/catalog';
-import type { FulfilmentMode, PaymentMethodId } from '@/data/types';
+import type { FulfilmentMode, PaymentMethodId, Product } from '@/data/types';
 import { parsePersisted, persisted, save, STORAGE_KEYS } from '@/lib/storage';
 import { supabase } from '@/lib/supabase';
 import { useSession } from '@/store/session';
@@ -74,7 +74,12 @@ const fromRow = (row: AddressRow): Address => ({
 
 const hydrateFulfilment = (): PersistedFulfilment | null => parsePersisted(persisted().fulfilment, isPersistedFulfilment);
 
-const STORED = hydrateFulfilment() ?? {
+/**
+ * Read inside the provider, never at import: the module loads before RootLayout's
+ * `loadSnapshot` resolves, and an import-time read saw an empty snapshot, so every
+ * cold start forgot the chosen store and then saved the defaults over it.
+ */
+const storedFulfilment = (): PersistedFulfilment => hydrateFulfilment() ?? {
   mode: 'delivery' as FulfilmentMode,
   storeId: stores[0].id,
   addressId: defaultAddress.id,
@@ -136,20 +141,21 @@ const FulfilmentContext = createContext<FulfilmentContextValue | null>(null);
 export function FulfilmentProvider({ children }: { children: ReactNode }) {
   const { user, isDemo } = useSession();
   const userId = user?.id ?? null;
-  const [mode, setMode] = useState<FulfilmentMode>(STORED.mode);
-  const [storeId, setStoreIdState] = useState<string>(STORED.storeId);
-  const [storeChosen, setStoreChosen] = useState(STORED.storeChosen === true);
+  const [stored] = useState(storedFulfilment);
+  const [mode, setMode] = useState<FulfilmentMode>(stored.mode);
+  const [storeId, setStoreIdState] = useState<string>(stored.storeId);
+  const [storeChosen, setStoreChosen] = useState(stored.storeChosen === true);
   const setStoreId = useCallback((id: string) => {
     setStoreIdState(id);
     setStoreChosen(true);
   }, []);
-  const [savedAddresses, setAddresses] = useState<Address[]>(STORED.addresses);
+  const [savedAddresses, setAddresses] = useState<Address[]>(stored.addresses);
   // The "Amina" sample address belongs to the demo account only; everyone else starts with none.
   const addresses = useMemo(
     () => (isDemo ? savedAddresses : savedAddresses.filter(a => a.id !== defaultAddress.id)),
     [isDemo, savedAddresses],
   );
-  const [addressId, setAddressId] = useState<string>(STORED.addressId);
+  const [addressId, setAddressId] = useState<string>(stored.addressId);
 
   // A different account on this phone never inherits the previous person's
   // addresses; its own saved ones then load from Supabase below.
@@ -211,9 +217,9 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
     [userId],
   );
   const setAddress = (next: Address) => setAddressId(next.id);
-  const [slotId, setSlotId] = useState(STORED.slotId);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodId>(STORED.paymentMethod);
-  const [storedMpesaNumber, setMpesaNumber] = useState(STORED.mpesaNumber);
+  const [slotId, setSlotId] = useState(stored.slotId);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodId>(stored.paymentMethod);
+  const [storedMpesaNumber, setMpesaNumber] = useState(stored.mpesaNumber);
   // The sample M-Pesa line is Amina's; a real account defaults to its own number.
   const mpesaNumber = !isDemo && user && storedMpesaNumber === defaultAddress.phone ? user.phone : storedMpesaNumber;
   const [pointsRedeemed, setPointsRedeemed] = useState(0);
@@ -288,6 +294,21 @@ export function useFulfilment(): FulfilmentContextValue {
   const ctx = useContext(FulfilmentContext);
   if (!ctx) throw new Error('useFulfilment must be used inside <FulfilmentProvider>');
   return ctx;
+}
+
+/**
+ * In stock at one store. place-order checks the chosen store, so a product that
+ * only another branch holds must not look available. Products cached before
+ * per-store stock existed fall back to the all-branch flag.
+ */
+export const inStockAt = (product: Product, storeId: string): boolean =>
+  product.stockByStore ? (product.stockByStore[storeId.toUpperCase()] ?? 0) > 0 : product.inStock !== false;
+
+/** `inStockAt` for the shopper's chosen store, plus that store's short name for "Out of stock at …". */
+export function useStoreStock() {
+  const { storeId, store } = useFulfilment();
+  const inStock = useCallback((product: Product) => inStockAt(product, storeId), [storeId]);
+  return { inStock, storeShortName: store.name.replace('Xana Plus ', '') };
 }
 
 export { defaultAddress };

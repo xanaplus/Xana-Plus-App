@@ -30,7 +30,7 @@ import { discountPercent, formatKes } from '@/lib/format';
 import { PharmacistWhatsAppSheet } from '@/features/pharmacy/whatsapp-sheet';
 import { activePriceTiers, type PriceTier } from '@/lib/quantity-pricing';
 import { unitPrice, useCart } from '@/store/cart';
-import { useFulfilment } from '@/store/fulfilment';
+import { useFulfilment, useStoreStock } from '@/store/fulfilment';
 import { layout, radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
@@ -244,7 +244,8 @@ function ProductDetail({ product }: { product: Product }) {
   const aisle = AISLE_BY_CATEGORY[product.category];
   const copy = PRODUCT_COPY[product.id];
   const eyebrow = aisle ? VERTICAL_EYEBROW[aisle.vertical] ?? aisle.label : undefined;
-  const inStock = product.inStock !== false;
+  const { inStock: inStockHere, storeShortName } = useStoreStock();
+  const inStock = inStockHere(product);
 
   /** "Home / Household / Cleaning" for grocery packs, "Pharmacy / Pain Relief / Paracetamol" for pharmacy. */
   const crumbs = (isPharmacy
@@ -282,7 +283,7 @@ function ProductDetail({ product }: { product: Product }) {
     product.specifications ?? [
       { label: 'Pack size', value: product.pack },
       { label: 'Aisle', value: aisle?.name ?? humanize(product.category) },
-      { label: 'Availability', value: inStock ? 'In stock' : 'Out of stock' },
+      { label: 'Availability', value: inStock ? 'In stock' : `Out of stock at ${storeShortName}` },
     ];
 
   const compositionRows = [
@@ -306,6 +307,8 @@ function ProductDetail({ product }: { product: Product }) {
           {/* Prescription-only items never go in the cart: the pharmacist quotes them from the uploaded prescription. */}
           {product.rxRequired && inCart === 0 ? (
             <Button label="Prescription needed · Upload" icon="prescription" iconPosition="leading" onPress={() => openPrescriptionUpload(product.name)} />
+          ) : inCart === 0 && !inStock ? (
+            <Button label={`Out of stock at ${storeShortName}`} icon="cart" iconPosition="leading" disabled onPress={onAdd} />
           ) : inCart === 0 ? (
             <Button label={`Add to Cart · ${formatKes(currentUnitPrice)}`} icon="cart" iconPosition="leading" onPress={onAdd} />
           ) : (
@@ -427,7 +430,7 @@ function ProductDetail({ product }: { product: Product }) {
             <View style={styles.stockRow}>
               <View style={[styles.stockDot, inStock ? null : styles.stockDotOut]} />
               <Txt variant="label" color={inStock ? 'primaryAccent' : 'error'}>
-                {inStock ? 'In Stock' : 'Out of stock'}
+                {inStock ? 'In Stock' : `Out of stock at ${storeShortName}`}
               </Txt>
               {inStock ? null : (
                 <Txt variant="bodySm" color="onSurfaceVariant">

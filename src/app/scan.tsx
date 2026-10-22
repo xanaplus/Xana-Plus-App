@@ -11,6 +11,7 @@ import type { Product } from '@/data/types';
 import { tapFeedback } from '@/lib/haptics';
 import { discountPercent, formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
+import { useStoreStock } from '@/store/fulfilment';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
@@ -37,6 +38,7 @@ export default function ScanRoute() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const cart = useCart();
+  const { inStock } = useStoreStock();
   const [permission, requestPermission] = useCameraPermissions();
   const [torch, setTorch] = useState(false);
   const [lookup, setLookup] = useState<Lookup>({ state: 'scanning' });
@@ -151,9 +153,9 @@ export default function ScanRoute() {
       <View style={styles.sheet}>
         {lookup.state === 'found' ? (
           <View style={styles.foundCard}>
-            <View style={[styles.foundBadge, lookup.product.inStock === false ? styles.foundBadgeOut : null]}>
+            <View style={[styles.foundBadge, !inStock(lookup.product) ? styles.foundBadgeOut : null]}>
               <Txt variant="labelSm" tint={colors.onPrimary}>
-                {lookup.product.inStock === false ? 'ITEM FOUND · OUT OF STOCK' : 'ITEM FOUND · IN STOCK'}
+                {!inStock(lookup.product) ? 'ITEM FOUND · OUT OF STOCK' : 'ITEM FOUND · IN STOCK'}
               </Txt>
             </View>
             <View style={styles.foundMeta}>
@@ -180,7 +182,7 @@ export default function ScanRoute() {
               </View>
             </View>
             <View style={styles.foundActions}>
-              {lookup.product.inStock === false ? null : (
+              {!inStock(lookup.product) ? null : (
                 <Button
                   label="Add to Cart"
                   icon="plus"

@@ -195,7 +195,7 @@ export type PlaceOrderInput = {
   promoCode?: string;
 };
 
-/** Error codes `place-order` returns, plus `network` for no reply at all. */
+/** Error codes `place-order` returns, plus `network` for no reply and `timeout` for a reply that never came. */
 export type PlaceOrderError =
   | 'signed_out'
   | 'invalid_order'
@@ -206,7 +206,11 @@ export type PlaceOrderError =
   | 'price_changed'
   | PromoError
   | 'server_error'
-  | 'network';
+  | 'network'
+  | 'timeout';
+
+/** Seconds checkout waits for place-order before telling the shopper, instead of spinning for ever. */
+const PLACE_ORDER_TIMEOUT_MS = 20_000;
 
 /** Why a promo code was turned down (from `check_promo` / `place-order`). */
 export type PromoError = 'promo_unknown' | 'promo_expired' | 'promo_min_spend' | 'promo_used' | 'promo_limit';
@@ -248,6 +252,8 @@ export const placeOrderErrorMessage = (error: PlaceOrderError): string => {
       return 'A price or wholesale tier has changed. Refresh your basket and review the total before trying again. You have not been charged.';
     case 'network':
       return 'No connection. Check your internet and try again. You have not been charged.';
+    case 'timeout':
+      return 'We did not hear back in time. Check My orders before trying again, so you do not order twice. You have not been charged.';
     default:
       if (isPromoError(error)) return promoErrorMessage(error);
       return 'We could not place your order. Please try again.';
@@ -474,7 +480,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     if (!userId) return { ok: false, error: 'signed_out' };
     const owner = userId;
     const generation = accountGeneration.current;
-    const { data, error } = await supabase.functions.invoke<PlaceOrderReply>('place-order', {
+    const request = supabase.functions.invoke<PlaceOrderReply>('place-order', {
       body: {
         lines: input.lines.map(line => {
           const product = productById(line.productId);
@@ -494,6 +500,17 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         promoCode: input.promoCode,
       },
     });
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timedOut = new Promise<'timeout'>(resolve => {
+      timer = setTimeout(() => resolve('timeout'), PLACE_ORDER_TIMEOUT_MS);
+    });
+    const reply = await Promise.race([request, timedOut]);
+    clearTimeout(timer);
+    if (reply === 'timeout') {
+      track('order_failed', { reason: 'timeout' });
+      return { ok: false, error: 'timeout' };
+    }
+    const { data, error } = reply;
 
     // A response for a previous account must not enter the next account's cache.
     if (activeUserId.current !== owner || accountGeneration.current !== generation) return { ok: false, error: 'signed_out' };

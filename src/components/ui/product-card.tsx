@@ -12,6 +12,7 @@ import { figmaAsset } from '@/data/images';
 import type { Product, ProductBadge } from '@/data/types';
 import { discountPercent, formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
+import { useStoreStock } from '@/store/fulfilment';
 import { elevation, radius, spacing } from '@/theme';
 import { useTheme } from '@/theme/provider';
 
@@ -53,6 +54,7 @@ export function ProductCard({ product, width, quantity = 0, onPress, onAdd, styl
   const image = figmaAsset(product.image);
   const topBadge = product.badges?.[0];
   const press = usePressScale();
+  const available = useStoreStock().inStock(product);
 
   return (
     <Animated.View style={[styles.card, width ? { width } : styles.flex, style, press.style]}>
@@ -66,7 +68,7 @@ export function ProductCard({ product, width, quantity = 0, onPress, onAdd, styl
             />
           </View>
         ) : null}
-        {product.inStock === false ? (
+        {!available ? (
           <View style={[styles.outOfStock, { backgroundColor: colors.white70 }]}>
             <Txt variant="labelSm">Out of stock</Txt>
           </View>
@@ -105,7 +107,7 @@ export function ProductCard({ product, width, quantity = 0, onPress, onAdd, styl
             </Txt>
           ) : null}
         </View>
-        {product.inStock === false ? null : quantity > 0 ? (
+        {!available ? null : quantity > 0 ? (
           <CardStepper productId={product.id} quantity={quantity} />
         ) : (
           <ProductAddButton productName={product.name} onPress={onAdd} rxRequired={product.rxRequired} />

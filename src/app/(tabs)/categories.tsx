@@ -35,9 +35,9 @@ import { useShelves } from '@/data/live-catalogue';
 import type { CategoryVertical, Product, ProductBadge } from '@/data/types';
 import { discountPercent, formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
-import { useFulfilment } from '@/store/fulfilment';
+import { inStockAt, useFulfilment, useStoreStock } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
-import { colors, elevation, layout, radius, spacing } from '@/theme';
+import { elevation, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
@@ -48,7 +48,7 @@ type PharmacyScope = 'all' | 'otc' | 'rx';
 
 type SortChip = { key: SortKey; label: string; icon?: IconName };
 type CardBadge = { label: string; tone: BadgeTone };
-type FilterState = { sort: SortKey; scope: PharmacyScope; inStockOnly: boolean; priceCap: number | null };
+type FilterState = { sort: SortKey; scope: PharmacyScope; inStockOnly: boolean; priceCap: number | null; storeId: string };
 
 /** Frame rail cards reveal 30% of the next card. */
 const RAIL_PEEK = 1.3;
@@ -162,7 +162,7 @@ const SORTERS: Record<SortKey, (a: Product, b: Product) => number> = {
 const applyFilters = (products: Product[], filters: FilterState, pharmacyOnly: boolean): Product[] =>
   products
     .filter(product => {
-      if (filters.inStockOnly && product.inStock === false) return false;
+      if (filters.inStockOnly && !inStockAt(product, filters.storeId)) return false;
       if (filters.priceCap !== null && product.price > filters.priceCap) return false;
       if (pharmacyOnly && filters.scope === 'rx') return product.rxRequired === true;
       if (pharmacyOnly && filters.scope === 'otc') return product.rxRequired !== true;
@@ -226,7 +226,7 @@ export default function CategoriesRoute() {
   const isLiquor = vertical === 'liquor';
   const showsGrid = GRID_VERTICALS.includes(vertical);
   const sortKey: SortKey = isPharmacy ? 'top' : sort;
-  const filters: FilterState = { sort: sortKey, scope, inStockOnly, priceCap };
+  const filters: FilterState = { sort: sortKey, scope, inStockOnly, priceCap, storeId };
   const filtersActive = inStockOnly || priceCap !== null;
 
   const contentWidth = Math.min(width, layout.maxContentWidth) - layout.screenMargin * 2;
@@ -621,6 +621,7 @@ function InfoBanner({
   subtitleTail?: string;
   onPress?: () => void;
 }) {
+  const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const body = (
     <>
@@ -712,7 +713,7 @@ function RailCard({
       ? `Save ${formatKes(product.wasPrice - product.price)}${vertical === 'retail' || vertical === 'liquor' ? ' vs singles' : ''}`
       : undefined;
   const bulk = vertical === 'wholesale' && product.wholesalePrice && product.wholesaleMinQty ? product : undefined;
-  const outOfStock = product.inStock === false;
+  const outOfStock = !useStoreStock().inStock(product);
 
   return (
     <View style={[styles.railCard, { width }]}>

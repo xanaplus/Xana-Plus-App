@@ -129,12 +129,6 @@ export default function MpesaPendingRoute() {
             variant="outline"
             onPress={() => reportFailure(expired ? 'timeout' : 'cancelled')}
           />
-          <View style={styles.trust}>
-            <Icon name="lock" size={12} color="outline" />
-            <Txt variant="caption" color="onSurfaceVariant">
-              256-bit Encrypted · Instant M-Pesa Prompt
-            </Txt>
-          </View>
         </View>
       }
     >
@@ -306,5 +300,4 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   links: { alignItems: 'center', gap: spacing.md },
   linkRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   footer: { gap: spacing.sm },
-  trust: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs },
 });

@@ -8,7 +8,6 @@ import {
   EMPTY_PHONE_INPUT,
   OTP_LENGTH,
   OtpCodeField,
-  OtpSecurityNote,
   PHONE_INVALID_MESSAGE,
   PhoneSignInForm,
   formatPhoneDisplay,
@@ -115,7 +114,6 @@ export default function LoginRoute() {
               loading={busy}
               onPress={() => void confirmCode()}
             />
-            <OtpSecurityNote />
           </View>
         )
       }

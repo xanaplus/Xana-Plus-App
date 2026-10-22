@@ -33,6 +33,8 @@ export type Product = {
   /** Alcohol: checkout asks the shopper to confirm they are 18 or over. */
   ageRestricted?: boolean;
   inStock?: boolean;
+  /** BC stock per branch code (`SYOKIMAU`, `RUIRU`). Orders are checked against the chosen store, so screens use `inStockAt`. */
+  stockByStore?: Record<string, number>;
   rating?: number;
   reviewCount?: number;
   /** Rail / grid section the product belongs to on Home. */

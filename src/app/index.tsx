@@ -1,5 +1,5 @@
-import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
 import { layout, radius, spacing } from '@/theme';
@@ -15,10 +15,14 @@ export default function SplashRoute() {
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
 
-  useEffect(() => {
-    const timer = setTimeout(() => router.replace('/(tabs)'), 1600);
-    return () => clearTimeout(timer);
-  }, [router]);
+  // Only while the splash is on screen: a notification tapped on a cold start
+  // opens its order on top, and a running timer would replace that order with Home.
+  useFocusEffect(
+    useCallback(() => {
+      const timer = setTimeout(() => router.replace('/(tabs)'), 1600);
+      return () => clearTimeout(timer);
+    }, [router]),
+  );
 
   return (
     <View style={styles.root}>
