@@ -199,6 +199,15 @@ Deno.serve(async request => {
     }
   }
 
+  // "Order received" SMS: queued for the website team's outbox-send, which owns the
+  // wording. The order is already saved, so a failed queue never fails it.
+  const { error: smsError } = await db.from('outbox').insert({
+    order_id: order.id,
+    kind: 'sms_order_received',
+    payload: { orderNo: order.order_no, amountDue, paymentMethod, storeName, slotLabel },
+  });
+  if (smsError) console.error('sms_order_received not queued', order.order_no, smsError.message);
+
   return reply(200, {
     orderNo: order.order_no,
     createdAt: order.created_at,
