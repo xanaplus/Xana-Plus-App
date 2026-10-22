@@ -1,7 +1,9 @@
+import { useSegments } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 
 import { BottomSheet, Button, Txt } from '@/components/ui';
+import { useFulfilment } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
@@ -104,13 +106,18 @@ function NameForm({
   );
 }
 
-/** After a first sign-in, asks once per app visit for the name the profile doesn't have yet. */
+/**
+ * After a first sign-in, asks once per app visit for the name the profile doesn't have yet.
+ * Waits for the tabs and a chosen store, so it never opens over the splash or under the store chooser.
+ */
 export function NamePrompt() {
   const { needsName } = useSession();
+  const { storeChosen } = useFulfilment();
+  const onTabs = useSegments()[0] === '(tabs)';
   const [dismissed, setDismissed] = useState(false);
   return (
     <NameSheet
-      visible={needsName && !dismissed}
+      visible={needsName && !dismissed && onTabs && storeChosen}
       onClose={() => setDismissed(true)}
       title="What should we call you?"
       description="Your rider and pharmacist will see this name on your orders."
