@@ -94,7 +94,7 @@ export default function RequestsRoute() {
     return (
       <Screen padded>
         <TopBar title="Returns & bookings" onBack={goBack} />
-        <EmptyState icon="receipt" title="Log in to see your requests" description="Returns and clinic bookings you send appear here.">
+        <EmptyState icon="receipt" title="Log in to see your requests">
           <Button label="Log in" onPress={() => router.push('/login')} />
         </EmptyState>
       </Screen>
@@ -121,7 +121,6 @@ export default function RequestsRoute() {
         <EmptyState
           icon="receipt"
           title="Nothing sent yet"
-          description="Return requests from a delivered order, and clinic bookings, show up here."
         />
       ) : null}
 

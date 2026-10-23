@@ -129,9 +129,6 @@ export default function DepartmentDonut({ breakdown, onDepartmentPress, revealed
               <Txt variant="label" align="center">No spending{'\n'}to show</Txt>
             </View>
           </View>
-          <Txt variant="bodySm" color="onSurfaceVariant" align="center" style={styles.emptyCopy}>
-            Department totals will appear here when recorded spending is available.
-          </Txt>
         </View>
       ) : (
         <>
@@ -297,7 +294,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     justifyContent: 'center',
   },
   emptyRingInner: { width: 82, alignItems: 'center' },
-  emptyCopy: { maxWidth: 260 },
   legend: { gap: 0 },
   legendGroup: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.outlineVariant },
   legendRow: { minHeight: 62, flexDirection: 'row', alignItems: 'center', gap: spacing.xs },

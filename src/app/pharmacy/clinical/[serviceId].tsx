@@ -148,7 +148,7 @@ export default function ClinicalBookingRoute() {
         </View>
       }
     >
-      <TopBar title="Service Details & Screening" subtitle="Xana Plus" onBack={goBack} />
+      <TopBar title="Service Details & Screening" onBack={goBack} />
 
       <Card variant="outline" padding={spacing.lg} style={styles.card}>
         <View style={styles.heroTop}>

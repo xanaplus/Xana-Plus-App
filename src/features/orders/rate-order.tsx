@@ -111,9 +111,6 @@ export function RateOrder({ orderNo, pickup }: { orderNo: string; pickup: boolea
   return (
     <Card variant="elevated" padding={spacing.lg} style={styles.card}>
       <Txt variant="titleLg">How was your order?</Txt>
-      <Txt variant="caption" color="onSurfaceVariant">
-        One tap is enough. It goes straight to the branch.
-      </Txt>
 
       <ThumbRow label={serviceLabel} value={service} onChange={setService} />
       <ThumbRow label="Packing" value={packing} onChange={setPacking} />

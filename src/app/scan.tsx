@@ -256,7 +256,7 @@ export default function ScanRoute() {
               Point your camera at a barcode
             </Txt>
             <Txt variant="bodySm" color="onSurfaceVariant" align="center" style={styles.helperBody}>
-              Scan packaged groceries to check the price and whether Xana Plus Syokimau and Ruiru have it in stock.
+              See the price and whether your store has it.
             </Txt>
             <Pressable accessibilityRole="button" onPress={() => setTyping(true)} style={styles.manualLink}>
               <Txt variant="label" color="primaryAccent">

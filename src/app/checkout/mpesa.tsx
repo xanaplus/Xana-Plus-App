@@ -140,13 +140,6 @@ export default function MpesaPendingRoute() {
       <TopBar title="M-Pesa Payment" onBack={cancel} />
 
       <LinearGradient colors={gradients.mpesa} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.panel}>
-        <View style={styles.brandPill}>
-          <View style={styles.brandDot} />
-          <Txt variant="labelSm" color="primaryAccent">
-            Xana Pay via M-Pesa
-          </Txt>
-        </View>
-
         <View style={styles.glyph}>
           <MpesaLogo width={56} />
         </View>
@@ -156,7 +149,7 @@ export default function MpesaPendingRoute() {
             Check your phone
           </Txt>
           <Txt variant="bodySm" color="onSurfaceVariant" align="center">
-            An STK push PIN prompt has been sent to:
+            We sent the M-Pesa PIN prompt to:
           </Txt>
         </View>
 
@@ -175,20 +168,12 @@ export default function MpesaPendingRoute() {
             </Txt>
             <ProgressBar value={secondsLeft / STK_WINDOW_SECONDS} style={styles.progress} />
           </View>
-          <View style={styles.statusRight}>
-            <Txt variant="labelSm" color="primaryAccent" align="right">
-              Xana Pay via M-Pesa
-            </Txt>
-            <Txt variant="caption" color="onSurfaceVariant" align="right">
-              {`${secondsLeft}s`}
-            </Txt>
-          </View>
+          <Txt variant="caption" color="onSurfaceVariant" align="right">
+            {`${secondsLeft}s`}
+          </Txt>
         </View>
 
         <View style={styles.instructions}>
-          <Txt variant="overline" color="onSurfaceVariant">
-            Instructions
-          </Txt>
           <View style={styles.steps}>
             {steps.map((step, index) => (
               <View key={step} style={styles.step}>
@@ -245,16 +230,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     alignItems: 'center',
     gap: spacing.lg,
   },
-  brandPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    height: 30,
-    borderRadius: radius.pill,
-    backgroundColor: colors.white95,
-  },
-  brandDot: { width: 8, height: 8, borderRadius: radius.pill, backgroundColor: colors.primaryContainer },
   glyph: {
     width: 72,
     height: 72,
@@ -289,7 +264,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     backgroundColor: colors.white95,
   },
   progress: { marginTop: spacing.sm },
-  statusRight: { alignItems: 'flex-end' },
   instructions: {
     alignSelf: 'stretch',
     gap: spacing.md,

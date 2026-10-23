@@ -135,7 +135,6 @@ export default function AddAddressRoute() {
         <Field label="Second Phone Number (optional)" value={secondPhone} onChangeText={setSecondPhone} placeholder="733 456 789" keyboardType="number-pad" />
 
         <Txt variant="overline" color="onSurfaceVariant" style={styles.sectionGap}>WHERE TO DELIVER</Txt>
-        <Txt variant="caption" color="onSurfaceVariant">Our rider uses these details to find your door.</Txt>
 
         <Field label="Area / Street" value={area} onChangeText={setArea} placeholder="Syokimau, Katani Road" />
         <Field label="Estate / Apartment Name" value={estate} onChangeText={setEstate} placeholder="Green Park Estate" />
@@ -151,10 +150,7 @@ export default function AddAddressRoute() {
         </View>
 
         <View style={styles.defaultRow}>
-          <View style={styles.flex}>
-            <Txt variant="label">Set as default delivery address</Txt>
-            <Txt variant="caption" color="onSurfaceVariant">Preferred destination for one-tap orders</Txt>
-          </View>
+          <Txt variant="label" style={styles.flex}>Set as default delivery address</Txt>
           <Switch value={setDefault} onValueChange={setSetDefault} />
         </View>
       </View>

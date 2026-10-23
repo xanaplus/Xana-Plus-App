@@ -73,7 +73,7 @@ export default function UploadPrescriptionScreen() {
   };
 
   return <Screen padded contentStyle={styles.content}>
-    <TopBar title="Upload prescription" subtitle="Prescription first, then a priced list to review" onBack={() => router.canGoBack() ? router.back() : router.replace('/pharmacy/prescriptions')} />
+    <TopBar title="Upload prescription" onBack={() => router.canGoBack() ? router.back() : router.replace('/pharmacy/prescriptions')} />
     <Card variant="tinted" padding={spacing.lg} style={styles.notice}>
       <Icon name="shield" size={18} color="primaryAccent" />
       <Txt variant="bodySm" color="onSurfaceVariant" style={styles.noticeText}>Your prescription is private. It is shared with an authorised pharmacist for review. You will see the exact priced medicine list before confirming an order.</Txt>

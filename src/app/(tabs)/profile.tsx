@@ -61,7 +61,7 @@ type AlertKey =
   | 'loyaltyUpdates';
 
 /** One switch can cover several of send-push's alert keys; it reads on only when all of them are. */
-type AlertRow = { keys: AlertKey[]; icon: IconName; title: string; description: string };
+type AlertRow = { keys: AlertKey[]; icon: IconName; title: string; description?: string };
 
 /**
  * Only the alerts send-push actually sends, as one "Order updates" switch like most retail apps.
@@ -76,7 +76,6 @@ const ALERT_SECTIONS: { title: string; rows: AlertRow[] }[] = [
         keys: ['orderConfirmed', 'outForDelivery', 'delivered'],
         icon: 'receipt',
         title: 'Order updates',
-        description: 'When your order is being packed, on its way and delivered',
       },
     ],
   },
@@ -199,7 +198,7 @@ type RowSpec = {
   key: string;
   icon: IconName;
   title: string;
-  description: string;
+  description?: string;
   /** Trailing meta line, e.g. "2 of 3 on". */
   value?: string;
   onPress: () => void;
@@ -308,19 +307,17 @@ export default function ProfileRoute() {
   };
 
   const accountRows: RowSpec[] = [
-    { key: 'orders', icon: 'receipt', title: 'My Orders', description: 'Track, reorder & view receipts', onPress: () => router.push('/orders') },
+    { key: 'orders', icon: 'receipt', title: 'My Orders', onPress: () => router.push('/orders') },
     {
       key: 'requests',
       icon: 'refresh',
       title: 'Returns & bookings',
-      description: 'Return requests and clinic bookings you have sent',
       onPress: () => router.push('/requests'),
     },
     {
       key: 'prescriptions',
       icon: 'prescription',
       title: 'My Prescriptions',
-      description: 'Repeats, dispensing status & Rx upload',
       onPress: () => router.push('/pharmacy/prescriptions'),
     },
     {
@@ -347,20 +344,19 @@ export default function ProfileRoute() {
   ];
 
   const rewardRows: RowSpec[] = [
-    { key: 'rewards', icon: 'gift', title: 'Xana Club Rewards', description: 'Points, tiers and member offers', onPress: () => setSheet('rewards') },
+    { key: 'rewards', icon: 'gift', title: 'Xana Club Rewards', onPress: () => setSheet('rewards') },
     {
       key: 'notifications',
       icon: 'bell',
       title: 'Notifications',
-      description: 'Order updates and offers',
       value: alertsOn === 0 ? 'Off' : alertsOn === ALERT_ROWS.length ? 'On' : `${alertsOn} of ${ALERT_ROWS.length} on`,
       onPress: () => setSheet('notifications'),
     },
   ];
 
   const supportRows: RowSpec[] = [
-    { key: 'help', icon: 'help', title: 'Help & Support', description: 'Chat with a pharmacist', onPress: () => setSheet('help') },
-    { key: 'terms', icon: 'shield', title: 'Terms & Privacy', description: isAuthenticated ? 'Sign-in details, privacy settings & how we handle your data' : 'How we handle your data', onPress: () => setSheet('terms') },
+    { key: 'help', icon: 'help', title: 'Help & Support', onPress: () => setSheet('help') },
+    { key: 'terms', icon: 'shield', title: 'Terms & Privacy', onPress: () => setSheet('terms') },
   ];
 
   const helpRows: RowSpec[] = [
@@ -377,7 +373,7 @@ export default function ProfileRoute() {
       key: 'pharmacist',
       icon: 'message',
       title: 'Chat with a pharmacist',
-      description: 'On WhatsApp: dosage, stock or refills',
+      description: 'On WhatsApp',
       onPress: () => {
         const line = PHARMACY_CONTACTS.find(contact => contact.storeId === store.id) ?? PHARMACY_CONTACTS[0];
         void Linking.openURL(whatsappLink(line));
@@ -387,7 +383,6 @@ export default function ProfileRoute() {
       key: 'pharmacy-tab',
       icon: 'prescription',
       title: 'Browse the Pharmacy',
-      description: 'Shop Rx items and upload a prescription',
       onPress: () => {
         closeSheet();
         router.push('/(tabs)/pharmacy');
@@ -458,9 +453,6 @@ export default function ProfileRoute() {
             </View>
             <View style={styles.identityBody}>
               <Txt variant="headlineSm">Log in to Xana Plus</Txt>
-              <Txt variant="bodySm" color="onSurfaceVariant">
-                Track orders, save addresses and earn Xana Club points on every delivery.
-              </Txt>
             </View>
           </View>
           <Button label="Log in" icon="arrow-right" onPress={signIn} style={styles.identityAction} />
@@ -572,7 +564,6 @@ export default function ProfileRoute() {
                 key: 'staff',
                 icon: 'store',
                 title: 'Staff tools',
-                description: 'Orders, returns and clinic bookings',
                 onPress: () => router.push('/staff'),
               },
             ]}
@@ -613,7 +604,6 @@ export default function ProfileRoute() {
         visible={sheet === 'orders'}
         onClose={closeSheet}
         title="My Orders"
-        description={isAuthenticated ? 'Reorder a past basket in one tap.' : 'Log in to see your order history.'}
         scrollable
       >
         {isAuthenticated ? (
@@ -629,7 +619,7 @@ export default function ProfileRoute() {
             />
           ))
         ) : (
-          <EmptyState icon="receipt" title="No orders yet" description="Log in to track deliveries, download receipts and reorder past baskets.">
+          <EmptyState icon="receipt" title="No orders yet">
             <Button label="Log in" onPress={signIn} />
           </EmptyState>
         )}
@@ -639,7 +629,7 @@ export default function ProfileRoute() {
         visible={sheet === 'prescriptions'}
         onClose={closeSheet}
         title="My Prescriptions"
-        description={isAuthenticated ? 'Repeats a pharmacist has verified for you.' : 'Log in to manage your repeat prescriptions.'}
+        description={isAuthenticated ? 'Repeats a pharmacist has verified for you.' : undefined}
         scrollable
       >
         {isAuthenticated ? (
@@ -680,7 +670,6 @@ export default function ProfileRoute() {
               <SettingsRow
                 icon="prescription"
                 title="Upload Prescription"
-                description="Send it to our pharmacist from the Pharmacy tab"
                 onPress={() => {
                   closeSheet();
                   router.push('/(tabs)/pharmacy');
@@ -689,7 +678,7 @@ export default function ProfileRoute() {
             </Card>
           </>
         ) : (
-          <EmptyState icon="prescription" title="No prescriptions on file" description="Log in to upload an Rx and manage your repeats.">
+          <EmptyState icon="prescription" title="No prescriptions on file">
             <Button label="Log in" onPress={signIn} />
           </EmptyState>
         )}
@@ -699,7 +688,6 @@ export default function ProfileRoute() {
         visible={sheet === 'address'}
         onClose={closeSheet}
         title="Saved Addresses"
-        description={isAuthenticated ? 'Where we bring your Xana orders.' : 'Log in to save a delivery address.'}
         footer={
           isAuthenticated ? (
             <Button
@@ -716,7 +704,7 @@ export default function ProfileRoute() {
         }
       >
         {isAuthenticated && addresses.length === 0 ? (
-          <EmptyState icon="map-pin" title="No saved address yet" description="Add one and checkout fills it in for you." />
+          <EmptyState icon="map-pin" title="No saved address yet" />
         ) : isAuthenticated ? (
           <View style={styles.cardStack}>
             {removeFailed ? (
@@ -760,7 +748,7 @@ export default function ProfileRoute() {
             ))}
           </View>
         ) : (
-          <EmptyState icon="map-pin" title="No saved address" description="Log in and add your address once and checkout will fill it in for you.">
+          <EmptyState icon="map-pin" title="No saved address">
             <Button label="Log in" onPress={signIn} />
           </EmptyState>
         )}
@@ -770,7 +758,6 @@ export default function ProfileRoute() {
         visible={sheet === 'payment'}
         onClose={closeSheet}
         title="Payment Methods"
-        description="How you pay for this order at checkout."
         footer={<Button label="Done" onPress={closeSheet} />}
       >
         {PAYMENT_METHODS.map(method => (
@@ -791,7 +778,6 @@ export default function ProfileRoute() {
         visible={sheet === 'rewards'}
         onClose={closeSheet}
         title="Xana Club Rewards"
-        description={user ? `${user.clubTier} member · ${user.clubPoints.toLocaleString('en-KE')} points` : 'Join free and earn on every order.'}
         scrollable
       >
         {user ? (
@@ -852,7 +838,7 @@ export default function ProfileRoute() {
             </Card>
           </>
         ) : (
-          <EmptyState icon="gift" title="Xana Club is free to join" description="Log in to start earning points on groceries, pharmacy refills and wholesale cartons.">
+          <EmptyState icon="gift" title="Xana Club is free to join">
             <Button label="Log in" onPress={signIn} />
           </EmptyState>
         )}
@@ -862,7 +848,6 @@ export default function ProfileRoute() {
         visible={sheet === 'notifications'}
         onClose={closeSheet}
         title="Notification Preferences"
-        description="Choose the alerts you want from Xana Plus."
         footer={<Button label="Done" onPress={closeSheet} />}
         scrollable
       >
@@ -875,7 +860,6 @@ export default function ProfileRoute() {
           <ToggleRow
             icon="bell"
             title="Push notifications"
-            description="Turn off to silence every alert below"
             value={pushEnabled}
             onValueChange={next => updatePreferences({ pushEnabled: next })}
           />
@@ -924,7 +908,6 @@ export default function ProfileRoute() {
         visible={sheet === 'terms'}
         onClose={closeSheet}
         title="Terms & Privacy"
-        description="Sign-in, privacy settings and the short version of how we handle your data."
         footer={<Button label="Back to Profile" variant="outline" icon="arrow-left" iconPosition="leading" onPress={closeSheet} />}
         scrollable
       >
@@ -1037,14 +1020,10 @@ export default function ProfileRoute() {
         visible={sheet === 'settings'}
         onClose={closeSheet}
         title="Settings"
-        description="Set how Xana Plus looks and where your orders are fulfilled."
         footer={<Button label="Done" onPress={closeSheet} />}
         scrollable
       >
         <SectionHeader title="Appearance" />
-        <Txt variant="caption" color="onSurfaceVariant">
-          Choose a look for this device. Your choice stays saved on this device, including when signed out.
-        </Txt>
         {appearanceSaving || appearanceError ? (
           <View accessibilityRole="summary" style={[styles.syncNotice, appearanceError ? styles.syncNoticeError : styles.syncNoticePending]}>
             <Icon name="info" size={18} color={appearanceError ? 'error' : 'primaryAccent'} />
@@ -1057,13 +1036,12 @@ export default function ProfileRoute() {
           </View>
         ) : null}
         {([
-          { value: 'light', title: 'Light', description: 'Always use the light appearance', icon: 'sparkle' },
-          { value: 'dark', title: 'Dark', description: 'Always use the dark appearance', icon: 'eye' },
-        ] as { value: AppearanceChoice; title: string; description: string; icon: IconName }[]).map(option => (
+          { value: 'light', title: 'Light', icon: 'sparkle' },
+          { value: 'dark', title: 'Dark', icon: 'eye' },
+        ] as { value: AppearanceChoice; title: string; icon: IconName }[]).map(option => (
           <SelectableOption
             key={option.value}
             title={option.title}
-            description={option.description}
             icon={option.icon}
             selected={appearance === option.value}
             onPress={() => void setAppearance(option.value)}
@@ -1128,7 +1106,7 @@ function SettingsRow({
 }: {
   icon: IconName;
   title: string;
-  description: string;
+  description?: string;
   value?: string;
   onPress: () => void;
 }) {
@@ -1147,9 +1125,11 @@ function SettingsRow({
         <Txt variant="title" numberOfLines={1}>
           {title}
         </Txt>
-        <Txt variant="caption" color="onSurfaceVariant" numberOfLines={1}>
-          {description}
-        </Txt>
+        {description ? (
+          <Txt variant="caption" color="onSurfaceVariant" numberOfLines={1}>
+            {description}
+          </Txt>
+        ) : null}
       </View>
       {value ? (
         <Txt variant="labelSm" color="onSurfaceVariant">
@@ -1186,7 +1166,7 @@ function ToggleRow({
 }: {
   icon: IconName;
   title: string;
-  description: string;
+  description?: string;
   value: boolean;
   onValueChange: (next: boolean) => void;
 }) {
@@ -1199,9 +1179,11 @@ function ToggleRow({
       </View>
       <View style={styles.rowBody}>
         <Txt variant="title">{title}</Txt>
-        <Txt variant="caption" color="onSurfaceVariant">
-          {description}
-        </Txt>
+        {description ? (
+          <Txt variant="caption" color="onSurfaceVariant">
+            {description}
+          </Txt>
+        ) : null}
       </View>
       <Switch
         value={value}

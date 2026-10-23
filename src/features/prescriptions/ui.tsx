@@ -63,10 +63,9 @@ export function PrivatePhotos({ files }: { files: PrescriptionFile[] }) {
     return () => { active = false; };
   }, [files]);
   if (!files.length) return <Txt variant="caption" color="onSurfaceVariant">No prescription photos attached.</Txt>;
-  return <View style={styles.privatePhotos}>{files.map((file, i) => <View key={file.path} style={styles.privatePhoto}>
+  return <View style={styles.privatePhotos}>{files.map(file => <View key={file.path}>
     {urls[file.path] ? <Image source={{ uri: urls[file.path] }} contentFit="cover" style={styles.privateImage} />
       : <View style={styles.privateUnavailable}><Icon name="receipt" size={22} color="outline" /><Txt variant="caption" color="onSurfaceVariant">{failed.includes(file.path) ? 'Photo access failed' : 'Loading private photo…'}</Txt></View>}
-    <Txt variant="caption" color="onSurfaceVariant">Prescription image {i + 1}</Txt>
   </View>)}</View>;
 }
 
@@ -86,7 +85,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   multiline: { minHeight: 92, paddingTop: spacing.md }, card: { gap: spacing.md }, titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   actions: { flexDirection: 'row', gap: spacing.sm }, flex: { flex: 1 }, photoRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.xs },
   thumb: { width: 58, height: 58, borderRadius: radius.md, backgroundColor: colors.surfaceContainerLow }, fileInfo: { flex: 1, gap: spacing.xxs },
-  privatePhotos: { gap: spacing.md }, privatePhoto: { gap: spacing.xs }, privateImage: { width: '100%', height: 220, borderRadius: radius.lg, backgroundColor: colors.surfaceContainerLow },
+  privatePhotos: { gap: spacing.md }, privateImage: { width: '100%', height: 220, borderRadius: radius.lg, backgroundColor: colors.surfaceContainerLow },
   privateUnavailable: { height: 92, borderRadius: radius.lg, backgroundColor: colors.surfaceContainerLow, alignItems: 'center', justifyContent: 'center', gap: spacing.xs },
   error: { padding: spacing.md, gap: spacing.sm, borderRadius: radius.lg, backgroundColor: colors.errorContainer },
 });

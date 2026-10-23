@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import {
-  Badge,
   BottomSheet,
   Button,
   Card,
@@ -415,7 +414,7 @@ export default function CheckoutRoute() {
 
       {empty ? (
         <View style={styles.inset}>
-          <EmptyState icon="cart" title="Your cart is empty" description="Add items to your basket and the checkout will pick them up here.">
+          <EmptyState icon="cart" title="Your cart is empty">
             <Button label="Browse groceries" onPress={() => router.replace('/(tabs)')} />
           </EmptyState>
         </View>
@@ -562,7 +561,7 @@ export default function CheckoutRoute() {
                         <View style={styles.numberNote}>
                           <Icon name="check-circle" size={14} color="primaryAccent" />
                           <Txt variant="caption" color="primaryAccent">
-                            STK Push prompt will be sent to this line
+                            The M-Pesa prompt goes to this number
                           </Txt>
                         </View>
                       </View>
@@ -658,9 +657,11 @@ export default function CheckoutRoute() {
                 </View>
                 <View style={styles.flex}>
                   <Txt variant="titleLg">Promo code</Txt>
-                  <Txt variant="bodySm" color="onSurfaceVariant">
-                    {promo ? `${promo.code} applied (-${formatKes(promo.discount)})` : 'Got a code by SMS or on a flyer? Enter it here'}
-                  </Txt>
+                  {promo ? (
+                    <Txt variant="bodySm" color="onSurfaceVariant">
+                      {`${promo.code} applied (-${formatKes(promo.discount)})`}
+                    </Txt>
+                  ) : null}
                 </View>
               </View>
               {promo ? (
@@ -726,7 +727,7 @@ export default function CheckoutRoute() {
                 <View style={styles.flex}>
                   <Txt variant="titleLg">KRA PIN (optional)</Txt>
                   <Txt variant="bodySm" color="onSurfaceVariant">
-                    Add it to get this sale on your KRA record. We save it for next time.
+                    Puts this sale on your KRA record.
                   </Txt>
                 </View>
               </View>
@@ -835,7 +836,6 @@ export default function CheckoutRoute() {
                 <Txt variant="label" color="secondaryAccent" style={styles.flex}>
                   {`You'll earn ${clubPoints} Xana Club ${clubPoints === 1 ? 'point' : 'points'}`}
                 </Txt>
-                <Badge label={`+${clubPoints} pts`} tone="warning" />
               </View>
             </View>
           </Card>
@@ -896,7 +896,6 @@ export default function CheckoutRoute() {
         visible={sheet === 'address'}
         onClose={closeSheet}
         title="Delivery address"
-        description="Send this order to the saved address, or collect it from a Xana Plus store."
         scrollable
       >
         <View style={styles.sheetGroup}>
@@ -945,7 +944,6 @@ export default function CheckoutRoute() {
         visible={sheet === 'slot'}
         onClose={closeSheet}
         title="Delivery slot"
-        description="Pick the window that suits you."
         scrollable
       >
         {deliverySlots.map(slot => (
@@ -967,7 +965,7 @@ export default function CheckoutRoute() {
         visible={sheet === 'mpesa-number'}
         onClose={closeSheet}
         title="M-Pesa number"
-        description="The STK push prompt goes to this line. It must be the phone you enter the PIN on."
+        description="Use the phone you enter your M-Pesa PIN on."
         footer={<Button label="Save number" disabled={!isValidPhone(phoneDraft)} onPress={saveNumber} />}
       >
         <View style={styles.field}>
@@ -991,11 +989,7 @@ export default function CheckoutRoute() {
             <Txt variant="caption" tint={colors.error}>
               {phoneError}
             </Txt>
-          ) : (
-            <Txt variant="caption" color="onSurfaceVariant">
-              {"We'll send the M-Pesa prompt to this number each time you order."}
-            </Txt>
-          )}
+          ) : null}
         </View>
       </BottomSheet>
 

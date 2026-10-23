@@ -56,7 +56,6 @@ export function PharmacistWhatsAppSheet({ visible, onClose }: { visible: boolean
       onClose={onClose}
       scrollable
       title="Ask a pharmacist on WhatsApp"
-      description="Pick a pharmacy. WhatsApp opens with a message ready to send."
     >
       {group('Order collection branches', branches)}
       {group('Standalone pharmacies', standalone)}

@@ -259,7 +259,7 @@ export default function SpendingScreen() {
     >
       <TopBar
         title="Savings & Spending"
-        subtitle={user ? `${user.name} · ${tier.tier} member` : 'Your Xana activity'}
+        subtitle={user ? `${user.name} · ${tier.tier} member` : undefined}
         onBack={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/profile'))}
       />
 
@@ -267,7 +267,6 @@ export default function SpendingScreen() {
         <EmptyState
           icon="tag"
           title="Nothing to show yet"
-          description="Once you have placed an order, your savings and spending breakdown appears here."
         >
           <Button label="Start shopping" onPress={() => router.replace('/')} />
         </EmptyState>
@@ -370,11 +369,6 @@ export default function SpendingScreen() {
                 </View>
               ))}
             </View>
-            {t.months.length < 3 ? (
-              <Txt variant="caption" color="onSurfaceVariant" align="center" style={styles.monthNote}>
-                A longer trend appears as you place more orders.
-              </Txt>
-            ) : null}
           </Card>
 
           {/* Club progress */}
@@ -499,7 +493,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   monthCol: { flex: 1, alignItems: 'center', gap: spacing.sm, height: '100%', justifyContent: 'flex-end' },
   monthBarWrap: { flex: 1, width: '100%', justifyContent: 'flex-end', alignItems: 'center' },
   monthBar: { width: '70%', borderRadius: radius.xs, backgroundColor: colors.primaryAccent },
-  monthNote: { marginTop: spacing.md },
 
   clubRow: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' },
   clubEarned: { alignItems: 'flex-end' },

@@ -115,7 +115,7 @@ export default function RequestReturnRoute() {
     return (
       <Screen padded>
         <TopBar title="Request a Return" onBack={goBack} />
-        <EmptyState icon="delivery" title="Order not found" description="This order is no longer available." />
+        <EmptyState icon="delivery" title="Order not found" />
       </Screen>
     );
   }
@@ -185,10 +185,7 @@ export default function RequestReturnRoute() {
 
       <Card variant="outline" padding={spacing.lg} style={styles.card}>
         <View style={styles.orderHead}>
-          <View>
-            <Txt variant="overline" color="onSurfaceVariant">REFERENCE</Txt>
-            <Txt variant="titleLg">{`Order #${order.id}`}</Txt>
-          </View>
+          <Txt variant="titleLg">{`Order #${order.id}`}</Txt>
           <Badge label="Delivered" tone="fresh" />
         </View>
         <Txt variant="bodySm" color="onSurfaceVariant">{`${order.placed} · ${order.storeName}`}</Txt>

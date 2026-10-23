@@ -27,7 +27,6 @@ export default function ClinicalDirectoryRoute() {
     <Screen padded={false} contentStyle={styles.content}>
       <TopBar
         title="Clinical Services"
-        subtitle="Xana Plus Pharmacy"
         onBack={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/pharmacy'))}
         actions={<TopBarAction name="phone" accessibilityLabel="Call the clinical helpline" onPress={() => Linking.openURL(`tel:${store.phone.replace(/\s/g, '')}`)} />}
       />
@@ -35,16 +34,11 @@ export default function ClinicalDirectoryRoute() {
       <View style={styles.inset}>
         <View style={styles.introBanner}>
           <Icon name="shield" size={18} color="primaryAccent" />
-          <View style={styles.flex}>
-            <View style={styles.introHead}>
-              <Txt variant="titleLg">In-Pharmacy Clinical Care</Txt>
-              <View style={styles.ppbBadge}>
-                <Txt variant="labelSm" color="primaryAccent">PPB Certified</Txt>
-              </View>
+          <View style={[styles.flex, styles.introHead]}>
+            <Txt variant="titleLg">In-Pharmacy Clinical Care</Txt>
+            <View style={styles.ppbBadge}>
+              <Txt variant="labelSm" color="primaryAccent">PPB Certified</Txt>
             </View>
-            <Txt variant="bodySm" color="onSurfaceVariant">
-              Walk-in & scheduled consultations conducted by PPB-certified pharmacists at Syokimau and Ruiru dispensary suites.
-            </Txt>
           </View>
         </View>
 

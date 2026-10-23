@@ -365,7 +365,7 @@ export default function SearchRoute() {
         <View style={styles.meta}>
           <Txt variant="caption" color="outline" numberOfLines={1} style={styles.metaText}>
             {!hasQuery
-              ? 'Start typing to search the catalogue'
+              ? ''
               : searching
                 ? `Searching for "${trimmed}"…`
                 : base.length >= RESULT_LIMIT
@@ -696,12 +696,13 @@ function NoResults({ query, filtered, onClear }: { query: string; filtered: bool
       <Txt variant="headline" align="center">
         {filteredOut ? 'No matches with these filters' : `No results for '${query}'`}
       </Txt>
-      <Txt variant="bodySm" color="onSurfaceVariant" align="center" style={styles.emptyBody}>
-        {filteredOut
-          ? `Nothing for "${query}" fits the filters you picked. Clear them to see everything.`
-          : `We couldn't find matches for "${query}". Try checking your spelling or searching for a broader term in groceries or pharmacy.`}
-      </Txt>
-      {filteredOut ? <Button label="Clear filters" variant="outline" onPress={onClear} /> : null}
+      {filteredOut ? (
+        <Button label="Clear filters" variant="outline" onPress={onClear} />
+      ) : (
+        <Txt variant="bodySm" color="onSurfaceVariant" align="center" style={styles.emptyBody}>
+          Check the spelling or try a broader word.
+        </Txt>
+      )}
     </View>
   );
 }
@@ -713,9 +714,6 @@ function PopularSearches({ onPick }: { onPick: (label: string) => void }) {
     <View style={styles.popular}>
       <View style={styles.popularHead}>
         <Txt variant="overline">POPULAR SEARCHES</Txt>
-        <Txt variant="labelSm" color="outline">
-          Quick suggestions
-        </Txt>
       </View>
       <View style={styles.popularChips}>
         {popularSearches.map(entry => (

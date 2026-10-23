@@ -512,9 +512,6 @@ function ProductDetail({ product }: { product: Product }) {
               </View>
               <View style={styles.serviceBody}>
                 <Txt variant="title">{`Packed at ${store.name}`}</Txt>
-                <Txt variant="bodySm" color="onSurfaceVariant">
-                  Choose delivery or pickup, and a time, at checkout
-                </Txt>
               </View>
             </View>
           </View>

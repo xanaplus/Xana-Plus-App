@@ -471,9 +471,6 @@ export default function HomeRoute() {
             </View>
             <View style={styles.mpesaCopy}>
               <Txt variant="title">1-Tap M-Pesa Checkout</Txt>
-              <Txt variant="bodySm" color="onSurfaceVariant">
-                No delays, prompt direct to STK push
-              </Txt>
             </View>
             <Icon name="chevron-right" size={18} color="onSurfaceVariant" />
           </Pressable>
@@ -486,7 +483,6 @@ export default function HomeRoute() {
         visible={alertsOpen}
         onClose={() => setAlertsOpen(false)}
         title="Notifications"
-        description="Flash drops, M-Pesa receipts and restock alerts."
         footer={
           <Button
             label={alertsUnread ? 'Mark all as read' : 'All caught up'}

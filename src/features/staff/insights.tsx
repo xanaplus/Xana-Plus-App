@@ -121,7 +121,7 @@ export function InsightsPanel() {
       <Card variant="elevated" padding={spacing.lg} style={styles.card}>
         <Txt variant="titleLg">Shopping funnel</Txt>
         <Txt variant="caption" color="onSurfaceVariant">
-          Phones that reached each step. The biggest drop is where shoppers get stuck.
+          Phones that reached each step.
         </Txt>
         {data.funnel.map((step, index) => {
           const previous = index > 0 ? data.funnel[index - 1].devices : step.devices;

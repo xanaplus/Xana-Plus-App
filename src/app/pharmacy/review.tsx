@@ -197,7 +197,7 @@ export default function PharmacyReviewScreen() {
 
   const backendMissing = backendConfigPending || isConfigIssue(accessError || error || catalogueError);
   return <Screen padded contentStyle={styles.content}>
-    <TopBar title="Pharmacy review" subtitle="Authorised reviewer workspace" onBack={() => router.replace('/(tabs)/pharmacy')} />
+    <TopBar title="Pharmacy review" onBack={() => router.replace('/(tabs)/pharmacy')} />
     {access === 'checking' ? <Card variant="flat" padding={spacing.lg} style={styles.state}>
       <ActivityIndicator accessibilityLabel="Checking reviewer access" color={colors.primaryAccent} />
       <Txt variant="bodySm" color="onSurfaceVariant">Checking pharmacy reviewer access…</Txt>
@@ -214,18 +214,14 @@ export default function PharmacyReviewScreen() {
     </View> : <>
       <Card variant="tinted" padding={spacing.lg} style={styles.notice}>
         <Icon name="shield" size={18} color="primaryAccent" />
-        <Txt variant="bodySm" color="onSurfaceVariant" style={styles.flex}>Private customer requests. Review actions are sent through the authorised prescription review service; no order or payment is placed here.</Txt>
+        <Txt variant="bodySm" color="onSurfaceVariant" style={styles.flex}>Private customer requests. No order or payment is placed here.</Txt>
       </Card>
       {backendMissing ? <Card variant="tinted" padding={spacing.lg} style={styles.configNotice}><Icon name="info" size={18} color="primaryAccent" /><Txt variant="bodySm" color="onSurfaceVariant" style={styles.flex}>The prescription backend service is unavailable or not configured in this environment.</Txt></Card> : null}
-      {error ? <>
-        <Card variant="tinted" padding={spacing.md}><Txt variant="caption" color="onSurfaceVariant">Review requests could not be loaded. Retry to refresh the queue.</Txt></Card>
-        <ErrorNotice message={error} onRetry={() => void refresh()} />
-      </> : null}
+      {error ? <ErrorNotice message={error} onRetry={() => void refresh()} /> : null}
       {loading && records.length === 0 ? <Card variant="flat" padding={spacing.lg} style={styles.state}><ActivityIndicator accessibilityLabel="Loading review queue" color={colors.primaryAccent} /><Txt variant="bodySm" color="onSurfaceVariant">Loading requests…</Txt></Card> : null}
       {!loading && !error && reviewableRecords.length === 0 ? <Card variant="elevated" padding={spacing.lg} style={styles.state}>
         <Icon name="prescription" size={24} color="primaryAccent" />
         <Txt variant="title">No requests in the queue</Txt>
-        <Txt variant="bodySm" color="onSurfaceVariant">New customer submissions will appear here when the prescription service is available.</Txt>
         <Button label="Refresh queue" variant="outline" disabled={busy} onPress={() => void refresh()} />
       </Card> : null}
       {reviewableRecords.length > 0 ? <View style={styles.queueSection}>
@@ -237,8 +233,8 @@ export default function PharmacyReviewScreen() {
                 <Txt variant="label">{record.patient_name || 'Patient name not provided'}</Txt>
                 <Txt variant="caption" color="onSurfaceVariant">{new Date(record.created_at).toLocaleDateString('en-KE')} · {record.files?.length ?? 0} private photos</Txt>
               </View><Badge label={STATUS_LABELS[record.status]} tone={tone(record.status)} /></View>
-              <Txt variant="caption" color="onSurfaceVariant">{record.doctor ? `Prescriber: ${record.doctor}` : 'Prescriber not provided'}</Txt>
-              <Txt variant="label" color="primaryAccent">{selectedId === record.id ? 'Selected for review' : 'Open request'}</Txt>
+              {record.doctor ? <Txt variant="caption" color="onSurfaceVariant">Prescriber: {record.doctor}</Txt> : null}
+              {selectedId === record.id ? <Txt variant="label" color="primaryAccent">Selected for review</Txt> : null}
             </Card>
           </Pressable>)}
         </View>
@@ -246,7 +242,7 @@ export default function PharmacyReviewScreen() {
       {selected ? <View style={styles.editor}>
         <Card variant="elevated" padding={spacing.lg} style={styles.section}>
           <View style={styles.editorTitle}>
-            <View style={styles.flex}><Txt variant="caption" color="onSurfaceVariant">REVIEW REQUEST</Txt><Txt variant="title">{selected.patient_name}</Txt></View>
+            <Txt variant="title" style={styles.flex}>{selected.patient_name}</Txt>
           <Button label="Close" size="sm" variant="outline" disabled={busy} onPress={() => setSelectedId('')} />
           </View>
           <Txt variant="bodySm" color="onSurfaceVariant">Patient type: {selected.patient_kind || 'Not provided'} · Prescriber: {selected.doctor || 'Not provided'}</Txt>
@@ -288,7 +284,7 @@ export default function PharmacyReviewScreen() {
             </Pressable>
           </View>)}
           {lines.length ? <View style={styles.totalPreview}>
-            <Txt variant="caption" color="onSurfaceVariant">Current catalogue subtotal · prices rechecked when quote is saved</Txt>
+            <Txt variant="caption" color="onSurfaceVariant">Subtotal · prices rechecked on save</Txt>
             <Txt variant="title">{formatKes(quoteTotal)}</Txt>
           </View> : null}
           <View style={styles.inputField}><Txt variant="label">Quote expiry date</Txt><TextInput accessibilityLabel="Quote expiry date" value={expiry} onChangeText={setExpiry} editable={!busy} placeholder="YYYY-MM-DD" placeholderTextColor={colors.outline} style={styles.input} /></View>

@@ -348,7 +348,7 @@ export default function PrescriptionDetailScreen() {
   const canCancel = !!record && ['draft', 'submitted', 'clarification', 'held', 'quoted', 'rejected'].includes(record.status);
 
   return <Screen padded contentStyle={styles.content}>
-    <TopBar title="Prescription details" subtitle="Private request" onBack={backToList} />
+    <TopBar title="Prescription details" onBack={backToList} />
     {!isAuthenticated ? <Card variant="elevated" padding={spacing.lg} style={styles.stateCard}>
       <Icon name="lock" size={22} color="primaryAccent" />
       <Txt variant="title">Sign in to view this request</Txt>
@@ -418,7 +418,7 @@ export default function PrescriptionDetailScreen() {
           <Txt variant="title">Photos already attached</Txt>
           <PrivatePhotos files={record.files || []} />
           {record.files?.map(file => <View key={file.path} style={styles.existingFile}>
-            <View style={styles.flex}><Txt variant="label">{file.name || 'Prescription photo'}</Txt><Txt variant="caption" color="onSurfaceVariant">Private prescription image</Txt></View>
+            <Txt variant="label" style={styles.flex}>{file.name || 'Prescription photo'}</Txt>
             <Button label="Remove" size="sm" variant="outline" disabled={busy} onPress={() => removePhoto(file.path)} />
           </View>)}
         </Card>
@@ -436,10 +436,9 @@ export default function PrescriptionDetailScreen() {
 
       <Card variant="elevated" padding={spacing.lg} style={styles.section}>
         <Txt variant="title">Decision history</Txt>
-        <Txt variant="caption" color="onSurfaceVariant">Recorded request status changes and pharmacist decisions.</Txt>
         {eventsLoading ? <View style={styles.eventLoading}><View style={styles.skeletonWide} /><View style={styles.skeletonShort} /></View> :
           eventsError ? <ErrorNotice message={eventsError} onRetry={() => void loadEvents(record.id)} /> :
-          events.length === 0 ? <Txt variant="bodySm" color="onSurfaceVariant">No decision events are available for this request.</Txt> :
+          events.length === 0 ? <Txt variant="bodySm" color="onSurfaceVariant">Nothing recorded yet.</Txt> :
           [...events].reverse().map(event => <View key={event.id} style={styles.eventRow}>
             <View style={styles.eventMarker}><Icon name="check-circle" size={17} color="primaryAccent" /></View>
             <View style={styles.flex}>
@@ -447,8 +446,7 @@ export default function PrescriptionDetailScreen() {
                 <Txt variant="label">{STATUS_LABELS[event.status]}</Txt>
                 <Txt variant="caption" color="onSurfaceVariant">{formatDateTime(event.created_at)}</Txt>
               </View>
-              {event.review_note ? <Txt variant="bodySm" color="onSurfaceVariant">{event.review_note}</Txt> :
-                <Txt variant="caption" color="onSurfaceVariant">No reviewer note recorded for this event.</Txt>}
+              {event.review_note ? <Txt variant="bodySm" color="onSurfaceVariant">{event.review_note}</Txt> : null}
             </View>
           </View>)}
       </Card>
@@ -471,7 +469,7 @@ export default function PrescriptionDetailScreen() {
       </Card> : null}
 
       {record.quote_lines?.length ? <Card variant="elevated" padding={spacing.lg} style={styles.section}>
-        <View style={styles.quoteTitle}><View style={styles.flex}><Txt variant="title">Quoted medicines</Txt><Txt variant="caption" color="onSurfaceVariant">Pharmacist-provided item, quantity and price</Txt></View></View>
+        <Txt variant="title">Quoted medicines</Txt>
         {record.quote_lines.map((line, index) => <View key={`${line.item_no}-${index}`} style={styles.quoteLine}>
           <View style={styles.quoteName}>
             <Txt variant="label">{line.name}</Txt>
@@ -489,8 +487,8 @@ export default function PrescriptionDetailScreen() {
           <Txt variant="title">Order details</Txt>
           <Txt variant="caption" color="onSurfaceVariant">This order request uses the exact pharmacist quote. M-Pesa and cash on delivery are test/simulated here; no payment will be collected.</Txt>
           <View style={styles.modeRow}>
-            <SelectableOption title="Delivery" description="Use your saved delivery settings" icon="delivery" selected={fulfilment.mode === 'delivery'} onPress={() => chooseFulfilmentMode('delivery')} />
-            <SelectableOption title="Pickup" description="Choose a store for collection" icon="pickup" selected={fulfilment.mode === 'pickup'} onPress={() => chooseFulfilmentMode('pickup')} />
+            <SelectableOption title="Delivery" icon="delivery" selected={fulfilment.mode === 'delivery'} onPress={() => chooseFulfilmentMode('delivery')} />
+            <SelectableOption title="Pickup" icon="pickup" selected={fulfilment.mode === 'pickup'} onPress={() => chooseFulfilmentMode('pickup')} />
           </View>
           {fulfilment.mode === 'pickup' ? <View style={styles.chipRow}>{stores.map(store => <Chip key={store.id} label={store.name} selected={fulfilment.storeId === store.id} onPress={() => fulfilment.setStoreId(store.id)} />)}</View> : <>
             <InputField label="Delivery address" value={addressLine} onChangeText={setAddressLine} placeholder="Enter delivery address" />
@@ -537,7 +535,6 @@ export default function PrescriptionDetailScreen() {
         setError('');
       }}
       title={pendingAction?.kind === 'place-order' ? 'Confirm quoted order' : pendingAction?.kind === 'remove-photo' ? 'Remove prescription photo?' : 'Cancel this prescription?'}
-      description={pendingAction?.kind === 'place-order' ? 'Review this final step before sending the order request.' : undefined}
       footer={<View style={styles.sheetActions}>
         <Button label={busy ? 'Please wait…' : pendingAction?.kind === 'remove-photo' ? 'Keep photo' : pendingAction?.kind === 'place-order' ? 'Back to review' : 'Keep request'} variant="outline" disabled={busy} style={{ flex: 1 }} onPress={() => { setPendingAction(null); setError(''); }} />
         <Button
@@ -584,7 +581,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   eventMarker: { width: 28, height: 28, borderRadius: radius.pill, backgroundColor: colors.mintSurface, alignItems: 'center', justifyContent: 'center' }, eventHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: spacing.md },
   detail: { gap: spacing.xxs, paddingVertical: spacing.xs, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.outlineVariant },
   existingFile: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.outlineVariant },
-  quoteTitle: { flexDirection: 'row', alignItems: 'center' }, quoteLine: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: spacing.md, paddingVertical: spacing.md, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.outlineVariant },
+  quoteLine: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: spacing.md, paddingVertical: spacing.md, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.outlineVariant },
   quoteName: { flex: 1, gap: spacing.xs }, quoteTotal: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.outlineVariant, paddingTop: spacing.md }, expiry: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.outlineVariant, paddingTop: spacing.md },
   checkout: { gap: spacing.md, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.outlineVariant, paddingTop: spacing.lg },
   modeRow: { gap: spacing.sm }, chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }, paymentRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },

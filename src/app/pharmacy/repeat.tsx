@@ -26,11 +26,11 @@ export default function PrescriptionHistoryScreen() {
   useFocusEffect(useCallback(() => { if (isAuthenticated) void refresh(); }, [isAuthenticated, refresh]));
 
   return <Screen padded contentStyle={styles.content}>
-    <TopBar title="Prescription history" subtitle="Your private requests" onBack={() => router.replace('/pharmacy/prescriptions')} />
+    <TopBar title="Prescription history" onBack={() => router.replace('/pharmacy/prescriptions')} />
     <Card variant="tinted" padding={spacing.lg} style={styles.notice}>
       <Icon name="info" size={18} color="primaryAccent" />
       <Txt variant="bodySm" color="onSurfaceVariant" style={styles.flex}>
-        This page shows real prescription requests only. It does not place a refill order. To request medicine again, upload a current prescription for pharmacist review.
+        This does not reorder medicine. To get it again, upload a current prescription for pharmacist review.
       </Txt>
     </Card>
     {!isAuthenticated ? <Card variant="elevated" padding={spacing.lg} style={styles.state}>
@@ -44,16 +44,9 @@ export default function PrescriptionHistoryScreen() {
       {loading && records.length === 0 ? <Card variant="flat" padding={spacing.lg} style={styles.state}>
         <View style={styles.skeletonWide} /><View style={styles.skeletonShort} />
         <ActivityIndicator accessibilityLabel="Loading prescription history" color={colors.primaryAccent} />
-      </Card> : error ? <>
-        <Card variant="tinted" padding={spacing.lg} style={styles.notice}>
-          <Icon name="info" size={18} color="primaryAccent" />
-          <Txt variant="bodySm" color="onSurfaceVariant" style={styles.flex}>Your prescription history could not be loaded. No refill order has been placed.</Txt>
-        </Card>
-        <ErrorNotice message={error} onRetry={() => void refresh()} />
-      </> : records.length === 0 ? <Card variant="elevated" padding={spacing.lg} style={styles.state}>
+      </Card> : error ? <ErrorNotice message={error} onRetry={() => void refresh()} /> : records.length === 0 ? <Card variant="elevated" padding={spacing.lg} style={styles.state}>
         <View style={styles.emptyGlyph}><Icon name="prescription" size={23} color="primaryAccent" /></View>
         <Txt variant="title">No prescription history yet</Txt>
-        <Txt variant="bodySm" color="onSurfaceVariant">A new request will appear here after it is created. Upload a current script to start pharmacist review.</Txt>
         <Button label="Upload a new prescription" onPress={() => router.push('/pharmacy/upload')} />
       </Card> : <View style={styles.list}>
         <View style={styles.listHead}><Txt variant="titleLg">Requests</Txt><Pressable accessibilityRole="button" accessibilityLabel="Refresh prescription history" onPress={() => void refresh()}><Txt variant="label" color="primaryAccent">Refresh</Txt></Pressable></View>
@@ -63,7 +56,7 @@ export default function PrescriptionHistoryScreen() {
               <View style={styles.flex}><Txt variant="title">{record.patient_name}</Txt><Txt variant="caption" color="onSurfaceVariant">{new Date(record.created_at).toLocaleDateString('en-KE')}</Txt></View>
               <Badge label={STATUS_LABELS[record.status]} tone={tone(record.status)} />
             </View>
-            <Txt variant="caption" color="onSurfaceVariant">{record.doctor ? `Prescriber: ${record.doctor}` : 'Prescriber not provided'}</Txt>
+            {record.doctor ? <Txt variant="caption" color="onSurfaceVariant">Prescriber: {record.doctor}</Txt> : null}
             {record.order_no ? <Txt variant="caption" color="onSurfaceVariant">Existing order {record.order_no}</Txt> : null}
             <View style={styles.openRow}><Txt variant="label" color="primaryAccent">View request</Txt><Icon name="arrow-right" size={16} color="primaryAccent" /></View>
           </Card>

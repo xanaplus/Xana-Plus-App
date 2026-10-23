@@ -441,7 +441,6 @@ export default function CategoriesRoute() {
             <EmptyState
               icon="filter"
               title="Nothing matches these filters"
-              description={`No ${definition.label} product fits the filters you picked.`}
             >
               <Button
                 label="Clear filters"
@@ -472,9 +471,6 @@ export default function CategoriesRoute() {
                   actionLabel={SECTION_ACTION[vertical] ?? 'See All'}
                   onAction={() => openSearch(section.title)}
                 />
-                <Txt variant="bodySm" color="onSurfaceVariant">
-                  {section.subtitle}
-                </Txt>
               </View>
 
               {showsGrid ? (
@@ -534,7 +530,6 @@ export default function CategoriesRoute() {
         visible={filtersOpen}
         onClose={() => setFiltersOpen(false)}
         title="Filters"
-        description={`Narrow the ${definition.label} aisle before you add to cart.`}
         scrollable
         footer={
           <Button
@@ -547,7 +542,6 @@ export default function CategoriesRoute() {
           <Txt variant="titleLg">Availability</Txt>
           <SelectableOption
             title="In stock only"
-            description="Hide the items the store has run out of"
             icon="check-circle"
             indicator="check"
             selected={inStockOnly}
@@ -586,7 +580,6 @@ export default function CategoriesRoute() {
         visible={storeSheetOpen}
         onClose={() => setStoreSheetOpen(false)}
         title="Shopping at"
-        description="Pick the Xana Plus store that packs this order."
       >
         {stores.map(entry => (
           <SelectableOption

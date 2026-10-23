@@ -22,7 +22,7 @@ import { RateOrder } from '@/features/orders/rate-order';
 import { OrderPlaced } from '@/features/orders/order-placed';
 import { formatKes, formatKesDecimal } from '@/lib/format';
 import { unitPrice } from '@/store/cart';
-import { isActiveOrder, isCompleted, ORDER_PAYMENT_LABEL, paymentNote, stagesFor } from '@/lib/order-status';
+import { isCompleted, ORDER_PAYMENT_LABEL, paymentNote, stagesFor } from '@/lib/order-status';
 import { useOrders } from '@/store/orders';
 import { radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
@@ -68,7 +68,7 @@ export default function OrderStatusScreen() {
     return (
       <Screen padded>
         <TopBar title="Order" onBack={goBack} />
-        <EmptyState icon="delivery" title="Order not found" description="This order is no longer available.">
+        <EmptyState icon="delivery" title="Order not found">
           <Button label="Back to my orders" onPress={() => router.replace('/orders')} />
         </EmptyState>
       </Screen>
@@ -173,13 +173,7 @@ export default function OrderStatusScreen() {
         ) : null}
 
         {/* Saved orders are moved along by the branch in Staff tools; only the sample orders advance here. */}
-        {!sample ? (
-          isActiveOrder(order.status) ? (
-            <Txt variant="caption" color="onSurfaceVariant">
-              {pickup ? 'This updates by itself as the branch gets your order ready.' : 'This updates by itself as the branch packs and sends your order.'}
-            </Txt>
-          ) : null
-        ) : order.status !== 'delivered' ? (
+        {sample && order.status !== 'delivered' ? (
           <Button label="Advance status (demo)" size="sm" variant="ghost" onPress={() => advanceStatus(order.id)} />
         ) : null}
       </Card>

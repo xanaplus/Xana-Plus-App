@@ -339,7 +339,6 @@ export default function StaffRoute() {
     <Screen padded contentStyle={styles.content}>
       <TopBar
         title="Staff tools"
-        subtitle="Orders, returns and clinic bookings"
         onBack={goBack}
         actions={<TopBarAction name="refresh" accessibilityLabel="Refresh" onPress={() => void load()} />}
       />
@@ -382,7 +381,7 @@ export default function StaffRoute() {
       ) : null}
 
       {status === 'ready' && tab !== 'insights' && visibleCount === 0 ? (
-        <EmptyState icon="check-circle" title="Nothing waiting" description="New orders, returns and bookings show up here." />
+        <EmptyState icon="check-circle" title="Nothing waiting" />
       ) : null}
 
       {status === 'ready' && tab === 'orders'

@@ -40,9 +40,6 @@ export default function ConsultScreen() {
               })
             }
           />
-          <Txt variant="caption" color="onSurfaceVariant" align="center">
-            Free and confidential · WhatsApp or in-app chat
-          </Txt>
         </View>
       }
     >

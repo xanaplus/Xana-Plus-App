@@ -129,11 +129,7 @@ export default function CartRoute() {
 
       {isEmpty ? (
         <View style={[styles.inset, styles.emptyBlock]}>
-          <EmptyState
-            icon="cart"
-            title="Your cart is empty"
-            description="Add groceries, meds and household essentials to get started."
-          >
+          <EmptyState icon="cart" title="Your cart is empty">
             <Button label="Start Shopping" icon="arrow-right" iconPosition="trailing" onPress={() => router.push('/(tabs)')} />
           </EmptyState>
           <View style={styles.emptyChips}>
@@ -225,9 +221,6 @@ export default function CartRoute() {
       <View style={styles.section}>
         <View style={[styles.inset, styles.sectionHead]}>
           <Txt variant="headlineLg">Buy Again</Txt>
-          <Txt variant="caption" color="onSurfaceVariant">
-            From recent orders
-          </Txt>
         </View>
         <ScrollView
           horizontal
@@ -286,7 +279,6 @@ export default function CartRoute() {
         visible={sheetOpen}
         onClose={() => setSheetOpen(false)}
         title="If an item is unavailable"
-        description="Choose how our shoppers should handle out-of-stock items in this order."
         footer={<Button label="Save preference" onPress={() => setSheetOpen(false)} />}
       >
         {(Object.keys(SUBSTITUTION_COPY) as SubstitutionPreference[]).map(preference => (

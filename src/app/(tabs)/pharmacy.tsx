@@ -253,10 +253,7 @@ export default function PharmacyRoute() {
         </View>
         {isAuthenticated && reviewerCheck?.userId === user?.id && reviewerCheck?.allowed ? <View style={styles.inset}>
           <Card variant="tinted" padding={spacing.md} style={styles.reviewAccess}>
-            <View style={styles.reviewCopy}>
-              <Txt variant="label">Pharmacy review queue</Txt>
-              <Txt variant="caption" color="onSurfaceVariant">Customers: upload a prescription first; pharmacist updates appear under My Prescriptions.</Txt>
-            </View>
+            <Txt variant="label" style={styles.reviewCopy}>Pharmacy review queue</Txt>
             <Button label="Open reviewer queue" size="sm" variant="outline" onPress={() => router.push('/pharmacy/review')} />
           </Card>
         </View> : null}
@@ -277,12 +274,7 @@ export default function PharmacyRoute() {
 
       {sections.map(section => (
         <View key={section.title} style={[styles.inset, styles.section]}>
-          <View style={styles.sectionHead}>
-            <SectionHeader title={section.title} actionLabel="See All" onAction={() => router.push({ pathname: '/search', params: { q: section.title } })} />
-            <Txt variant="bodySm" color="onSurfaceVariant">
-              {section.subtitle}
-            </Txt>
-          </View>
+          <SectionHeader title={section.title} actionLabel="See All" onAction={() => router.push({ pathname: '/search', params: { q: section.title } })} />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.railBleed} contentContainerStyle={styles.rail}>
             {(shelves.data[section.title] ?? []).map(product => (
               <PharmacyCard
@@ -329,7 +321,7 @@ export default function PharmacyRoute() {
             <Txt variant="headlineSm">Ask a Pharmacist</Txt>
           </View>
           <Txt variant="bodySm" color="onSurfaceVariant">
-            Free and confidential. Message one of our pharmacies on WhatsApp, no account needed.
+            Free and confidential. No account needed.
           </Txt>
           <Button label="Ask a pharmacist on WhatsApp" icon="whatsapp" iconPosition="leading" onPress={() => setAskOpen(true)} />
         </Card>
@@ -431,14 +423,9 @@ function PharmacyCard({
       <Pressable accessibilityRole="button" accessibilityLabel={product.name} onPress={onPress} style={styles.cardOverlay} />
 
       <View style={styles.cardFooter}>
-        <View style={styles.cardPrice}>
-          <Txt variant="label" color="outline">
-            Price
-          </Txt>
-          <Txt variant="titleLg" tint={colors.primaryAccent}>
-            {formatKes(product.price)}
-          </Txt>
-        </View>
+        <Txt variant="titleLg" tint={colors.primaryAccent} style={styles.cardPrice}>
+          {formatKes(product.price)}
+        </Txt>
         {quantity > 0 ? (
           <View style={styles.qtyPill}>
             <Txt variant="label" tint={colors.onPrimary}>
@@ -480,7 +467,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   quickRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, marginTop: spacing.md },
   quickAction: { flex: 1, alignItems: 'center', gap: spacing.sm },
   reviewAccess: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: spacing.md },
-  reviewCopy: { flex: 1, gap: spacing.xxs },
+  reviewCopy: { flex: 1 },
   quickGlyph: {
     width: layout.touchTarget,
     height: layout.touchTarget,
@@ -491,7 +478,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   },
   chipRow: { gap: spacing.sm, paddingHorizontal: layout.screenMargin },
   section: { gap: spacing.md },
-  sectionHead: { gap: spacing.xxs },
   // Rails sit in an inset section but scroll edge to edge, so cards aren't clipped at the margin (and the shadow isn't cut off).
   railBleed: { marginHorizontal: -layout.screenMargin },
   rail: { gap: layout.gutter, paddingHorizontal: layout.screenMargin, paddingVertical: spacing.xs },

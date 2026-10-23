@@ -80,7 +80,7 @@ export default function OrderHistoryScreen() {
     <Screen padded contentStyle={styles.content}>
       <TopBar
         title="My Orders"
-        subtitle={`${orders.length} ${orders.length === 1 ? 'order' : 'orders'} · Xana Life`}
+        subtitle={`${orders.length} ${orders.length === 1 ? 'order' : 'orders'}`}
         onBack={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/profile'))}
       />
 
@@ -109,7 +109,7 @@ export default function OrderHistoryScreen() {
 
       {visible.length === 0 ? (
         orders.length === 0 && (historyLoading || historyError) ? null : (
-          <EmptyState icon="delivery" title="No orders here" description="Orders you place will appear in this list.">
+          <EmptyState icon="delivery" title="No orders here">
             <Button label="Start shopping" onPress={() => router.replace('/(tabs)')} />
           </EmptyState>
         )

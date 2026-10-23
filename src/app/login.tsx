@@ -122,9 +122,6 @@ export default function LoginRoute() {
 
       {enteringPhone ? (
         <View style={[styles.inset, styles.section]}>
-          <Txt variant="bodySm" color="onSurfaceVariant">
-            Enter your phone number to receive a one-time verification code. No password needed.
-          </Txt>
           <PhoneSignInForm value={phone} onChange={setPhone} onSubmit={() => void sendCode()} error={error} />
         </View>
       ) : (

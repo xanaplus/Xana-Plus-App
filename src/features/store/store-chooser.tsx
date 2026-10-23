@@ -39,7 +39,7 @@ export function StoreChooser({ visible, onClose, onChosen }: StoreChooserProps) 
       visible={visible}
       onClose={onClose}
       title="Which store do you shop from?"
-      description="We pack your order there and check it has your items. You can change it any time."
+      description="You can change it any time."
       scrollable
       footer={<Button label="Continue" disabled={!picked} onPress={confirm} />}
     >

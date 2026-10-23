@@ -418,11 +418,7 @@ function SignInSheet({ onClose, onSuccess }: { onClose: () => void; onSuccess?: 
       visible
       onClose={onClose}
       title={enteringPhone ? 'Log in to complete your order' : 'Verify your number'}
-      description={
-        enteringPhone
-          ? 'Enter your phone number to receive a one-time verification code. No password needed.'
-          : `Enter the 6-digit code sent to ${sentTo}`
-      }
+      description={enteringPhone ? undefined : `Enter the 6-digit code sent to ${sentTo}`}
       footer={
         <View style={styles.footer}>
           {enteringPhone ? (
