@@ -10,6 +10,8 @@ export type SelectableOptionProps = {
   title: string;
   description?: string;
   icon?: IconName;
+  /** Replaces the round glyph, e.g. a brand logo on payment rows. */
+  leading?: ReactNode;
   /** Extra line rendered under the description (blocked reasons, fees). */
   note?: string;
   noteTone?: 'neutral' | 'warning' | 'danger';
@@ -30,6 +32,7 @@ export function SelectableOption({
   title,
   description,
   icon,
+  leading,
   note,
   noteTone = 'neutral',
   selected,
@@ -58,11 +61,11 @@ export function SelectableOption({
         style,
       ]}
     >
-      {icon ? (
+      {leading ?? (icon ? (
           <View style={[styles.iconWrap, { backgroundColor: selected ? colors.primaryContainer : colors.surfaceContainerLow }]}>
           <Icon name={icon} size={18} color={selected ? 'onPrimary' : 'onSurfaceVariant'} />
         </View>
-      ) : null}
+      ) : null)}
       <View style={styles.body}>
         <Txt variant="title">{title}</Txt>
         {description ? (

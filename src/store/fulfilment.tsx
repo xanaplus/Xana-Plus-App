@@ -218,7 +218,10 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
   );
   const setAddress = (next: Address) => setAddressId(next.id);
   const [slotId, setSlotId] = useState(stored.slotId);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodId>(stored.paymentMethod);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodId>(
+    // Card is hidden until DPO Pay is live: a saved card choice falls back to M-Pesa.
+    stored.paymentMethod === 'card' ? 'mpesa' : stored.paymentMethod,
+  );
   const [storedMpesaNumber, setMpesaNumber] = useState(stored.mpesaNumber);
   // The sample M-Pesa line is Amina's; a real account defaults to its own number.
   const mpesaNumber = !isDemo && user && storedMpesaNumber === defaultAddress.phone ? user.phone : storedMpesaNumber;

@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { Button, Icon, ProgressBar, Screen, TopBar, Txt } from '@/components/ui';
+import { Button, Icon, MpesaLogo, ProgressBar, Screen, TopBar, Txt } from '@/components/ui';
 import { formatKes } from '@/lib/format';
 import { placeOrderErrorMessage, useOrders } from '@/store/orders';
 import { useCart } from '@/store/cart';
@@ -143,7 +143,7 @@ export default function MpesaPendingRoute() {
         </View>
 
         <View style={styles.glyph}>
-          <Icon name="mpesa" size={34} color="primaryAccent" />
+          <MpesaLogo width={56} />
         </View>
 
         <View style={styles.heading}>

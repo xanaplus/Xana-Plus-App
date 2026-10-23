@@ -30,6 +30,7 @@ export { QuantityStepper } from './quantity-stepper';
 export type { QuantityStepperProps } from './quantity-stepper';
 export { Segmented } from './segmented';
 export type { SegmentedOption, SegmentedProps } from './segmented';
+export { MpesaLogo } from './mpesa-logo';
 export { SelectableOption } from './selectable-option';
 export type { SelectableOptionProps } from './selectable-option';
 export { ProgressBar, EmptyState, LoadState } from './feedback';

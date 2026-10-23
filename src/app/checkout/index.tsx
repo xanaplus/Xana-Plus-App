@@ -14,6 +14,7 @@ import {
   IconButton,
   NoticePill,
   Screen,
+  MpesaLogo,
   SelectableOption,
   TopBar,
   Txt,
@@ -51,7 +52,7 @@ type PaymentMethodCopy = { id: PaymentMethodId; title: string; icon: IconName; s
 const PAYMENT_METHODS: PaymentMethodCopy[] = [
   { id: 'mpesa', title: 'M-Pesa', icon: 'mpesa', showsTotal: true },
   { id: 'cod', title: 'Cash on Delivery', icon: 'cash', showsTotal: false },
-  { id: 'card', title: 'Credit / Debit Card', icon: 'card', showsTotal: true },
+  // Card is hidden until DPO Pay is live (23 Oct): it placed the order without charging anyone.
 ];
 
 
@@ -404,7 +405,6 @@ export default function CheckoutRoute() {
         centered
         title="Checkout"
         onBack={goBack}
-        actions={<Chip label="Secure" tone="mint" icon="lock" />}
       />
 
       {empty ? (
@@ -520,13 +520,14 @@ export default function CheckoutRoute() {
 
             <View style={styles.methodList}>
               {PAYMENT_METHODS.map(entry => {
-                const selected = fulfilment.paymentMethod === entry.id;
+                const selected = method.id === entry.id;
                 const attached = selected && entry.id !== 'card';
                 return (
                   <View key={entry.id}>
                     <SelectableOption
                       title={entry.title}
                       icon={entry.icon}
+                      leading={entry.id === 'mpesa' ? <MpesaLogo width={56} /> : undefined}
                       selected={selected}
                       onPress={() => fulfilment.setPaymentMethod(entry.id)}
                       style={attached ? styles.attachedOption : undefined}

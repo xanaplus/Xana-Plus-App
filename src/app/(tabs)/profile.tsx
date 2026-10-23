@@ -17,6 +17,7 @@ import {
   Screen,
   SectionHeader,
   Segmented,
+  MpesaLogo,
   SelectableOption,
   TopBar,
   TopBarAction,
@@ -119,7 +120,7 @@ const DEFAULT_PRIVACY: Record<PrivacyKey, boolean> = {
 const PAYMENT_METHODS: { id: PaymentMethodId; icon: IconName; title: string; description: string }[] = [
   { id: 'mpesa', icon: 'mpesa', title: 'M-Pesa', description: 'STK Push prompt will be sent to this line' },
   { id: 'cod', icon: 'cash', title: 'Cash on Delivery', description: 'Pay the rider or in-store when your order arrives.' },
-  { id: 'card', icon: 'card', title: 'Credit / Debit Card', description: 'Hosted Card Gateway: Visa and Mastercard' },
+  // Card is hidden until DPO Pay is live, as at checkout.
 ];
 
 const MODE_OPTIONS: SegmentedOption<FulfilmentMode>[] = [
@@ -769,6 +770,7 @@ export default function ProfileRoute() {
             description={method.description}
             note={method.id === 'mpesa' ? mpesaNumber : undefined}
             icon={method.icon}
+            leading={method.id === 'mpesa' ? <MpesaLogo width={56} /> : undefined}
             selected={paymentMethod === method.id}
             onPress={() => setPaymentMethod(method.id)}
           />
