@@ -11,6 +11,8 @@ import type { Palette } from '@/theme';
 
 type AddressLabel = 'Home' | 'Work' | 'Other';
 
+const withCountryCode = (number: string) => (number.trim().startsWith('+254') ? number.trim() : `+254 ${number.trim()}`);
+
 /** Screen: Address — Add, FR-E.7.
  *
  * A form, not a map (22 Oct 2026): the old drag-a-pin stand-in judged the
@@ -29,7 +31,7 @@ export default function AddAddressRoute() {
   const [landmark, setLandmark] = useState('');
   const [recipient, setRecipient] = useState('');
   const [phone, setPhone] = useState('');
-  const [gateCode, setGateCode] = useState('');
+  const [secondPhone, setSecondPhone] = useState('');
   const [label, setLabel] = useState<AddressLabel>('Home');
   const [setDefault, setSetDefault] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -43,7 +45,8 @@ export default function AddAddressRoute() {
     estate.trim().length > 0 &&
     houseNumber.trim().length > 0 &&
     recipient.trim().length > 0 &&
-    phone.trim().length >= 9;
+    phone.trim().length >= 9 &&
+    (secondPhone.trim().length === 0 || secondPhone.trim().length >= 9);
 
   const save = async () => {
     if (!canSave || saving) return;
@@ -56,11 +59,12 @@ export default function AddAddressRoute() {
         estate.trim(),
         area.trim(),
         landmark.trim() ? `near ${landmark.trim()}` : null,
-        gateCode.trim() ? `gate code ${gateCode.trim()}` : null,
+        // No column for it: the second number travels in the address line to the order and the rider.
+        secondPhone.trim() ? `alt phone ${withCountryCode(secondPhone)}` : null,
       ]
         .filter(Boolean)
         .join(', '),
-      phone: phone.trim().startsWith('+254') ? phone.trim() : `+254 ${phone.trim()}`,
+      phone: withCountryCode(phone),
       isDefault: setDefault,
     };
     setSaving(true);
@@ -124,20 +128,20 @@ export default function AddAddressRoute() {
       </View>
 
       <View style={[styles.inset, styles.form]}>
-        <Txt variant="overline" color="onSurfaceVariant">WHERE TO DELIVER</Txt>
+        {/* Contact first, then the address, as on Jumia (23 Oct). */}
+        <Txt variant="overline" color="onSurfaceVariant">CONTACT PERSON</Txt>
+        <Field label="Recipient Name" value={recipient} onChangeText={setRecipient} placeholder="Amina Mohamed" />
+        <Field label="M-Pesa Delivery Phone Number" value={phone} onChangeText={setPhone} placeholder="712 345 678" keyboardType="number-pad" />
+        <Field label="Second Phone Number (optional)" value={secondPhone} onChangeText={setSecondPhone} placeholder="733 456 789" keyboardType="number-pad" />
+
+        <Txt variant="overline" color="onSurfaceVariant" style={styles.sectionGap}>WHERE TO DELIVER</Txt>
         <Txt variant="caption" color="onSurfaceVariant">Our rider uses these details to find your door.</Txt>
 
-        <Field label="Area / Road" value={area} onChangeText={setArea} placeholder="Syokimau, Katani Road" />
+        <Field label="Area / Street" value={area} onChangeText={setArea} placeholder="Syokimau, Katani Road" />
         <Field label="Estate / Apartment Name" value={estate} onChangeText={setEstate} placeholder="Green Park Estate" />
         <Field label="House / Unit / Door Number" value={houseNumber} onChangeText={setHouseNumber} placeholder="Block C, Door 14" />
         <Field label="Nearest Landmark" value={landmark} onChangeText={setLandmark} placeholder="Next to TotalEnergies Katani Rd" />
 
-        <Txt variant="overline" color="onSurfaceVariant" style={styles.sectionGap}>CONTACT PERSON</Txt>
-        <Field label="Recipient Name" value={recipient} onChangeText={setRecipient} placeholder="Amina Mohamed" />
-        <Field label="M-Pesa Delivery Phone Number" value={phone} onChangeText={setPhone} placeholder="712 345 678" keyboardType="number-pad" />
-
-        <Txt variant="overline" color="onSurfaceVariant" style={styles.sectionGap}>ACCESS INSTRUCTIONS</Txt>
-        <Field label="Intercom / Gate Code" value={gateCode} onChangeText={setGateCode} placeholder="#4402" />
 
         <Txt variant="overline" color="onSurfaceVariant" style={styles.sectionGap}>SAVE ADDRESS AS</Txt>
         <View style={styles.chipRow}>
