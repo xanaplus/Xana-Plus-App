@@ -3,6 +3,7 @@ import vm from 'node:vm';
 import { webcrypto } from 'node:crypto';
 import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
+import { cleanKraPin } from '../../src/lib/kra-pin.ts';
 import { activePriceTiers, lineTotal, pricingDate, quantityUnitPrice } from '../../src/lib/quantity-pricing.ts';
 
 const tiers = [{ minQty: 6, unitPrice: 155 }, { minQty: 24, unitPrice: 145 }];
@@ -41,19 +42,20 @@ const compile = file => ts.transpileModule(readFileSync(file,'utf8'),{
   compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022},
 }).outputText;
 function checkout(rows) {
-  let handler; const saved = { headers: [], lines: [] };
+  let handler; const saved = { headers: [], lines: [], profile: [], outbox: [] };
   const db = {
     auth: { getUser: async () => ({data:{user:{id:'synthetic-local-only'}}}) },
     from(table) {
       if(table==='catalogue') return { select:()=>({in:async()=>({data:rows,error:null})}) };
-      if(table==='profiles') return { select:()=>({eq:()=>({maybeSingle:async()=>({data:{club_points:0}})})}) };
+      if(table==='profiles') return { select:()=>({eq:()=>({maybeSingle:async()=>({data:{club_points:0}})})}), update:row=>({eq:async()=>{saved.profile.push(row);return {error:null};}}) };
+      if(table==='outbox') return {insert:async row=>{saved.outbox.push(row);return {error:null};}};
       if(table==='orders') return { insert:row=>{saved.headers.push(row);return {select:()=>({single:async()=>({data:{id:'local-order',order_no:row.order_no,created_at:'2026-10-08'}})})};} };
       if(table==='order_items') return {insert:async rows=>{saved.lines.push(...rows);return {error:null};}};
       throw Error('Unexpected table '+table);
     },
   };
   const helpers={adminClient:()=>db,preflight:()=>null,reply:(status,body)=>Response.json(body,{status})};
-  const context={exports:{},Request,Response,Intl,Date,Math,Number,Map,Set,crypto:webcrypto,Deno:{serve:fn=>{handler=fn;}},require:path=>path.includes('quantity-pricing')?{lineTotal,quantityUnitPrice}:helpers};
+  const context={exports:{},Request,Response,Intl,Date,Math,Number,Map,Set,crypto:webcrypto,Deno:{serve:fn=>{handler=fn;}},require:path=>path.includes('quantity-pricing')?{lineTotal,quantityUnitPrice}:path.includes('kra-pin')?{cleanKraPin}:helpers};
   vm.runInNewContext(compile('supabase/functions/place-order/index.ts'),context);
   return {saved, async run(lines, extra={}) {
     const response=await handler(new Request('https://test.invalid',{method:'POST',headers:{Authorization:'Bearer synthetic'},body:JSON.stringify({
@@ -72,6 +74,16 @@ describe('actual checkout handler uses BC tiers',()=>{
     expect(result.body.itemsSubtotal).toBe(930);
     expect(result.body.wholesaleSavings).toBe(30);
     expect(result.body.items[0]).toMatchObject({unitPrice:155,lineTotal:930});
+  });
+  it('puts a well-formed KRA PIN on the order and the account, and drops a malformed one',async()=>{
+    const good=checkout([row]);
+    expect((await good.run([{itemNo:row.item_no,quantity:1}],{kraPin:' p051234567x '})).status).toBe(200);
+    expect(good.saved.headers[0]).toMatchObject({buyer_kra_pin:'P051234567X'});
+    expect(good.saved.profile).toEqual([{kra_pin:'P051234567X'}]);
+    const bad=checkout([row]);
+    expect((await bad.run([{itemNo:row.item_no,quantity:1}],{kraPin:'P0512'})).status).toBe(200);
+    expect(bad.saved.headers[0]).toMatchObject({buyer_kra_pin:null});
+    expect(bad.saved.profile).toHaveLength(0);
   });
   it('refuses stale/tampered prices without creating an order',async()=>{
     const h=checkout([row]);const result=await h.run([{itemNo:row.item_no,quantity:6,expectedUnitPrice:1}]);

@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Button, Icon, MpesaLogo, ProgressBar, Screen, TopBar, Txt } from '@/components/ui';
 import { formatKes } from '@/lib/format';
+import { cleanKraPin } from '@/lib/kra-pin';
 import { placeOrderErrorMessage, useOrders } from '@/store/orders';
 import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
@@ -87,6 +88,7 @@ export default function MpesaPendingRoute() {
       rxSupplied: false,
       rxReference: fulfilment.rxReference || undefined,
       promoCode: fulfilment.promo?.code,
+      kraPin: cleanKraPin(fulfilment.kraPinDraft ?? session.kraPin) ?? undefined,
     });
     setSaving(false);
     if (!result.ok) {
@@ -101,6 +103,9 @@ export default function MpesaPendingRoute() {
     fulfilment.setPromo(null);
     fulfilment.setAgeConfirmed(false);
     fulfilment.setRxReference('');
+    // The server saved a new PIN on the account; read it back for the next checkout.
+    fulfilment.setKraPinDraft(null);
+    void session.refreshProfile();
     router.replace({ pathname: '/orders/[id]', params: { id: result.id, placed: '1' } });
   };
 

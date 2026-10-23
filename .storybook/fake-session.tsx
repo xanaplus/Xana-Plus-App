@@ -26,6 +26,8 @@ export function FakeSession({ user = DEMO_USER, isStaff = false, preferences = {
     deleteAccount: async () => true,
     isDemo: false,
     isStaff,
+    kraPin: null,
+    saveKraPin: async () => 'saved',
     refreshProfile: async () => {},
     spendPoints: () => {},
   };

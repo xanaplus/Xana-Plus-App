@@ -35,6 +35,7 @@ import {
 } from '@/features/auth/auth-sheet';
 import { track } from '@/lib/analytics';
 import { formatKes } from '@/lib/format';
+import { KRA_PIN_ERROR, cleanKraPin, kraPinMalformed } from '@/lib/kra-pin';
 import { supabase } from '@/lib/supabase';
 import { useCart } from '@/store/cart';
 import { useFulfilment, type Address, type AppliedPromo } from '@/store/fulfilment';
@@ -108,6 +109,7 @@ export default function CheckoutRoute() {
   const cart = useCart();
   const session = useSession();
   const fulfilment = useFulfilment();
+  const kraPinValue = fulfilment.kraPinDraft ?? session.kraPin ?? '';
   const orders = useOrders();
 
   const [sheet, setSheet] = useState<SheetKind>(null);
@@ -236,6 +238,7 @@ export default function CheckoutRoute() {
       ageConfirmed: confirmedAge,
       rxSupplied: !rxBlocked,
       promoCode: promo?.code,
+      kraPin: cleanKraPin(kraPinValue) ?? undefined,
     });
     setPlacing(false);
     if (!result.ok) {
@@ -266,6 +269,9 @@ export default function CheckoutRoute() {
     setPromo(null);
     setAgeConfirmed(false);
     fulfilment.setRxReference('');
+    // The server saved a new PIN on the account; read it back for the next checkout.
+    fulfilment.setKraPinDraft(null);
+    void session.refreshProfile();
   };
 
   const applyPromo = async () => {
@@ -706,6 +712,42 @@ export default function CheckoutRoute() {
               {promoError ? (
                 <Txt variant="caption" tint={colors.error}>
                   {promoError}
+                </Txt>
+              ) : null}
+            </Card>
+          ) : null}
+
+          {session.user ? (
+            <Card variant="outline" padding={spacing.lg} style={[styles.inset, styles.promoCard]}>
+              <View style={styles.pointsHeader}>
+                <View style={styles.headerIcon}>
+                  <Icon name="bank" size={18} color="primaryAccent" />
+                </View>
+                <View style={styles.flex}>
+                  <Txt variant="titleLg">KRA PIN (optional)</Txt>
+                  <Txt variant="bodySm" color="onSurfaceVariant">
+                    Add it to get this sale on your KRA record. We save it for next time.
+                  </Txt>
+                </View>
+              </View>
+              <View style={styles.fieldRow}>
+                <TextInput
+                  value={kraPinValue}
+                  onChangeText={fulfilment.setKraPinDraft}
+                  placeholder="e.g. P051234567X"
+                  placeholderTextColor={colors.outline}
+                  autoCapitalize="characters"
+                  autoCorrect={false}
+                  maxLength={14}
+                  returnKeyType="done"
+                  accessibilityLabel="KRA PIN"
+                  style={styles.input}
+                />
+              </View>
+              {/* Never blocks the order: a PIN that is still malformed is left off the receipt, as at the POS. */}
+              {kraPinMalformed(kraPinValue) && kraPinValue.trim().length >= 11 ? (
+                <Txt variant="caption" tint={colors.error}>
+                  {KRA_PIN_ERROR}
                 </Txt>
               ) : null}
             </Card>

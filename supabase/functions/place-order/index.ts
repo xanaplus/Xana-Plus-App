@@ -1,10 +1,11 @@
 import { adminClient, preflight, reply } from '../_shared/otp.ts';
+import { cleanKraPin } from '../../../src/lib/kra-pin.ts';
 import { lineTotal, quantityUnitPrice } from '../../../src/lib/quantity-pricing.ts';
 
 /**
  * POST (signed in) { lines: [{ itemNo, quantity }], paymentMethod, contact,
  * addressLine, slotLabel, storeName, branchCode?, substitution, pointsRedeemed,
- * ageConfirmed, rxSupplied, rxReference?, promoCode? } → { orderNo, ... }.
+ * ageConfirmed, rxSupplied, rxReference?, promoCode?, kraPin? } → { orderNo, ... }.
  *
  * Every line is re-priced from the catalogue here; the app's prices are never
  * trusted. Orders are saved as test orders (is_test, payment 'simulated')
@@ -137,6 +138,8 @@ Deno.serve(async request => {
   }
 
   const total = itemsSubtotal - promoDiscount + DELIVERY_FEE + PLATFORM_FEE;
+  // Optional buyer's KRA PIN for the receipt. A malformed one is dropped, never refused (as the POS and create_order() do).
+  const kraPin = cleanKraPin(body.kraPin);
 
   const { data: profile } = await db.from('profiles').select('club_points').eq('id', user.id).maybeSingle();
   const maxRedeemable = Math.min(profile?.club_points ?? 0, Math.floor(total * POINTS_PER_KES));
@@ -174,6 +177,7 @@ Deno.serve(async request => {
         points_earned: pointsEarned,
         age_confirmed: body.ageConfirmed === true,
         rx_reference: text(body.rxReference, 60),
+        buyer_kra_pin: kraPin,
       })
       .select('id, order_no, created_at')
       .single();
@@ -197,6 +201,13 @@ Deno.serve(async request => {
       await db.from('orders').delete().eq('id', order.id);
       return reply(400, { error: 'points_unavailable' });
     }
+  }
+
+  // A well-formed PIN is saved on the account for the next checkout, as create_order() does;
+  // a blank one never removes the saved PIN (that is done on Profile).
+  if (kraPin) {
+    const { error: pinError } = await db.from('profiles').update({ kra_pin: kraPin }).eq('id', user.id);
+    if (pinError) console.error('kra_pin not saved', order.order_no, pinError.message);
   }
 
   // "Order received" SMS: queued for the website team's outbox-send, which owns the

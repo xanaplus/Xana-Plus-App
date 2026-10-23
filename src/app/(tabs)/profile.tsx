@@ -29,6 +29,7 @@ import { deliverySlots, productById, stores } from '@/data/catalog';
 import { ORDER_HISTORY, type OrderRecord } from '@/data/orders';
 import { PHARMACY_CONTACTS, whatsappLink } from '@/data/pharmacy-contacts';
 import type { FulfilmentMode, PaymentMethodId, Product } from '@/data/types';
+import { KraPinSheet } from '@/features/account/kra-pin-sheet';
 import { NameSheet } from '@/features/account/name-sheet';
 import { SignInDetails } from '@/features/account/sign-in-details';
 import { formatCartCounts, formatKes } from '@/lib/format';
@@ -191,6 +192,7 @@ type SheetId =
   | 'terms'
   | 'settings'
   | 'edit-name'
+  | 'kra-pin'
   | 'delete-account';
 
 type RowSpec = {
@@ -249,6 +251,7 @@ export default function ProfileRoute() {
     deleteAccount,
     isStaff,
     isDemo,
+    kraPin,
   } = useSession();
   const { address, addresses, setAddress, removeAddress, hasAddress, mode, setMode, mpesaNumber, paymentMethod, setPaymentMethod, setStoreId, slot, store, storeId } = useFulfilment();
 
@@ -333,6 +336,13 @@ export default function ProfileRoute() {
       title: 'Payment Methods',
       description: `M-Pesa · ${mpesaNumber}`,
       onPress: () => setSheet('payment'),
+    },
+    {
+      key: 'kra-pin',
+      icon: 'bank',
+      title: 'KRA PIN',
+      description: kraPin ?? 'Optional · for your KRA receipts',
+      onPress: () => setSheet('kra-pin'),
     },
   ];
 
@@ -1012,6 +1022,8 @@ export default function ProfileRoute() {
           </Txt>
         ) : null}
       </BottomSheet>
+
+      <KraPinSheet visible={sheet === 'kra-pin'} onClose={closeSheet} />
 
       <NameSheet
         visible={sheet === 'edit-name'}

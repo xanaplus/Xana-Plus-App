@@ -77,6 +77,10 @@ export type SessionContextValue = {
   isDemo: boolean;
   /** The account is on the staff list, so it can open Staff tools. */
   isStaff: boolean;
+  /** The buyer's KRA PIN saved on the account (shared with the website), or null. */
+  kraPin: string | null;
+  /** Saves or, when blank, removes the KRA PIN through `set_my_kra_pin()`. */
+  saveKraPin: (pin: string) => Promise<'saved' | 'invalid' | 'failed'>;
   /** Re-reads the profile, e.g. after staff deliver an order and points are added. */
   refreshProfile: () => Promise<void>;
   /** Deducts redeemed Xana Club points once an order is confirmed (on this device until orders reach the server). */
@@ -97,7 +101,7 @@ const normalizePhone = (phone: string) => {
 /** `+254712345678` → `+254 712 345 678`, the format the screens display. */
 const displayPhone = (phone: string) => phone.replace(/^\+254(\d{3})(\d{3})(\d{3})$/, '+254 $1 $2 $3');
 
-type Profile = { user: User; named: boolean; preferences: Preferences; isStaff: boolean };
+type Profile = { user: User; named: boolean; preferences: Preferences; isStaff: boolean; kraPin: string | null };
 
 /** Reads the signed-in customer's profile row into the app's `User` shape. */
 async function loadProfile(userId: string): Promise<Profile | null> {
@@ -120,6 +124,7 @@ async function loadProfile(userId: string): Promise<Profile | null> {
     preferences: (data.preferences as Preferences | null) ?? {},
     // `role` is what the server's user_role() returns; customers can't change it.
     isStaff: ['staff', 'pharmacist', 'admin'].includes(data.role),
+    kraPin: typeof data.kra_pin === 'string' ? data.kra_pin : null,
   };
 }
 
@@ -137,6 +142,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     owner: null as string | null, value: {} as Preferences, revision: 0, dirty: false, saving: false,
   });
   const [isStaff, setIsStaff] = useState(false);
+  const [kraPin, setKraPin] = useState<string | null>(null);
 
   const applyProfile = useCallback((profile: Profile | null, preservePreferences = false) => {
     const owner = profile?.user.id ?? null;
@@ -151,6 +157,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setNamed(profile?.named ?? true);
     setPreferences(preferenceState.current.value);
     setIsStaff(profile?.isStaff ?? false);
+    setKraPin(profile?.kraPin ?? null);
   }, []);
 
   const refreshProfile = useCallback(async () => {
@@ -306,6 +313,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     return true;
   }, [signOut]);
 
+  const saveKraPin = useCallback(
+    async (input: string) => {
+      if (!user) return 'failed' as const;
+      // Customers can't write profiles.kra_pin directly; the function checks the format too.
+      const { data, error } = await supabase.rpc('set_my_kra_pin', { p_pin: input });
+      if (error) return error.message === 'invalid_kra_pin' ? ('invalid' as const) : ('failed' as const);
+      setKraPin(typeof data === 'string' ? data : null);
+      return 'saved' as const;
+    },
+    [user],
+  );
+
   const spendPoints = useCallback((points: number) => {
     if (points <= 0) return;
     setUser(current => (current ? { ...current, clubPoints: Math.max(0, current.clubPoints - points) } : current));
@@ -333,10 +352,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       deleteAccount,
       isDemo: user !== null && user.phone.replace(/\D/g, '') === DEMO_DIGITS,
       isStaff,
+      kraPin,
+      saveKraPin,
       refreshProfile,
       spendPoints,
     }),
-    [user, pendingPhone, requestOtp, verify, signOut, named, updateName, preferences, updatePreferences, preferencesSaving, preferencesError, retryPreferences, deleteAccount, isStaff, refreshProfile, spendPoints],
+    [user, pendingPhone, requestOtp, verify, signOut, named, updateName, preferences, updatePreferences, preferencesSaving, preferencesError, retryPreferences, deleteAccount, isStaff, kraPin, saveKraPin, refreshProfile, spendPoints],
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

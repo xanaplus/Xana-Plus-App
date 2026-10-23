@@ -132,6 +132,9 @@ type FulfilmentContextValue = {
   /** Promo code accepted at checkout (the server checks it again when the order is placed). */
   promo: AppliedPromo | null;
   setPromo: (promo: AppliedPromo | null) => void;
+  /** KRA PIN typed at checkout; null until edited, so the field shows the account's saved PIN. */
+  kraPinDraft: string | null;
+  setKraPinDraft: (pin: string | null) => void;
 };
 
 export type AppliedPromo = { code: string; description: string; discount: number };
@@ -230,6 +233,7 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [rxReference, setRxReference] = useState('');
   const [promo, setPromo] = useState<AppliedPromo | null>(null);
+  const [kraPinDraft, setKraPinDraft] = useState<string | null>(null);
 
   const store = useMemo(() => stores.find(s => s.id === storeId) ?? stores[0], [storeId]);
   const slot = useMemo(() => deliverySlots.find(s => s.id === slotId) ?? deliverySlots[0], [slotId]);
@@ -286,8 +290,10 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
       setRxReference,
       promo,
       setPromo,
+      kraPinDraft,
+      setKraPinDraft,
     }),
-    [mode, storeId, setStoreId, storeChosen, store, address, addresses, addAddress, removeAddress, hasAddress, slotId, slot, paymentMethod, mpesaNumber, pointsRedeemed, ageConfirmed, rxReference, promo],
+    [mode, storeId, setStoreId, storeChosen, store, address, addresses, addAddress, removeAddress, hasAddress, slotId, slot, paymentMethod, mpesaNumber, pointsRedeemed, ageConfirmed, rxReference, promo, kraPinDraft],
   );
 
   return <FulfilmentContext.Provider value={value}>{children}</FulfilmentContext.Provider>;

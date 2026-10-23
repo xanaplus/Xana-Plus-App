@@ -193,6 +193,8 @@ export type PlaceOrderInput = {
   rxSupplied: boolean;
   rxReference?: string;
   promoCode?: string;
+  /** Optional buyer's KRA PIN for the receipt; a well-formed one is also saved on the account. */
+  kraPin?: string;
 };
 
 /** Error codes `place-order` returns, plus `network` for no reply and `timeout` for a reply that never came. */
@@ -498,6 +500,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         rxSupplied: input.rxSupplied,
         rxReference: input.rxReference,
         promoCode: input.promoCode,
+        kraPin: input.kraPin,
       },
     });
     let timer: ReturnType<typeof setTimeout> | undefined;
