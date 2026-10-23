@@ -19,6 +19,8 @@ export type SearchBarProps = {
   style?: StyleProp<ViewStyle>;
 };
 
+const TRAILING_LABELS: Partial<Record<IconName, string>> = { close: 'Clear search', scan: 'Scan a barcode' };
+
 /** Rounded search field used on Home, the Categories tab and Search Results. */
 export function SearchBar({
   value,
@@ -26,7 +28,7 @@ export function SearchBar({
   onChangeText,
   onSubmit,
   onPress,
-  trailingIcon = 'mic',
+  trailingIcon,
   onTrailingPress,
   autoFocus,
   style,
@@ -56,9 +58,11 @@ export function SearchBar({
           style={[styles.input, showValue ? null : styles.inputPlaceholder]}
         />
       )}
-      <Pressable accessibilityRole="button" accessibilityLabel={trailingIcon === 'mic' ? 'Voice search' : 'Filters'} onPress={onTrailingPress} hitSlop={8}>
-        <Icon name={trailingIcon} size={18} color="onSurfaceVariant" />
-      </Pressable>
+      {trailingIcon ? (
+        <Pressable accessibilityRole="button" accessibilityLabel={TRAILING_LABELS[trailingIcon] ?? 'Filters'} onPress={onTrailingPress} hitSlop={8}>
+          <Icon name={trailingIcon} size={18} color="onSurfaceVariant" />
+        </Pressable>
+      ) : null}
     </View>
   );
 }

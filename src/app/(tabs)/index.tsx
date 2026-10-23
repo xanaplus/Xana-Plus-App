@@ -215,7 +215,6 @@ export default function HomeRoute() {
           <SearchBar
             placeholder="Search groceries, meds & more"
             onPress={() => router.push('/search')}
-            onTrailingPress={() => router.push('/search')}
             style={styles.searchField}
           />
           <Pressable

@@ -192,8 +192,6 @@ export default function SearchRoute() {
   const { q } = useLocalSearchParams<{ q?: string }>();
   const arrivedWithQuery = typeof q === "string" && q.trim() !== "";
   const [query, setQuery] = useState(arrivedWithQuery ? q : DEFAULT_QUERY);
-  /** Bumped by the mic affordance to re-focus the field (voice search is mocked). */
-  const [fieldKey, setFieldKey] = useState(0);
 
   const [filterOpen, setFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState<SortBy>('relevance');
@@ -301,15 +299,14 @@ export default function SearchRoute() {
           </Pressable>
           <View style={styles.inputWrap}>
             <SearchBar
-              key={fieldKey}
               value={query}
               onChangeText={setQuery}
               placeholder="Search groceries, meds & more"
               // Results first when a tile or See All brought a query; the keyboard only for typing.
-              autoFocus={!arrivedWithQuery || fieldKey > 0}
+              autoFocus={!arrivedWithQuery}
               style={styles.field}
-              trailingIcon={hasQuery ? 'close' : 'mic'}
-              onTrailingPress={hasQuery ? () => setQuery('') : () => setFieldKey(key => key + 1)}
+              trailingIcon={hasQuery ? 'close' : undefined}
+              onTrailingPress={() => setQuery('')}
             />
           </View>
         </View>

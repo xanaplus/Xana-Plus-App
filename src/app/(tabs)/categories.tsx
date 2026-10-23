@@ -377,7 +377,7 @@ export default function CategoriesRoute() {
             placeholder="Search bulk packs, groceries & drinks..."
             onPress={() => openSearch()}
             trailingIcon="scan"
-            onTrailingPress={() => openSearch()}
+            onTrailingPress={() => router.push('/scan')}
           />
         </View>
 

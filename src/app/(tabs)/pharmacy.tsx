@@ -228,7 +228,7 @@ export default function PharmacyRoute() {
             placeholder="Search medicines & wellness products..."
             onPress={() => router.push('/search')}
             trailingIcon="scan"
-            onTrailingPress={() => router.push('/search')}
+            onTrailingPress={() => router.push('/scan')}
             style={styles.searchField}
           />
         </View>
