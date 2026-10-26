@@ -493,7 +493,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     height: CARD_IMAGE_SIZE,
     borderRadius: radius.lg,
     overflow: 'hidden',
-    backgroundColor: colors.surfaceContainerLow,
+    backgroundColor: colors.surface,
   },
   rxBadge: { position: 'absolute', top: spacing.sm, left: spacing.sm },
   cardText: { flexGrow: 1, gap: spacing.xxs },

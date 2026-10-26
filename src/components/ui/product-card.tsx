@@ -57,8 +57,8 @@ export function ProductCard({ product, width, quantity = 0, onPress, onAdd, styl
   const available = useStoreStock().inStock(product);
 
   return (
-    <Animated.View style={[styles.card, width ? { width } : styles.flex, style, press.style]}>
-      <View style={[styles.imageWrap, { backgroundColor: colors.surfaceContainerLow }]}>
+    <Animated.View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.outlineSoft30 }, width ? { width } : styles.flex, style, press.style]}>
+      <View style={[styles.imageWrap, { backgroundColor: colors.surface }]}>
         <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="card" />
         {topBadge ? (
           <View style={styles.badges}>
@@ -160,7 +160,7 @@ export function ProductRow({ product, eyebrow, description, quantity = 0, onPres
 
   return (
     <View style={[styles.row, { backgroundColor: colors.surface }, style]}>
-      <View style={[styles.rowImageWrap, { backgroundColor: colors.surfaceContainerLow }]}>
+      <View style={[styles.rowImageWrap, { backgroundColor: colors.surface }]}>
         <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="row" />
       </View>
       <View style={styles.rowBody}>
@@ -204,11 +204,12 @@ export function ProductRow({ product, eyebrow, description, quantity = 0, onPres
 }
 
 const styles = StyleSheet.create({
-  card: { gap: spacing.xs },
+  // A white card with a hairline edge, like the search tiles, so the white photo box has a frame.
+  card: { gap: spacing.xs, padding: spacing.sm, borderRadius: radius.xl, borderWidth: 1, ...elevation.card },
   flex: { flex: 1 },
   imageWrap: {
     aspectRatio: 1,
-    borderRadius: radius.xl,
+    borderRadius: radius.lg,
     overflow: 'hidden',
     marginBottom: spacing.sm,
   },

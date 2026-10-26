@@ -773,7 +773,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     maxWidth: layout.maxContentWidth,
     aspectRatio: 1,
     alignSelf: 'center',
-    backgroundColor: colors.surfaceContainerLow,
+    backgroundColor: colors.surface,
   },
   heroBadges: { position: 'absolute', top: spacing.lg, left: spacing.lg, right: spacing.lg, alignItems: 'flex-start', gap: spacing.sm },
   headline: { gap: spacing.xxs },

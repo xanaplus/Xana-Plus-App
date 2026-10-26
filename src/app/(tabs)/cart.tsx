@@ -409,7 +409,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   slotIcon: { width: 40, height: 40, borderRadius: radius.pill, backgroundColor: colors.mintSurface, alignItems: 'center', justifyContent: 'center' },
   slotBody: { flex: 1, gap: 2 },
   line: { flexDirection: 'row', gap: spacing.md, paddingVertical: spacing.md },
-  lineImageWrap: { width: 68, height: 68, borderRadius: radius.lg, overflow: 'hidden', backgroundColor: colors.surfaceContainerLow },
+  lineImageWrap: { width: 68, height: 68, borderRadius: radius.lg, overflow: 'hidden', backgroundColor: colors.surface },
   lineBody: { flex: 1, gap: spacing.xs },
   lineHead: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
   lineTitle: { flex: 1 },

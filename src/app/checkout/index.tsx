@@ -1158,7 +1158,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   summaryHeaderLeft: { flexDirection: 'row', alignItems: 'baseline', gap: spacing.sm, flexShrink: 1 },
   preview: { gap: spacing.md, paddingTop: spacing.md, paddingBottom: spacing.md },
   previewRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  previewThumb: { width: 46, height: 46, borderRadius: radius.lg, overflow: 'hidden', backgroundColor: colors.surfaceContainerLow },
+  previewThumb: { width: 46, height: 46, borderRadius: radius.lg, overflow: 'hidden', backgroundColor: colors.surface },
   previewBody: { flex: 1, gap: spacing.xxs },
   previewMeta: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   financials: { gap: spacing.md, paddingTop: spacing.md },
