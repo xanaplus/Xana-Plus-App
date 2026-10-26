@@ -903,7 +903,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     height: 132,
     borderRadius: radius.lg,
     overflow: 'hidden',
-    backgroundColor: colors.surfaceContainerLow,
+    backgroundColor: colors.surface,
     marginBottom: spacing.sm,
   },
   // Placeholders stay faint: no shadow, a hairline edge and the palest grey.

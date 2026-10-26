@@ -913,7 +913,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
     overflow: 'hidden',
-    backgroundColor: colors.surfaceContainerLow,
+    backgroundColor: colors.surface,
   },
   railBadges: { position: 'absolute', top: spacing.sm, left: spacing.sm, right: spacing.sm, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.xs },
   railAge: { position: 'absolute', top: spacing.sm, right: spacing.sm },
