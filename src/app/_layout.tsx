@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { CartToast } from '@/components/nav/cart-toast';
 import { Button, Txt } from '@/components/ui';
+import { EmailPrompt } from '@/features/account/email-sheet';
 import { NamePrompt } from '@/features/account/name-sheet';
 import { CartProvider } from '@/store/cart';
 import { FulfilmentProvider } from '@/store/fulfilment';
@@ -141,6 +142,7 @@ function AppFrame() {
       </Stack>
       <CartToast />
       <NamePrompt />
+      <EmailPrompt />
       <TrackingBridge />
       <PushBridge />
     </>

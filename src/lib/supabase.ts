@@ -44,6 +44,14 @@ export type FunctionError =
   | 'wrong_code'
   | 'expired'
   | 'too_many_attempts'
+  // email-code (the website team's function, shared with the app)
+  | 'invalid_email'
+  | 'email_limit'
+  | 'email_failed'
+  | 'email_unavailable'
+  | 'email_taken'
+  | 'already_confirmed'
+  | 'session_expired'
   | 'server_error'
   | 'network';
 
@@ -51,14 +59,20 @@ const FUNCTION_ERRORS: readonly FunctionError[] = [
   'invalid_phone', 'too_soon', 'too_many', 'sms_failed', 'sms_blocked',
   'sms_limit', 'sms_paused',
   'wrong_code', 'expired', 'too_many_attempts', 'server_error',
+  'invalid_email', 'email_limit', 'email_failed', 'email_unavailable', 'email_taken', 'already_confirmed', 'session_expired',
 ];
 
 /** POSTs to an Edge Function and returns its JSON, or the error code it sent back. */
-export async function callFunction<T>(name: string, body: Record<string, unknown>): Promise<{ data: T } | { error: FunctionError }> {
+export async function callFunction<T>(
+  name: string,
+  body: Record<string, unknown>,
+  /** The signed-in user's access token, for actions that act on their own account. */
+  accessToken?: string,
+): Promise<{ data: T } | { error: FunctionError }> {
   try {
     const response = await fetch(`${url}/functions/v1/${name}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', apikey: key },
+      headers: { 'Content-Type': 'application/json', apikey: key, ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}) },
       body: JSON.stringify(body),
     });
     const json = await response.json().catch(() => null);

@@ -63,6 +63,7 @@ const glyphs = {
   'heart-filled': ['ion', 'heart'],
   user: ['ion', 'person-circle-outline'],
   phone: ['ion', 'call-outline'],
+  mail: ['ion', 'mail-outline'],
   message: ['ion', 'chatbubble-ellipses-outline'],
   whatsapp: ['ion', 'logo-whatsapp'],
   'thumbs-up': ['ion', 'thumbs-up-outline'],

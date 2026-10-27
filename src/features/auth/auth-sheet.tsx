@@ -9,9 +9,13 @@ import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
 /**
- * Screen 6a — Checkout (Login Sheet): the phone/OTP sign-in prompt opened from
- * checkout, plus the pieces the standalone `/login` route (Screen 11) reuses so
- * both hosts render the same form and the same verification step.
+ * Screen 6a — Checkout (Login Sheet): the sign-in prompt opened from checkout,
+ * plus the pieces the standalone `/login` route (Screen 11) reuses so both hosts
+ * render the same form and the same verification step.
+ *
+ * Email first, phone second (Roystone, 27 Oct 2026). Email only reaches an
+ * account that has confirmed the address, so the phone route stays one tap away
+ * for new customers.
  */
 
 /** Digits in the SMS code, in the design and in the `request-otp` Edge Function. */
@@ -20,12 +24,13 @@ export const OTP_LENGTH = 6;
 const RESEND_SECONDS = 30;
 
 export const PHONE_INVALID_MESSAGE = 'Enter a valid Kenyan mobile number, e.g. 0712 345 678.';
+export const EMAIL_INVALID_MESSAGE = 'Enter a valid email address, e.g. amina@gmail.com.';
 export const CODE_INVALID_MESSAGE = "That code doesn't match. Check the 6 digits and try again.";
 
 const SIGN_IN_MESSAGES: Record<FunctionError, string> = {
   invalid_phone: PHONE_INVALID_MESSAGE,
   too_soon: 'A code was just sent. Wait 30 seconds before asking for another.',
-  too_many: 'Too many codes requested for this number. Try again in an hour.',
+  too_many: 'Too many codes requested. Try again in an hour.',
   sms_failed: "We couldn't send the SMS just now. Please try again.",
   sms_limit: 'SMS sign-in is temporarily at capacity. Please try again later.',
   sms_paused: 'SMS sign-in is temporarily unavailable. Please try again later.',
@@ -34,6 +39,13 @@ const SIGN_IN_MESSAGES: Record<FunctionError, string> = {
   wrong_code: CODE_INVALID_MESSAGE,
   expired: 'That code has expired. Tap resend for a new one.',
   too_many_attempts: 'Too many wrong tries. Tap resend for a new code.',
+  invalid_email: EMAIL_INVALID_MESSAGE,
+  email_limit: 'Email sign-in is busy right now. Please try again in a few minutes, or use your phone number.',
+  email_failed: "We couldn't send the email just now. Please try again, or use your phone number.",
+  email_unavailable: 'Email sign-in is unavailable right now. Please use your phone number.',
+  email_taken: 'This email is already linked to another account. Use a different email.',
+  already_confirmed: 'This email is already confirmed on your account.',
+  session_expired: 'You were signed out. Please sign in again.',
   server_error: 'Something went wrong on our side. Please try again.',
   network: 'No connection. Check your internet and try again.',
 };
@@ -198,15 +210,240 @@ export function PhoneSignInForm({
   );
 }
 
-/** "Change number" link above the code cells (Screen 11). */
-export function ChangeNumberLink({ onPress }: { onPress: () => void }) {
+/** Email field and helper line: the first way in. */
+export function EmailSignInForm({
+  value,
+  onChange,
+  onSubmit,
+  error,
+  helper = "We'll email you a 6-digit code.",
+}: {
+  value: string;
+  onChange: (next: string) => void;
+  /** The keyboard's Enter / Go key: same as tapping the send button. */
+  onSubmit?: () => void;
+  error?: string;
+  helper?: string;
+}) {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
+  const [focused, setFocused] = useState(false);
+
+  return (
+    <View style={styles.form}>
+      <Txt variant="overline" color="onSurfaceVariant">
+        Email
+      </Txt>
+      <View style={[styles.field, styles.emailField, focused ? styles.fieldFocused : null]}>
+        <Icon name="mail" size={18} color="onSurfaceVariant" />
+        <TextInput
+          value={value}
+          onChangeText={text => onChange(text.replace(/\s/g, ''))}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          placeholder="you@example.com"
+          placeholderTextColor={colors.outline}
+          keyboardType="email-address"
+          inputMode="email"
+          autoCapitalize="none"
+          autoCorrect={false}
+          autoComplete="email"
+          textContentType="emailAddress"
+          returnKeyType="go"
+          enterKeyHint="go"
+          onSubmitEditing={onSubmit}
+          maxLength={254}
+          accessibilityLabel="Email address"
+          style={styles.input}
+        />
+      </View>
+
+      {error ? <ErrorNote message={error} /> : null}
+
+      <View style={styles.helper}>
+        <Icon name="info" size={14} color="primaryAccent" />
+        <Txt variant="caption" color="onSurfaceVariant" style={styles.helperText}>
+          {helper}
+        </Txt>
+      </View>
+    </View>
+  );
+}
+
+/** The quiet link that swaps email for phone and back, under the form. */
+export function SignInMethodSwitch({ method, onSwitch }: { method: SignInMethod; onSwitch: () => void }) {
+  const styles = useThemeStyles(createStyles);
+  const toPhone = method === 'email';
+  return (
+    <View style={styles.switchRow}>
+      <Txt variant="bodySm" color="onSurfaceVariant" align="center">
+        {toPhone ? 'New here, or no email linked yet?' : 'Have an email linked to your account?'}
+      </Txt>
+      <Pressable accessibilityRole="button" hitSlop={8} onPress={onSwitch}>
+        <Txt variant="label" color="primaryAccent" align="center">
+          {toPhone ? 'Use your phone number' : 'Use your email'}
+        </Txt>
+      </Pressable>
+    </View>
+  );
+}
+
+/** "Change number" / "Change email" link above the code cells (Screen 11). */
+export function ChangeNumberLink({ onPress, label = 'Change number' }: { onPress: () => void; label?: string }) {
   const styles = useThemeStyles(createStyles);
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel="Change number" hitSlop={8} onPress={onPress} style={styles.changeNumber}>
+    <Pressable accessibilityRole="button" accessibilityLabel={label} hitSlop={8} onPress={onPress} style={styles.changeNumber}>
       <Txt variant="label" color="primaryAccent">
-        Change number
+        {label}
       </Txt>
     </Pressable>
+  );
+}
+
+export type SignInMethod = 'email' | 'phone';
+
+/**
+ * The state behind both sign-in hosts: which way in, the typed address, the
+ * code and the calls. `onSignedIn` runs once the session is set.
+ */
+export function useSignInFlow(onSignedIn: () => void) {
+  const { requestOtp, verify, requestEmailCode, verifyEmail } = useSession();
+  const [method, setMethod] = useState<SignInMethod>('email');
+  const [step, setStep] = useState<'enter' | 'code'>('enter');
+  const [phone, setPhone] = useState<PhoneInput>(EMPTY_PHONE_INPUT);
+  const [email, setEmail] = useState('');
+  const [sentTo, setSentTo] = useState('');
+  const [code, setCode] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  const request = async () =>
+    method === 'email' ? requestEmailCode(email) : requestOtp(phoneFromInput(phone));
+
+  const sendCode = async () => {
+    if (busy) return;
+    if (method === 'phone' && !isValidPhone(phone)) {
+      setError(PHONE_INVALID_MESSAGE);
+      return;
+    }
+    setBusy(true);
+    const result = await request();
+    setBusy(false);
+    if (!result.ok) {
+      setError(signInErrorMessage(result.error));
+      return;
+    }
+    setSentTo('email' in result ? result.email : formatPhoneDisplay(result.phone));
+    setCode('');
+    setError('');
+    setStep('code');
+  };
+
+  const resendCode = async () => {
+    if (busy) return;
+    setBusy(true);
+    setCode('');
+    const result = await request();
+    setBusy(false);
+    setError(result.ok ? '' : signInErrorMessage(result.error));
+  };
+
+  const confirmCode = async (entered = code) => {
+    if (busy || entered.length < OTP_LENGTH) return;
+    setBusy(true);
+    const result = method === 'email' ? await verifyEmail(entered) : await verify(entered);
+    setBusy(false);
+    if (!result.ok) {
+      setError(signInErrorMessage(result.error));
+      setCode('');
+      return;
+    }
+    onSignedIn();
+  };
+
+  // The iPhone number pad has no Enter key, so a complete code verifies by itself.
+  const changeCode = (next: string) => {
+    setCode(next);
+    if (next.length === OTP_LENGTH) void confirmCode(next);
+  };
+
+  const backToEntry = () => {
+    setStep('enter');
+    setCode('');
+    setError('');
+  };
+
+  const switchMethod = () => {
+    setMethod(current => (current === 'email' ? 'phone' : 'email'));
+    setError('');
+  };
+
+  return {
+    method, step, phone, setPhone, email, setEmail, sentTo, code, error, busy,
+    sendCode, resendCode, confirmCode, changeCode, backToEntry, switchMethod,
+  };
+}
+
+export type SignInFlow = ReturnType<typeof useSignInFlow>;
+
+/** The entry step's body: the email or phone form, then the switch link. */
+export function SignInEntry({ flow }: { flow: SignInFlow }) {
+  const styles = useThemeStyles(createStyles);
+  return (
+    <View style={styles.entry}>
+      {flow.method === 'email' ? (
+        <EmailSignInForm value={flow.email} onChange={flow.setEmail} onSubmit={() => void flow.sendCode()} error={flow.error} />
+      ) : (
+        <PhoneSignInForm value={flow.phone} onChange={flow.setPhone} onSubmit={() => void flow.sendCode()} error={flow.error} />
+      )}
+      <SignInMethodSwitch method={flow.method} onSwitch={flow.switchMethod} />
+    </View>
+  );
+}
+
+/** The code step's body: instruction, change link, the six cells, and for email the "nothing came?" way out. */
+export function SignInCodeStep({ flow, showInstruction = true }: { flow: SignInFlow; showInstruction?: boolean }) {
+  const styles = useThemeStyles(createStyles);
+  const byEmail = flow.method === 'email';
+  return (
+    <View style={styles.otpStep}>
+      {showInstruction ? (
+        <Txt variant="bodySm" color="onSurfaceVariant">
+          {`Enter the 6-digit code sent to ${flow.sentTo}`}
+        </Txt>
+      ) : null}
+      <ChangeNumberLink onPress={flow.backToEntry} label={byEmail ? 'Change email' : 'Change number'} />
+      <OtpCodeField
+        code={flow.code}
+        onChangeCode={flow.changeCode}
+        onResend={flow.resendCode}
+        onSubmit={() => void flow.confirmCode()}
+        error={flow.error}
+        autoFocus
+        busy={flow.busy}
+      />
+      {byEmail ? (
+        // The server answers the same for unknown addresses, so say plainly why a code may not come.
+        <View style={styles.helper}>
+          <Icon name="info" size={14} color="primaryAccent" />
+          <Txt variant="caption" color="onSurfaceVariant" style={styles.helperText}>
+            {'We only send the code if this email is linked to a Xana Plus account. Nothing came? Check spam, or '}
+            <Txt
+              variant="caption"
+              color="primaryAccent"
+              accessibilityRole="button"
+              onPress={() => {
+                flow.backToEntry();
+                flow.switchMethod();
+              }}
+            >
+              use your phone number
+            </Txt>
+            {'.'}
+          </Txt>
+        </View>
+      ) : null}
+    </View>
   );
 }
 
@@ -355,115 +592,40 @@ export function AuthSheet({ visible, onClose, onSuccess }: { visible: boolean; o
  */
 function SignInSheet({ onClose, onSuccess }: { onClose: () => void; onSuccess?: () => void }) {
   const styles = useThemeStyles(createStyles);
-  const { requestOtp, verify } = useSession();
-  const [step, setStep] = useState<'phone' | 'otp'>('phone');
-  const [phone, setPhone] = useState<PhoneInput>(EMPTY_PHONE_INPUT);
-  const [sentTo, setSentTo] = useState('');
-  const [code, setCode] = useState('');
-  const [error, setError] = useState('');
-  const [busy, setBusy] = useState(false);
-
-  const sendCode = async () => {
-    if (busy) return;
-    if (!isValidPhone(phone)) {
-      setError(PHONE_INVALID_MESSAGE);
-      return;
-    }
-    setBusy(true);
-    const result = await requestOtp(phoneFromInput(phone));
-    setBusy(false);
-    if (!result.ok) {
-      setError(signInErrorMessage(result.error));
-      return;
-    }
-    setSentTo(formatPhoneDisplay(result.phone));
-    setCode('');
-    setError('');
-    setStep('otp');
-  };
-
-  // The iPhone number pad has no Enter key, so a complete code verifies by itself.
-  const changeCode = (next: string) => {
-    setCode(next);
-    if (next.length === OTP_LENGTH) void confirmCode(next);
-  };
-
-  const resendCode = async () => {
-    if (busy) return;
-    setBusy(true);
-    setCode('');
-    const result = await requestOtp(phoneFromInput(phone));
-    setBusy(false);
-    setError(result.ok ? '' : signInErrorMessage(result.error));
-  };
-
-  const confirmCode = async (entered = code) => {
-    if (busy || entered.length < OTP_LENGTH) return;
-    setBusy(true);
-    const result = await verify(entered);
-    setBusy(false);
-    if (!result.ok) {
-      setError(signInErrorMessage(result.error));
-      setCode('');
-      return;
-    }
+  const flow = useSignInFlow(() => {
     onSuccess?.();
     onClose();
-  };
-
-  const enteringPhone = step === 'phone';
+  });
+  const entering = flow.step === 'enter';
 
   return (
     <BottomSheet
       visible
       onClose={onClose}
-      title={enteringPhone ? 'Log in to complete your order' : 'Verify your number'}
-      description={enteringPhone ? undefined : `Enter the 6-digit code sent to ${sentTo}`}
+      title={entering ? 'Log in to complete your order' : flow.method === 'email' ? 'Check your email' : 'Verify your number'}
+      description={entering ? undefined : `Enter the 6-digit code sent to ${flow.sentTo}`}
       footer={
         <View style={styles.footer}>
-          {enteringPhone ? (
+          {entering ? (
             <>
-              <Button label="Continue" icon="chevron-right" size="lg" loading={busy} onPress={sendCode} />
+              <Button label="Continue" icon="chevron-right" size="lg" loading={flow.busy} onPress={flow.sendCode} />
               <TermsNote />
             </>
           ) : (
-            <>
-              <Button
-                label="Verify & Continue"
-                icon="shield"
-                iconPosition="leading"
-                size="lg"
-                disabled={code.length < OTP_LENGTH}
-                loading={busy}
-                onPress={() => void confirmCode()}
-              />
-            </>
+            <Button
+              label="Verify & Continue"
+              icon="shield"
+              iconPosition="leading"
+              size="lg"
+              disabled={flow.code.length < OTP_LENGTH}
+              loading={flow.busy}
+              onPress={() => void flow.confirmCode()}
+            />
           )}
         </View>
       }
     >
-      {enteringPhone ? (
-        <PhoneSignInForm value={phone} onChange={setPhone} onSubmit={() => void sendCode()} error={error} />
-      ) : (
-        <View style={styles.otpStep}>
-          <ChangeNumberLink
-            onPress={() => {
-              setStep('phone');
-              setCode('');
-              setError('');
-            }}
-          />
-          <OtpCodeField
-            code={code}
-            onChangeCode={changeCode}
-            onResend={resendCode}
-            onSubmit={() => void confirmCode()}
-            error={error}
-            autoFocus
-            busy={busy}
-          />
-        </View>
-      )}
+      {entering ? <SignInEntry flow={flow} /> : <SignInCodeStep flow={flow} showInstruction={false} />}
     </BottomSheet>
   );
 }
@@ -483,6 +645,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     backgroundColor: colors.surface,
   },
   fieldFocused: { borderColor: colors.primaryAccent },
+  emailField: { paddingLeft: spacing.lg },
   prefix: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -544,6 +707,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   resendTimer: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   changeNumber: { alignSelf: 'flex-start' },
   otpStep: { gap: spacing.md },
+  entry: { gap: spacing.xl },
+  switchRow: { alignItems: 'center', gap: spacing.xxs },
   footer: { gap: spacing.lg },
   terms: { lineHeight: 18 },
   termsLink: { textDecorationLine: 'underline' },

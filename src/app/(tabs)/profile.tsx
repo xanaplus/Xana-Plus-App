@@ -29,6 +29,7 @@ import { deliverySlots, productById, stores } from '@/data/catalog';
 import { ORDER_HISTORY, type OrderRecord } from '@/data/orders';
 import { PHARMACY_CONTACTS, whatsappLink } from '@/data/pharmacy-contacts';
 import type { FulfilmentMode, PaymentMethodId, Product } from '@/data/types';
+import { EmailSheet } from '@/features/account/email-sheet';
 import { KraPinSheet } from '@/features/account/kra-pin-sheet';
 import { NameSheet } from '@/features/account/name-sheet';
 import { SignInDetails } from '@/features/account/sign-in-details';
@@ -192,6 +193,7 @@ type SheetId =
   | 'settings'
   | 'edit-name'
   | 'kra-pin'
+  | 'email'
   | 'delete-account';
 
 type RowSpec = {
@@ -251,6 +253,7 @@ export default function ProfileRoute() {
     isStaff,
     isDemo,
     kraPin,
+    email,
   } = useSession();
   const { address, addresses, setAddress, removeAddress, hasAddress, mode, setMode, mpesaNumber, paymentMethod, setPaymentMethod, setStoreId, slot, store, storeId } = useFulfilment();
 
@@ -334,6 +337,18 @@ export default function ProfileRoute() {
       description: `M-Pesa · ${mpesaNumber}`,
       onPress: () => setSheet('payment'),
     },
+    // Not on the demo number: anyone can sign in to it, so it must never hold a real email.
+    ...(isAuthenticated && !isDemo
+      ? [
+          {
+            key: 'email',
+            icon: 'mail' as const,
+            title: 'Email',
+            description: email ?? 'Add one to sign in by email',
+            onPress: () => setSheet('email'),
+          },
+        ]
+      : []),
     {
       key: 'kra-pin',
       icon: 'bank',
@@ -1007,6 +1022,13 @@ export default function ProfileRoute() {
       </BottomSheet>
 
       <KraPinSheet visible={sheet === 'kra-pin'} onClose={closeSheet} />
+
+      <EmailSheet
+        visible={sheet === 'email'}
+        onClose={closeSheet}
+        title={email ? 'Change your email' : 'Add your email'}
+        description={email ? `You sign in with ${email}. A new address replaces it once confirmed.` : 'Sign in with a code sent to your email.'}
+      />
 
       <NameSheet
         visible={sheet === 'edit-name'}

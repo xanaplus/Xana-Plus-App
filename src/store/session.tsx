@@ -10,10 +10,17 @@ import { callFunction, supabase, type FunctionError } from '@/lib/supabase';
  * Africa's Talking, `verify-otp` checks it and returns a Supabase session, and
  * the customer's `profiles` row becomes `user`.
  *
+ * Email is the main way in, SMS the second: the website team's `email-code`
+ * function emails a code and answers with a session the same way. An account is
+ * still a phone number, so email only reaches an account that has confirmed the
+ * address (`account_emails`); a new customer starts with their phone.
+ *
  * Device profile data is not authentication: the Supabase session and profile
  * must be checked before signed-in customer data is exposed.
  */
 const PHONE_PATTERN = /^\+254[17]\d{8}$/;
+/** The same check the `email-code` function makes, so a typo never costs a round trip. */
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 /** NFR-S.5: an account unused for 30 days is signed out on next launch. */
 const INACTIVE_SESSION_MS = 30 * 24 * 60 * 60 * 1000;
 /** Shown until the customer enters their own name. */
@@ -59,6 +66,19 @@ export type SessionContextValue = {
   requestOtp: (phone: string) => Promise<SignInResult & { phone: string }>;
   /** Checks the code for the pending phone and, on success, signs the customer in. */
   verify: (code: string) => Promise<SignInResult>;
+  /** Emails a sign-in code. The answer is the same whether or not an account has confirmed the address. */
+  requestEmailCode: (email: string) => Promise<SignInResult & { email: string }>;
+  /** Checks the emailed code for the pending address and, on success, signs the customer in. */
+  verifyEmail: (code: string) => Promise<SignInResult>;
+  /** The account's confirmed sign-in email, or null. */
+  email: string | null;
+  /** Emails a code to confirm `email` for the signed-in account. */
+  requestEmailConfirm: (email: string) => Promise<SignInResult & { email: string }>;
+  /** Checks that code and saves the address as the account's sign-in email. */
+  confirmEmail: (email: string, code: string) => Promise<SignInResult>;
+  /** True right after a phone sign-in on an account with no email yet: offer to add one. */
+  offerEmail: boolean;
+  dismissEmailOffer: () => void;
   signOut: () => Promise<void>;
   /** True once signed in with no name on the profile yet (a first sign-in). */
   needsName: boolean;
@@ -101,7 +121,9 @@ const normalizePhone = (phone: string) => {
 /** `+254712345678` → `+254 712 345 678`, the format the screens display. */
 const displayPhone = (phone: string) => phone.replace(/^\+254(\d{3})(\d{3})(\d{3})$/, '+254 $1 $2 $3');
 
-type Profile = { user: User; named: boolean; preferences: Preferences; isStaff: boolean; kraPin: string | null };
+type Profile = { user: User; named: boolean; preferences: Preferences; isStaff: boolean; kraPin: string | null; email: string | null };
+
+const normalizeEmail = (email: string) => email.trim().toLowerCase();
 
 /** Reads the signed-in customer's profile row into the app's `User` shape. */
 async function loadProfile(userId: string): Promise<Profile | null> {
@@ -111,6 +133,8 @@ async function loadProfile(userId: string): Promise<Profile | null> {
     .eq('id', userId)
     .maybeSingle();
   if (error || !data) return null;
+  // Customers read only their own row; there is none until they confirm an address.
+  const { data: emailRow } = await supabase.from('account_emails').select('email').eq('user_id', userId).maybeSingle();
   const name = data.name?.trim() ?? '';
   return {
     user: {
@@ -125,6 +149,7 @@ async function loadProfile(userId: string): Promise<Profile | null> {
     // `role` is what the server's user_role() returns; customers can't change it.
     isStaff: ['staff', 'pharmacist', 'admin'].includes(data.role),
     kraPin: typeof data.kra_pin === 'string' ? data.kra_pin : null,
+    email: typeof emailRow?.email === 'string' ? emailRow.email : null,
   };
 }
 
@@ -143,6 +168,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   });
   const [isStaff, setIsStaff] = useState(false);
   const [kraPin, setKraPin] = useState<string | null>(null);
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
+  const [offerEmail, setOfferEmail] = useState(false);
 
   const applyProfile = useCallback((profile: Profile | null, preservePreferences = false) => {
     const owner = profile?.user.id ?? null;
@@ -158,6 +186,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setPreferences(preferenceState.current.value);
     setIsStaff(profile?.isStaff ?? false);
     setKraPin(profile?.kraPin ?? null);
+    setEmail(profile?.email ?? null);
+    if (!profile) setOfferEmail(false);
   }, []);
 
   const refreshProfile = useCallback(async () => {
@@ -196,6 +226,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         authGeneration.current += 1;
         applyProfile(null);
         setPendingPhone(null);
+        setPendingEmail(null);
       }
     });
     return () => {
@@ -204,6 +235,21 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       listener.subscription.unsubscribe();
     };
   }, [applyProfile]);
+
+  /** Both code routes end here: keep the session the function returned, then load the profile. */
+  const finishSignIn = useCallback(
+    async (tokens: { access_token: string; refresh_token: string }, generation: number): Promise<Profile | { ok: false; error: FunctionError }> => {
+      if (generation !== authGeneration.current) return { ok: false, error: 'expired' };
+      const { data, error } = await supabase.auth.setSession(tokens);
+      if (error || !data.session) return { ok: false, error: 'server_error' };
+      const profile = await loadProfile(data.session.user.id);
+      if (generation !== authGeneration.current) return { ok: false, error: 'expired' };
+      if (!profile) return { ok: false, error: 'server_error' };
+      applyProfile(profile);
+      return profile;
+    },
+    [applyProfile],
+  );
 
   const requestOtp = useCallback(async (phone: string) => {
     const normalized = normalizePhone(phone);
@@ -223,25 +269,75 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         code,
       });
       if ('error' in result) return { ok: false, error: result.error };
-      if (generation !== authGeneration.current) return { ok: false, error: 'expired' };
-
-      const { data, error } = await supabase.auth.setSession(result.data);
-      if (error || !data.session) return { ok: false, error: 'server_error' };
-      const profile = await loadProfile(data.session.user.id);
-      if (generation !== authGeneration.current) return { ok: false, error: 'expired' };
-      if (!profile) return { ok: false, error: 'server_error' };
-
-      applyProfile(profile);
+      const profile = await finishSignIn(result.data, generation);
+      if ('error' in profile) return profile;
       setPendingPhone(null);
+      // Not for the demo number: anyone can sign in to it, so it must never hold a real email.
+      setOfferEmail(profile.email === null && pendingPhone.replace(/\D/g, '') !== DEMO_DIGITS);
       return { ok: true };
     },
-    [pendingPhone, applyProfile],
+    [pendingPhone, finishSignIn],
   );
+
+  const requestEmailCode = useCallback(async (input: string) => {
+    const normalized = normalizeEmail(input);
+    if (!EMAIL_PATTERN.test(normalized)) return { ok: false as const, error: 'invalid_email' as const, email: normalized };
+    const result = await callFunction<{ ok: true }>('email-code', { action: 'request', email: normalized });
+    if ('error' in result) return { ok: false as const, error: result.error, email: normalized };
+    setPendingEmail(normalized);
+    return { ok: true as const, email: normalized };
+  }, []);
+
+  const verifyEmail = useCallback(
+    async (code: string): Promise<SignInResult> => {
+      if (!pendingEmail) return { ok: false, error: 'expired' };
+      const generation = ++authGeneration.current;
+      const result = await callFunction<{ access_token: string; refresh_token: string }>('email-code', {
+        action: 'verify',
+        email: pendingEmail,
+        code,
+      });
+      if ('error' in result) return { ok: false, error: result.error };
+      const profile = await finishSignIn(result.data, generation);
+      if ('error' in profile) return profile;
+      setPendingEmail(null);
+      setOfferEmail(false);
+      return { ok: true };
+    },
+    [pendingEmail, finishSignIn],
+  );
+
+  const requestEmailConfirm = useCallback(async (input: string) => {
+    const normalized = normalizeEmail(input);
+    if (!EMAIL_PATTERN.test(normalized)) return { ok: false as const, error: 'invalid_email' as const, email: normalized };
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) return { ok: false as const, error: 'session_expired' as const, email: normalized };
+    const result = await callFunction<{ ok: true }>('email-code', { action: 'confirm-request', email: normalized }, data.session.access_token);
+    if ('error' in result) return { ok: false as const, error: result.error, email: normalized };
+    return { ok: true as const, email: normalized };
+  }, []);
+
+  const confirmEmail = useCallback(async (input: string, code: string): Promise<SignInResult> => {
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) return { ok: false, error: 'session_expired' };
+    const result = await callFunction<{ ok: true; email: string }>(
+      'email-code',
+      { action: 'confirm', email: normalizeEmail(input), code },
+      data.session.access_token,
+    );
+    if ('error' in result) return { ok: false, error: result.error };
+    setEmail(result.data.email);
+    setOfferEmail(false);
+    return { ok: true };
+  }, []);
+
+  const dismissEmailOffer = useCallback(() => setOfferEmail(false), []);
 
   const signOut = useCallback(async () => {
     authGeneration.current += 1;
     applyProfile(null);
     setPendingPhone(null);
+    setPendingEmail(null);
     // Drop this device's push token first; once the session is gone RLS refuses it.
     await unregisterPush();
     await supabase.auth.signOut();
@@ -341,6 +437,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       isAuthenticated: user !== null,
       requestOtp,
       verify,
+      requestEmailCode,
+      verifyEmail,
+      email,
+      requestEmailConfirm,
+      confirmEmail,
+      // Waits for the name prompt, so the two sheets never stack.
+      offerEmail: offerEmail && user !== null && named,
+      dismissEmailOffer,
       signOut,
       needsName: user !== null && !named,
       updateName,
@@ -357,7 +461,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       refreshProfile,
       spendPoints,
     }),
-    [user, pendingPhone, requestOtp, verify, signOut, named, updateName, preferences, updatePreferences, preferencesSaving, preferencesError, retryPreferences, deleteAccount, isStaff, kraPin, saveKraPin, refreshProfile, spendPoints],
+    [user, pendingPhone, requestOtp, verify, requestEmailCode, verifyEmail, email, requestEmailConfirm, confirmEmail, offerEmail, dismissEmailOffer, signOut, named, updateName, preferences, updatePreferences, preferencesSaving, preferencesError, retryPreferences, deleteAccount, isStaff, kraPin, saveKraPin, refreshProfile, spendPoints],
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
