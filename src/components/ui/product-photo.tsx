@@ -105,7 +105,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing.xs,
   },
-  card: { padding: spacing.sm },
+  // Thin margin so the pack fills the box, as on Jumia and Instacart.
+  card: { padding: spacing.xxs },
   row: { padding: spacing.xxs },
   hero: { padding: spacing.xl },
 });

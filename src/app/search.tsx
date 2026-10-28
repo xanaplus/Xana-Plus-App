@@ -5,29 +5,24 @@ import { Animated, Linking, Platform, Pressable, ScrollView, StyleSheet, View, u
 import Reanimated, { FadeInDown } from 'react-native-reanimated';
 
 import {
-  Badge,
   BottomSheet,
   Button,
   Chip,
   Divider,
   Icon,
   LoadState,
-  QuantityStepper,
   Screen,
   SearchBar,
   Txt,
 } from '@/components/ui';
-import type { BadgeTone } from '@/components/ui';
-import { ProductAddButton } from '@/components/ui/product-add-button';
-import { ProductPhoto } from '@/components/ui/product-photo';
+import { ProductCard } from '@/components/ui/product-card';
 import { popularSearches, shelfForTerm, stores, verticalForProduct } from '@/data/catalog';
-import { figmaAsset } from '@/data/images';
 import { fetchShelf, searchCatalogue, useLive } from '@/data/live-catalogue';
 import type { PriceBand, ResultOptions, ResultSort } from '@/data/live-catalogue';
-import type { CategoryVertical, Product, ProductBadge } from '@/data/types';
-import { discountPercent, formatKes } from '@/lib/format';
+import type { CategoryVertical, Product } from '@/data/types';
+import { formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
-import { useFulfilment, useStoreStock } from '@/store/fulfilment';
+import { useFulfilment } from '@/store/fulfilment';
 import { elevation, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
@@ -126,22 +121,6 @@ const SUGGESTION_TERMS: Record<string, string> = {
   'Paracetamol 500mg': 'Panadol',
   'Hass Avocado': 'Avocado',
   'Hand Wash': 'Wash',
-};
-
-const BADGE_TONE: Record<ProductBadge, BadgeTone> = {
-  discount: 'discount',
-  fresh: 'fresh',
-  new: 'new',
-  organic: 'info',
-  bulk: 'warning',
-};
-
-const BADGE_LABEL: Record<ProductBadge, string> = {
-  discount: 'SAVE',
-  fresh: 'FRESH',
-  new: 'NEW',
-  organic: 'ORGANIC',
-  bulk: 'BULK',
 };
 
 type ResultGroup = { id: string; title: string; subLabel: string; pharmacy: boolean; items: Product[] };
@@ -444,14 +423,13 @@ export default function SearchRoute() {
                 {group.items.map((product, index) => (
                   // Results rise into place one after another; capped so long lists don't lag.
                   <Reanimated.View key={product.id} entering={FadeInDown.duration(260).delay(Math.min(index, 8) * 40)}>
-                  <ResultTile
+                  <ProductCard
                     product={product}
                     width={tileWidth}
                     quantity={cart.quantityOf(product.id)}
                     onPress={() => router.push(`/product/${product.id}`)}
                     onAdd={() => cart.add(product.id)}
-                    onIncrement={() => cart.increment(product.id)}
-                    onDecrement={() => cart.decrement(product.id)}
+                    style={styles.tileFill}
                   />
                   </Reanimated.View>
                 ))}
@@ -533,7 +511,6 @@ export default function SearchRoute() {
   );
 }
 
-/** Two-column result tile: artwork, aisle eyebrow, name, pack, price and add. */
 const SKELETON_TILES = 4;
 
 /**
@@ -580,93 +557,6 @@ function ResultsSkeleton({ tileWidth }: { tileWidth: number }) {
         ))}
       </View>
     </Animated.View>
-  );
-}
-
-function ResultTile({
-  product,
-  width,
-  quantity,
-  onPress,
-  onAdd,
-  onIncrement,
-  onDecrement,
-}: {
-  product: Product;
-  width: number;
-  quantity: number;
-  onPress: () => void;
-  onAdd: () => void;
-  onIncrement: () => void;
-  onDecrement: () => void;
-}) {
-  const styles = useThemeStyles(createStyles);
-  const available = useStoreStock().inStock(product);
-  const badge = product.badges?.[0];
-  const image = figmaAsset(product.image);
-
-  return (
-    <View style={[styles.tile, { width }]}>
-      <View style={styles.tileArt}>
-        <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="card" />
-        {badge ? (
-          <View style={styles.tileBadge}>
-            <Badge
-              label={
-                badge === 'discount' && product.wasPrice
-                  ? `SAVE ${discountPercent(product.price, product.wasPrice)}%`
-                  : BADGE_LABEL[badge]
-              }
-              tone={BADGE_TONE[badge]}
-            />
-          </View>
-        ) : null}
-      </View>
-
-      <Txt variant="labelSm" color="outline" numberOfLines={1}>
-        {categoryMeta(product.category).label}
-      </Txt>
-      <Txt variant="titleSm" numberOfLines={2} style={styles.tileName}>
-        {product.name}
-      </Txt>
-      <Txt variant="caption" color="outline" numberOfLines={1}>
-        {product.pack}
-      </Txt>
-
-      {/* Card-wide tap target; a sibling of the add control, never its parent. */}
-      <Pressable accessibilityRole="button" accessibilityLabel={product.name} onPress={onPress} style={styles.tileOverlay} />
-
-      <View style={[styles.tileFoot, quantity > 0 && available && styles.tileFootStacked]}>
-        <Txt variant="titleLg" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.68} style={styles.tilePrice}>
-          {formatKes(product.price)}
-        </Txt>
-        {!available ? (
-          <Txt variant="labelSm" color="outline">
-            Out of stock
-          </Txt>
-        ) : quantity > 0 ? (
-          <QuantityStepper
-            quantity={quantity}
-            onIncrement={onIncrement}
-            onDecrement={onDecrement}
-            size="compact"
-            tone="brand"
-          />
-        ) : product.rxRequired ? (
-          <ProductAddButton productName={product.name} rxRequired />
-        ) : (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`Add ${product.name} to cart`}
-            onPress={onAdd}
-            hitSlop={6}
-            style={styles.addButton}
-          >
-            <Icon name="plus" size={18} color="onPrimary" />
-          </Pressable>
-        )}
-      </View>
-    </View>
   );
 }
 
@@ -888,19 +778,10 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   },
 
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: layout.gutter },
-  tile: {
-    // Fills its row, so both cards in a row are the same height.
-    flexGrow: 1,
-    padding: spacing.md,
-    borderRadius: radius.xl,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.outlineSoft30,
-    gap: spacing.xs,
-    ...elevation.card,
-  },
+  /** Fills its row, so both cards in a row are the same height. */
+  tileFill: { flexGrow: 1 },
   tileArt: {
-    height: 132,
+    aspectRatio: 1,
     borderRadius: radius.lg,
     overflow: 'hidden',
     backgroundColor: colors.surface,
@@ -918,32 +799,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   skeletonArt: { backgroundColor: colors.surfaceContainerLow },
   skeletonBar: { borderRadius: radius.sm, backgroundColor: colors.surfaceContainerLow },
   skeletonFoot: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.sm },
-  tileBadge: { position: 'absolute', top: spacing.sm, left: spacing.sm },
-  tileName: { minHeight: 38 },
-  tileOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
-  /** One line, pinned to the card's foot, so both cards in a row line up (as on the shelf cards). */
-  tileFoot: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.xs,
-    marginTop: 'auto',
-    paddingTop: spacing.xs,
-  },
-  /** The − n + control is too wide to share the line, so the price sits above it. */
-  tileFootStacked: { flexDirection: 'column', alignItems: 'stretch', gap: spacing.sm },
-  /** A long price ("KES 1,280.00") shrinks a little to fit beside the +. */
-  tilePrice: { flexShrink: 1, minWidth: 0 },
-  addButton: {
-    width: 34,
-    height: 34,
-    borderRadius: radius.pill,
-    backgroundColor: colors.primaryContainer,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...elevation.hairline,
-  },
-
   empty: { alignItems: 'center', gap: spacing.md, paddingTop: spacing.xxl, paddingBottom: spacing.lg },
   emptyBadge: { width: 92, height: 92, alignItems: 'flex-end', justifyContent: 'flex-start' },
   emptyIcon: {

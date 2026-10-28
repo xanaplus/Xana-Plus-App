@@ -21,3 +21,16 @@ export const formatCartCounts = (itemCount: number, unitCount: number): string =
 
 /** Percentage saved between a struck-through price and the current price. */
 export const discountPercent = (price: number, wasPrice: number): number => Math.round(((wasPrice - price) / wasPrice) * 100);
+
+/**
+ * Card name without a trailing size that the card already shows underneath:
+ * "XanaLife Brown Bread - 400 G" with pack "400 G" → "XanaLife Brown Bread".
+ * Spacing and case are ignored; a size in the middle of the name is left alone.
+ */
+export const nameWithoutPack = (name: string, pack?: string): string => {
+  const size = pack?.replace(/\s+/g, '');
+  if (!size) return name;
+  const pattern = size.split('').map(ch => ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s*');
+  const trimmed = name.replace(new RegExp(`[\\s,(-]*${pattern}\\)?\\s*$`, 'i'), '').trim();
+  return trimmed || name;
+};
