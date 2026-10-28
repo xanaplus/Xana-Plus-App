@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
@@ -10,7 +10,6 @@ import {
   BottomSheet,
   Button,
   CategoryTile,
-  Chip,
   Icon,
   LoadState,
   ProductCard,
@@ -23,10 +22,11 @@ import {
   TopBar,
 } from '@/components/ui';
 import type { IconName } from '@/components/ui';
-import { heroDeal, homeCategoryTiles, trendingDeals } from '@/data/catalog';
+import { homeCategoryTiles, trendingDeals } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
 import { groupsForCategory, useShelves } from '@/data/live-catalogue';
 import type { Deal, User } from '@/data/types';
+import { HomeBanner } from '@/features/home/home-banner';
 import { useBuyAgain } from '@/features/orders/buy-again';
 import { StoreChooser } from '@/features/store/store-chooser';
 import { useCart } from '@/store/cart';
@@ -36,11 +36,7 @@ import { elevation, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
-/** Flash-drop countdown the hero opens on — 04:22:15 in the frame. */
-const FLASH_DROP_SECONDS = 4 * 3600 + 22 * 60 + 15;
-
-/** Hero card and deal card geometry (the frame's 200pt hero, 216pt deal card). */
-const HERO_HEIGHT = 200;
+/** Deal card geometry (the frame's 216pt deal card). */
 const DEAL_CARD_WIDTH = 216;
 const DEAL_CARD_HEIGHT = 150;
 
@@ -73,13 +69,6 @@ type Alert = { id: string; icon: IconName; title: string; body: string; time: st
 /** Notification feed behind the app-bar bell. */
 const ALERTS: Alert[] = [
   {
-    id: 'flash-drop',
-    icon: 'flame',
-    title: 'Flash Drop ends soon',
-    body: 'Supa Deals This Week pricing reverts the moment the hero countdown reaches zero.',
-    time: 'Just now',
-  },
-  {
     id: 'mpesa-cashback',
     icon: 'mpesa',
     title: 'M-Pesa cashback is live',
@@ -106,13 +95,6 @@ const FRESH_EVERYDAY_SIZE = 10;
 /** Narrowest gap the category grid allows between tiles before dropping a column. */
 const TILE_MIN_GAP = 8;
 
-/** "04:22:15" — the hero pill counts down in place. */
-const formatCountdown = (totalSeconds: number): string => {
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  return [hours, minutes, totalSeconds % 60].map(unit => String(unit).padStart(2, '0')).join(':');
-};
-
 /** Progress and caption towards the member's next club tier. */
 function clubStanding(points: number, tierName: User['clubTier']): { progress: number; caption: string } {
   const index = Math.max(0, CLUB_TIERS.findIndex(entry => entry.tier === tierName));
@@ -127,7 +109,7 @@ function clubStanding(points: number, tierName: User['clubTier']): { progress: n
 }
 
 /**
- * Screen 2a — Home: search trigger, flash-drop hero, the 17-tile category grid,
+ * Screen 2a — Home: search trigger, the shared banners, the 17-tile category grid,
  * the Xana Club card, Trending Deals, the Fresh Everyday rail and the M-Pesa
  * micro-banner. The app bar is fixed above the scroll body.
  */
@@ -140,7 +122,6 @@ export default function HomeRoute() {
   const { user } = useSession();
   const buyAgain = useBuyAgain();
   const { store, storeChosen } = useFulfilment();
-  const [secondsLeft, setSecondsLeft] = useState(FLASH_DROP_SECONDS);
   // First open: ask which store they shop from (orders are packed and stock-checked there).
   const [storeSheetOpen, setStoreSheetOpen] = useState(!storeChosen);
   const [alertsOpen, setAlertsOpen] = useState(false);
@@ -151,16 +132,10 @@ export default function HomeRoute() {
   const gridColumns = Math.max(1, Math.floor((gridWidth + TILE_MIN_GAP) / (layout.categoryTileSize + TILE_MIN_GAP)));
   const gridFillers = (gridColumns - (homeCategoryTiles.length % gridColumns)) % gridColumns;
 
-  useEffect(() => {
-    const timer = setInterval(() => setSecondsLeft(remaining => (remaining > 0 ? remaining - 1 : 0)), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
   const storeShortName = store.name.replace('Xana Plus ', '');
   const fresh = useShelves(FRESH_EVERYDAY, FRESH_EVERYDAY_SIZE);
   const freshEveryday = fresh.data[FRESH_EVERYDAY[0].title] ?? [];
   const club = user ? clubStanding(user.clubPoints, user.clubTier) : null;
-  const heroArt = figmaAsset(heroDeal.image);
 
   return (
     <Screen scroll={false} padded={false} contentStyle={styles.screenBody}>
@@ -228,62 +203,9 @@ export default function HomeRoute() {
           </Pressable>
         </View>
 
-        {/* 3. Promotional hero */}
+        {/* 3. Banners from the admin app's Homepage ads, the same ones the website shows */}
         <View style={styles.section}>
-          <LinearGradient colors={gradients.promoHero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
-            <View style={styles.heroArt}>
-              {heroArt ? <Image source={heroArt} style={styles.heroImage} contentFit="cover" transition={120} /> : null}
-              <LinearGradient
-                colors={[gradients.promoHero[2], colors.transparent]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.heroFade}
-              />
-            </View>
-
-            <View style={styles.heroTop}>
-              {heroDeal.eyebrow ? <Badge label={heroDeal.eyebrow} tone="discount" /> : null}
-              {heroDeal.tag ? <Chip label={heroDeal.tag} tone="outline" icon="flame" /> : null}
-              <View style={styles.countdown}>
-                <Icon name="clock" size={12} color="secondaryAccent" />
-                <Txt variant="label" color="secondaryAccent">
-                  {formatCountdown(secondsLeft)}
-                </Txt>
-              </View>
-            </View>
-
-            <View style={styles.heroCopy}>
-              <Txt variant="headlineLg" numberOfLines={2}>
-                {heroDeal.title}
-              </Txt>
-              <Txt variant="bodySm" color="onSurfaceVariant" numberOfLines={2}>
-                {heroDeal.description}
-              </Txt>
-            </View>
-
-            <View style={styles.heroFoot}>
-              <View style={styles.mpesaRow}>
-                <View style={styles.mpesaDot}>
-                  <Icon name="mpesa" size={11} color="onPrimary" />
-                </View>
-                <Txt variant="label" color="onSurfaceVariant" numberOfLines={1}>
-                  M-Pesa: KES 200 cashback
-                </Txt>
-              </View>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={`${heroDeal.cta}, browse categories`}
-                onPress={() => router.push('/(tabs)/categories')}
-                hitSlop={8}
-                style={styles.heroCta}
-              >
-                <Txt variant="titleSm" color="primaryAccent">
-                  {heroDeal.cta}
-                </Txt>
-                <Icon name="arrow-right" size={14} color="primaryAccent" />
-              </Pressable>
-            </View>
-          </LinearGradient>
+          <HomeBanner width={gridWidth} />
         </View>
 
         {/* Buy it again: past-order items near the top, as on Amazon and Instacart. Signed-in shoppers with orders only. */}
@@ -619,58 +541,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     backgroundColor: colors.surfaceContainerLow,
   },
 
-  hero: {
-    minHeight: HERO_HEIGHT,
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-    padding: spacing.lg,
-    borderRadius: radius.card,
-    borderWidth: 1,
-    borderColor: colors.secondaryFixed,
-    overflow: 'hidden',
-    ...elevation.hairline,
-  },
-  heroArt: { position: 'absolute', top: spacing.giant, right: 0, bottom: 0, width: '42%' },
   heroImage: { width: '100%', height: '100%' },
-  heroFade: { position: 'absolute', top: 0, bottom: 0, left: 0, width: 32 },
-  heroTop: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  countdown: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xxs,
-    marginLeft: 'auto',
-    height: 24,
-    paddingHorizontal: spacing.sm,
-    borderRadius: radius.pill,
-    backgroundColor: colors.white95,
-    borderWidth: 1,
-    borderColor: colors.outlineSoft30,
-  },
-  /** 20pt section title and 13pt body need the wider column; the artwork's left
-   *  32pt is faded out, so the copy never sits over visible pixels. */
-  heroCopy: { width: '68%', gap: spacing.xs },
-  heroFoot: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: spacing.lg },
-  mpesaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    height: 24,
-    paddingRight: spacing.sm,
-    paddingLeft: 3,
-    borderRadius: radius.pill,
-    backgroundColor: colors.white95,
-    borderWidth: 1,
-    borderColor: colors.outlineSoft30,
-  },
-  mpesaDot: {
-    width: 18,
-    height: 18,
-    borderRadius: radius.pill,
-    backgroundColor: colors.primaryContainer,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  heroCta: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
 
   grid: {
     flexDirection: 'row',

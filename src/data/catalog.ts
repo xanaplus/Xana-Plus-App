@@ -38,18 +38,6 @@ export const homeCategoryTiles: Category[] = [
   { slug: 'pet-care', name: 'Pet Care', image: 'pet-care', vertical: 'retail' },
 ];
 
-/** Home promotional hero (Screen 2a, "Supa Deals This Week"). */
-export const heroDeal: Deal = {
-  id: 'supa-deals',
-  eyebrow: 'UP TO 35% OFF',
-  tag: 'Flash Drop',
-  title: 'Supa Deals This Week',
-  description: 'Save big on fresh produce, pantry staples & everyday household…',
-  image: 'home-hero-basket',
-  cta: 'Shop All',
-  tone: 'promo',
-};
-
 /** "Trending Deals" rail (Screen 2a). */
 export const trendingDeals: Deal[] = [
   {
