@@ -230,12 +230,13 @@ export const elevation = {
     shadowOffset: { width: 0, height: 1 },
     elevation: 1,
   },
+  // A little stronger than a hairline so white cards lift off the off-white page on cheaper screens.
   card: {
     shadowColor: '#000000',
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 2,
+    shadowOpacity: 0.07,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
   },
   raised: {
     shadowColor: '#000000',
