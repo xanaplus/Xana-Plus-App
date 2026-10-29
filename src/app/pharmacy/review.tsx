@@ -8,6 +8,7 @@ import {
   isPharmacyReviewer, prescriptionError, reviewPrescription, setPrescriptionReviewStatus,
   STATUS_LABELS, usePrescriptionList, type Prescription, type PrescriptionStatus, type QuoteChoice,
 } from '@/features/prescriptions/api';
+import { daysFromToday, ExpiryPicker } from '@/features/prescriptions/expiry-picker';
 import { ErrorNotice, PrivatePhotos } from '@/features/prescriptions/ui';
 import { useStoreStock } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
@@ -25,6 +26,19 @@ const isConfigIssue = (error: unknown) => {
     : '';
   return ['does not exist', 'schema cache', 'could not find function', 'pgrst202', 'pgrst205', '42p01'].some(part => message.includes(part));
 };
+
+/** A quote lasts 14 days unless the pharmacist picks another date. */
+const QUOTE_DAYS = 14;
+
+/** What is missing from a quote, one thing at a time, or '' when it can be sent. */
+function quoteProblem(lines: DraftLine[], note: string, expiry: string): string {
+  if (!lines.length) return 'Add at least one in-stock medicine to the quote.';
+  if (!note.trim()) return 'Write a short note for the customer, for example "Approved. Collect at Syokimau."';
+  if (!expiry) return 'Choose when the quote expires.';
+  if (expiry < daysFromToday(1)) return 'The quote expiry date must be after today.';
+  if (expiry > daysFromToday(365)) return 'The quote expiry date must be within a year.';
+  return '';
+}
 
 function tone(status: PrescriptionStatus): 'neutral' | 'info' | 'fresh' | 'warning' {
   const map: Record<string, 'neutral' | 'info' | 'fresh' | 'warning'> = {
@@ -122,7 +136,7 @@ export default function PharmacyReviewScreen() {
       name: line.name, unitPrice: Number(line.unit_price),
     })));
     setNote(record.review_note || '');
-    setExpiry(record.valid_until ? record.valid_until.slice(0, 10) : '');
+    setExpiry(record.valid_until ? record.valid_until.slice(0, 10) : daysFromToday(QUOTE_DAYS));
     setSearch('');
     setProducts([]);
     setSearching(false);
@@ -147,10 +161,9 @@ export default function PharmacyReviewScreen() {
       setCatalogueError('Enter a specific reason in the reviewer note before declining. This reason will be shown to the customer.');
       return;
     }
-    const expiryTime = expiry ? new Date(`${expiry}T23:59:59`).getTime() : NaN;
-    if (!reject && (!lines.length || !note.trim() || !/^\d{4}-\d{2}-\d{2}$/.test(expiry) ||
-      !Number.isFinite(expiryTime) || expiryTime <= Date.now() || expiryTime > Date.now() + 365 * 24 * 60 * 60 * 1000)) {
-      setCatalogueError('Add at least one in-stock medicine, a reviewer note, and a future quote expiry date.');
+    const problem = reject ? '' : quoteProblem(lines, note, expiry);
+    if (problem) {
+      setCatalogueError(problem);
       return;
     }
     setBusy(true);
@@ -160,7 +173,7 @@ export default function PharmacyReviewScreen() {
         selected.id,
         lines.map(({ itemNo, quantity, instructions }) => ({ itemNo, quantity, instructions })),
         note.trim(),
-        expiry ? `${expiry}T23:59:59.000Z` : '',
+        !reject && expiry ? `${expiry}T23:59:59.000Z` : '',
         reject,
       );
       setSelectedId('');
@@ -287,7 +300,7 @@ export default function PharmacyReviewScreen() {
             <Txt variant="caption" color="onSurfaceVariant">Subtotal · prices rechecked on save</Txt>
             <Txt variant="title">{formatKes(quoteTotal)}</Txt>
           </View> : null}
-          <View style={styles.inputField}><Txt variant="label">Quote expiry date</Txt><TextInput accessibilityLabel="Quote expiry date" value={expiry} onChangeText={setExpiry} editable={!busy} placeholder="YYYY-MM-DD" placeholderTextColor={colors.outline} style={styles.input} /></View>
+          <View style={styles.inputField}><Txt variant="label">Quote expiry date</Txt><ExpiryPicker value={expiry} onChange={setExpiry} disabled={busy} /></View>
           <View style={styles.inputField}><Txt variant="label">Reviewer note or decline reason</Txt><TextInput accessibilityLabel="Reviewer note" value={note} onChangeText={setNote} editable={!busy} maxLength={1000} multiline textAlignVertical="top" placeholder="Write the real review note for the customer" placeholderTextColor={colors.outline} style={[styles.input, styles.multiline]} /></View>
           <View style={styles.actionStack}>
             <Button label={busy ? 'Saving review…' : 'Send priced quote'} size="lg" disabled={busy || !lines.length} onPress={() => void runReview(false)} />
