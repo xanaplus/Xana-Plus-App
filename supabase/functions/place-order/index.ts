@@ -214,13 +214,20 @@ Deno.serve(async request => {
       if (smsError) console.error('sms_order_received not queued', created.orderNo, smsError.message);
     }
     const pushSecret = Deno.env.get('BC_SYNC_SECRET');
+    let notified = pushSecret ? 'not_sent' : 'no_secret';
     if (pushSecret) {
-      await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/send-push`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-sync-secret': pushSecret },
-        body: JSON.stringify({ orderNo: created.orderNo, status: created.status }),
-      }).catch(error => console.error('push not sent', created.orderNo, String(error)));
+      try {
+        const pushed = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/send-push`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-sync-secret': pushSecret },
+          body: JSON.stringify({ orderNo: created.orderNo, status: created.status }),
+        });
+        notified = `${pushed.status} ${await pushed.text()}`;
+      } catch (error) {
+        notified = `failed ${String(error)}`;
+      }
     }
+    console.log('push', created.orderNo, notified);
     return reply(200, {
       orderNo: created.orderNo,
       status: created.status,
@@ -234,6 +241,7 @@ Deno.serve(async request => {
       total: Number(created.total),
       amountDue: Number(created.amountDue),
       pointsEarned,
+      notified,
     });
   }
 
