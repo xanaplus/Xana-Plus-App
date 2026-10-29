@@ -15,6 +15,15 @@ const MAX_PER_REQUEST = 100;
 
 /** The order states worth telling the customer about, and what they read. */
 const ORDER_MESSAGES: Record<string, { title: string; body: string }> = {
+  // Prescription orders (owner, 29 Oct 2026): the pharmacist approves, then the customer confirms.
+  'awaiting-approval': {
+    title: 'Prescription sent',
+    body: 'A pharmacist is checking your prescription. We will let you know when your order is approved.',
+  },
+  approved: {
+    title: 'Approved by the pharmacist',
+    body: 'Check the quantities and total, then confirm your order within 48 hours.',
+  },
   received: {
     title: 'Order received',
     body: 'We have your order. Our pharmacy team is reviewing it now.',
@@ -43,6 +52,7 @@ const ORDER_MESSAGES: Record<string, { title: string; body: string }> = {
  * entry here is always sent.
  */
 const STATUS_ALERT: Record<string, string> = {
+  'awaiting-approval': 'orderConfirmed',
   received: 'orderConfirmed',
   shopping: 'orderConfirmed',
   'out-for-delivery': 'outForDelivery',

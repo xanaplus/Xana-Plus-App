@@ -201,6 +201,26 @@ Deno.serve(async request => {
         items: code === 'unavailable' && createError.details ? createError.details.split(',') : undefined,
       });
     }
+    // Tell the customer it arrived, as for other app orders: the "order received" SMS
+    // (outbox-send owns the wording) and an app notification, which the status trigger
+    // only sends on later changes (approved, received…). The order is saved either way.
+    const { data: saved } = await db.from('orders').select('id').eq('order_no', created.orderNo).maybeSingle();
+    if (saved) {
+      const { error: smsError } = await db.from('outbox').insert({
+        order_id: saved.id,
+        kind: 'sms_order_received',
+        payload: { orderNo: created.orderNo, amountDue: Number(created.amountDue), paymentMethod, storeName, slotLabel },
+      });
+      if (smsError) console.error('sms_order_received not queued', created.orderNo, smsError.message);
+    }
+    const pushSecret = Deno.env.get('BC_SYNC_SECRET');
+    if (pushSecret) {
+      await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/send-push`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-sync-secret': pushSecret },
+        body: JSON.stringify({ orderNo: created.orderNo, status: created.status }),
+      }).catch(error => console.error('push not sent', created.orderNo, String(error)));
+    }
     return reply(200, {
       orderNo: created.orderNo,
       status: created.status,
