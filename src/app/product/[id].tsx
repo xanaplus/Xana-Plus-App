@@ -20,7 +20,6 @@ import {
   TopBar,
   TopBarAction,
 } from '@/components/ui';
-import { openPrescriptionUpload } from '@/components/ui/product-add-button';
 import { ProductPhoto } from '@/components/ui/product-photo';
 import { deliverySlots, productById, productsByCategory, productsByIds, verticalBySlug, verticals } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
@@ -31,6 +30,7 @@ import { PharmacistWhatsAppSheet } from '@/features/pharmacy/whatsapp-sheet';
 import { activePriceTiers, type PriceTier } from '@/lib/quantity-pricing';
 import { unitPrice, useCart } from '@/store/cart';
 import { useFulfilment, useStoreStock } from '@/store/fulfilment';
+import { useSession } from '@/store/session';
 import { layout, radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
@@ -113,7 +113,7 @@ const BULK_BADGE = 'BULK SAVINGS';
 const PHARMACIST_REVIEW = 'Requires Pharmacist Review';
 const UNAVAILABLE_NOTE = 'Currently unavailable. Check back soon';
 const REGULATED_NOTE = 'Fixed regulated retail price • Incl. VAT';
-const RX_NOTICE = 'Prescription needed · a pharmacist checks it, then quotes you';
+const RX_NOTICE = 'Prescription needed · add it once, attach the prescription at checkout, and the pharmacist sets the quantity';
 const AGE_NOTICE = '18+ only · Confirm your age at checkout';
 const RETURN_NOTE =
   'Unopened items can be returned within 24 hours for a full M-Pesa refund. Our shopper collects them from your door.';
@@ -293,7 +293,9 @@ function ProductDetail({ product }: { product: Product }) {
 
   const toggle = (key: string) => setOpenSection(current => (current === key ? '' : key));
 
-  const onAdd = () => cart.add(product.id, 1);
+  const { isAuthenticated } = useSession();
+  // A prescription medicine needs an account: the prescription is attached to it at checkout.
+  const onAdd = () => (product.rxRequired && !isAuthenticated ? router.push('/login') : cart.add(product.id, 1));
 
   return (
     <Screen
@@ -304,10 +306,8 @@ function ProductDetail({ product }: { product: Product }) {
           {product.rxRequired ? <NoticePill label={RX_NOTICE} tone="danger" icon="prescription" /> : null}
           {product.ageRestricted ? <NoticePill label={AGE_NOTICE} tone="warning" icon="shield" /> : null}
           {/* Add to Cart adds one; after that − n + changes the cart line itself, one tap at a time, as on Jumia. */}
-          {/* Prescription-only items never go in the cart: the pharmacist quotes them from the uploaded prescription. */}
-          {product.rxRequired && inCart === 0 ? (
-            <Button label="Prescription needed · Upload" icon="prescription" iconPosition="leading" onPress={() => openPrescriptionUpload(product.name)} />
-          ) : inCart === 0 && !inStock ? (
+          {/* Prescription medicines go in once (the stepper stops at 1); the pharmacist sets the quantity. */}
+          {inCart === 0 && !inStock ? (
             <Button label={`Out of stock at ${storeShortName}`} icon="cart" iconPosition="leading" disabled onPress={onAdd} />
           ) : inCart === 0 ? (
             <Button label={`Add to Cart · ${formatKes(currentUnitPrice)}`} icon="cart" iconPosition="leading" onPress={onAdd} />

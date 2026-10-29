@@ -433,7 +433,7 @@ function PharmacyCard({
             </Txt>
           </View>
         ) : product.rxRequired ? (
-          <ProductAddButton productName={product.name} rxRequired />
+          <ProductAddButton productName={product.name} onPress={onAdd} rxRequired />
         ) : (
           <Pressable
             accessibilityRole="button"

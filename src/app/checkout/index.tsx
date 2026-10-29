@@ -42,6 +42,7 @@ import { OrderPlaced } from '@/features/orders/order-placed';
 import { placeOrderErrorMessage, pointsEarned, promoErrorMessage, useOrders, type PromoError } from '@/store/orders';
 import { useSession } from '@/store/session';
 import { StoreChooser, storeWithAllItems } from '@/features/store/store-chooser';
+import { RxCheckoutPanel, useRxAttachment } from '@/features/prescriptions/checkout-rx';
 import { layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
@@ -131,7 +132,10 @@ export default function CheckoutRoute() {
 
   const method = PAYMENT_METHODS.find(entry => entry.id === fulfilment.paymentMethod) ?? PAYMENT_METHODS[0];
   const blockedItems = cart.items.filter(item => item.product.rxRequired);
-  const rxBlocked = blockedItems.length > 0;
+  // Prescription medicines go to the pharmacist with the prescription attached here (owner, 29 Oct 2026).
+  const hasRx = blockedItems.length > 0;
+  const rx = useRxAttachment(session.user && session.user.name !== 'Xana member' ? session.user.name : '');
+  const rxBlocked = hasRx && !rx.ready;
   const blockedNames = blockedItems.map(item => item.product.name).join(', ');
   /** Alcohol in the basket: the shopper confirms they are 18 or over before paying. */
   const needsAgeCheck = cart.items.some(item => item.product.ageRestricted);
@@ -161,7 +165,7 @@ export default function CheckoutRoute() {
 
   // Alcohol doesn't disable the button: tapping it asks for the 18+ confirmation (the 'age' sheet).
   const payDisabled = empty || rxBlocked || payBlockedByAddress;
-  const payLabel = method.showsTotal ? `Place Order · ${formatKes(amountDue)}` : 'Place Order';
+  const payLabel = hasRx ? 'Send to pharmacist' : method.showsTotal ? `Place Order · ${formatKes(amountDue)}` : 'Place Order';
   const storeArea = fulfilment.store.name.replace('Xana Plus ', '');
   const phoneError = phoneDraft.digits.length === 9 && !isValidPhone(phoneDraft) ? PHONE_INVALID_MESSAGE : null;
 
@@ -214,16 +218,27 @@ export default function CheckoutRoute() {
   /** `chosenStore` is the store just picked in this tap, before the screen has re-rendered with it. */
   const placeOrder = async (confirmedAge = ageConfirmed, chosenStore = fulfilment.store) => {
     if (rxBlocked) {
-      setPlaceError('Upload your prescription first. Confirm the pharmacist’s priced list from My prescriptions before ordering medicines.');
+      setPlaceError('Add a photo of your prescription, the patient’s name and your consent first.');
       return;
     }
-    if (method.id === 'mpesa') {
+    // A prescription order is paid only after the pharmacist approves it, so no M-Pesa prompt now.
+    if (method.id === 'mpesa' && !hasRx) {
       router.replace('/checkout/mpesa');
       return;
     }
     setPlacing(true);
     setPlaceError(null);
     setOtherStore(null);
+    let prescriptionId: string | undefined;
+    if (hasRx) {
+      try {
+        prescriptionId = await rx.send();
+      } catch (failure) {
+        setPlacing(false);
+        setPlaceError(failure instanceof Error ? failure.message : 'Could not send your prescription. Please try again.');
+        return;
+      }
+    }
     const result = await orders.placeOrder({
       lines: cart.items.map(item => ({ productId: item.product.id, quantity: item.quantity })),
       paymentMethod: method.id,
@@ -238,6 +253,7 @@ export default function CheckoutRoute() {
       rxSupplied: !rxBlocked,
       promoCode: promo?.code,
       kraPin: cleanKraPin(kraPinValue) ?? undefined,
+      prescriptionId,
     });
     setPlacing(false);
     if (!result.ok) {
@@ -261,7 +277,7 @@ export default function CheckoutRoute() {
       }
       return;
     }
-    setPlaced({ method: method.id, total: amountDue, points: clubPoints });
+    if (!hasRx) setPlaced({ method: method.id, total: amountDue, points: clubPoints });
     cart.clear();
     session.spendPoints(pointsUsed);
     fulfilment.setPointsRedeemed(0);
@@ -271,6 +287,11 @@ export default function CheckoutRoute() {
     // The server saved a new PIN on the account; read it back for the next checkout.
     fulfilment.setKraPinDraft(null);
     void session.refreshProfile();
+    // Waiting for the pharmacist: the order page says what happens next.
+    if (hasRx) {
+      rx.reset();
+      router.replace({ pathname: '/orders/[id]', params: { id: result.id } });
+    }
   };
 
   const applyPromo = async () => {
@@ -392,7 +413,7 @@ export default function CheckoutRoute() {
             <View style={styles.blockedNote}>
               <Icon name="lock" size={12} color="error" />
               <Txt variant="caption" tint={colors.error}>
-                Checkout blocked · Resolve Rx requirement above to proceed
+                Add your prescription above to send the order
               </Txt>
             </View>
           ) : payBlockedByAddress && !empty ? (
@@ -841,52 +862,9 @@ export default function CheckoutRoute() {
           </Card>
 
 
-          {rxBlocked ? (
-            <View style={[styles.inset, styles.rxPanel]}>
-              <View style={styles.rxHead}>
-                <View style={styles.rxHeadLeft}>
-                  <View style={styles.rxIcon}>
-                    <Icon name="alert-triangle" size={18} color="warningDeep" />
-                  </View>
-                  <Txt variant="titleLg">Prescription Required</Txt>
-                </View>
-                <NoticePill label="ACTION REQUIRED" tone="warning" />
-              </View>
-
-              <Txt variant="bodySm" color="onSurfaceVariant">
-                {`${blockedNames} ${blockedItems.length === 1 ? 'requires' : 'require'} a valid prescription before this order can be placed.`}
-              </Txt>
-
-              <View style={styles.rxLegal}>
-                <Icon name="prescription" size={16} color="warningDeep" />
-                <Txt variant="caption" tint={colors.warningDeep} style={styles.flex}>
-                  {"Kenya Pharmacy & Poisons Board regulations require a verified doctor's prescription for this medication."}
-                </Txt>
-              </View>
-
-              <Pressable accessibilityRole="button" onPress={() => router.push('/pharmacy/prescriptions')} style={styles.rxRefLink}>
-                <Txt variant="label" color="primaryAccent">
-                  View my prescription requests and quotes
-                </Txt>
-              </Pressable>
-
-              <View style={styles.rxActions}>
-                <Button
-                  label="Upload Prescription"
-                  icon="prescription"
-                  iconPosition="leading"
-                  onPress={() => router.push('/pharmacy/upload')}
-                  style={styles.flex}
-                />
-                <Button
-                  label={blockedItems.length === 1 ? 'Remove Item' : 'Remove Items'}
-                  icon="trash"
-                  iconPosition="leading"
-                  variant="outline"
-                  onPress={removeBlockedItems}
-                  style={styles.flex}
-                />
-              </View>
+          {hasRx ? (
+            <View style={styles.inset}>
+              <RxCheckoutPanel rx={rx} medicines={blockedNames} onRemove={removeBlockedItems} />
             </View>
           ) : null}
         </>
@@ -1167,20 +1145,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   totalRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md },
   pointsRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
 
-  rxPanel: {
-    gap: spacing.md,
-    padding: spacing.lg,
-    borderRadius: radius.card,
-    borderWidth: 2,
-    borderColor: colors.tertiaryFixed,
-    backgroundColor: colors.amberTint15,
-  },
-  rxHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm },
-  rxHeadLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexShrink: 1 },
-  rxIcon: { width: 32, height: 32, borderRadius: radius.pill, backgroundColor: colors.secondaryFixed, alignItems: 'center', justifyContent: 'center' },
-  rxLegal: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, padding: spacing.md, borderRadius: radius.md, backgroundColor: colors.secondaryFixed },
-  rxRefLink: { alignSelf: 'flex-start', paddingVertical: spacing.xs },
-  rxActions: { flexDirection: 'row', gap: spacing.sm },
   rxResolved: {
     flexDirection: 'row',
     alignItems: 'flex-start',

@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import { Icon } from '@/components/ui/icon';
+import { useSession } from '@/store/session';
 import { radius } from '@/theme';
 import { useTheme } from '@/theme/provider';
 
@@ -9,7 +10,11 @@ export type ProductAddButtonProps = {
   productName: string;
   onPress?: () => void;
   disabled?: boolean;
-  /** Prescription-only items can't go in the cart: the button opens the upload-prescription flow instead. */
+  /**
+   * Prescription medicine: a signed-in customer adds it once and attaches the
+   * prescription at checkout (owner, 29 Oct 2026); signed out, the button opens
+   * sign-in. With no `onPress` it opens the upload-prescription flow instead.
+   */
   rxRequired?: boolean;
   style?: StyleProp<ViewStyle>;
 };
@@ -24,15 +29,21 @@ export const openPrescriptionUpload = (productName: string) =>
  */
 export function ProductAddButton({ productName, onPress, disabled = false, rxRequired = false, style }: ProductAddButtonProps) {
   const { colors } = useTheme();
+  const { isAuthenticated } = useSession();
   const isDisabled = disabled || (!onPress && !rxRequired);
 
   if (rxRequired) {
+    const addRx = () => {
+      if (!onPress) openPrescriptionUpload(productName);
+      else if (!isAuthenticated) router.push('/login');
+      else onPress();
+    };
     return (
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`Prescription needed for ${productName}. Upload a prescription`}
+        accessibilityLabel={onPress ? `Add ${productName} to cart. Prescription needed at checkout` : `Prescription needed for ${productName}. Upload a prescription`}
         disabled={disabled}
-        onPress={() => openPrescriptionUpload(productName)}
+        onPress={addRx}
         hitSlop={4}
         style={({ pressed }) => [
           styles.button,

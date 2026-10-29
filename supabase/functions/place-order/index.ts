@@ -16,6 +16,12 @@ import { lineTotal, quantityUnitPrice } from '../../../src/lib/quantity-pricing.
  * Orders leave from the store the customer picked (owner, 15 Oct 2026): it is saved
  * as branch_code (BC posting needs a location) and stock is checked at that branch.
  * App builds before this send only storeName, so the branch is read from it.
+ *
+ * Prescription medicines (owner, 29 Oct 2026): sent with `prescriptionId` (the
+ * customer's own draft prescription, photos attached), the order goes through the
+ * shared create_order() as the website's do. It then waits for a pharmacist in the
+ * admin app (awaiting-approval) and the customer confirms what was approved. Every
+ * other order is saved here as before (owner, 23 Oct: keep this function until DPO).
  */
 
 /** No packaging fee (owner, 15 Oct 2026); the field stays so past orders still show theirs. */
@@ -38,6 +44,12 @@ const branchFor = (code: string | null, storeName: string | null): string | null
 };
 
 type Line = { itemNo: string; quantity: number; expectedUnitPrice?: number };
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+/** create_order() refusals passed on to the app as they are; anything else is a server error. */
+const SHARED_ERRORS = [
+  'unavailable', 'rx_missing', 'not_sold_online', 'age_unconfirmed', 'points_unavailable', 'invalid_branch', 'price_mismatch', 'invalid_order',
+];
 
 const text = (value: unknown, max = 300): string | null =>
   typeof value === 'string' && value.trim() !== '' ? value.trim().slice(0, max) : null;
@@ -121,9 +133,13 @@ Deno.serve(async request => {
   }
 
   if (items.some(item => item.age_restricted) && body.ageConfirmed !== true) return reply(400, { error: 'age_unconfirmed' });
-  // Rx orders are created only by the transaction-bound pharmacist-quote RPC.
+  // Prescription medicines only with a prescription the pharmacist will check
+  // (create_order() checks it is the caller's own draft with photos).
   // A client-supplied boolean/reference is never clinical approval.
-  if (items.some(item => item.requires_rx)) return reply(400, { error: 'rx_missing' });
+  const prescriptionId = typeof body.prescriptionId === 'string' && UUID.test(body.prescriptionId) ? body.prescriptionId : null;
+  const hasRx = items.some(item => item.requires_rx);
+  if (hasRx && !prescriptionId) return reply(400, { error: 'rx_missing' });
+  if (hasRx && items.some(item => item.requires_rx && item.quantity !== 1)) return reply(400, { error: 'rx_quantity' });
 
   const itemsSubtotal = items.reduce((sum, item) => sum + item.line_total, 0);
   const wholesaleSavings = Math.round(items.reduce((sum, item) =>
@@ -147,6 +163,59 @@ Deno.serve(async request => {
 
   const amountDue = Math.max(0, total - pointsRedeemed / POINTS_PER_KES);
   const pointsEarned = Math.floor(amountDue / KES_PER_POINT_EARNED);
+
+  if (hasRx) {
+    // The shared order: stock held at the branch, points taken off, the pharmacy texted (rx_review).
+    const { data: created, error: createError } = await db.rpc('create_order', {
+      p_user: user.id,
+      p_channel: 'app',
+      p_order: {
+        idempotencyKey: crypto.randomUUID(),
+        // App orders are test orders until M-Pesa is real, like the ones saved below.
+        isTest: true,
+        fulfilment: 'delivery',
+        branchCode,
+        storeName,
+        paymentMethod,
+        contact,
+        addressLine,
+        slotLabel,
+        substitution,
+        lines: items.map(item => ({ itemNo: item.item_no, quantity: item.quantity, unitPrice: item.unit_price })),
+        promoCode,
+        promoDiscount,
+        pointsRedeemed,
+        pointsEarned,
+        deliveryFee: DELIVERY_FEE,
+        platformFee: PLATFORM_FEE,
+        ageConfirmed: body.ageConfirmed === true,
+        buyerKraPin: kraPin,
+        prescriptionId,
+      },
+    });
+    if (createError) {
+      const code = SHARED_ERRORS.includes(createError.message) ? createError.message : 'server_error';
+      if (code === 'server_error') console.error('create_order failed', createError.message);
+      return reply(code === 'unavailable' ? 409 : code === 'server_error' ? 500 : 400, {
+        error: code,
+        items: code === 'unavailable' && createError.details ? createError.details.split(',') : undefined,
+      });
+    }
+    return reply(200, {
+      orderNo: created.orderNo,
+      status: created.status,
+      createdAt: new Date().toISOString(),
+      itemsSubtotal: Number(created.itemsSubtotal),
+      wholesaleSavings,
+      items: items.map(item => ({ itemNo: item.item_no, quantity: item.quantity, unitPrice: item.unit_price, lineTotal: item.line_total })),
+      promoDiscount,
+      deliveryFee: DELIVERY_FEE,
+      platformFee: PLATFORM_FEE,
+      total: Number(created.total),
+      amountDue: Number(created.amountDue),
+      pointsEarned,
+    });
+  }
 
   // Four-digit numbers match the app's "XN-2481" style; retry on the rare clash.
   let order: { id: string; order_no: string; created_at: string } | null = null;

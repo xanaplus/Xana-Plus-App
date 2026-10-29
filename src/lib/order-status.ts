@@ -4,8 +4,13 @@ import type { PaymentMethodId } from '@/data/types';
  * Delivery orders (the app) go received → shopping → out-for-delivery → delivered.
  * Pickup orders (the website, and the app later) go awaiting-payment → received →
  * shopping → ready → collected. Both share one `orders` table with the website.
+ * An order with prescription medicines first waits for the pharmacist
+ * (awaiting-approval), then for the customer to confirm what was approved
+ * (approved, 48 hours), before it goes on as usual (owner, 29 Oct 2026).
  */
 export type OrderStatus =
+  | 'awaiting-approval'
+  | 'approved'
   | 'awaiting-payment'
   | 'received'
   | 'shopping'
@@ -45,9 +50,34 @@ export const PICKUP_STAGES: { status: OrderStatus; label: string }[] = [
   { status: 'collected', label: 'Collected' },
 ];
 
-/** The stepper for this order: pickup or delivery. */
-export const stagesFor = (order: { fulfilment?: Fulfilment }) =>
-  order.fulfilment === 'pickup' ? PICKUP_STAGES : ORDER_STAGES;
+/** The pharmacist's step and the customer's, ahead of the usual stages. */
+const RX_STAGES: { status: OrderStatus; label: string }[] = [
+  { status: 'awaiting-approval', label: 'Pharmacist' },
+  { status: 'approved', label: 'You confirm' },
+];
+
+/** The stepper for this order: pickup or delivery, with the prescription steps first when it has one. */
+export const stagesFor = (order: { fulfilment?: Fulfilment; prescription?: boolean }) => {
+  const stages = order.fulfilment === 'pickup' ? PICKUP_STAGES : ORDER_STAGES;
+  return order.prescription ? [...RX_STAGES, ...stages] : stages;
+};
+
+/** Waiting on the pharmacist or the customer: not yet an order the branch works on. */
+export const isRxPending = (status: OrderStatus) => status === 'awaiting-approval' || status === 'approved';
+
+/** Why a cancelled order was cancelled, for the customer; null when there's nothing particular to say. */
+export const cancelNote = (order: { cancelledReason?: string; pharmacistNote?: string }): string | null => {
+  switch (order.cancelledReason) {
+    case 'rx_rejected':
+      return order.pharmacistNote
+        ? `The pharmacist could not approve your prescription: ${order.pharmacistNote}`
+        : 'The pharmacist could not approve your prescription.';
+    case 'not_confirmed':
+      return 'This order was not confirmed within 48 hours of the pharmacist approving it, so it was cancelled.';
+    default:
+      return null;
+  }
+};
 
 /** The customer has the goods. */
 export const isCompleted = (status: OrderStatus) => status === 'delivered' || status === 'collected';

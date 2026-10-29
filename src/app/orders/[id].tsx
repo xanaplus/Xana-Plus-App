@@ -22,7 +22,7 @@ import { RateOrder } from '@/features/orders/rate-order';
 import { OrderPlaced } from '@/features/orders/order-placed';
 import { formatKes, formatKesDecimal } from '@/lib/format';
 import { unitPrice } from '@/store/cart';
-import { isCompleted, ORDER_PAYMENT_LABEL, paymentNote, stagesFor } from '@/lib/order-status';
+import { cancelNote, isCompleted, isRxPending, ORDER_PAYMENT_LABEL, paymentNote, stagesFor } from '@/lib/order-status';
 import { useOrders } from '@/store/orders';
 import { radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
@@ -56,11 +56,13 @@ export default function OrderStatusScreen() {
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const { id, placed } = useLocalSearchParams<{ id: string; placed?: string }>();
-  const { orderById, resolveSubstitution, advanceStatus } = useOrders();
+  const { orderById, resolveSubstitution, advanceStatus, confirmApproved } = useOrders();
   const order = orderById(String(id));
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [choice, setChoice] = useState<SubstitutionPreference>('similar');
+  const [confirming, setConfirming] = useState(false);
+  const [confirmError, setConfirmError] = useState<string | null>(null);
 
   const goBack = () => (router.canGoBack() ? router.back() : router.replace('/orders'));
 
@@ -83,6 +85,15 @@ export default function OrderStatusScreen() {
   // Saved orders (app or website) carry isTest; only the demo's sample baskets don't.
   const sample = order.isTest === undefined;
   const blockedProduct = order.substitutionNeeded ? productById(order.substitutionNeeded.productId) : undefined;
+
+  const rxPending = isRxPending(order.status);
+  const whyCancelled = cancelNote(order);
+
+  const confirmOrder = async () => {
+    setConfirming(true);
+    setConfirmError(await confirmApproved(order.id));
+    setConfirming(false);
+  };
 
   const confirmSubstitution = () => {
     resolveSubstitution(order.id, choice);
@@ -110,8 +121,15 @@ export default function OrderStatusScreen() {
             LIVE FULFILMENT
           </Txt>
           <Badge
-            label={completed ? 'Complete' : order.status === 'cancelled' ? 'Cancelled' : order.status === 'awaiting-payment' ? 'Awaiting payment' : 'Active'}
-            tone={completed ? 'fresh' : order.status === 'cancelled' ? 'neutral' : order.status === 'awaiting-payment' ? 'warning' : 'info'}
+            label={
+              completed ? 'Complete'
+                : order.status === 'cancelled' ? 'Cancelled'
+                  : order.status === 'awaiting-payment' ? 'Awaiting payment'
+                    : order.status === 'awaiting-approval' ? 'With the pharmacist'
+                      : order.status === 'approved' ? 'Please confirm'
+                        : 'Active'
+            }
+            tone={completed ? 'fresh' : order.status === 'cancelled' ? 'neutral' : order.status === 'awaiting-payment' || rxPending ? 'warning' : 'info'}
           />
         </View>
 
@@ -148,7 +166,11 @@ export default function OrderStatusScreen() {
               : order.status === 'collected'
                 ? 'Collected. Thank you for shopping with Xana Life.'
                 : order.status === 'cancelled'
-                  ? 'This order was cancelled. Any Xana Club points you used have been returned.'
+                  ? `${whyCancelled ? `${whyCancelled} ` : ''}This order was cancelled. Any Xana Club points you used have been returned.`
+                  : order.status === 'awaiting-approval'
+                    ? 'A pharmacist is checking your prescription and will set the quantities. We will text you when it is done.'
+                  : order.status === 'approved'
+                    ? `Approved by the pharmacist. Check the items and total below, then confirm${order.expiresAt ? ` by ${formatDeadline(order.expiresAt)}` : ' within 48 hours'}.`
                   : order.status === 'awaiting-payment'
                     ? 'Awaiting payment. We start on your order once it is paid.'
                     : order.status === 'ready'
@@ -177,6 +199,32 @@ export default function OrderStatusScreen() {
           <Button label="Advance status (demo)" size="sm" variant="ghost" onPress={() => advanceStatus(order.id)} />
         ) : null}
       </Card>
+
+      {/* The pharmacist approved: the customer accepts the quantities and total. */}
+      {order.status === 'approved' ? (
+        <Card variant="elevated" padding={spacing.lg} style={styles.alertCard}>
+          <View style={styles.alertHead}>
+            <Icon name="prescription" size={16} color="primaryAccent" />
+            <Txt variant="label">{`Approved · ${formatKesDecimal(order.summary.total)}`}</Txt>
+          </View>
+          {order.pharmacistNote ? (
+            <Txt variant="caption" color="onSurfaceVariant">
+              {`Pharmacist's note: ${order.pharmacistNote}`}
+            </Txt>
+          ) : null}
+          <Txt variant="caption" color="onSurfaceVariant">
+            {order.fulfilment === 'pickup'
+              ? `Confirm and the branch prepares your order. You pay at the counter at ${order.storeName}.`
+              : 'Confirm and we start on your order.'}
+          </Txt>
+          {confirmError ? (
+            <Txt variant="caption" color="error">
+              {confirmError}
+            </Txt>
+          ) : null}
+          <Button label="Confirm order" icon="check" iconPosition="leading" loading={confirming} onPress={() => void confirmOrder()} />
+        </Card>
+      ) : null}
 
       {/* Substitution request */}
       {order.substitutionNeeded ? (
@@ -234,7 +282,8 @@ export default function OrderStatusScreen() {
                   </Txt>
                   {unavailable ? <Badge label="Out of stock" tone="warning" /> : null}
                 </View>
-                <Txt variant="label">{formatKes(paid * line.quantity)}</Txt>
+                {/* Saved lines keep what was charged (a pharmacist's approval re-prices them); samples work it out. */}
+                <Txt variant="label">{formatKes(line.lineTotal ?? paid * line.quantity)}</Txt>
               </View>
             </View>
           );
@@ -253,7 +302,7 @@ export default function OrderStatusScreen() {
           <Line label="Club member savings" value={`− ${formatKesDecimal(order.summary.wholesaleSavings)}`} tint />
         ) : null}
         <Divider />
-        <Line label="Total paid" value={formatKesDecimal(order.summary.total)} strong />
+        <Line label={rxPending ? 'Total' : 'Total paid'} value={formatKesDecimal(order.summary.total)} strong />
         <View style={styles.points}>
           <Icon name="sparkle" size={14} color="primaryAccent" />
           <Txt variant="caption" color="onSurfaceVariant" style={styles.pointsText}>
@@ -308,6 +357,14 @@ export default function OrderStatusScreen() {
       </BottomSheet>
     </Screen>
   );
+}
+
+/** `2026-10-31T11:05:00Z` → `Sat 31 Oct, 2:05 pm`, in the phone's own time zone. */
+function formatDeadline(iso: string): string {
+  const date = new Date(iso);
+  const day = date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  const time = date.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true });
+  return `${day}, ${time}`;
 }
 
 function Row({ icon, label, value, note }: { icon: 'store' | 'delivery' | 'mpesa'; label: string; value: string; note?: string }) {

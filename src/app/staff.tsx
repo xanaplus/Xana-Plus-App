@@ -115,6 +115,9 @@ const nextStep = (order: OrderRow): Step | undefined => {
 const canCancel = (order: OrderRow) => OPEN_ORDER(order) && order.status !== 'awaiting-payment';
 
 const ORDER_STATUS: Record<OrderStatus, { label: string; tone: BadgeTone }> = {
+  // Prescription orders: the pharmacist approves in the admin app, then the customer confirms.
+  'awaiting-approval': { label: 'WAITING FOR PHARMACIST', tone: 'neutral' },
+  approved: { label: 'WAITING FOR CUSTOMER', tone: 'neutral' },
   'awaiting-payment': { label: 'AWAITING PAYMENT', tone: 'neutral' },
   received: { label: 'NEW', tone: 'warning' },
   shopping: { label: 'SHOPPING', tone: 'info' },

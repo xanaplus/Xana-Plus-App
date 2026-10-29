@@ -31,6 +31,8 @@ import type { Palette } from '@/theme';
 type Filter = 'all' | 'active' | 'delivered' | 'cancelled';
 
 const STATUS_META: Record<OrderStatus, { label: string; tone: BadgeTone }> = {
+  'awaiting-approval': { label: 'With the pharmacist', tone: 'warning' },
+  approved: { label: 'Please confirm', tone: 'warning' },
   'awaiting-payment': { label: 'Awaiting payment', tone: 'warning' },
   received: { label: 'Received', tone: 'warning' },
   shopping: { label: 'Shopper picking', tone: 'warning' },

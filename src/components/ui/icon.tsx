@@ -54,6 +54,8 @@ const glyphs = {
   store: ['mci', 'store-outline'],
   shield: ['ion', 'shield-checkmark-outline'],
   lock: ['ion', 'lock-closed-outline'],
+  camera: ['ion', 'camera-outline'],
+  image: ['ion', 'image-outline'],
   info: ['ion', 'information-circle-outline'],
   alert: ['ion', 'alert-circle-outline'],
   'alert-triangle': ['ion', 'warning-outline'],

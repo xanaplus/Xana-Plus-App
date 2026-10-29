@@ -64,6 +64,9 @@ const hydrateCart = (): CartState => {
   };
 };
 
+/** A prescription medicine goes in the basket once; the pharmacist sets how many (owner, 29 Oct 2026). */
+const capped = (productId: string, quantity: number) => (productById(productId)?.rxRequired ? Math.min(quantity, 1) : quantity);
+
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case 'add': {
@@ -71,18 +74,18 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       if (existing) {
         return {
           ...state,
-          lines: state.lines.map(l => (l.productId === action.productId ? { ...l, quantity: l.quantity + (action.quantity ?? 1) } : l)),
+          lines: state.lines.map(l => (l.productId === action.productId ? { ...l, quantity: capped(l.productId, l.quantity + (action.quantity ?? 1)) } : l)),
         };
       }
-      return { ...state, lines: [...state.lines, { productId: action.productId, quantity: action.quantity ?? 1 }] };
+      return { ...state, lines: [...state.lines, { productId: action.productId, quantity: capped(action.productId, action.quantity ?? 1) }] };
     }
     case 'remove':
       return { ...state, lines: state.lines.filter(l => l.productId !== action.productId) };
     case 'setQuantity':
       if (action.quantity < 1) return { ...state, lines: state.lines.filter(l => l.productId !== action.productId) };
-      return { ...state, lines: state.lines.map(l => (l.productId === action.productId ? { ...l, quantity: action.quantity } : l)) };
+      return { ...state, lines: state.lines.map(l => (l.productId === action.productId ? { ...l, quantity: capped(l.productId, action.quantity) } : l)) };
     case 'increment':
-      return { ...state, lines: state.lines.map(l => (l.productId === action.productId ? { ...l, quantity: l.quantity + 1 } : l)) };
+      return { ...state, lines: state.lines.map(l => (l.productId === action.productId ? { ...l, quantity: capped(l.productId, l.quantity + 1) } : l)) };
     case 'decrement':
       return {
         ...state,

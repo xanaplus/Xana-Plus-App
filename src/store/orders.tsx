@@ -67,7 +67,14 @@ export type PlacedOrder = {
   /** Set when an item went out of stock and needs the customer to choose. */
   /** `held` = the shopper could not reach the customer, so the item waits for their answer (D-1). */
   substitutionNeeded?: { productId: string; shopperNote: string; held?: boolean };
+  /** The server's cancel reason, e.g. `rx_rejected` or `not_confirmed`. */
   cancelledReason?: string;
+  /** The order carries a prescription, so the pharmacist approves it first. */
+  prescription?: boolean;
+  /** What the pharmacist wrote: the reason for a rejection, or a note with an approval. */
+  pharmacistNote?: string;
+  /** ISO time an approved order must be confirmed by. */
+  expiresAt?: string;
   /** Saved in Supabase as a test order (payment simulated). */
   isTest?: boolean;
 };
@@ -132,7 +139,7 @@ const SEED: PlacedOrder[] = ORDER_HISTORY.map((record, index) => {
 });
 
 const STATUSES: readonly OrderStatus[] = [
-  'awaiting-payment', 'received', 'shopping', 'ready', 'collected', 'out-for-delivery', 'delivered', 'cancelled',
+  'awaiting-approval', 'approved', 'awaiting-payment', 'received', 'shopping', 'ready', 'collected', 'out-for-delivery', 'delivered', 'cancelled',
 ];
 const SUBSTITUTIONS: readonly SubstitutionPreference[] = ['similar', 'refund', 'call'];
 const PAYMENTS: readonly OrderPaymentMethod[] = ['mpesa', 'cod', 'card', 'dpo', 'counter'];
@@ -195,6 +202,8 @@ export type PlaceOrderInput = {
   promoCode?: string;
   /** Optional buyer's KRA PIN for the receipt; a well-formed one is also saved on the account. */
   kraPin?: string;
+  /** The draft prescription (photos attached) sent with prescription medicines, for the pharmacist. */
+  prescriptionId?: string;
 };
 
 /** Error codes `place-order` returns, plus `network` for no reply and `timeout` for a reply that never came. */
@@ -204,6 +213,8 @@ export type PlaceOrderError =
   | 'unavailable'
   | 'age_unconfirmed'
   | 'rx_missing'
+  | 'rx_quantity'
+  | 'not_sold_online'
   | 'points_unavailable'
   | 'price_changed'
   | PromoError
@@ -247,7 +258,11 @@ export const placeOrderErrorMessage = (error: PlaceOrderError): string => {
     case 'age_unconfirmed':
       return 'Confirm you are 18 or over to buy alcohol.';
     case 'rx_missing':
-      return 'A prescription is needed for the medicine in your cart.';
+      return 'Add a photo of your prescription for the medicine in your cart.';
+    case 'rx_quantity':
+      return 'Add each prescription medicine once. The pharmacist sets the quantity.';
+    case 'not_sold_online':
+      return 'Some items in your cart cannot be ordered online. Remove them and try again.';
     case 'points_unavailable':
       return 'Those Xana Club points are no longer available. Adjust the points and try again.';
     case 'price_changed':
@@ -264,6 +279,8 @@ export const placeOrderErrorMessage = (error: PlaceOrderError): string => {
 
 type PlaceOrderReply = {
   orderNo: string;
+  /** Set for a prescription order, which waits for the pharmacist (awaiting-approval). */
+  status?: OrderStatus;
   createdAt: string;
   itemsSubtotal: number;
   wholesaleSavings: number;
@@ -298,8 +315,25 @@ type OrderRow = {
   platform_fee: number | string;
   total: number | string;
   points_earned: number;
+  prescription_id: string | null;
+  cancel_reason: string | null;
+  expires_at: string | null;
   order_items: { item_no: string; quantity: number; unit_price: number | string; line_total: number | string }[];
 };
+
+const ORDER_COLUMNS =
+  'order_no, created_at, status, is_test, payment_method, payment_reference, fulfilment, payment_status, collection_code, contact, address_line, slot_label, store_name, substitution, items_subtotal, wholesale_savings, promo_code, promo_discount, delivery_fee, platform_fee, total, points_earned, prescription_id, cancel_reason, expires_at, order_items(item_no, quantity, unit_price, line_total)';
+
+/** The pharmacist's note for each prescription order, read from the customer's own prescriptions. */
+async function pharmacistNotes(orderNos: string[]): Promise<Map<string, string>> {
+  const notes = new Map<string, string>();
+  if (orderNos.length === 0) return notes;
+  const { data } = await supabase.from('prescriptions').select('order_no, review_note').in('order_no', orderNos);
+  for (const row of (data ?? []) as { order_no: string | null; review_note: string | null }[]) {
+    if (row.order_no && row.review_note?.trim()) notes.set(row.order_no, row.review_note.trim());
+  }
+  return notes;
+}
 
 const displayDate = (iso: string): string => {
   const d = new Date(iso);
@@ -343,6 +377,9 @@ const fromRow = (row: OrderRow): PlacedOrder => {
     substitution: row.substitution,
     pointsEarned: row.points_earned,
     isTest: row.is_test,
+    prescription: row.prescription_id !== null,
+    cancelledReason: row.cancel_reason ?? undefined,
+    expiresAt: row.expires_at ?? undefined,
   };
 };
 
@@ -357,6 +394,13 @@ type OrdersContextValue = {
   /** Applies the customer's answer to an out-of-stock item. */
   resolveSubstitution: (orderId: string, preference: SubstitutionPreference) => void;
   advanceStatus: (orderId: string) => void;
+  /** The customer accepts what the pharmacist approved; resolves to an error message, or null when done. */
+  confirmApproved: (orderId: string) => Promise<string | null>;
+};
+
+const CONFIRM_ERRORS: Record<string, string> = {
+  approval_expired: 'The 48 hours to confirm have passed, so this order is being cancelled.',
+  not_approved: 'This order can no longer be confirmed.',
 };
 
 const OrdersContext = createContext<OrdersContextValue | null>(null);
@@ -413,6 +457,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
             status?: OrderStatus;
             payment_status?: PaymentStatus | null;
             collection_code?: string | null;
+            cancel_reason?: string | null;
+            expires_at?: string | null;
           };
           if (!row.order_no || !row.status || !STATUSES.includes(row.status)) return;
           setOrders(prev =>
@@ -423,18 +469,22 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
                     status: row.status as OrderStatus,
                     paymentStatus: row.payment_status ?? o.paymentStatus,
                     collectionCode: row.collection_code ?? o.collectionCode,
+                    cancelledReason: row.cancel_reason ?? o.cancelledReason,
+                    expiresAt: row.expires_at ?? undefined,
                   }
                 : o,
             ),
           );
           if (isCompleted(row.status) || row.status === 'cancelled') void refreshProfile();
+          // The pharmacist's answer changes quantities, totals and the note: read the order again.
+          if (row.status === 'approved' || row.cancel_reason === 'rx_rejected') retryHistory();
         },
       )
       .subscribe();
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [userId, refreshProfile]);
+  }, [userId, refreshProfile, retryHistory]);
 
   // Signed in: the saved orders come from Supabase; the demo baskets stay underneath.
   useEffect(() => {
@@ -446,9 +496,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       try {
         const { data, error } = await supabase
           .from('orders')
-          .select(
-            'order_no, created_at, status, is_test, payment_method, payment_reference, fulfilment, payment_status, collection_code, contact, address_line, slot_label, store_name, substitution, items_subtotal, wholesale_savings, promo_code, promo_discount, delivery_fee, platform_fee, total, points_earned, order_items(item_no, quantity, unit_price, line_total)',
-          )
+          .select(ORDER_COLUMNS)
           // Staff accounts can read every order, so a customer's list must ask for its own explicitly.
           .eq('user_id', userId)
           .order('created_at', { ascending: false })
@@ -456,6 +504,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         if (!isCurrent()) return;
         if (error || !data) throw new Error('History unavailable');
         const saved = (data as OrderRow[]).map(fromRow);
+        const notes = await pharmacistNotes(saved.filter(order => order.prescription).map(order => order.id)).catch(() => new Map<string, string>());
+        for (const order of saved) order.pharmacistNote = notes.get(order.id);
         // Order screens look lines up by id, so load any item this device hasn't seen yet.
         const missing = [...new Set(saved.flatMap(order => order.lines.map(line => line.productId)))].filter(id => !productById(id));
         await fetchProducts(missing).catch(() => []);
@@ -501,6 +551,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         rxReference: input.rxReference,
         promoCode: input.promoCode,
         kraPin: input.kraPin,
+        prescriptionId: input.prescriptionId,
       },
     });
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -535,7 +586,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     const order: PlacedOrder = {
       id: data.orderNo,
       placed: displayDate(data.createdAt),
-      status: 'received',
+      status: data.status && STATUSES.includes(data.status) ? data.status : 'received',
+      prescription: input.prescriptionId !== undefined,
       lines: data.items?.map(item => ({ productId: item.itemNo, quantity: item.quantity, unitPrice: item.unitPrice, lineTotal: item.lineTotal })) ?? input.lines,
       summary: {
         itemsSubtotal: data.itemsSubtotal,
@@ -592,9 +644,19 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
   const orderById = useCallback((id: string) => orders.find(o => o.id === id), [orders]);
 
+  const confirmApproved = useCallback(async (orderId: string) => {
+    const { data, error } = await supabase.rpc('confirm_approved_order', { p_order_no: orderId });
+    if (error) return CONFIRM_ERRORS[error.message] ?? 'Could not confirm your order. Check your connection and try again.';
+    const status = (data as { status?: OrderStatus } | null)?.status;
+    if (status && STATUSES.includes(status)) {
+      setOrders(prev => prev.map(o => (o.id === orderId ? { ...o, status, expiresAt: undefined } : o)));
+    }
+    return null;
+  }, []);
+
   const value = useMemo<OrdersContextValue>(
-    () => ({ orders, historyLoading, historyError, retryHistory, orderById, placeOrder, resolveSubstitution, advanceStatus }),
-    [orders, historyLoading, historyError, retryHistory, orderById, placeOrder, resolveSubstitution, advanceStatus],
+    () => ({ orders, historyLoading, historyError, retryHistory, orderById, placeOrder, resolveSubstitution, advanceStatus, confirmApproved }),
+    [orders, historyLoading, historyError, retryHistory, orderById, placeOrder, resolveSubstitution, advanceStatus, confirmApproved],
   );
 
   return <OrdersContext.Provider value={value}>{children}</OrdersContext.Provider>;

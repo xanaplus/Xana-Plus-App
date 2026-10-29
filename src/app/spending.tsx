@@ -28,6 +28,7 @@ import { recordedSavings } from '@/lib/order-savings';
 import { spendingBreakdown } from '@/lib/spending-breakdown';
 import { unitPrice, useCart } from '@/store/cart';
 import { useOrders, type PlacedOrder } from '@/store/orders';
+import { isRxPending } from '@/lib/order-status';
 import { useSession } from '@/store/session';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
@@ -222,7 +223,7 @@ export default function SpendingScreen() {
   const monthsProgress = useRevealProgress(revealed.months);
 
   // Provider includes demo seed orders and saved orders with checkout snapshots.
-  const history = useMemo(() => placedOrders.filter(order => order.status !== 'cancelled' && order.status !== 'awaiting-payment'), [placedOrders]);
+  const history = useMemo(() => placedOrders.filter(order => order.status !== 'cancelled' && order.status !== 'awaiting-payment' && !isRxPending(order.status)), [placedOrders]);
 
   const orders = useMemo(() => {
     const months = PERIOD_MONTHS[period];
