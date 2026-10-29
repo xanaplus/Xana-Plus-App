@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Linking, Pressable, StyleSheet, TextInput, View, type TextInputProps, type ViewStyle } from 'react-native';
+import { Linking, Pressable, StyleSheet, Switch, TextInput, View, type TextInputProps, type ViewStyle } from 'react-native';
 
 import { BottomSheet, Button, Icon, ProgressBar, Txt, type IconName } from '@/components/ui';
 import type { FunctionError } from '@/lib/supabase';
@@ -382,12 +382,12 @@ type SignupForm = {
 
 const EMPTY_SIGNUP: SignupForm = { firstName: '', lastName: '', phone: EMPTY_PHONE_INPUT, email: '', password: '', marketing: false };
 
-/** The sign-up password checklist, as on Carrefour's sign-up (Roystone, 29 Oct 2026). */
-export const PASSWORD_RULES: { label: string; met: (password: string) => boolean }[] = [
-  { label: `At least ${PASSWORD_MIN} characters`, met: password => password.length >= PASSWORD_MIN },
-  { label: 'At least 1 uppercase letter', met: password => /[A-Z]/.test(password) },
-  { label: 'At least 1 lowercase letter', met: password => /[a-z]/.test(password) },
-  { label: 'At least 1 number', met: password => /\d/.test(password) },
+/** The sign-up password rules (Roystone, 29 Oct 2026), shown as a strength bar. */
+export const PASSWORD_RULES: { label: string; short: string; met: (password: string) => boolean }[] = [
+  { label: `At least ${PASSWORD_MIN} characters`, short: `${PASSWORD_MIN}+ characters`, met: password => password.length >= PASSWORD_MIN },
+  { label: 'At least 1 uppercase letter', short: 'A–Z', met: password => /[A-Z]/.test(password) },
+  { label: 'At least 1 lowercase letter', short: 'a–z', met: password => /[a-z]/.test(password) },
+  { label: 'At least 1 number', short: '0–9', met: password => /\d/.test(password) },
 ];
 
 /** The first thing missing from the sign-up form, or '' when it can go. */
@@ -634,7 +634,7 @@ export function useSignInFlow(onSignedIn: () => void) {
     phone: null,
     email: null,
     password: 'Log in with password',
-    signup: 'Sign up',
+    signup: 'Create account',
     code: 'Get a sign-in code',
     verify: codeBy === 'email' ? 'Check your email' : 'Verify your number',
     confirmEmail: 'Confirm your email',
@@ -644,7 +644,7 @@ export function useSignInFlow(onSignedIn: () => void) {
     phone: { label: 'Continue', onPress: continueWithPhone, disabled: false },
     email: { label: 'Continue', onPress: continueWithEmail, disabled: false },
     password: { label: 'Log in', onPress: signIn, disabled: false },
-    signup: { label: 'Continue', onPress: createAccount, disabled: signupProblem(signup) !== '' },
+    signup: { label: 'Create account', onPress: createAccount, disabled: signupProblem(signup) !== '' },
     code: { label: 'Send code', onPress: sendCode, disabled: false },
     verify: { label: 'Verify & Continue', onPress: () => confirmCode(), disabled: code.length < OTP_LENGTH },
     confirmEmail: { label: 'Confirm email', onPress: () => confirmCode(), disabled: code.length < OTP_LENGTH },
@@ -699,23 +699,71 @@ function WayChoice({ value, onChange }: { value: CodeWay; onChange: (next: CodeW
   );
 }
 
-/** "Your password must include": each rule ticks green once the password meets it. */
-function PasswordChecklist({ password }: { password: string }) {
+const STRENGTH_WORDS = ['Too short', 'Weak', 'Fair', 'Good', 'Strong'];
+
+/** The password rules as a four-step bar and small chips that turn green as each is met. */
+function PasswordStrength({ password }: { password: string }) {
+  const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
+  const met = PASSWORD_RULES.map(rule => rule.met(password));
+  const score = met.filter(Boolean).length;
+  const fill = score === 4 ? colors.primaryAccent : score === 3 ? colors.warningStrong : colors.warning;
   return (
-    <View style={styles.rules} accessibilityLiveRegion="polite">
-      <Txt variant="titleSm">Your password must include:</Txt>
-      {PASSWORD_RULES.map(rule => {
-        const met = rule.met(password);
-        return (
-          <View key={rule.label} style={styles.rule} accessibilityLabel={`${rule.label}, ${met ? 'done' : 'not yet'}`}>
-            <Icon name={met ? 'check-circle' : 'check-circle-outline'} size={18} color={met ? 'primaryAccent' : 'onSurfaceVariant'} />
-            <Txt variant="body" color={met ? 'onSurface' : 'onSurfaceVariant'}>
-              {rule.label}
+    <View style={styles.strength} accessibilityLiveRegion="polite">
+      <View style={styles.strengthHead}>
+        <View style={styles.strengthBar}>
+          {PASSWORD_RULES.map((rule, index) => (
+            <View key={rule.label} style={[styles.strengthStep, index < score ? { backgroundColor: fill } : null]} />
+          ))}
+        </View>
+        {password ? (
+          <Txt variant="labelSm" tint={score === 4 ? colors.primaryAccent : colors.onSurfaceVariant}>
+            {STRENGTH_WORDS[score]}
+          </Txt>
+        ) : null}
+      </View>
+      <View style={styles.chips}>
+        {PASSWORD_RULES.map((rule, index) => (
+          <View
+            key={rule.label}
+            style={[styles.chip, met[index] ? styles.chipMet : null]}
+            accessible
+            accessibilityLabel={`${rule.label}, ${met[index] ? 'done' : 'not yet'}`}
+          >
+            {met[index] ? <Icon name="check" size={12} color="primaryAccent" /> : null}
+            <Txt variant="labelSm" color={met[index] ? 'primaryAccent' : 'onSurfaceVariant'}>
+              {rule.short}
             </Txt>
           </View>
-        );
-      })}
+        ))}
+      </View>
+    </View>
+  );
+}
+
+/** The offers consent as a switch card; off until the customer turns it on. */
+function OffersSwitch({ value, onChange }: { value: boolean; onChange: (next: boolean) => void }) {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
+  return (
+    <View style={styles.offers}>
+      <View style={styles.offersIcon}>
+        <Icon name="tag" size={18} color="primaryAccent" />
+      </View>
+      <View style={styles.offersBody}>
+        <Txt variant="title">Offers and news</Txt>
+        <Txt variant="caption" color="onSurfaceVariant">
+          By SMS, email or app notification. Change it anytime in Profile.
+        </Txt>
+      </View>
+      <Switch
+        value={value}
+        onValueChange={onChange}
+        accessibilityLabel="Offers and news"
+        trackColor={{ false: colors.surfaceContainerHighest, true: colors.primaryContainer }}
+        thumbColor={colors.surface}
+        ios_backgroundColor={colors.surfaceContainerHighest}
+      />
     </View>
   );
 }
@@ -802,10 +850,20 @@ export function SignInBody({ flow }: { flow: SignInFlow }) {
     const { signup } = flow;
     return (
       <View style={styles.entry}>
-        <View style={styles.form}>
+        <View style={styles.welcome}>
+          <Txt variant="headlineLg">Join Xana Plus</Txt>
+          <Txt variant="bodySm" color="onSurfaceVariant">
+            Earn points on every order and check out faster.
+          </Txt>
+        </View>
+
+        <View style={styles.section}>
+          <Txt variant="overline" color="onSurfaceVariant">
+            About you
+          </Txt>
           <View style={styles.nameRow}>
             <TextField
-              label="First name*"
+              label="First name"
               style={styles.nameField}
               value={signup.firstName}
               onChangeText={firstName => flow.updateSignup({ firstName })}
@@ -815,7 +873,7 @@ export function SignInBody({ flow }: { flow: SignInFlow }) {
               maxLength={30}
             />
             <TextField
-              label="Last name*"
+              label="Last name"
               style={styles.nameField}
               value={signup.lastName}
               onChangeText={lastName => flow.updateSignup({ lastName })}
@@ -825,24 +883,40 @@ export function SignInBody({ flow }: { flow: SignInFlow }) {
               maxLength={30}
             />
           </View>
+        </View>
+
+        <View style={styles.section}>
+          <Txt variant="overline" color="onSurfaceVariant">
+            Contact
+          </Txt>
+          <PhoneSignInForm
+            label="Phone number"
+            value={signup.phone}
+            onChange={phone => flow.updateSignup({ phone })}
+            showChannels={false}
+            helper="We'll text a code to confirm it."
+          />
           <TextField
-            label="Email address*"
+            label="Email"
+            icon="mail"
             value={signup.email}
             onChangeText={text => flow.updateSignup({ email: text.replace(/\s/g, '') })}
+            placeholder="you@example.com"
             keyboardType="email-address"
             autoCapitalize="none"
             autoComplete="email"
             textContentType="emailAddress"
             maxLength={254}
           />
-          <PhoneSignInForm
-            label="Phone number*"
-            value={signup.phone}
-            onChange={phone => flow.updateSignup({ phone })}
-            showChannels={false}
-          />
+        </View>
+
+        <View style={styles.section}>
+          <Txt variant="overline" color="onSurfaceVariant">
+            Security
+          </Txt>
           <TextField
-            label="Password*"
+            label="Password"
+            icon="lock"
             secure
             value={signup.password}
             onChangeText={password => flow.updateSignup({ password })}
@@ -854,43 +928,21 @@ export function SignInBody({ flow }: { flow: SignInFlow }) {
             onSubmitEditing={submit}
             maxLength={PASSWORD_MAX}
           />
-          <PasswordChecklist password={signup.password} />
-          {flow.error ? <ErrorNote message={flow.error} /> : null}
+          <PasswordStrength password={signup.password} />
         </View>
-        <Pressable
-          accessibilityRole="checkbox"
-          accessibilityState={{ checked: signup.marketing }}
-          onPress={() => flow.updateSignup({ marketing: !signup.marketing })}
-          style={styles.consent}
-        >
-          <View style={[styles.checkbox, signup.marketing ? styles.checkboxOn : null]}>
-            {signup.marketing ? <Icon name="check" size={14} color="onPrimary" /> : null}
-          </View>
-          <Txt variant="bodySm" style={styles.consentText}>
-            Yes, I would like to receive news and exclusive offers from Xana Plus and Xana Life by SMS, email and app notifications.
-          </Txt>
-        </Pressable>
-        <Txt variant="bodySm" color="onSurfaceVariant">
-          You can opt out at any time in Profile, under Terms & Privacy.
-        </Txt>
-        <Txt variant="bodySm" color="onSurfaceVariant">
-          {"By registering, I agree to Xana Life's Terms & Conditions and acknowledge that I have read and understand the "}
-          <Txt
-            variant="bodySm"
-            color="primaryAccent"
-            accessibilityRole="link"
-            onPress={() => void Linking.openURL(PRIVACY_POLICY_URL)}
-          >
+
+        <OffersSwitch value={signup.marketing} onChange={marketing => flow.updateSignup({ marketing })} />
+
+        {flow.error ? <ErrorNote message={flow.error} /> : null}
+
+        <Txt variant="caption" color="onSurfaceVariant" align="center" style={styles.terms}>
+          {"By creating an account you agree to Xana Life's terms and our "}
+          <Txt variant="caption" color="primaryAccent" accessibilityRole="link" onPress={() => void Linking.openURL(PRIVACY_POLICY_URL)}>
             Privacy Policy
           </Txt>
           {'.'}
         </Txt>
-        <Txt variant="body" align="center">
-          {'Already have an account? '}
-          <Txt variant="titleSm" color="primaryAccent" accessibilityRole="button" onPress={() => flow.go('phone')}>
-            Log in
-          </Txt>
-        </Txt>
+        <AltLink prompt="Already a member?" label="Log in" onPress={() => flow.go('phone')} />
       </View>
     );
   }
@@ -1276,21 +1328,42 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   textField: { gap: spacing.sm },
   nameRow: { flexDirection: 'row', gap: spacing.md },
   nameField: { flex: 1 },
-  rules: { gap: spacing.sm, padding: spacing.lg, borderRadius: radius.lg, backgroundColor: colors.surfaceContainerLow },
-  rule: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  consent: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
-  checkbox: {
-    width: 22,
-    height: 22,
-    marginTop: 2,
-    borderRadius: radius.sm,
-    borderWidth: 2,
-    borderColor: colors.outline,
+  welcome: { gap: spacing.xs },
+  section: { gap: spacing.md },
+  strength: { gap: spacing.sm },
+  strengthHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  strengthBar: { flex: 1, flexDirection: 'row', gap: spacing.xs },
+  strengthStep: { flex: 1, height: 4, borderRadius: radius.pill, backgroundColor: colors.surfaceContainerHigh },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xxs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.pill,
+    backgroundColor: colors.surfaceContainerLow,
+  },
+  chipMet: { backgroundColor: colors.mintSubtle },
+  offers: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.lg,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.outlineSoft30,
+    backgroundColor: colors.surface,
+  },
+  offersIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: colors.mintSubtle,
   },
-  checkboxOn: { borderColor: colors.primaryAccent, backgroundColor: colors.primaryAccent },
-  consentText: { flex: 1 },
+  offersBody: { flex: 1, gap: spacing.xxs },
   links: { gap: spacing.lg },
   switchRow: { alignItems: 'center', gap: spacing.xxs },
   footer: { gap: spacing.lg },
