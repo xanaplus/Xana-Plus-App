@@ -737,6 +737,7 @@ export function SignInBody({ flow }: { flow: SignInFlow }) {
           showChannels={false}
           helper="Have an account? We'll text you a code. New here? You'll sign up next."
         />
+        <EntryButtons flow={flow} />
       </View>
     );
   }
@@ -752,6 +753,7 @@ export function SignInBody({ flow }: { flow: SignInFlow }) {
           error={flow.error}
           helper="Have an account? We'll email you a code. New here? You'll sign up next."
         />
+        <EntryButtons flow={flow} />
       </View>
     );
   }
@@ -1077,43 +1079,64 @@ export function OtpCodeField({
   );
 }
 
+/** The main button: Continue, Log in, Verify… */
+function PrimaryButton({ flow }: { flow: SignInFlow }) {
+  const codeStep = flow.view === 'verify' || flow.view === 'confirmEmail';
+  return (
+    <Button
+      label={flow.primary.label}
+      icon={codeStep ? 'shield' : undefined}
+      iconPosition="leading"
+      size="lg"
+      disabled={flow.primary.disabled}
+      loading={flow.busy}
+      onPress={() => void flow.primary.onPress()}
+    />
+  );
+}
+
+/** The phone and email screens put their buttons right under the field, where they are seen first. */
+const inBody = (view: SignInView) => view === 'phone' || view === 'email';
+
 /**
- * The bottom of every sign-in screen, in both hosts: the main button, then
- * "or / Continue with email" on the first screen and "Use password instead"
- * under a sign-in code.
+ * Continue, then "or" and the other way in, straight under the phone or email
+ * field, as on Carrefour's "Log in or sign up" (Roystone, 29 Oct 2026).
+ */
+function EntryButtons({ flow }: { flow: SignInFlow }) {
+  const styles = useThemeStyles(createStyles);
+  return (
+    <View style={styles.footer}>
+      <PrimaryButton flow={flow} />
+      <View style={styles.orRow}>
+        <View style={styles.orLine} />
+        <Txt variant="bodySm" color="onSurfaceVariant">
+          or
+        </Txt>
+        <View style={styles.orLine} />
+      </View>
+      {flow.view === 'phone' ? (
+        <Button label="Continue with email" icon="mail" iconPosition="leading" variant="outline" size="lg" onPress={() => flow.go('email')} />
+      ) : (
+        <Button label="Continue with phone number" icon="phone" iconPosition="leading" variant="outline" size="lg" onPress={() => flow.go('phone')} />
+      )}
+    </View>
+  );
+}
+
+/**
+ * The bottom of the other sign-in screens, in both hosts: the main button, and
+ * "Use password instead" under a sign-in code. Null where the screen has
+ * nothing to pin there.
  */
 export function SignInActions({ flow, terms = false }: { flow: SignInFlow; terms?: boolean }) {
   const styles = useThemeStyles(createStyles);
-  const codeStep = flow.view === 'verify' || flow.view === 'confirmEmail';
+  const showTerms = terms && (inBody(flow.view) || flow.view === 'password');
+  if (inBody(flow.view) && !showTerms) return null;
   return (
     <View style={styles.footer}>
-      <Button
-        label={flow.primary.label}
-        icon={codeStep ? 'shield' : undefined}
-        iconPosition="leading"
-        size="lg"
-        disabled={flow.primary.disabled}
-        loading={flow.busy}
-        onPress={() => void flow.primary.onPress()}
-      />
-      {flow.view === 'phone' || flow.view === 'email' ? (
-        <>
-          <View style={styles.orRow}>
-            <View style={styles.orLine} />
-            <Txt variant="bodySm" color="onSurfaceVariant">
-              or
-            </Txt>
-            <View style={styles.orLine} />
-          </View>
-          {flow.view === 'phone' ? (
-            <Button label="Continue with email" icon="mail" iconPosition="leading" variant="outline" size="lg" onPress={() => flow.go('email')} />
-          ) : (
-            <Button label="Continue with phone number" icon="phone" iconPosition="leading" variant="outline" size="lg" onPress={() => flow.go('phone')} />
-          )}
-        </>
-      ) : null}
+      {inBody(flow.view) ? null : <PrimaryButton flow={flow} />}
       {flow.offerPassword ? <AltLink label="Use password instead" onPress={flow.usePassword} /> : null}
-      {terms && (flow.view === 'phone' || flow.view === 'email' || flow.view === 'password') ? <TermsNote /> : null}
+      {showTerms ? <TermsNote /> : null}
     </View>
   );
 }

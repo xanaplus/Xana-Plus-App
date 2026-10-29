@@ -21,7 +21,8 @@ export default function LoginRoute() {
     <Screen
       padded={false}
       contentStyle={styles.content}
-      footer={<SignInActions flow={flow} />}
+      // The phone and email screens carry their buttons under the field, so nothing is pinned below.
+      footer={flow.view === 'phone' || flow.view === 'email' ? undefined : <SignInActions flow={flow} />}
     >
       <TopBar title={flow.title ?? 'Log in or sign up'} onBack={() => flow.back() || leave()} />
 
