@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
 
 import { BottomSheet, Button, Icon, ProgressBar, Txt, type IconName } from '@/components/ui';
 import type { FunctionError } from '@/lib/supabase';
-import { useSession } from '@/store/session';
+import { isValidEmail, useSession, type SignInResult } from '@/store/session';
 import { fonts, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
@@ -13,13 +13,17 @@ import type { Palette } from '@/theme';
  * plus the pieces the standalone `/login` route (Screen 11) reuses so both hosts
  * render the same form and the same verification step.
  *
- * Email first, phone second (Roystone, 27 Oct 2026). Email only reaches an
- * account that has confirmed the address, so the phone route stays one tap away
- * for new customers.
+ * The same as the website's account page (Roystone, 29 Oct 2026): email or
+ * phone number and password first, "Create an account", and a code by SMS or
+ * email for anyone without a password. Email only reaches an account that has
+ * confirmed the address, so a new customer starts with their phone.
  */
 
 /** Digits in the SMS code, in the design and in the `request-otp` Edge Function. */
 export const OTP_LENGTH = 6;
+/** The website's password rule. */
+export const PASSWORD_MIN = 8;
+export const PASSWORD_MAX = 72;
 /** Seconds the resend link stays disabled after a code is issued. */
 const RESEND_SECONDS = 30;
 
@@ -46,6 +50,11 @@ const SIGN_IN_MESSAGES: Record<FunctionError, string> = {
   email_taken: 'This email is already linked to another account. Use a different email.',
   already_confirmed: 'This email is already confirmed on your account.',
   session_expired: 'You were signed out. Please sign in again.',
+  invalid_credentials: 'The email, phone number or password is not right. If you have not set a password yet, get a code instead.',
+  too_many_tries: 'Too many tries. Wait 15 minutes and try again, or get a code instead.',
+  wrong_password: 'Your current password is not right.',
+  weak_password: `Choose a stronger password of at least ${PASSWORD_MIN} characters.`,
+  same_password: 'The new password must be different from the current one.',
   server_error: 'Something went wrong on our side. Please try again.',
   network: 'No connection. Check your internet and try again.',
 };
@@ -121,12 +130,15 @@ export function PhoneSignInForm({
   onChange,
   onSubmit,
   error,
+  showChannels = true,
 }: {
   value: PhoneInput;
   onChange: (next: PhoneInput) => void;
   /** The keyboard's Enter / Go key: same as tapping the send button. */
   onSubmit?: () => void;
   error?: string;
+  /** The "Send code via" choice; off where SMS is the only way. */
+  showChannels?: boolean;
 }) {
   const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
@@ -178,7 +190,7 @@ export function PhoneSignInForm({
         </Txt>
       </View>
 
-      <View style={styles.channels}>
+      {showChannels ? <View style={styles.channels}>
         <Txt variant="overline" color="onSurfaceVariant">
           Send code via
         </Txt>
@@ -205,12 +217,12 @@ export function PhoneSignInForm({
             );
           })}
         </View>
-      </View>
+      </View> : null}
     </View>
   );
 }
 
-/** Email field and helper line: the first way in. */
+/** Email field and helper line, for a code by email. */
 export function EmailSignInForm({
   value,
   onChange,
@@ -270,18 +282,69 @@ export function EmailSignInForm({
   );
 }
 
-/** The quiet link that swaps email for phone and back, under the form. */
-export function SignInMethodSwitch({ method, onSwitch }: { method: SignInMethod; onSwitch: () => void }) {
+/** A labelled text field in the form's style; `secure` adds a show / hide toggle. */
+export function TextField({
+  label,
+  icon,
+  hint,
+  secure = false,
+  ...input
+}: { label: string; icon: IconName; hint?: string; secure?: boolean } & Omit<TextInputProps, 'style' | 'secureTextEntry'>) {
+  const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
-  const toPhone = method === 'email';
+  const [focused, setFocused] = useState(false);
+  const [shown, setShown] = useState(false);
+
+  return (
+    <View style={styles.textField}>
+      <Txt variant="overline" color="onSurfaceVariant">
+        {label}
+      </Txt>
+      <View style={[styles.field, styles.emailField, focused ? styles.fieldFocused : null]}>
+        <Icon name={icon} size={18} color="onSurfaceVariant" />
+        <TextInput
+          placeholderTextColor={colors.outline}
+          autoCorrect={false}
+          accessibilityLabel={label}
+          {...input}
+          secureTextEntry={secure && !shown}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={styles.input}
+        />
+        {secure ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={shown ? 'Hide password' : 'Show password'}
+            hitSlop={8}
+            onPress={() => setShown(value => !value)}
+          >
+            <Icon name="eye" size={18} color={shown ? 'primaryAccent' : 'onSurfaceVariant'} />
+          </Pressable>
+        ) : null}
+      </View>
+      {hint ? (
+        <Txt variant="caption" color="onSurfaceVariant">
+          {hint}
+        </Txt>
+      ) : null}
+    </View>
+  );
+}
+
+/** "New here? Create an account": a line of text and the link that acts on it. */
+function AltLink({ prompt, label, onPress }: { prompt?: string; label: string; onPress: () => void }) {
+  const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.switchRow}>
-      <Txt variant="bodySm" color="onSurfaceVariant" align="center">
-        {toPhone ? 'New here, or no email linked yet?' : 'Have an email linked to your account?'}
-      </Txt>
-      <Pressable accessibilityRole="button" hitSlop={8} onPress={onSwitch}>
+      {prompt ? (
+        <Txt variant="bodySm" color="onSurfaceVariant" align="center">
+          {prompt}
+        </Txt>
+      ) : null}
+      <Pressable accessibilityRole="button" hitSlop={8} onPress={onPress}>
         <Txt variant="label" color="primaryAccent" align="center">
-          {toPhone ? 'Use your phone number' : 'Use your email'}
+          {label}
         </Txt>
       </Pressable>
     </View>
@@ -300,43 +363,107 @@ export function ChangeNumberLink({ onPress, label = 'Change number' }: { onPress
   );
 }
 
-export type SignInMethod = 'email' | 'phone';
+/**
+ * The screens, as on the website's account page: sign in with a password,
+ * create an account, get a code instead, enter it, and (after a sign-up)
+ * confirm the email.
+ */
+export type SignInView = 'password' | 'signup' | 'code' | 'verify' | 'confirmEmail';
+export type CodeWay = 'sms' | 'email';
+
+type SignupForm = { name: string; phone: PhoneInput; email: string; password: string };
+
+const EMPTY_SIGNUP: SignupForm = { name: '', phone: EMPTY_PHONE_INPUT, email: '', password: '' };
+
+/** The website's password rule, in its words. */
+export function passwordProblem(password: string): string {
+  if (!password) return 'Enter a password.';
+  if (password.length < PASSWORD_MIN) return `Use at least ${PASSWORD_MIN} characters.`;
+  if (password.length > PASSWORD_MAX) return `Use ${PASSWORD_MAX} characters or fewer.`;
+  return '';
+}
 
 /**
- * The state behind both sign-in hosts: which way in, the typed address, the
- * code and the calls. `onSignedIn` runs once the session is set.
+ * The state behind both sign-in hosts: which screen, what was typed, and the
+ * calls. `onSignedIn` runs once the customer is in and nothing is left to do.
  */
 export function useSignInFlow(onSignedIn: () => void) {
-  const { requestOtp, verify, requestEmailCode, verifyEmail } = useSession();
-  const [method, setMethod] = useState<SignInMethod>('email');
-  const [step, setStep] = useState<'enter' | 'code'>('enter');
+  const session = useSession();
+  const [view, setView] = useState<SignInView>('password');
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
+  const [way, setWay] = useState<CodeWay>('sms');
   const [phone, setPhone] = useState<PhoneInput>(EMPTY_PHONE_INPUT);
   const [email, setEmail] = useState('');
+  const [signup, setSignup] = useState<SignupForm>(EMPTY_SIGNUP);
+  /** The code being entered is a sign-up's phone code. */
+  const [signingUp, setSigningUp] = useState(false);
   const [sentTo, setSentTo] = useState('');
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
+  /** Something a sign-up could not save, shown on the email step. */
+  const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const request = async () =>
-    method === 'email' ? requestEmailCode(email) : requestOtp(phoneFromInput(phone));
+  /** A sign-up's phone code always goes by SMS. */
+  const codeBy: CodeWay = signingUp ? 'sms' : way;
+
+  const go = (next: SignInView) => {
+    setView(next);
+    setCode('');
+    setError('');
+  };
+
+  const updateSignup = (patch: Partial<SignupForm>) => setSignup(current => ({ ...current, ...patch }));
+
+  const signIn = async () => {
+    if (busy) return;
+    if (!login.trim()) return setError('Enter your email or phone number.');
+    if (!password) return setError('Enter your password.');
+    setBusy(true);
+    const result = await session.signInWithPassword(login, password);
+    setBusy(false);
+    if (!result.ok) return setError(signInErrorMessage(result.error));
+    setPassword('');
+    onSignedIn();
+  };
+
+  const request = async () => {
+    if (view === 'confirmEmail') return session.requestEmailConfirm(signup.email);
+    if (signingUp) return session.requestOtp(phoneFromInput(signup.phone));
+    return way === 'email' ? session.requestEmailCode(email) : session.requestOtp(phoneFromInput(phone));
+  };
 
   const sendCode = async () => {
     if (busy) return;
-    if (method === 'phone' && !isValidPhone(phone)) {
-      setError(PHONE_INVALID_MESSAGE);
-      return;
-    }
+    if (way === 'sms' && !isValidPhone(phone)) return setError(PHONE_INVALID_MESSAGE);
     setBusy(true);
-    const result = await request();
+    const result = await (way === 'email' ? session.requestEmailCode(email) : session.requestOtp(phoneFromInput(phone)));
     setBusy(false);
-    if (!result.ok) {
-      setError(signInErrorMessage(result.error));
-      return;
-    }
+    if (!result.ok) return setError(signInErrorMessage(result.error));
+    setSigningUp(false);
     setSentTo('email' in result ? result.email : formatPhoneDisplay(result.phone));
-    setCode('');
-    setError('');
-    setStep('code');
+    go('verify');
+  };
+
+  const createAccount = async () => {
+    if (busy) return;
+    const problem = !signup.name.trim()
+      ? 'Enter your full name.'
+      : !isValidPhone(signup.phone)
+        ? PHONE_INVALID_MESSAGE
+        : !isValidEmail(signup.email)
+          ? EMAIL_INVALID_MESSAGE
+          : passwordProblem(signup.password);
+    if (problem) return setError(problem);
+    setBusy(true);
+    const result = await session.requestOtp(phoneFromInput(signup.phone));
+    setBusy(false);
+    if (!result.ok) return setError(signInErrorMessage(result.error));
+    setSigningUp(true);
+    setNotice('');
+    setSentTo(formatPhoneDisplay(result.phone));
+    go('verify');
   };
 
   const resendCode = async () => {
@@ -348,17 +475,46 @@ export function useSignInFlow(onSignedIn: () => void) {
     setError(result.ok ? '' : signInErrorMessage(result.error));
   };
 
+  /** A sign-up whose phone is confirmed: send the email code, or finish if that can't happen. */
+  const startEmailStep = async (unsaved: string[]) => {
+    if (unsaved.length) setNotice(`We couldn't save ${unsaved.join(' and ')}. You can do it later in Profile.`);
+    const result = await session.requestEmailConfirm(signup.email);
+    if (result.ok) {
+      setSentTo(result.email);
+      go('confirmEmail');
+      return;
+    }
+    // Already confirmed: nothing to ask. Any other failure leaves the "Add your email" prompt for later.
+    if (result.error === 'already_confirmed') session.dismissEmailOffer();
+    onSignedIn();
+  };
+
   const confirmCode = async (entered = code) => {
     if (busy || entered.length < OTP_LENGTH) return;
     setBusy(true);
-    const result = method === 'email' ? await verifyEmail(entered) : await verify(entered);
-    setBusy(false);
+    if (view === 'confirmEmail') {
+      const result = await session.confirmEmail(signup.email, entered);
+      setBusy(false);
+      if (!result.ok) {
+        setError(signInErrorMessage(result.error));
+        setCode('');
+        return;
+      }
+      onSignedIn();
+      return;
+    }
+    const result: SignInResult & { unsaved?: string[] } = codeBy === 'email'
+      ? await session.verifyEmail(entered)
+      : await session.verify(entered, signingUp ? { name: signup.name, email: signup.email, password: signup.password } : undefined);
     if (!result.ok) {
+      setBusy(false);
       setError(signInErrorMessage(result.error));
       setCode('');
       return;
     }
-    onSignedIn();
+    if (signingUp) await startEmailStep(result.unsaved ?? []);
+    else onSignedIn();
+    setBusy(false);
   };
 
   // The iPhone number pad has no Enter key, so a complete code verifies by itself.
@@ -367,77 +523,256 @@ export function useSignInFlow(onSignedIn: () => void) {
     if (next.length === OTP_LENGTH) void confirmCode(next);
   };
 
-  const backToEntry = () => {
-    setStep('enter');
-    setCode('');
+  /** "Skip for now" on the email step: the account is ready, the email waits for Profile. */
+  const skipEmail = () => {
+    session.dismissEmailOffer();
+    onSignedIn();
+  };
+
+  /** One step back; false on the first screen, where the host closes instead. */
+  const back = () => {
+    if (view === 'password') return false;
+    if (view === 'confirmEmail') skipEmail();
+    else if (view === 'verify') go(signingUp ? 'signup' : 'code');
+    else go('password');
+    return true;
+  };
+
+  const chooseWay = (next: CodeWay) => {
+    setWay(next);
     setError('');
   };
 
-  const switchMethod = () => {
-    setMethod(current => (current === 'email' ? 'phone' : 'email'));
-    setError('');
+  const titles: Record<SignInView, string | null> = {
+    password: null,
+    signup: 'Create an account',
+    code: 'Get a sign-in code',
+    verify: codeBy === 'email' ? 'Check your email' : 'Verify your number',
+    confirmEmail: 'Confirm your email',
+  };
+
+  const actions: Record<SignInView, { label: string; onPress: () => Promise<void>; disabled: boolean }> = {
+    password: { label: 'Sign in', onPress: signIn, disabled: false },
+    signup: { label: 'Create account', onPress: createAccount, disabled: false },
+    code: { label: 'Send code', onPress: sendCode, disabled: false },
+    verify: { label: 'Verify & Continue', onPress: () => confirmCode(), disabled: code.length < OTP_LENGTH },
+    confirmEmail: { label: 'Confirm email', onPress: () => confirmCode(), disabled: code.length < OTP_LENGTH },
   };
 
   return {
-    method, step, phone, setPhone, email, setEmail, sentTo, code, error, busy,
-    sendCode, resendCode, confirmCode, changeCode, backToEntry, switchMethod,
+    view, go, login, setLogin, password, setPassword, way, chooseWay, phone, setPhone, email, setEmail,
+    signup, updateSignup, signingUp, codeBy, sentTo, code, error, notice, busy,
+    /** The screen's own title; null on the first screen, which each host names. */
+    title: titles[view],
+    primary: actions[view],
+    resendCode, changeCode, skipEmail, back,
   };
 }
 
 export type SignInFlow = ReturnType<typeof useSignInFlow>;
 
-/** The entry step's body: the email or phone form, then the switch link. */
-export function SignInEntry({ flow }: { flow: SignInFlow }) {
+const WAYS: { value: CodeWay; label: string; icon: IconName }[] = [
+  { value: 'sms', label: 'By SMS', icon: 'message' },
+  { value: 'email', label: 'By email', icon: 'mail' },
+];
+
+/** The SMS / email choice on "Get a sign-in code". */
+function WayChoice({ value, onChange }: { value: CodeWay; onChange: (next: CodeWay) => void }) {
   const styles = useThemeStyles(createStyles);
   return (
-    <View style={styles.entry}>
-      {flow.method === 'email' ? (
-        <EmailSignInForm value={flow.email} onChange={flow.setEmail} onSubmit={() => void flow.sendCode()} error={flow.error} />
-      ) : (
-        <PhoneSignInForm value={flow.phone} onChange={flow.setPhone} onSubmit={() => void flow.sendCode()} error={flow.error} />
-      )}
-      <SignInMethodSwitch method={flow.method} onSwitch={flow.switchMethod} />
+    <View style={styles.channelRow} accessibilityRole="radiogroup">
+      {WAYS.map(option => {
+        const selected = value === option.value;
+        return (
+          <Pressable
+            key={option.value}
+            accessibilityRole="radio"
+            accessibilityState={{ selected }}
+            accessibilityLabel={option.label}
+            onPress={() => onChange(option.value)}
+            style={[styles.channel, selected ? styles.channelSelected : null]}
+          >
+            <View style={[styles.radio, selected ? styles.radioSelected : null]}>
+              {selected ? <Icon name="check" size={10} color="onPrimary" /> : null}
+            </View>
+            <Icon name={option.icon} size={15} color={selected ? 'primaryAccent' : 'onSurfaceVariant'} />
+            <Txt variant="label" color={selected ? 'primaryAccent' : 'onSurfaceVariant'}>
+              {option.label}
+            </Txt>
+          </Pressable>
+        );
+      })}
     </View>
   );
 }
 
-/** The code step's body: instruction, change link, the six cells, and for email the "nothing came?" way out. */
-export function SignInCodeStep({ flow, showInstruction = true }: { flow: SignInFlow; showInstruction?: boolean }) {
+/** Whichever screen the flow is on. */
+export function SignInBody({ flow }: { flow: SignInFlow }) {
   const styles = useThemeStyles(createStyles);
-  const byEmail = flow.method === 'email';
+  const submit = () => void flow.primary.onPress();
+
+  if (flow.view === 'password') {
+    return (
+      <View style={styles.entry}>
+        <View style={styles.form}>
+          <TextField
+            label="Email or phone number"
+            icon="user"
+            value={flow.login}
+            onChangeText={text => flow.setLogin(text.replace(/^\s+/, ''))}
+            placeholder="you@example.com or 0712 345 678"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="username"
+            textContentType="username"
+            maxLength={254}
+          />
+          <TextField
+            label="Password"
+            icon="lock"
+            secure
+            value={flow.password}
+            onChangeText={flow.setPassword}
+            autoCapitalize="none"
+            autoComplete="current-password"
+            textContentType="password"
+            returnKeyType="go"
+            enterKeyHint="go"
+            onSubmitEditing={submit}
+            maxLength={PASSWORD_MAX}
+          />
+          {flow.error ? <ErrorNote message={flow.error} /> : null}
+        </View>
+        <View style={styles.links}>
+          <AltLink prompt="New here?" label="Create an account" onPress={() => flow.go('signup')} />
+          <AltLink prompt="Forgot your password, or never set one?" label="Get a code by SMS or email" onPress={() => flow.go('code')} />
+        </View>
+      </View>
+    );
+  }
+
+  if (flow.view === 'signup') {
+    const { signup } = flow;
+    return (
+      <View style={styles.entry}>
+        <Txt variant="bodySm" color="onSurfaceVariant">
+          Your account is your phone number. We confirm it by SMS and your email with a code. Then you can sign in with either and your password.
+        </Txt>
+        <View style={styles.form}>
+          <TextField
+            label="Full name"
+            icon="user"
+            value={signup.name}
+            onChangeText={name => flow.updateSignup({ name })}
+            autoCapitalize="words"
+            autoComplete="name"
+            textContentType="name"
+            maxLength={60}
+          />
+          <PhoneSignInForm value={signup.phone} onChange={phone => flow.updateSignup({ phone })} showChannels={false} />
+          <TextField
+            label="Email"
+            icon="mail"
+            hint="We email you a code to confirm it."
+            value={signup.email}
+            onChangeText={text => flow.updateSignup({ email: text.replace(/\s/g, '') })}
+            placeholder="you@example.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="email"
+            textContentType="emailAddress"
+            maxLength={254}
+          />
+          <TextField
+            label="Password"
+            icon="lock"
+            secure
+            hint={`At least ${PASSWORD_MIN} characters.`}
+            value={signup.password}
+            onChangeText={password => flow.updateSignup({ password })}
+            autoCapitalize="none"
+            autoComplete="new-password"
+            textContentType="newPassword"
+            returnKeyType="go"
+            enterKeyHint="go"
+            onSubmitEditing={submit}
+            maxLength={PASSWORD_MAX}
+          />
+          {flow.error ? <ErrorNote message={flow.error} /> : null}
+        </View>
+        <AltLink prompt="Already have an account?" label="Sign in" onPress={() => flow.go('password')} />
+      </View>
+    );
+  }
+
+  if (flow.view === 'code') {
+    const byEmail = flow.way === 'email';
+    return (
+      <View style={styles.entry}>
+        <WayChoice value={flow.way} onChange={flow.chooseWay} />
+        <Txt variant="bodySm" color="onSurfaceVariant">
+          {byEmail
+            ? 'Enter the email confirmed on your account and we will email you a 6-digit code. New here? Start with a code by SMS.'
+            : 'Enter your phone number and we will text you a 6-digit code.'}
+        </Txt>
+        {byEmail ? (
+          <EmailSignInForm value={flow.email} onChange={flow.setEmail} onSubmit={submit} error={flow.error} />
+        ) : (
+          <PhoneSignInForm value={flow.phone} onChange={flow.setPhone} onSubmit={submit} error={flow.error} showChannels={false} />
+        )}
+        <AltLink prompt="Have a password?" label="Sign in with your password" onPress={() => flow.go('password')} />
+      </View>
+    );
+  }
+
+  const confirming = flow.view === 'confirmEmail';
   return (
     <View style={styles.otpStep}>
-      {showInstruction ? (
-        <Txt variant="bodySm" color="onSurfaceVariant">
-          {`Enter the 6-digit code sent to ${flow.sentTo}`}
+      {flow.signingUp ? (
+        <Txt variant="overline" color="primaryAccent">
+          {confirming ? 'Step 2 of 2: your email' : 'Step 1 of 2: your phone'}
         </Txt>
       ) : null}
-      <ChangeNumberLink onPress={flow.backToEntry} label={byEmail ? 'Change email' : 'Change number'} />
+      {flow.notice ? <ErrorNote message={flow.notice} /> : null}
+      <Txt variant="bodySm" color="onSurfaceVariant">
+        {confirming
+          ? `We emailed a 6-digit code to ${flow.sentTo}. It expires in 10 minutes. Check your spam folder too.`
+          : `Enter the 6-digit code sent to ${flow.sentTo}`}
+      </Txt>
+      {confirming ? null : (
+        <ChangeNumberLink
+          onPress={flow.back}
+          label={flow.signingUp ? 'Change your details' : flow.codeBy === 'email' ? 'Change email' : 'Change number'}
+        />
+      )}
       <OtpCodeField
+        key={flow.view}
         code={flow.code}
         onChangeCode={flow.changeCode}
         onResend={flow.resendCode}
-        onSubmit={() => void flow.confirmCode()}
+        onSubmit={submit}
         error={flow.error}
         autoFocus
         busy={flow.busy}
       />
-      {byEmail ? (
+      {confirming ? (
+        <AltLink prompt="You can confirm it later in Profile." label="Skip for now" onPress={flow.skipEmail} />
+      ) : flow.codeBy === 'email' ? (
         // The server answers the same for unknown addresses, so say plainly why a code may not come.
         <View style={styles.helper}>
           <Icon name="info" size={14} color="primaryAccent" />
           <Txt variant="caption" color="onSurfaceVariant" style={styles.helperText}>
-            {'We only send the code if this email is linked to a Xana Plus account. Nothing came? Check spam, or '}
+            {'We only send the code if this email is confirmed on a Xana Plus account. Nothing came? Check spam, or '}
             <Txt
               variant="caption"
               color="primaryAccent"
               accessibilityRole="button"
               onPress={() => {
-                flow.backToEntry();
-                flow.switchMethod();
+                flow.chooseWay('sms');
+                flow.go('code');
               }}
             >
-              use your phone number
+              get a code by SMS
             </Txt>
             {'.'}
           </Txt>
@@ -575,10 +910,10 @@ function TermsNote() {
 
 /**
  * Screen 6a — the checkout sign-in sheet. Mounted only while it is open, so
- * every visit starts on the phone step.
+ * every visit starts on the sign-in screen.
  */
 export function AuthSheet({ visible, onClose, onSuccess }: { visible: boolean; onClose: () => void; onSuccess?: () => void }) {
-  // Mounting the sheet per open keeps every open on a fresh phone step without a
+  // Mounting the sheet per open keeps every open on a fresh sign-in screen without a
   // state-syncing effect. Trade-off: a closing sheet disappears without the
   // kit's slide-down, which is why the auth sheet alone unmounts on close.
   if (!visible) return null;
@@ -586,9 +921,8 @@ export function AuthSheet({ visible, onClose, onSuccess }: { visible: boolean; o
 }
 
 /**
- * The sheet body for one open session: collects the phone number, requests a
- * real SMS code and verifies it without leaving the host screen; `onSuccess`
- * fires once the session is authenticated.
+ * The sheet body for one open session: every sign-in screen, without leaving
+ * the host screen; `onSuccess` fires once the customer is in.
  */
 function SignInSheet({ onClose, onSuccess }: { onClose: () => void; onSuccess?: () => void }) {
   const styles = useThemeStyles(createStyles);
@@ -596,36 +930,31 @@ function SignInSheet({ onClose, onSuccess }: { onClose: () => void; onSuccess?: 
     onSuccess?.();
     onClose();
   });
-  const entering = flow.step === 'enter';
+  const first = flow.view === 'password' || flow.view === 'signup';
 
   return (
     <BottomSheet
       visible
-      onClose={onClose}
-      title={entering ? 'Log in to complete your order' : flow.method === 'email' ? 'Check your email' : 'Verify your number'}
-      description={entering ? undefined : `Enter the 6-digit code sent to ${flow.sentTo}`}
+      scrollable
+      // Closing on the email step leaves a signed-in customer: the same as "Skip for now".
+      onClose={flow.view === 'confirmEmail' ? flow.skipEmail : onClose}
+      title={flow.title ?? 'Log in to complete your order'}
       footer={
         <View style={styles.footer}>
-          {entering ? (
-            <>
-              <Button label="Continue" icon="chevron-right" size="lg" loading={flow.busy} onPress={flow.sendCode} />
-              <TermsNote />
-            </>
-          ) : (
-            <Button
-              label="Verify & Continue"
-              icon="shield"
-              iconPosition="leading"
-              size="lg"
-              disabled={flow.code.length < OTP_LENGTH}
-              loading={flow.busy}
-              onPress={() => void flow.confirmCode()}
-            />
-          )}
+          <Button
+            label={flow.primary.label}
+            icon={first ? 'chevron-right' : flow.view === 'code' ? undefined : 'shield'}
+            iconPosition={first ? 'trailing' : 'leading'}
+            size="lg"
+            disabled={flow.primary.disabled}
+            loading={flow.busy}
+            onPress={() => void flow.primary.onPress()}
+          />
+          {first ? <TermsNote /> : null}
         </View>
       }
     >
-      {entering ? <SignInEntry flow={flow} /> : <SignInCodeStep flow={flow} showInstruction={false} />}
+      <SignInBody flow={flow} />
     </BottomSheet>
   );
 }
@@ -708,6 +1037,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   changeNumber: { alignSelf: 'flex-start' },
   otpStep: { gap: spacing.md },
   entry: { gap: spacing.xl },
+  textField: { gap: spacing.sm },
+  links: { gap: spacing.lg },
   switchRow: { alignItems: 'center', gap: spacing.xxs },
   footer: { gap: spacing.lg },
   terms: { lineHeight: 18 },

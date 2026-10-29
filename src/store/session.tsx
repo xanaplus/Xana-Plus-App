@@ -3,16 +3,18 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { User } from '@/data/types';
 import { unregisterPush } from '@/lib/notifications';
 import { parsePersisted, persisted, save, STORAGE_KEYS } from '@/lib/storage';
-import { callFunction, supabase, type FunctionError } from '@/lib/supabase';
+import { authErrorCode, callFunction, supabase, type FunctionError } from '@/lib/supabase';
 
 /**
  * Real sign-in: the `request-otp` Edge Function texts a six-digit code through
  * Africa's Talking, `verify-otp` checks it and returns a Supabase session, and
  * the customer's `profiles` row becomes `user`.
  *
- * Email is the main way in, SMS the second: the website team's `email-code`
- * function emails a code and answers with a session the same way. An account is
- * still a phone number, so email only reaches an account that has confirmed the
+ * Same as the website (Roystone, 29 Oct 2026): sign in with an email or phone
+ * number and a password; codes by SMS or email are the way back in without one.
+ * The website team's `email-code` function emails codes and checks passwords
+ * for an email, answering with a session the same way. An account is still a
+ * phone number, so email only reaches an account that has confirmed the
  * address (`account_emails`); a new customer starts with their phone.
  *
  * Device profile data is not authentication: the Supabase session and profile
@@ -21,6 +23,7 @@ import { callFunction, supabase, type FunctionError } from '@/lib/supabase';
 const PHONE_PATTERN = /^\+254[17]\d{8}$/;
 /** The same check the `email-code` function makes, so a typo never costs a round trip. */
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+export const isValidEmail = (email: string) => EMAIL_PATTERN.test(email.trim().toLowerCase());
 /** NFR-S.5: an account unused for 30 days is signed out on next launch. */
 const INACTIVE_SESSION_MS = 30 * 24 * 60 * 60 * 1000;
 /** Shown until the customer enters their own name. */
@@ -57,6 +60,9 @@ const storedSession = () => parsePersisted(persisted().session, isPersistedSessi
 
 export type SignInResult = { ok: true } | { ok: false; error: FunctionError };
 
+/** What the "Create an account" form saves once the phone code is right. */
+export type SignupDetails = { name: string; email: string; password: string };
+
 export type SessionContextValue = {
   user: User | null;
   /** Phone number awaiting verification, or null when idle. */
@@ -64,8 +70,18 @@ export type SessionContextValue = {
   isAuthenticated: boolean;
   /** Texts a code to `phone`; resolves once the SMS has been accepted for delivery. */
   requestOtp: (phone: string) => Promise<SignInResult & { phone: string }>;
-  /** Checks the code for the pending phone and, on success, signs the customer in. */
-  verify: (code: string) => Promise<SignInResult>;
+  /**
+   * Checks the code for the pending phone and, on success, signs the customer in.
+   * With `signup`, also saves the name, password and contact email; `unsaved`
+   * lists any that failed, to be done again from Profile.
+   */
+  verify: (code: string, signup?: SignupDetails) => Promise<SignInResult & { unsaved?: string[] }>;
+  /** Signs in with an email or phone number and the account's password. */
+  signInWithPassword: (login: string, password: string) => Promise<SignInResult>;
+  /** Whether the account has a password yet. */
+  hasPassword: boolean;
+  /** Sets the first password, or changes it when `current` is given. */
+  savePassword: (next: string, current?: string) => Promise<SignInResult>;
   /** Emails a sign-in code. The answer is the same whether or not an account has confirmed the address. */
   requestEmailCode: (email: string) => Promise<SignInResult & { email: string }>;
   /** Checks the emailed code for the pending address and, on success, signs the customer in. */
@@ -121,9 +137,17 @@ const normalizePhone = (phone: string) => {
 /** `+254712345678` → `+254 712 345 678`, the format the screens display. */
 const displayPhone = (phone: string) => phone.replace(/^\+254(\d{3})(\d{3})(\d{3})$/, '+254 $1 $2 $3');
 
-type Profile = { user: User; named: boolean; preferences: Preferences; isStaff: boolean; kraPin: string | null; email: string | null };
+/** A phone account's address in the sign-in service, as the website uses it: `254712345678@phone.xanalife.com`. */
+const phoneLoginEmail = (phone: string) => `${phone.slice(1)}@phone.xanalife.com`;
+
+type Profile = {
+  user: User; named: boolean; preferences: Preferences; isStaff: boolean; kraPin: string | null; email: string | null; hasPassword: boolean;
+};
+
+type Tokens = { access_token: string; refresh_token: string };
 
 const normalizeEmail = (email: string) => email.trim().toLowerCase();
+const cleanName = (name: string) => name.trim().replace(/\s+/g, ' ').slice(0, MAX_NAME_LENGTH);
 
 /** Reads the signed-in customer's profile row into the app's `User` shape. */
 async function loadProfile(userId: string): Promise<Profile | null> {
@@ -135,6 +159,7 @@ async function loadProfile(userId: string): Promise<Profile | null> {
   if (error || !data) return null;
   // Customers read only their own row; there is none until they confirm an address.
   const { data: emailRow } = await supabase.from('account_emails').select('email').eq('user_id', userId).maybeSingle();
+  const { data: auth } = await supabase.auth.getSession();
   const name = data.name?.trim() ?? '';
   return {
     user: {
@@ -150,7 +175,25 @@ async function loadProfile(userId: string): Promise<Profile | null> {
     isStaff: ['staff', 'pharmacist', 'admin'].includes(data.role),
     kraPin: typeof data.kra_pin === 'string' ? data.kra_pin : null,
     email: typeof emailRow?.email === 'string' ? emailRow.email : null,
+    // The website marks this when a password is set.
+    hasPassword: auth.session?.user.user_metadata?.has_password === true,
   };
+}
+
+/** After a sign-up's phone code: the name, password and contact email the form collected. */
+async function saveSignupDetails(userId: string, details: SignupDetails): Promise<string[]> {
+  const unsaved: string[] = [];
+  const name = cleanName(details.name);
+  if (name) {
+    const { error } = await supabase.from('profiles').update({ name }).eq('id', userId);
+    if (error) unsaved.push('your name');
+  }
+  const { error } = await supabase.auth.updateUser({
+    password: details.password,
+    data: { has_password: true, contact_email: normalizeEmail(details.email) },
+  });
+  if (error) unsaved.push('your password');
+  return unsaved;
 }
 
 export function SessionProvider({ children }: { children: ReactNode }) {
@@ -171,6 +214,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [pendingEmail, setPendingEmail] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [offerEmail, setOfferEmail] = useState(false);
+  const [hasPassword, setHasPassword] = useState(false);
 
   const applyProfile = useCallback((profile: Profile | null, preservePreferences = false) => {
     const owner = profile?.user.id ?? null;
@@ -187,6 +231,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setIsStaff(profile?.isStaff ?? false);
     setKraPin(profile?.kraPin ?? null);
     setEmail(profile?.email ?? null);
+    setHasPassword(profile?.hasPassword ?? false);
     if (!profile) setOfferEmail(false);
   }, []);
 
@@ -236,12 +281,16 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     };
   }, [applyProfile]);
 
-  /** Both code routes end here: keep the session the function returned, then load the profile. */
+  /**
+   * Every way in ends here: keep the session, then load the profile. `prepare`
+   * runs in between, so a sign-up's name is saved before any prompt asks for it.
+   */
   const finishSignIn = useCallback(
-    async (tokens: { access_token: string; refresh_token: string }, generation: number): Promise<Profile | { ok: false; error: FunctionError }> => {
+    async (tokens: Tokens, generation: number, prepare?: (userId: string) => Promise<void>): Promise<Profile | { ok: false; error: FunctionError }> => {
       if (generation !== authGeneration.current) return { ok: false, error: 'expired' };
       const { data, error } = await supabase.auth.setSession(tokens);
       if (error || !data.session) return { ok: false, error: 'server_error' };
+      await prepare?.(data.session.user.id);
       const profile = await loadProfile(data.session.user.id);
       if (generation !== authGeneration.current) return { ok: false, error: 'expired' };
       if (!profile) return { ok: false, error: 'server_error' };
@@ -261,23 +310,71 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const verify = useCallback(
-    async (code: string): Promise<SignInResult> => {
+    async (code: string, signup?: SignupDetails): Promise<SignInResult & { unsaved?: string[] }> => {
       if (!pendingPhone) return { ok: false, error: 'expired' };
       const generation = ++authGeneration.current;
-      const result = await callFunction<{ access_token: string; refresh_token: string }>('verify-otp', {
+      const result = await callFunction<Tokens>('verify-otp', {
         phone: pendingPhone,
         code,
       });
       if ('error' in result) return { ok: false, error: result.error };
-      const profile = await finishSignIn(result.data, generation);
+      let unsaved: string[] = [];
+      const profile = await finishSignIn(result.data, generation, signup ? async userId => {
+        unsaved = await saveSignupDetails(userId, signup);
+      } : undefined);
       if ('error' in profile) return profile;
       setPendingPhone(null);
       // Not for the demo number: anyone can sign in to it, so it must never hold a real email.
       setOfferEmail(profile.email === null && pendingPhone.replace(/\D/g, '') !== DEMO_DIGITS);
-      return { ok: true };
+      return { ok: true, unsaved };
     },
     [pendingPhone, finishSignIn],
   );
+
+  const signInWithPassword = useCallback(
+    async (login: string, password: string): Promise<SignInResult> => {
+      const byEmail = login.includes('@');
+      const generation = ++authGeneration.current;
+      let tokens: Tokens;
+      if (byEmail) {
+        const normalized = normalizeEmail(login);
+        if (!EMAIL_PATTERN.test(normalized)) return { ok: false, error: 'invalid_email' };
+        // The function finds the account that confirmed this email and checks its password.
+        const result = await callFunction<Tokens>('email-code', { action: 'password', email: normalized, password });
+        if ('error' in result) return { ok: false, error: result.error };
+        tokens = result.data;
+      } else {
+        const phone = normalizePhone(login);
+        if (!PHONE_PATTERN.test(phone)) return { ok: false, error: 'invalid_phone' };
+        const { data, error } = await supabase.auth.signInWithPassword({ email: phoneLoginEmail(phone), password });
+        if (error || !data.session) return { ok: false, error: authErrorCode(error) };
+        tokens = data.session;
+      }
+      const profile = await finishSignIn(tokens, generation);
+      if ('error' in profile) return profile;
+      setOfferEmail(!byEmail && profile.email === null && profile.user.phone.replace(/\D/g, '') !== DEMO_DIGITS);
+      return { ok: true };
+    },
+    [finishSignIn],
+  );
+
+  const savePassword = useCallback(async (next: string, current?: string): Promise<SignInResult> => {
+    const { data } = await supabase.auth.getSession();
+    const loginEmail = data.session?.user.email;
+    if (!loginEmail) return { ok: false, error: 'session_expired' };
+    // Checks the current password first, so an unattended phone is not enough to take the account.
+    if (current !== undefined) {
+      const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password: current });
+      if (error) {
+        const code = authErrorCode(error);
+        return { ok: false, error: code === 'invalid_credentials' ? 'wrong_password' : code };
+      }
+    }
+    const { error } = await supabase.auth.updateUser({ password: next, data: { has_password: true } });
+    if (error) return { ok: false, error: authErrorCode(error) };
+    setHasPassword(true);
+    return { ok: true };
+  }, []);
 
   const requestEmailCode = useCallback(async (input: string) => {
     const normalized = normalizeEmail(input);
@@ -345,7 +442,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const updateName = useCallback(
     async (input: string) => {
-      const name = input.trim().replace(/\s+/g, ' ').slice(0, MAX_NAME_LENGTH);
+      const name = cleanName(input);
       if (!user || !name) return false;
       const { error } = await supabase.from('profiles').update({ name }).eq('id', user.id);
       if (error) return false;
@@ -437,6 +534,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       isAuthenticated: user !== null,
       requestOtp,
       verify,
+      signInWithPassword,
+      hasPassword,
+      savePassword,
       requestEmailCode,
       verifyEmail,
       email,
@@ -461,7 +561,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       refreshProfile,
       spendPoints,
     }),
-    [user, pendingPhone, requestOtp, verify, requestEmailCode, verifyEmail, email, requestEmailConfirm, confirmEmail, offerEmail, dismissEmailOffer, signOut, named, updateName, preferences, updatePreferences, preferencesSaving, preferencesError, retryPreferences, deleteAccount, isStaff, kraPin, saveKraPin, refreshProfile, spendPoints],
+    [user, pendingPhone, requestOtp, verify, signInWithPassword, hasPassword, savePassword, requestEmailCode, verifyEmail, email, requestEmailConfirm, confirmEmail, offerEmail, dismissEmailOffer, signOut, named, updateName, preferences, updatePreferences, preferencesSaving, preferencesError, retryPreferences, deleteAccount, isStaff, kraPin, saveKraPin, refreshProfile, spendPoints],
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

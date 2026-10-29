@@ -52,6 +52,12 @@ export type FunctionError =
   | 'email_taken'
   | 'already_confirmed'
   | 'session_expired'
+  // passwords (the email-code `password` action and Supabase's own sign-in)
+  | 'invalid_credentials'
+  | 'too_many_tries'
+  | 'wrong_password'
+  | 'weak_password'
+  | 'same_password'
   | 'server_error'
   | 'network';
 
@@ -60,7 +66,21 @@ const FUNCTION_ERRORS: readonly FunctionError[] = [
   'sms_limit', 'sms_paused',
   'wrong_code', 'expired', 'too_many_attempts', 'server_error',
   'invalid_email', 'email_limit', 'email_failed', 'email_unavailable', 'email_taken', 'already_confirmed', 'session_expired',
+  'invalid_credentials', 'too_many_tries',
 ];
+
+/** Supabase sign-in errors in the same words as the Edge Functions'. */
+export function authErrorCode(error: { code?: string; status?: number; name?: string; message?: string } | null): FunctionError {
+  if (!error) return 'server_error';
+  const text = (error.message ?? '').toLowerCase();
+  if (error.name === 'AuthRetryableFetchError' || error.status === 0) return 'network';
+  if (error.code === 'invalid_credentials' || text.includes('invalid login credentials')) return 'invalid_credentials';
+  if (error.code === 'weak_password' || text.includes('password should')) return 'weak_password';
+  if (error.code === 'same_password' || text.includes('different from the old password')) return 'same_password';
+  if (error.code === 'over_request_rate_limit' || error.status === 429) return 'too_many_tries';
+  if (error.status === 401 || error.status === 403) return 'session_expired';
+  return 'server_error';
+}
 
 /** POSTs to an Edge Function and returns its JSON, or the error code it sent back. */
 export async function callFunction<T>(

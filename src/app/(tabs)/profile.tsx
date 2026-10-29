@@ -30,6 +30,7 @@ import { ORDER_HISTORY, type OrderRecord } from '@/data/orders';
 import { PHARMACY_CONTACTS, whatsappLink } from '@/data/pharmacy-contacts';
 import type { FulfilmentMode, PaymentMethodId, Product } from '@/data/types';
 import { EmailSheet } from '@/features/account/email-sheet';
+import { PasswordSheet } from '@/features/account/password-sheet';
 import { KraPinSheet } from '@/features/account/kra-pin-sheet';
 import { NameSheet } from '@/features/account/name-sheet';
 import { SignInDetails } from '@/features/account/sign-in-details';
@@ -194,6 +195,7 @@ type SheetId =
   | 'edit-name'
   | 'kra-pin'
   | 'email'
+  | 'password'
   | 'delete-account';
 
 type RowSpec = {
@@ -254,6 +256,7 @@ export default function ProfileRoute() {
     isDemo,
     kraPin,
     email,
+    hasPassword,
   } = useSession();
   const { address, addresses, setAddress, removeAddress, hasAddress, mode, setMode, mpesaNumber, paymentMethod, setPaymentMethod, setStoreId, slot, store, storeId } = useFulfilment();
 
@@ -337,7 +340,7 @@ export default function ProfileRoute() {
       description: `M-Pesa · ${mpesaNumber}`,
       onPress: () => setSheet('payment'),
     },
-    // Not on the demo number: anyone can sign in to it, so it must never hold a real email.
+    // Not on the demo number: anyone can sign in to it, so it must never hold a real email or a password.
     ...(isAuthenticated && !isDemo
       ? [
           {
@@ -346,6 +349,13 @@ export default function ProfileRoute() {
             title: 'Email',
             description: email ?? 'Add one to sign in by email',
             onPress: () => setSheet('email'),
+          },
+          {
+            key: 'password',
+            icon: 'lock' as const,
+            title: 'Password',
+            description: hasPassword ? 'Set · tap to change' : 'Set one to sign in without a code',
+            onPress: () => setSheet('password'),
           },
         ]
       : []),
@@ -1029,6 +1039,8 @@ export default function ProfileRoute() {
         title={email ? 'Change your email' : 'Add your email'}
         description={email ? `You sign in with ${email}. A new address replaces it once confirmed.` : 'Sign in with a code sent to your email.'}
       />
+
+      <PasswordSheet visible={sheet === 'password'} onClose={closeSheet} />
 
       <NameSheet
         visible={sheet === 'edit-name'}
