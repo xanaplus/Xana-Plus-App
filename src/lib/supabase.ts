@@ -44,6 +44,7 @@ export type FunctionError =
   | 'wrong_code'
   | 'expired'
   | 'too_many_attempts'
+  | 'no_account'
   // email-code (the website team's function, shared with the app)
   | 'invalid_email'
   | 'email_limit'
@@ -64,7 +65,7 @@ export type FunctionError =
 const FUNCTION_ERRORS: readonly FunctionError[] = [
   'invalid_phone', 'too_soon', 'too_many', 'sms_failed', 'sms_blocked',
   'sms_limit', 'sms_paused',
-  'wrong_code', 'expired', 'too_many_attempts', 'server_error',
+  'wrong_code', 'expired', 'too_many_attempts', 'no_account', 'server_error',
   'invalid_email', 'email_limit', 'email_failed', 'email_unavailable', 'email_taken', 'already_confirmed', 'session_expired',
   'invalid_credentials', 'too_many_tries',
 ];

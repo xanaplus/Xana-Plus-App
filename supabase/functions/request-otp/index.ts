@@ -11,6 +11,9 @@ import {
 /**
  * POST { phone } → sends a six-digit sign-in code by SMS through Africa's
  * Talking. The code is stored hashed and is never returned to the app.
+ * With `existing_only: true` (the app's "Log in or sign up" screen), a number
+ * with no account gets 404 `no_account` and no text, so the app can go on to
+ * the sign-up form.
  */
 Deno.serve(async request => {
   const early = preflight(request);
@@ -22,6 +25,12 @@ Deno.serve(async request => {
   if (isDemoPhone(phone)) return reply(200, { ok: true, phone });
 
   const db = adminClient();
+  if (body.existing_only === true) {
+    const { data: account, error: lookupError } = await db.from('profiles').select('id').eq('phone', phone).limit(1).maybeSingle();
+    if (lookupError) return reply(500, { error: 'server_error' });
+    if (!account) return reply(404, { error: 'no_account' });
+  }
+
   const code = newCode();
   const { data: reservation, error: reserveError } = await db.rpc('reserve_otp', {
     p_phone: phone, p_code_hash: await hashCode(phone, code),

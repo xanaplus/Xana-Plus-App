@@ -38,6 +38,7 @@ const glyphs = {
   minus: ['ion', 'remove'],
   check: ['ion', 'checkmark'],
   'check-circle': ['ion', 'checkmark-circle'],
+  'check-circle-outline': ['ion', 'checkmark-circle-outline'],
   trash: ['ion', 'trash-outline'],
   edit: ['ion', 'create-outline'],
   share: ['ion', 'share-social-outline'],

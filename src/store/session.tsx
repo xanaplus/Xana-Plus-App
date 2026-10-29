@@ -61,7 +61,7 @@ const storedSession = () => parsePersisted(persisted().session, isPersistedSessi
 export type SignInResult = { ok: true } | { ok: false; error: FunctionError };
 
 /** What the "Create an account" form saves once the phone code is right. */
-export type SignupDetails = { name: string; email: string; password: string };
+export type SignupDetails = { name: string; email: string; password: string; marketing?: boolean };
 
 export type SessionContextValue = {
   user: User | null;
@@ -69,7 +69,8 @@ export type SessionContextValue = {
   pendingPhone: string | null;
   isAuthenticated: boolean;
   /** Texts a code to `phone`; resolves once the SMS has been accepted for delivery. */
-  requestOtp: (phone: string) => Promise<SignInResult & { phone: string }>;
+  /** With `existingOnly`, a number with no account gets `no_account` and no text. */
+  requestOtp: (phone: string, options?: { existingOnly?: boolean }) => Promise<SignInResult & { phone: string }>;
   /**
    * Checks the code for the pending phone and, on success, signs the customer in.
    * With `signup`, also saves the name, password and contact email; `unsaved`
@@ -82,6 +83,8 @@ export type SessionContextValue = {
   hasPassword: boolean;
   /** Sets the first password, or changes it when `current` is given. */
   savePassword: (next: string, current?: string) => Promise<SignInResult>;
+  /** Whether an account has confirmed this email: `no_account` when none has. Sends nothing. */
+  emailHasAccount: (email: string) => Promise<SignInResult>;
   /** Emails a sign-in code. The answer is the same whether or not an account has confirmed the address. */
   requestEmailCode: (email: string) => Promise<SignInResult & { email: string }>;
   /** Checks the emailed code for the pending address and, on success, signs the customer in. */
@@ -187,6 +190,14 @@ async function saveSignupDetails(userId: string, details: SignupDetails): Promis
   if (name) {
     const { error } = await supabase.from('profiles').update({ name }).eq('id', userId);
     if (error) unsaved.push('your name');
+  }
+  if (details.marketing) {
+    // Merged in, in case the number already had an account with its own settings.
+    const { data } = await supabase.from('profiles').select('preferences').eq('id', userId).maybeSingle();
+    const current = (data?.preferences as Preferences | null) ?? {};
+    const { error: consentError } = await supabase.from('profiles')
+      .update({ preferences: { ...current, privacy: { ...current.privacy, marketingMessages: true } } }).eq('id', userId);
+    if (consentError) unsaved.push('your offers choice');
   }
   const { error } = await supabase.auth.updateUser({
     password: details.password,
@@ -300,10 +311,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     [applyProfile],
   );
 
-  const requestOtp = useCallback(async (phone: string) => {
+  const requestOtp = useCallback(async (phone: string, options?: { existingOnly?: boolean }) => {
     const normalized = normalizePhone(phone);
     if (!PHONE_PATTERN.test(normalized)) return { ok: false as const, error: 'invalid_phone' as const, phone: normalized };
-    const result = await callFunction<{ ok: true }>('request-otp', { phone: normalized });
+    const result = await callFunction<{ ok: true }>('request-otp', {
+      phone: normalized,
+      ...(options?.existingOnly ? { existing_only: true } : {}),
+    });
     if ('error' in result) return { ok: false as const, error: result.error, phone: normalized };
     setPendingPhone(normalized);
     return { ok: true as const, phone: normalized };
@@ -374,6 +388,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     if (error) return { ok: false, error: authErrorCode(error) };
     setHasPassword(true);
     return { ok: true };
+  }, []);
+
+  const emailHasAccount = useCallback(async (email: string): Promise<SignInResult> => {
+    const normalized = normalizeEmail(email);
+    if (!EMAIL_PATTERN.test(normalized)) return { ok: false, error: 'invalid_email' };
+    const result = await callFunction<{ ok: true }>('account-exists', { email: normalized });
+    return 'error' in result ? { ok: false, error: result.error } : { ok: true };
   }, []);
 
   const requestEmailCode = useCallback(async (input: string) => {
@@ -537,6 +558,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       signInWithPassword,
       hasPassword,
       savePassword,
+      emailHasAccount,
       requestEmailCode,
       verifyEmail,
       email,
@@ -561,7 +583,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       refreshProfile,
       spendPoints,
     }),
-    [user, pendingPhone, requestOtp, verify, signInWithPassword, hasPassword, savePassword, requestEmailCode, verifyEmail, email, requestEmailConfirm, confirmEmail, offerEmail, dismissEmailOffer, signOut, named, updateName, preferences, updatePreferences, preferencesSaving, preferencesError, retryPreferences, deleteAccount, isStaff, kraPin, saveKraPin, refreshProfile, spendPoints],
+    [user, pendingPhone, requestOtp, verify, signInWithPassword, hasPassword, savePassword, emailHasAccount, requestEmailCode, verifyEmail, email, requestEmailConfirm, confirmEmail, offerEmail, dismissEmailOffer, signOut, named, updateName, preferences, updatePreferences, preferencesSaving, preferencesError, retryPreferences, deleteAccount, isStaff, kraPin, saveKraPin, refreshProfile, spendPoints],
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

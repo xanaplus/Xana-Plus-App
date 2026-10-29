@@ -422,6 +422,10 @@ verify_jwt = false
 [functions.verify-otp]
 verify_jwt = false
 
+# "Continue with email": says only whether a confirmed account has the address.
+[functions.account-exists]
+verify_jwt = false
+
 # Checks the caller itself with auth.getUser(), which works with both legacy and
 # new signing keys, so the gateway's own JWT check is not needed.
 [functions.place-order]

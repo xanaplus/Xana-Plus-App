@@ -99,11 +99,17 @@ const DEFAULT_ALERTS: Record<AlertKey, boolean> = {
 type PrivacyKey = 'shareOrderHistoryForRx' | 'marketingMessages' | 'orderAndDeliveryUpdates' | 'usageAnalytics';
 
 /**
- * Only settings something obeys. The Figma frame's pharmacist-sharing and marketing rows come
- * back once a pharmacist screen reads order history and marketing messages are sent. There is no
+ * Only settings something obeys, plus the offers consent ticked at sign-up (29 Oct 2026). The
+ * Figma frame's pharmacist-sharing row comes back once a pharmacist screen reads order history. There is no
  * order-texts switch: receipts and collection codes go to every customer (website team, 17 Oct 2026).
  */
 const PRIVACY_ROWS: { key: PrivacyKey; icon: IconName; title: string; description: string }[] = [
+  {
+    key: 'marketingMessages',
+    icon: 'tag',
+    title: 'News and offers',
+    description: 'Offers from Xana Plus and Xana Life by SMS, email and app notifications',
+  },
   {
     key: 'usageAnalytics',
     icon: 'info',

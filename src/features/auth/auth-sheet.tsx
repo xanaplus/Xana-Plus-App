@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
+import { Linking, Pressable, StyleSheet, TextInput, View, type TextInputProps, type ViewStyle } from 'react-native';
 
 import { BottomSheet, Button, Icon, ProgressBar, Txt, type IconName } from '@/components/ui';
 import type { FunctionError } from '@/lib/supabase';
@@ -13,14 +13,17 @@ import type { Palette } from '@/theme';
  * plus the pieces the standalone `/login` route (Screen 11) reuses so both hosts
  * render the same form and the same verification step.
  *
- * The same as the website's account page (Roystone, 29 Oct 2026): email or
- * phone number and password first, "Create an account", and a code by SMS or
- * email for anyone without a password. Email only reaches an account that has
- * confirmed the address, so a new customer starts with their phone.
+ * Phone number first, as on Carrefour's "Log in or sign up" (Roystone, 29 Oct
+ * 2026): a number with an account gets an SMS code ("Use password instead"
+ * below it), a new number goes on to the sign-up form. "Continue with email"
+ * works the same way: an emailed code for a confirmed address, the sign-up
+ * form with the email filled in for a new one.
  */
 
 /** Digits in the SMS code, in the design and in the `request-otp` Edge Function. */
 export const OTP_LENGTH = 6;
+/** The full privacy policy on xanalife.com, as linked from Profile. */
+const PRIVACY_POLICY_URL = 'https://www.xanalife.com/pages/xana-plus-privacy';
 /** The website's password rule. */
 export const PASSWORD_MIN = 8;
 export const PASSWORD_MAX = 72;
@@ -38,6 +41,7 @@ const SIGN_IN_MESSAGES: Record<FunctionError, string> = {
   sms_failed: "We couldn't send the SMS just now. Please try again.",
   sms_limit: 'SMS sign-in is temporarily at capacity. Please try again later.',
   sms_paused: 'SMS sign-in is temporarily unavailable. Please try again later.',
+  no_account: 'There is no account for this number yet.',
   sms_blocked:
     'Your network blocked our text because promotional SMS are switched off on this number. Switch them back on with your network provider, or try another number.',
   wrong_code: CODE_INVALID_MESSAGE,
@@ -131,6 +135,8 @@ export function PhoneSignInForm({
   onSubmit,
   error,
   showChannels = true,
+  label = 'Phone number',
+  helper,
 }: {
   value: PhoneInput;
   onChange: (next: PhoneInput) => void;
@@ -139,30 +145,24 @@ export function PhoneSignInForm({
   error?: string;
   /** The "Send code via" choice; off where SMS is the only way. */
   showChannels?: boolean;
+  label?: string;
+  /** The line under the field; by default, that a code is coming. */
+  helper?: string;
 }) {
   const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const [focused, setFocused] = useState(false);
-  const nextPrefix: PhonePrefix = value.prefix === '+254' ? '0' : '+254';
 
   return (
     <View style={styles.form}>
-      <Txt variant="overline" color="onSurfaceVariant">
-        Phone number
-      </Txt>
+      <Txt variant="title">{label}</Txt>
 
       <View style={[styles.field, focused ? styles.fieldFocused : null]}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Kenya country code"
-          accessibilityHint={`Switch to the ${nextPrefix} prefix`}
-          onPress={() => onChange({ ...value, prefix: nextPrefix })}
-          style={styles.prefix}
-        >
+        {/* Kenyan numbers only, so the code is fixed: tapping it used to switch +254 to 0 (Roystone, 29 Oct 2026). */}
+        <View accessible accessibilityLabel="Kenya, +254" style={styles.prefix}>
           <Txt variant="body">🇰🇪</Txt>
-          <Txt variant="label">{value.prefix}</Txt>
-          <Icon name="chevron-down" size={14} color="onSurfaceVariant" />
-        </Pressable>
+          <Txt variant="label">+254</Txt>
+        </View>
         <TextInput
           value={groupDigits(value.digits)}
           onChangeText={text => onChange({ ...value, digits: nationalDigits(text) })}
@@ -186,7 +186,7 @@ export function PhoneSignInForm({
       <View style={styles.helper}>
         <Icon name="info" size={14} color="primaryAccent" />
         <Txt variant="caption" color="onSurfaceVariant" style={styles.helperText}>
-          {`We'll send a 6-digit ${value.channel === 'sms' ? 'SMS' : 'WhatsApp'} verification code.`}
+          {helper ?? `We'll send a 6-digit ${value.channel === 'sms' ? 'SMS' : 'WhatsApp'} verification code.`}
         </Txt>
       </View>
 
@@ -229,6 +229,7 @@ export function EmailSignInForm({
   onSubmit,
   error,
   helper = "We'll email you a 6-digit code.",
+  label = 'Email',
 }: {
   value: string;
   onChange: (next: string) => void;
@@ -236,6 +237,7 @@ export function EmailSignInForm({
   onSubmit?: () => void;
   error?: string;
   helper?: string;
+  label?: string;
 }) {
   const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
@@ -243,9 +245,7 @@ export function EmailSignInForm({
 
   return (
     <View style={styles.form}>
-      <Txt variant="overline" color="onSurfaceVariant">
-        Email
-      </Txt>
+      <Txt variant="title">{label}</Txt>
       <View style={[styles.field, styles.emailField, focused ? styles.fieldFocused : null]}>
         <Icon name="mail" size={18} color="onSurfaceVariant" />
         <TextInput
@@ -288,24 +288,23 @@ export function TextField({
   icon,
   hint,
   secure = false,
+  style,
   ...input
-}: { label: string; icon: IconName; hint?: string; secure?: boolean } & Omit<TextInputProps, 'style' | 'secureTextEntry'>) {
+}: { label: string; icon?: IconName; hint?: string; secure?: boolean; style?: ViewStyle } & Omit<TextInputProps, 'style' | 'secureTextEntry'>) {
   const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const [focused, setFocused] = useState(false);
   const [shown, setShown] = useState(false);
 
   return (
-    <View style={styles.textField}>
-      <Txt variant="overline" color="onSurfaceVariant">
-        {label}
-      </Txt>
+    <View style={[styles.textField, style]}>
+      <Txt variant="title">{label}</Txt>
       <View style={[styles.field, styles.emailField, focused ? styles.fieldFocused : null]}>
-        <Icon name={icon} size={18} color="onSurfaceVariant" />
+        {icon ? <Icon name={icon} size={18} color="onSurfaceVariant" /> : null}
         <TextInput
           placeholderTextColor={colors.outline}
           autoCorrect={false}
-          accessibilityLabel={label}
+          accessibilityLabel={label.replace(/\*$/, '')}
           {...input}
           secureTextEntry={secure && !shown}
           onFocus={() => setFocused(true)}
@@ -364,16 +363,42 @@ export function ChangeNumberLink({ onPress, label = 'Change number' }: { onPress
 }
 
 /**
- * The screens, as on the website's account page: sign in with a password,
- * create an account, get a code instead, enter it, and (after a sign-up)
- * confirm the email.
+ * The screens: the phone number first, then its code or the sign-up form; and,
+ * as on the website's account page, sign in with a password, get a code
+ * instead, and (after a sign-up) confirm the email.
  */
-export type SignInView = 'password' | 'signup' | 'code' | 'verify' | 'confirmEmail';
+export type SignInView = 'phone' | 'email' | 'password' | 'signup' | 'code' | 'verify' | 'confirmEmail';
 export type CodeWay = 'sms' | 'email';
 
-type SignupForm = { name: string; phone: PhoneInput; email: string; password: string };
+type SignupForm = {
+  firstName: string;
+  lastName: string;
+  phone: PhoneInput;
+  email: string;
+  password: string;
+  /** The "news and offers" tick box; off until the customer ticks it. */
+  marketing: boolean;
+};
 
-const EMPTY_SIGNUP: SignupForm = { name: '', phone: EMPTY_PHONE_INPUT, email: '', password: '' };
+const EMPTY_SIGNUP: SignupForm = { firstName: '', lastName: '', phone: EMPTY_PHONE_INPUT, email: '', password: '', marketing: false };
+
+/** The sign-up password checklist, as on Carrefour's sign-up (Roystone, 29 Oct 2026). */
+export const PASSWORD_RULES: { label: string; met: (password: string) => boolean }[] = [
+  { label: `At least ${PASSWORD_MIN} characters`, met: password => password.length >= PASSWORD_MIN },
+  { label: 'At least 1 uppercase letter', met: password => /[A-Z]/.test(password) },
+  { label: 'At least 1 lowercase letter', met: password => /[a-z]/.test(password) },
+  { label: 'At least 1 number', met: password => /\d/.test(password) },
+];
+
+/** The first thing missing from the sign-up form, or '' when it can go. */
+function signupProblem(signup: SignupForm): string {
+  if (!signup.firstName.trim()) return 'Enter your first name.';
+  if (!signup.lastName.trim()) return 'Enter your last name.';
+  if (!isValidEmail(signup.email)) return EMAIL_INVALID_MESSAGE;
+  if (!isValidPhone(signup.phone)) return PHONE_INVALID_MESSAGE;
+  if (!PASSWORD_RULES.every(rule => rule.met(signup.password))) return 'Your password does not meet all the rules yet.';
+  return passwordProblem(signup.password);
+}
 
 /** The website's password rule, in its words. */
 export function passwordProblem(password: string): string {
@@ -389,7 +414,7 @@ export function passwordProblem(password: string): string {
  */
 export function useSignInFlow(onSignedIn: () => void) {
   const session = useSession();
-  const [view, setView] = useState<SignInView>('password');
+  const [view, setView] = useState<SignInView>('phone');
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [way, setWay] = useState<CodeWay>('sms');
@@ -398,6 +423,8 @@ export function useSignInFlow(onSignedIn: () => void) {
   const [signup, setSignup] = useState<SignupForm>(EMPTY_SIGNUP);
   /** The code being entered is a sign-up's phone code. */
   const [signingUp, setSigningUp] = useState(false);
+  /** Where "back" goes from a sign-in code: the phone or email screen, or "Get a sign-in code". */
+  const [codeFrom, setCodeFrom] = useState<'phone' | 'email' | 'code'>('phone');
   const [sentTo, setSentTo] = useState('');
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
@@ -434,6 +461,64 @@ export function useSignInFlow(onSignedIn: () => void) {
     return way === 'email' ? session.requestEmailCode(email) : session.requestOtp(phoneFromInput(phone));
   };
 
+  /**
+   * The first screen's Continue: a number with an account gets its code; a new
+   * number goes on to the sign-up form with the number filled in.
+   */
+  const continueWithPhone = async () => {
+    if (busy) return;
+    if (!isValidPhone(phone)) return setError(PHONE_INVALID_MESSAGE);
+    setBusy(true);
+    const result = await session.requestOtp(phoneFromInput(phone), { existingOnly: true });
+    setBusy(false);
+    if (!result.ok && result.error === 'no_account') {
+      updateSignup({ phone });
+      go('signup');
+      return;
+    }
+    if (!result.ok) return setError(signInErrorMessage(result.error));
+    setWay('sms');
+    setSigningUp(false);
+    setCodeFrom('phone');
+    setSentTo(formatPhoneDisplay(result.phone));
+    go('verify');
+  };
+
+  /**
+   * The email screen's Continue: an address confirmed on an account gets an
+   * emailed code; a new one goes on to the sign-up form with the email filled in.
+   */
+  const continueWithEmail = async () => {
+    if (busy) return;
+    if (!isValidEmail(email)) return setError(EMAIL_INVALID_MESSAGE);
+    setBusy(true);
+    const found = await session.emailHasAccount(email);
+    if (!found.ok && found.error === 'no_account') {
+      setBusy(false);
+      updateSignup({ email: email.trim().toLowerCase() });
+      go('signup');
+      return;
+    }
+    if (!found.ok) {
+      setBusy(false);
+      return setError(signInErrorMessage(found.error));
+    }
+    const result = await session.requestEmailCode(email);
+    setBusy(false);
+    if (!result.ok) return setError(signInErrorMessage(result.error));
+    setWay('email');
+    setSigningUp(false);
+    setCodeFrom('email');
+    setSentTo(result.email);
+    go('verify');
+  };
+
+  /** "Use password instead" under the code: the password screen, with the number or email filled in. */
+  const usePassword = () => {
+    setLogin(way === 'email' ? email.trim().toLowerCase() : `0${phone.digits}`);
+    go('password');
+  };
+
   const sendCode = async () => {
     if (busy) return;
     if (way === 'sms' && !isValidPhone(phone)) return setError(PHONE_INVALID_MESSAGE);
@@ -442,19 +527,14 @@ export function useSignInFlow(onSignedIn: () => void) {
     setBusy(false);
     if (!result.ok) return setError(signInErrorMessage(result.error));
     setSigningUp(false);
+    setCodeFrom('code');
     setSentTo('email' in result ? result.email : formatPhoneDisplay(result.phone));
     go('verify');
   };
 
   const createAccount = async () => {
     if (busy) return;
-    const problem = !signup.name.trim()
-      ? 'Enter your full name.'
-      : !isValidPhone(signup.phone)
-        ? PHONE_INVALID_MESSAGE
-        : !isValidEmail(signup.email)
-          ? EMAIL_INVALID_MESSAGE
-          : passwordProblem(signup.password);
+    const problem = signupProblem(signup);
     if (problem) return setError(problem);
     setBusy(true);
     const result = await session.requestOtp(phoneFromInput(signup.phone));
@@ -505,7 +585,12 @@ export function useSignInFlow(onSignedIn: () => void) {
     }
     const result: SignInResult & { unsaved?: string[] } = codeBy === 'email'
       ? await session.verifyEmail(entered)
-      : await session.verify(entered, signingUp ? { name: signup.name, email: signup.email, password: signup.password } : undefined);
+      : await session.verify(entered, signingUp ? {
+        name: `${signup.firstName.trim()} ${signup.lastName.trim()}`,
+        email: signup.email,
+        password: signup.password,
+        marketing: signup.marketing,
+      } : undefined);
     if (!result.ok) {
       setBusy(false);
       setError(signInErrorMessage(result.error));
@@ -531,10 +616,12 @@ export function useSignInFlow(onSignedIn: () => void) {
 
   /** One step back; false on the first screen, where the host closes instead. */
   const back = () => {
-    if (view === 'password') return false;
+    if (view === 'phone') return false;
     if (view === 'confirmEmail') skipEmail();
-    else if (view === 'verify') go(signingUp ? 'signup' : 'code');
-    else go('password');
+    else if (view === 'email') go('phone');
+    else if (view === 'verify') go(signingUp ? 'signup' : codeFrom);
+    else if (view === 'code') go('password');
+    else go('phone');
     return true;
   };
 
@@ -544,16 +631,20 @@ export function useSignInFlow(onSignedIn: () => void) {
   };
 
   const titles: Record<SignInView, string | null> = {
-    password: null,
-    signup: 'Create an account',
+    phone: null,
+    email: null,
+    password: 'Log in with password',
+    signup: 'Sign up',
     code: 'Get a sign-in code',
     verify: codeBy === 'email' ? 'Check your email' : 'Verify your number',
     confirmEmail: 'Confirm your email',
   };
 
   const actions: Record<SignInView, { label: string; onPress: () => Promise<void>; disabled: boolean }> = {
-    password: { label: 'Sign in', onPress: signIn, disabled: false },
-    signup: { label: 'Create account', onPress: createAccount, disabled: false },
+    phone: { label: 'Continue', onPress: continueWithPhone, disabled: false },
+    email: { label: 'Continue', onPress: continueWithEmail, disabled: false },
+    password: { label: 'Log in', onPress: signIn, disabled: false },
+    signup: { label: 'Continue', onPress: createAccount, disabled: signupProblem(signup) !== '' },
     code: { label: 'Send code', onPress: sendCode, disabled: false },
     verify: { label: 'Verify & Continue', onPress: () => confirmCode(), disabled: code.length < OTP_LENGTH },
     confirmEmail: { label: 'Confirm email', onPress: () => confirmCode(), disabled: code.length < OTP_LENGTH },
@@ -565,7 +656,9 @@ export function useSignInFlow(onSignedIn: () => void) {
     /** The screen's own title; null on the first screen, which each host names. */
     title: titles[view],
     primary: actions[view],
-    resendCode, changeCode, skipEmail, back,
+    resendCode, changeCode, skipEmail, back, usePassword,
+    /** "Use password instead" belongs under a sign-in code. */
+    offerPassword: view === 'verify' && !signingUp,
   };
 }
 
@@ -606,10 +699,62 @@ function WayChoice({ value, onChange }: { value: CodeWay; onChange: (next: CodeW
   );
 }
 
+/** "Your password must include": each rule ticks green once the password meets it. */
+function PasswordChecklist({ password }: { password: string }) {
+  const styles = useThemeStyles(createStyles);
+  return (
+    <View style={styles.rules} accessibilityLiveRegion="polite">
+      <Txt variant="titleSm">Your password must include:</Txt>
+      {PASSWORD_RULES.map(rule => {
+        const met = rule.met(password);
+        return (
+          <View key={rule.label} style={styles.rule} accessibilityLabel={`${rule.label}, ${met ? 'done' : 'not yet'}`}>
+            <Icon name={met ? 'check-circle' : 'check-circle-outline'} size={18} color={met ? 'primaryAccent' : 'onSurfaceVariant'} />
+            <Txt variant="body" color={met ? 'onSurface' : 'onSurfaceVariant'}>
+              {rule.label}
+            </Txt>
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
 /** Whichever screen the flow is on. */
 export function SignInBody({ flow }: { flow: SignInFlow }) {
   const styles = useThemeStyles(createStyles);
   const submit = () => void flow.primary.onPress();
+
+  if (flow.view === 'phone') {
+    return (
+      <View style={styles.entry}>
+        <PhoneSignInForm
+          label="Phone number*"
+          value={flow.phone}
+          onChange={flow.setPhone}
+          onSubmit={submit}
+          error={flow.error}
+          showChannels={false}
+          helper="Have an account? We'll text you a code. New here? You'll sign up next."
+        />
+      </View>
+    );
+  }
+
+  if (flow.view === 'email') {
+    return (
+      <View style={styles.entry}>
+        <EmailSignInForm
+          label="Email address*"
+          value={flow.email}
+          onChange={flow.setEmail}
+          onSubmit={submit}
+          error={flow.error}
+          helper="Have an account? We'll email you a code. New here? You'll sign up next."
+        />
+      </View>
+    );
+  }
 
   if (flow.view === 'password') {
     return (
@@ -644,7 +789,7 @@ export function SignInBody({ flow }: { flow: SignInFlow }) {
           {flow.error ? <ErrorNote message={flow.error} /> : null}
         </View>
         <View style={styles.links}>
-          <AltLink prompt="New here?" label="Create an account" onPress={() => flow.go('signup')} />
+          <AltLink prompt="New here?" label="Sign up" onPress={() => flow.go('signup')} />
           <AltLink prompt="Forgot your password, or never set one?" label="Get a code by SMS or email" onPress={() => flow.go('code')} />
         </View>
       </View>
@@ -655,39 +800,48 @@ export function SignInBody({ flow }: { flow: SignInFlow }) {
     const { signup } = flow;
     return (
       <View style={styles.entry}>
-        <Txt variant="bodySm" color="onSurfaceVariant">
-          Your account is your phone number. We confirm it by SMS and your email with a code. Then you can sign in with either and your password.
-        </Txt>
         <View style={styles.form}>
+          <View style={styles.nameRow}>
+            <TextField
+              label="First name*"
+              style={styles.nameField}
+              value={signup.firstName}
+              onChangeText={firstName => flow.updateSignup({ firstName })}
+              autoCapitalize="words"
+              autoComplete="given-name"
+              textContentType="givenName"
+              maxLength={30}
+            />
+            <TextField
+              label="Last name*"
+              style={styles.nameField}
+              value={signup.lastName}
+              onChangeText={lastName => flow.updateSignup({ lastName })}
+              autoCapitalize="words"
+              autoComplete="family-name"
+              textContentType="familyName"
+              maxLength={30}
+            />
+          </View>
           <TextField
-            label="Full name"
-            icon="user"
-            value={signup.name}
-            onChangeText={name => flow.updateSignup({ name })}
-            autoCapitalize="words"
-            autoComplete="name"
-            textContentType="name"
-            maxLength={60}
-          />
-          <PhoneSignInForm value={signup.phone} onChange={phone => flow.updateSignup({ phone })} showChannels={false} />
-          <TextField
-            label="Email"
-            icon="mail"
-            hint="We email you a code to confirm it."
+            label="Email address*"
             value={signup.email}
             onChangeText={text => flow.updateSignup({ email: text.replace(/\s/g, '') })}
-            placeholder="you@example.com"
             keyboardType="email-address"
             autoCapitalize="none"
             autoComplete="email"
             textContentType="emailAddress"
             maxLength={254}
           />
+          <PhoneSignInForm
+            label="Phone number*"
+            value={signup.phone}
+            onChange={phone => flow.updateSignup({ phone })}
+            showChannels={false}
+          />
           <TextField
-            label="Password"
-            icon="lock"
+            label="Password*"
             secure
-            hint={`At least ${PASSWORD_MIN} characters.`}
             value={signup.password}
             onChangeText={password => flow.updateSignup({ password })}
             autoCapitalize="none"
@@ -698,9 +852,43 @@ export function SignInBody({ flow }: { flow: SignInFlow }) {
             onSubmitEditing={submit}
             maxLength={PASSWORD_MAX}
           />
+          <PasswordChecklist password={signup.password} />
           {flow.error ? <ErrorNote message={flow.error} /> : null}
         </View>
-        <AltLink prompt="Already have an account?" label="Sign in" onPress={() => flow.go('password')} />
+        <Pressable
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: signup.marketing }}
+          onPress={() => flow.updateSignup({ marketing: !signup.marketing })}
+          style={styles.consent}
+        >
+          <View style={[styles.checkbox, signup.marketing ? styles.checkboxOn : null]}>
+            {signup.marketing ? <Icon name="check" size={14} color="onPrimary" /> : null}
+          </View>
+          <Txt variant="bodySm" style={styles.consentText}>
+            Yes, I would like to receive news and exclusive offers from Xana Plus and Xana Life by SMS, email and app notifications.
+          </Txt>
+        </Pressable>
+        <Txt variant="bodySm" color="onSurfaceVariant">
+          You can opt out at any time in Profile, under Terms & Privacy.
+        </Txt>
+        <Txt variant="bodySm" color="onSurfaceVariant">
+          {"By registering, I agree to Xana Life's Terms & Conditions and acknowledge that I have read and understand the "}
+          <Txt
+            variant="bodySm"
+            color="primaryAccent"
+            accessibilityRole="link"
+            onPress={() => void Linking.openURL(PRIVACY_POLICY_URL)}
+          >
+            Privacy Policy
+          </Txt>
+          {'.'}
+        </Txt>
+        <Txt variant="body" align="center">
+          {'Already have an account? '}
+          <Txt variant="titleSm" color="primaryAccent" accessibilityRole="button" onPress={() => flow.go('phone')}>
+            Log in
+          </Txt>
+        </Txt>
       </View>
     );
   }
@@ -758,11 +946,11 @@ export function SignInBody({ flow }: { flow: SignInFlow }) {
       {confirming ? (
         <AltLink prompt="You can confirm it later in Profile." label="Skip for now" onPress={flow.skipEmail} />
       ) : flow.codeBy === 'email' ? (
-        // The server answers the same for unknown addresses, so say plainly why a code may not come.
+        // A code that doesn't arrive is usually in spam; SMS is the way round it.
         <View style={styles.helper}>
           <Icon name="info" size={14} color="primaryAccent" />
           <Txt variant="caption" color="onSurfaceVariant" style={styles.helperText}>
-            {'We only send the code if this email is confirmed on a Xana Plus account. Nothing came? Check spam, or '}
+            {'Nothing came? Check your spam folder, or '}
             <Txt
               variant="caption"
               color="primaryAccent"
@@ -889,6 +1077,47 @@ export function OtpCodeField({
   );
 }
 
+/**
+ * The bottom of every sign-in screen, in both hosts: the main button, then
+ * "or / Continue with email" on the first screen and "Use password instead"
+ * under a sign-in code.
+ */
+export function SignInActions({ flow, terms = false }: { flow: SignInFlow; terms?: boolean }) {
+  const styles = useThemeStyles(createStyles);
+  const codeStep = flow.view === 'verify' || flow.view === 'confirmEmail';
+  return (
+    <View style={styles.footer}>
+      <Button
+        label={flow.primary.label}
+        icon={codeStep ? 'shield' : undefined}
+        iconPosition="leading"
+        size="lg"
+        disabled={flow.primary.disabled}
+        loading={flow.busy}
+        onPress={() => void flow.primary.onPress()}
+      />
+      {flow.view === 'phone' || flow.view === 'email' ? (
+        <>
+          <View style={styles.orRow}>
+            <View style={styles.orLine} />
+            <Txt variant="bodySm" color="onSurfaceVariant">
+              or
+            </Txt>
+            <View style={styles.orLine} />
+          </View>
+          {flow.view === 'phone' ? (
+            <Button label="Continue with email" icon="mail" iconPosition="leading" variant="outline" size="lg" onPress={() => flow.go('email')} />
+          ) : (
+            <Button label="Continue with phone number" icon="phone" iconPosition="leading" variant="outline" size="lg" onPress={() => flow.go('phone')} />
+          )}
+        </>
+      ) : null}
+      {flow.offerPassword ? <AltLink label="Use password instead" onPress={flow.usePassword} /> : null}
+      {terms && (flow.view === 'phone' || flow.view === 'email' || flow.view === 'password') ? <TermsNote /> : null}
+    </View>
+  );
+}
+
 /** Legal line under the sheet's primary action. */
 function TermsNote() {
   const { colors } = useTheme();
@@ -925,34 +1154,18 @@ export function AuthSheet({ visible, onClose, onSuccess }: { visible: boolean; o
  * the host screen; `onSuccess` fires once the customer is in.
  */
 function SignInSheet({ onClose, onSuccess }: { onClose: () => void; onSuccess?: () => void }) {
-  const styles = useThemeStyles(createStyles);
   const flow = useSignInFlow(() => {
     onSuccess?.();
     onClose();
   });
-  const first = flow.view === 'password' || flow.view === 'signup';
-
   return (
     <BottomSheet
       visible
       scrollable
       // Closing on the email step leaves a signed-in customer: the same as "Skip for now".
       onClose={flow.view === 'confirmEmail' ? flow.skipEmail : onClose}
-      title={flow.title ?? 'Log in to complete your order'}
-      footer={
-        <View style={styles.footer}>
-          <Button
-            label={flow.primary.label}
-            icon={first ? 'chevron-right' : flow.view === 'code' ? undefined : 'shield'}
-            iconPosition={first ? 'trailing' : 'leading'}
-            size="lg"
-            disabled={flow.primary.disabled}
-            loading={flow.busy}
-            onPress={() => void flow.primary.onPress()}
-          />
-          {first ? <TermsNote /> : null}
-        </View>
-      }
+      title={flow.title ?? 'Log in or sign up to order'}
+      footer={<SignInActions flow={flow} terms />}
     >
       <SignInBody flow={flow} />
     </BottomSheet>
@@ -1038,9 +1251,28 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   otpStep: { gap: spacing.md },
   entry: { gap: spacing.xl },
   textField: { gap: spacing.sm },
+  nameRow: { flexDirection: 'row', gap: spacing.md },
+  nameField: { flex: 1 },
+  rules: { gap: spacing.sm, padding: spacing.lg, borderRadius: radius.lg, backgroundColor: colors.surfaceContainerLow },
+  rule: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  consent: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
+  checkbox: {
+    width: 22,
+    height: 22,
+    marginTop: 2,
+    borderRadius: radius.sm,
+    borderWidth: 2,
+    borderColor: colors.outline,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxOn: { borderColor: colors.primaryAccent, backgroundColor: colors.primaryAccent },
+  consentText: { flex: 1 },
   links: { gap: spacing.lg },
   switchRow: { alignItems: 'center', gap: spacing.xxs },
   footer: { gap: spacing.lg },
+  orRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  orLine: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: colors.outlineVariant },
   terms: { lineHeight: 18 },
   termsLink: { textDecorationLine: 'underline' },
 });
