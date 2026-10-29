@@ -48,6 +48,8 @@ export function prescriptionError(error: unknown): string {
     restricted_item: 'This medicine is not available for online prescription ordering. Contact the pharmacy.',
     quote_updated: 'The pharmacist updated this quote. Refresh and review the new medicine list before confirming.',
     response_required: 'Enter a reply for the pharmacist before sending.',
+    not_open: 'This request is closed. Upload a new prescription instead.',
+    notes_full: 'This request already lists many medicines. Upload a new prescription instead.',
   };
   for (const [code, label] of Object.entries(known)) if (message.includes(code)) return label;
   return 'We could not load or save this request. Please retry. No successful change has been confirmed.';
@@ -107,6 +109,11 @@ export const cancelPrescription = (id: string) => rpc<void>('cancel_prescription
 export const isPharmacyReviewer = () => rpc<boolean>('is_pharmacy_reviewer', {});
 export const reviewPrescription = (id: string, lines: QuoteChoice[], note: string, validUntil: string, reject = false) =>
   rpc<void>('review_prescription', { p_id: id, p_lines: lines, p_note: note, p_valid_until: validUntil || null, p_reject: reject });
+/** Still with the pharmacist or awaiting the customer: a medicine can be added to these. */
+export const OPEN_STATUSES: readonly PrescriptionStatus[] = ['submitted', 'clarification', 'held', 'quoted'];
+/** Asks for one more medicine on a request already sent; a quoted request goes back to the pharmacist. */
+export const addPrescriptionItem = (id: string, item: string) =>
+  rpc<void>('add_prescription_item', { p_id: id, p_item: item });
 export const setPrescriptionReviewStatus = (id: string, status: 'clarification' | 'held', note: string) =>
   rpc<void>('set_prescription_review_status', { p_id: id, p_status: status, p_note: note });
 export const respondToPrescription = (id: string, message: string) =>

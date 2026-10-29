@@ -3,7 +3,10 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import type { ImagePickerAsset } from 'expo-image-picker';
 import { Button, Card, Chip, Icon, Screen, TopBar, Txt } from '@/components/ui';
-import { createPrescription, pickPrescriptionPhotos, prescriptionError, submitPrescription, uploadPrescriptionPhoto } from '@/features/prescriptions/api';
+import {
+  addPrescriptionItem, createPrescription, OPEN_STATUSES, pickPrescriptionPhotos, prescriptionError, STATUS_LABELS,
+  submitPrescription, uploadPrescriptionPhoto, usePrescriptionList,
+} from '@/features/prescriptions/api';
 import { ErrorNotice, Field, PhotoQueue } from '@/features/prescriptions/ui';
 import { useSession } from '@/store/session';
 import { radius, spacing } from '@/theme';
@@ -78,6 +81,7 @@ export default function UploadPrescriptionScreen() {
       <Icon name="shield" size={18} color="primaryAccent" />
       <Txt variant="bodySm" color="onSurfaceVariant" style={styles.noticeText}>Your prescription is private. It is shared with an authorised pharmacist for review. You will see the exact priced medicine list before confirming an order.</Txt>
     </Card>
+    {item && isAuthenticated ? <ExistingRequests item={item} /> : null}
     <PhotoQueue assets={assets} onRemove={uri => setAssets(current => current.filter(asset => asset.uri !== uri))} onCamera={() => void addPhotos(true)} onGallery={() => void addPhotos(false)} disabled={busy || assets.length >= 5} />
     <Card variant="elevated" padding={spacing.lg} style={styles.card}>
       <Txt variant="title">Who is the prescription for?</Txt>
@@ -101,7 +105,57 @@ export default function UploadPrescriptionScreen() {
   </Screen>;
 }
 
+/**
+ * Opened from a prescription-only medicine by someone with a request already
+ * open: they can ask for the medicine on that request instead of uploading the
+ * same prescription again, or open the quote that already includes it.
+ */
+function ExistingRequests({ item }: { item: string }) {
+  const styles = useThemeStyles(createStyles);
+  const router = useRouter();
+  const { records } = usePrescriptionList();
+  const [busyId, setBusyId] = useState('');
+  const [error, setError] = useState('');
+  const open = records.filter(record => OPEN_STATUSES.includes(record.status));
+  if (open.length === 0) return null;
+
+  const wanted = item.trim().toLowerCase();
+  const add = async (id: string) => {
+    setBusyId(id); setError('');
+    try {
+      await addPrescriptionItem(id, item);
+      router.replace(`/pharmacy/prescription/${id}`);
+    } catch (cause) { setError(prescriptionError(cause)); }
+    finally { setBusyId(''); }
+  };
+
+  return <Card variant="elevated" padding={spacing.lg} style={styles.card}>
+    <Txt variant="title">Already sent us this prescription?</Txt>
+    <Txt variant="bodySm" color="onSurfaceVariant">Ask for {item} on a request you sent before. The pharmacist adds it to your quote if the prescription covers it.</Txt>
+    {open.map(record => {
+      const inQuote = record.status === 'quoted' && record.quote_lines.some(line => line.name.trim().toLowerCase() === wanted);
+      const date = new Date(record.created_at).toLocaleDateString('en-KE', { day: 'numeric', month: 'short' });
+      return <View key={record.id} style={styles.request}>
+        <View style={styles.noticeText}>
+          <Txt variant="label">{`${record.patient_name} · sent ${date}`}</Txt>
+          <Txt variant="caption" color="onSurfaceVariant">{STATUS_LABELS[record.status]}</Txt>
+        </View>
+        {inQuote
+          ? <Button label="View quote" size="sm" onPress={() => router.replace(`/pharmacy/prescription/${record.id}`)} />
+          : <Button label={busyId === record.id ? 'Adding…' : 'Use this one'} size="sm" variant="outline" disabled={!!busyId} onPress={() => void add(record.id)} />}
+      </View>;
+    })}
+    {open.some(record => record.status === 'quoted') ? <Txt variant="caption" color="onSurfaceVariant">Adding to a request that already has a quote sends it back to the pharmacist for a new quote.</Txt> : null}
+    {error ? <ErrorNotice message={error} /> : null}
+    <Txt variant="label" color="onSurfaceVariant">Or upload a new prescription below.</Txt>
+  </Card>;
+}
+
 const createStyles = (colors: Palette) => StyleSheet.create({
+  request: {
+    flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingTop: spacing.sm,
+    borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.outlineVariant,
+  },
   content: { gap: spacing.md, paddingBottom: spacing.giant }, notice: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
   noticeText: { flex: 1 }, card: { gap: spacing.md }, choiceRow: { flexDirection: 'row', gap: spacing.sm },
   consent: { flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start', paddingVertical: spacing.sm },
