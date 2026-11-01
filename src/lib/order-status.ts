@@ -74,6 +74,8 @@ export const cancelNote = (order: { cancelledReason?: string; pharmacistNote?: s
         : 'The pharmacist could not approve your prescription.';
     case 'not_confirmed':
       return 'This order was not confirmed within 48 hours of the pharmacist approving it, so it was cancelled.';
+    case 'not_collected':
+      return 'This order was not collected within 24 hours of being ready, so it was cancelled. If you paid, we will refund you.';
     default:
       return null;
   }
