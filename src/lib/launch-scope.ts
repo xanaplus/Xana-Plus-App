@@ -14,4 +14,6 @@ export const LAUNCH_SCOPE = {
   pharmacistChat: false,
   /** Consult Doctor and clinic bookings: Care comes after launch, and no one handles bookings yet. */
   clinicalServices: false,
+  /** Return requests and the Returns & bookings list: the admin site has no Returns screen yet, so requests reach no one. Customers return at the counter. */
+  returns: false,
 } as const;

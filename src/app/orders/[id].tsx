@@ -27,6 +27,7 @@ import { useOrders } from '@/store/orders';
 import { radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 
 /**
  * Screens 09a / 09b — Order Status, with the Substitution Resolution sheet
@@ -325,7 +326,8 @@ export default function OrderStatusScreen() {
 
       {completed ? <RateOrder orderNo={order.id} pickup={pickup || order.slotLabel.startsWith('Pickup')} /> : null}
 
-      {completed ? (
+      {/* Returns wait for the admin site's Returns screen; until then customers return at the counter. */}
+      {completed && LAUNCH_SCOPE.returns ? (
         <Button
           label="Request a return"
           variant="outline"

@@ -44,6 +44,7 @@ import { elevation, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles, type AppearanceChoice } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { PressableScale } from '@/components/ui/pressable-scale';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 
 /** Xana Club tier ladder — the thresholds the rewards card measures against. */
 const CLUB_TIERS = [
@@ -320,12 +321,12 @@ export default function ProfileRoute() {
 
   const accountRows: RowSpec[] = [
     { key: 'orders', icon: 'receipt', title: 'My Orders', onPress: () => router.push('/orders') },
-    {
+    ...(LAUNCH_SCOPE.returns ? [{
       key: 'requests',
       icon: 'refresh',
       title: 'Returns & bookings',
       onPress: () => router.push('/requests'),
-    },
+    } satisfies RowSpec] : []),
     {
       key: 'prescriptions',
       icon: 'prescription',
