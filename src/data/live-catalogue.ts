@@ -97,11 +97,13 @@ const packFromName = (name: string): string => {
 /**
  * Pharmacy's rule (17 Oct 2026): items in these BC groups are listed without a
  * photo, on the app and the website. The slugs are the app categories they map to.
+ * Owner, 29 Oct 2026: no photo for any prescription medicine (`requires_rx`, which
+ * also covers class B and CONTR / CTRL items outside these groups).
  */
 const NO_PHOTO_GROUPS = new Set(['GENERAL', 'CHRONIC', 'CONTROLLED']);
 const NO_PHOTO_CATEGORIES = new Set(['medicines', 'chronic-care', 'controlled-medicines']);
 const photoOf = (row: CatalogueRow): string | null =>
-  NO_PHOTO_GROUPS.has(row.category?.trim().toUpperCase() ?? '') ? null : row.photo_url;
+  row.requires_rx || NO_PHOTO_GROUPS.has(row.category?.trim().toUpperCase() ?? '') ? null : row.photo_url;
 
 /** Owner-approved department rule; BC's regulatory flags remain independent. */
 const isDeliItem = (itemNo: string): boolean => itemNo.toUpperCase().startsWith('DEL');
