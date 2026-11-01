@@ -38,10 +38,12 @@ import type { Palette } from '@/theme';
 import { isPharmacyReviewer } from '@/features/prescriptions/api';
 import { PharmacistWhatsAppSheet } from '@/features/pharmacy/whatsapp-sheet';
 
-/** Filter chips above the product groups, one per pharmacy group — `null` shows every group. */
-const PHARMACY_FILTERS: readonly { label: string; categorySlug: string | null }[] = [
-  { label: 'All Pharmacy', categorySlug: null },
-  ...verticalBySlug('pharmacy').sections.map(section => ({ label: section.title, categorySlug: section.categorySlug })),
+/** Filter chips above the product groups — `null` shows every group. */
+const PHARMACY_FILTERS: readonly { label: string; categorySlugs: readonly string[] | null }[] = [
+  { label: 'All Pharmacy', categorySlugs: null },
+  // One chip for the three prescription groups together, as on the website (owner, 29 Oct 2026).
+  { label: 'Prescription Medication', categorySlugs: ['medicines', 'chronic-care', 'controlled-medicines'] },
+  ...verticalBySlug('pharmacy').sections.map(section => ({ label: section.title, categorySlugs: [section.categorySlug] })),
 ];
 
 type IntakeChoice = { id: string; title: string; description: string; icon: IconName };
@@ -144,7 +146,7 @@ export default function PharmacyRoute() {
   const cart = useCart();
   const { store } = useFulfilment();
   const { isAuthenticated, user } = useSession();
-  const [filter, setFilter] = useState<string | null>(null);
+  const [filter, setFilter] = useState(PHARMACY_FILTERS[0]);
   const [openIntake, setOpenIntake] = useState<string | null>(null);
   const [choice, setChoice] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -164,7 +166,9 @@ export default function PharmacyRoute() {
   }, [isAuthenticated, user?.id]);
 
   const vertical = verticalBySlug('pharmacy');
-  const sections = filter ? vertical.sections.filter(section => section.categorySlug === filter) : vertical.sections;
+  const sections = filter.categorySlugs
+    ? vertical.sections.filter(section => filter.categorySlugs?.includes(section.categorySlug))
+    : vertical.sections;
   const shelves = useShelves(vertical.sections, 8);
   const intake = INTAKE_ACTIONS.find(action => action.id === openIntake) ?? null;
 
@@ -264,8 +268,8 @@ export default function PharmacyRoute() {
           <Chip
             key={entry.label}
             label={entry.label}
-            selected={filter === entry.categorySlug}
-            onPress={() => setFilter(entry.categorySlug)}
+            selected={filter.label === entry.label}
+            onPress={() => setFilter(entry)}
           />
         ))}
       </ScrollView>
