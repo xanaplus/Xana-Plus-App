@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
@@ -35,9 +35,9 @@ import { useSession } from '@/store/session';
 import { elevation, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
-import { isPharmacyReviewer } from '@/features/prescriptions/api';
 import { PharmacistWhatsAppSheet } from '@/features/pharmacy/whatsapp-sheet';
 import { PressableScale } from '@/components/ui/pressable-scale';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 
 /** Filter chips above the product groups — `null` shows every group. */
 const PHARMACY_FILTERS: readonly { label: string; categorySlugs: readonly string[] | null }[] = [
@@ -135,7 +135,8 @@ const INTAKE_ACTIONS: readonly IntakeAction[] = [
 const CARD_IMAGE_SIZE = layout.productCardWidth - spacing.md * 2;
 
 /** Actions that need an account before a pharmacist can handle the request. */
-const ACCOUNT_REQUIRED = ['prescriptions', 'ask'];
+// The in-app chat needs an account; WhatsApp (used while the chat is off) does not.
+const ACCOUNT_REQUIRED = LAUNCH_SCOPE.pharmacistChat ? ['prescriptions', 'ask'] : ['prescriptions'];
 
 /** Screen 8a — Pharmacy & Wellness. */
 export default function PharmacyRoute() {
@@ -146,25 +147,12 @@ export default function PharmacyRoute() {
   const goBack = useTabBack();
   const cart = useCart();
   const { store } = useFulfilment();
-  const { isAuthenticated, user } = useSession();
+  const { isAuthenticated } = useSession();
   const [filter, setFilter] = useState(PHARMACY_FILTERS[0]);
   const [openIntake, setOpenIntake] = useState<string | null>(null);
   const [choice, setChoice] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [askOpen, setAskOpen] = useState(false);
-  const [reviewerCheck, setReviewerCheck] = useState<{ userId: string; allowed: boolean } | null>(null);
-
-  useEffect(() => {
-    let active = true;
-    const userId = user?.id;
-    if (!isAuthenticated || !userId) return () => { active = false; };
-    void isPharmacyReviewer().then(allowed => {
-      if (active) setReviewerCheck({ userId, allowed: Boolean(allowed) });
-    }).catch(() => {
-      if (active) setReviewerCheck({ userId, allowed: false });
-    });
-    return () => { active = false; };
-  }, [isAuthenticated, user?.id]);
 
   const vertical = verticalBySlug('pharmacy');
   const sections = filter.categorySlugs
@@ -190,7 +178,9 @@ export default function PharmacyRoute() {
       return;
     }
     if (id === 'ask') {
-      router.push('/pharmacy/consult');
+      // The in-app chat has sample replies; until it is real, pharmacists answer on WhatsApp.
+      if (LAUNCH_SCOPE.pharmacistChat) router.push('/pharmacy/consult');
+      else setAskOpen(true);
       return;
     }
     if (id === 'consult') {
@@ -239,7 +229,7 @@ export default function PharmacyRoute() {
         </View>
 
         <View style={[styles.inset, styles.quickRow]}>
-          {pharmacyQuickActions.map(action => (
+          {pharmacyQuickActions.filter(action => LAUNCH_SCOPE.clinicalServices || action.id !== 'consult').map(action => (
             <Pressable
               key={action.id}
               accessibilityRole="button"
@@ -256,12 +246,6 @@ export default function PharmacyRoute() {
             </Pressable>
           ))}
         </View>
-        {isAuthenticated && reviewerCheck?.userId === user?.id && reviewerCheck?.allowed ? <View style={styles.inset}>
-          <Card variant="tinted" padding={spacing.md} style={styles.reviewAccess}>
-            <Txt variant="label" style={styles.reviewCopy}>Pharmacy review queue</Txt>
-            <Button label="Open reviewer queue" size="sm" variant="outline" onPress={() => router.push('/pharmacy/review')} />
-          </Card>
-        </View> : null}
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
@@ -295,7 +279,7 @@ export default function PharmacyRoute() {
       ))}
 
       <View style={[styles.inset, styles.bottomBand]}>
-        <LinearGradient colors={gradients.promoHero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.promo}>
+        {LAUNCH_SCOPE.skinAnalysis ? <LinearGradient colors={gradients.promoHero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.promo}>
           <View style={styles.promoGlyph}>
             <Icon name="sparkle" size={20} color="primaryAccent" />
           </View>
@@ -316,7 +300,7 @@ export default function PharmacyRoute() {
             </Txt>
             <Icon name="arrow-right" size={16} color="primaryAccent" />
           </Pressable>
-        </LinearGradient>
+        </LinearGradient> : null}
 
         <Card variant="flat" padding={spacing.lg} radiusSize={radius.xl} style={styles.pharmacist}>
           <View style={styles.pharmacistHead}>
@@ -471,8 +455,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   searchField: { borderRadius: radius.lg },
   quickRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, marginTop: spacing.md },
   quickAction: { flex: 1, alignItems: 'center', gap: spacing.sm },
-  reviewAccess: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: spacing.md },
-  reviewCopy: { flex: 1 },
   quickGlyph: {
     width: layout.touchTarget,
     height: layout.touchTarget,

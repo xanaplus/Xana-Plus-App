@@ -47,6 +47,7 @@ import { layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { PressableScale } from '@/components/ui/pressable-scale';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 
 /** Payment rows in the order Screen 6 stacks them. */
 type PaymentMethodCopy = { id: PaymentMethodId; title: string; icon: IconName; showsTotal: boolean };
@@ -668,7 +669,8 @@ export default function CheckoutRoute() {
             </Card>
           ) : null}
 
-          {session.user ? (
+          {/* Promo codes wait for marketing's real offers (only a test code exists). */}
+          {session.user && LAUNCH_SCOPE.promoCodes ? (
             <Card variant="outline" padding={spacing.lg} style={[styles.inset, styles.promoCard]}>
               <View style={styles.pointsHeader}>
                 <View style={styles.headerIcon}>

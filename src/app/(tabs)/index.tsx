@@ -10,6 +10,7 @@ import {
   BottomSheet,
   Button,
   CategoryTile,
+  EmptyState,
   Icon,
   LoadState,
   ProductCard,
@@ -36,6 +37,7 @@ import { elevation, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { PressableScale } from '@/components/ui/pressable-scale';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 
 /** Deal card geometry (the frame's 216pt deal card). */
 const DEAL_CARD_WIDTH = 216;
@@ -68,7 +70,7 @@ const dealSurface = (tone: Deal['tone'], palette: Palette) => ({
 type Alert = { id: string; icon: IconName; title: string; body: string; time: string };
 
 /** Notification feed behind the app-bar bell. */
-const ALERTS: Alert[] = [
+const SAMPLE_ALERTS: Alert[] = [
   {
     id: 'mpesa-cashback',
     icon: 'mpesa',
@@ -84,6 +86,9 @@ const ALERTS: Alert[] = [
     time: 'Today',
   },
 ];
+
+/** The sample alerts are invented offers; the bell stays empty until real notices exist. */
+const ALERTS: Alert[] = LAUNCH_SCOPE.homeOffers ? SAMPLE_ALERTS : [];
 
 /** The Fresh Everyday rail: in-stock chilled and fresh lines from the BC catalogue. */
 const FRESH_EVERYDAY = [
@@ -126,7 +131,7 @@ export default function HomeRoute() {
   // First open: ask which store they shop from (orders are packed and stock-checked there).
   const [storeSheetOpen, setStoreSheetOpen] = useState(!storeChosen);
   const [alertsOpen, setAlertsOpen] = useState(false);
-  const [alertsUnread, setAlertsUnread] = useState(true);
+  const [alertsUnread, setAlertsUnread] = useState(ALERTS.length > 0);
   const { width } = useWindowDimensions();
   // Blank cells pad the last grid row so its tiles line up under the columns above.
   const gridWidth = Math.min(width, layout.maxContentWidth) - layout.screenMargin * 2;
@@ -342,8 +347,8 @@ export default function HomeRoute() {
           </LinearGradient>
         </View>
 
-        {/* 6a. Trending Deals */}
-        <View style={styles.section}>
+        {/* 6a. Trending Deals (sample offers until marketing sets real ones) */}
+        {LAUNCH_SCOPE.homeOffers ? <View style={styles.section}>
           <SectionHeader
             title="Trending Deals"
             icon="flame"
@@ -355,7 +360,7 @@ export default function HomeRoute() {
               <DealCard key={deal.id} deal={deal} onPress={() => router.push(DEAL_ROUTES[deal.tone])} />
             ))}
           </ScrollView>
-        </View>
+        </View> : null}
 
         {/* 6b. Fresh Everyday rail */}
         <View style={styles.section}>
@@ -381,8 +386,8 @@ export default function HomeRoute() {
           </ScrollView>
         </View>
 
-        {/* 7. M-Pesa micro-banner */}
-        <View style={styles.section}>
+        {/* 7. M-Pesa micro-banner (M-Pesa is simulated until DPO is live) */}
+        {LAUNCH_SCOPE.homeOffers ? <View style={styles.section}>
           <PressableScale
             accessibilityRole="button"
             accessibilityLabel="1-Tap M-Pesa Checkout"
@@ -397,7 +402,7 @@ export default function HomeRoute() {
             </View>
             <Icon name="chevron-right" size={18} color="onSurfaceVariant" />
           </PressableScale>
-        </View>
+        </View> : null}
       </ScrollView>
 
       <StoreChooser visible={storeSheetOpen} onClose={() => setStoreSheetOpen(false)} />
@@ -406,7 +411,7 @@ export default function HomeRoute() {
         visible={alertsOpen}
         onClose={() => setAlertsOpen(false)}
         title="Notifications"
-        footer={
+        footer={ALERTS.length === 0 ? undefined : (
           <Button
             label={alertsUnread ? 'Mark all as read' : 'All caught up'}
             variant="tonal"
@@ -416,9 +421,12 @@ export default function HomeRoute() {
               setAlertsOpen(false);
             }}
           />
-        }
+        )}
         scrollable
       >
+        {ALERTS.length === 0 ? (
+          <EmptyState icon="bell" title="No notifications yet" description="Order updates come to your phone as notifications." />
+        ) : null}
         {ALERTS.map(alert => (
           <View key={alert.id} style={styles.alertRow}>
             <View style={styles.alertIcon}>
