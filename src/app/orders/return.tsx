@@ -200,7 +200,7 @@ export default function RequestReturnRoute() {
             {index > 0 ? <Divider inset={spacing.lg} /> : null}
             <SelectableOption
               title={line.product.name}
-              description={`${line.product.pack} · Qty: ${line.quantity} · ${formatKes(line.lineTotal)}`}
+              description={[line.product.pack, `Qty: ${line.quantity}`, formatKes(line.lineTotal)].filter(Boolean).join(' · ')}
               indicator="check"
               selected={!!selected[line.product.id]}
               onPress={() => toggle(line.product.id)}

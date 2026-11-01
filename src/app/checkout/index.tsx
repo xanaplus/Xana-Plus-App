@@ -380,7 +380,8 @@ export default function CheckoutRoute() {
     <Screen
       padded={false}
       contentStyle={styles.content}
-      footer={
+      // An empty cart offers "Browse groceries" only, not a disabled "Place Order · KES 0".
+      footer={empty ? undefined : (
         <View style={styles.footer}>
           <Button
             label={payLabel}
@@ -426,7 +427,7 @@ export default function CheckoutRoute() {
             </View>
           ) : null}
         </View>
-      }
+      )}
     >
       <TopBar title="Checkout" onBack={goBack} />
 

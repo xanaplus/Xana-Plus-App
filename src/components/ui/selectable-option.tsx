@@ -82,7 +82,8 @@ export function SelectableOption({
       </View>
       {trailing}
       {indicator === 'check' ? (
-        selected ? <Icon name="check-circle" size={20} color="primaryAccent" /> : <View style={styles.checkPlaceholder} />
+        // An empty ring until ticked, so the row reads as selectable.
+        selected ? <Icon name="check-circle" size={20} color="primaryAccent" /> : <View style={[styles.radio, { borderColor: colors.outline }]} />
       ) : (
         <View style={[styles.radio, { borderColor: selected ? colors.primaryAccent : colors.outline }]}>{selected ? <View style={[styles.radioDot, { backgroundColor: colors.primaryContainer }]} /> : null}</View>
       )}
@@ -116,5 +117,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   radioDot: { width: 10, height: 10, borderRadius: radius.pill },
-  checkPlaceholder: { width: 20, height: 20 },
 });
