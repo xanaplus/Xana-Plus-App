@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Icon } from '@/components/ui/icon';
-import { Txt } from '@/components/ui/text';
 import { supabase } from '@/lib/supabase';
 import { spacing } from '@/theme';
 import { useTheme } from '@/theme/provider';
@@ -77,23 +76,14 @@ function ProductPhotoContent({ source, productId, accessibilityLabel, variant }:
           }}
         />
       ) : null}
-      {available && !loaded ? (
-        <View pointerEvents="none" style={[styles.loading, { backgroundColor: colors.surfaceContainerLow }]}>
-          <Icon name="store" size={variant === 'row' ? 18 : 26} color="outlineVariant" />
-          {variant !== 'row' ? (
-            <Txt variant="caption" color="outline" numberOfLines={1} style={styles.fallbackText}>
-              Loading product photo
-            </Txt>
-          ) : null}
-        </View>
-      ) : !available ? (
+      {/* A quiet tinted box while the photo loads; the photo fades in over it. */}
+      {available && !loaded ? <View pointerEvents="none" style={[styles.loading, { backgroundColor: colors.surfaceContainerLow }]} /> : null}
+      {/* No photo (prescription medicines, items not yet photographed): a calm mark, no "unavailable" caption. */}
+      {!available ? (
         <View style={styles.fallback}>
-          <Icon name="store" size={variant === 'row' ? 18 : 26} color="outlineVariant" />
-          {variant !== 'row' ? (
-            <Txt variant="caption" color="outline" numberOfLines={1} style={styles.fallbackText}>
-              {unavailableLabel}
-            </Txt>
-          ) : null}
+          <View style={[styles.mark, variant === 'row' ? styles.markRow : null, { backgroundColor: colors.surfaceContainerLow }]}>
+            <Icon name="store" size={variant === 'row' ? 16 : variant === 'hero' ? 34 : 24} color="outline" />
+          </View>
         </View>
       ) : null}
     </View>
@@ -115,13 +105,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing.xs,
   },
-  fallbackText: { maxWidth: '90%' },
-  loading: {
-    ...StyleSheet.absoluteFill,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xs,
-  },
+  mark: { width: '56%', aspectRatio: 1, maxWidth: 96, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
+  markRow: { width: '70%' },
+  loading: { ...StyleSheet.absoluteFill },
   // Thin margin so the pack fills the box, as on Jumia and Instacart.
   card: { padding: spacing.xxs },
   row: { padding: spacing.xxs },

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-native-web-vite';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
 
 import { Button } from './button';
 import { EmptyState, LoadState, ProgressBar } from './feedback';
@@ -22,7 +22,8 @@ export const LoadFailed: Story = {
   render: () => <LoadState status="error" noun="orders" onRetry={retry} />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByText(/load orders/)).toBeVisible();
+    // The empty state eases in, so wait for it to finish.
+    await waitFor(() => expect(canvas.getByText(/load orders/)).toBeVisible());
     await userEvent.click(canvas.getByText('Try again'));
     await expect(retry).toHaveBeenCalledOnce();
   },

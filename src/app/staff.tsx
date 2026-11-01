@@ -226,7 +226,7 @@ async function fetchStaffData(): Promise<StaffData | null> {
 
 export default function StaffRoute() {
   const router = useRouter();
-  const { isStaff } = useSession();
+  const { isStaff, isAuthenticated } = useSession();
   const [tab, setTab] = useState<Tab>('orders');
   const [showClosed, setShowClosed] = useState(false);
   const [status, setStatus] = useState<'loading' | 'error' | 'ready'>('loading');
@@ -328,7 +328,16 @@ export default function StaffRoute() {
     return (
       <Screen padded>
         <TopBar title="Staff tools" onBack={goBack} />
-        <EmptyState icon="lock" title="Staff only" description="This account isn't on the staff list. Ask the office to add you." />
+        {/* Never a dead end: a signed-out visitor can log in, anyone else goes back to shopping. */}
+        <EmptyState
+          icon="lock"
+          title="Staff only"
+          description={isAuthenticated ? "This account isn't on the staff list. Ask the office to add you." : 'Log in with your staff account to use these tools.'}
+        >
+          {isAuthenticated
+            ? <Button label="Back to shopping" variant="outline" onPress={() => router.replace('/(tabs)')} />
+            : <Button label="Log in" onPress={() => router.push('/login')} />}
+        </EmptyState>
       </Screen>
     );
   }

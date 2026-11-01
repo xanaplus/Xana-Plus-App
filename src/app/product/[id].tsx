@@ -34,6 +34,7 @@ import { useSession } from '@/store/session';
 import { layout, radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 /**
  * Screen 4 — Product Detail (grocery) and Screen 4b — Product Detail (Pharmacy).
@@ -334,9 +335,9 @@ function ProductDetail({ product }: { product: Product }) {
       }
     >
       <View style={styles.bar}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Go back" onPress={goBack} hitSlop={8} style={styles.back}>
+        <PressableScale accessibilityRole="button" accessibilityLabel="Go back" onPress={goBack} hitSlop={8} style={styles.back}>
           <Icon name="chevron-left" size={22} color="onSurface" />
-        </Pressable>
+        </PressableScale>
         <View style={styles.crumbs}>
           {crumbs.map((label, index) => (
             <Fragment key={label}>
@@ -346,13 +347,14 @@ function ProductDetail({ product }: { product: Product }) {
                 </Txt>
               ) : null}
               {index === 0 ? (
-                <Pressable accessibilityRole="button" accessibilityLabel="Back to the previous screen" onPress={goBack} hitSlop={6}>
-                  <Txt variant="titleSm" color="onSurfaceVariant">
+                <PressableScale accessibilityRole="button" accessibilityLabel="Back to the previous screen" onPress={goBack} hitSlop={6}>
+                  <Txt variant="titleSm" color="onSurfaceVariant" numberOfLines={1}>
                     {label}
                   </Txt>
-                </Pressable>
+                </PressableScale>
               ) : (
-                <Txt variant="titleSm" color={index === crumbs.length - 1 ? 'onSurface' : 'onSurfaceVariant'}>
+                // One line: the last crumb gives way with an ellipsis rather than wrapping.
+                <Txt variant="titleSm" color={index === crumbs.length - 1 ? 'onSurface' : 'onSurfaceVariant'} numberOfLines={1} style={index === crumbs.length - 1 ? styles.crumbLast : styles.crumbFixed}>
                   {label}
                 </Txt>
               )}
@@ -666,7 +668,7 @@ function AccordionCard({
   const styles = useThemeStyles(createStyles);
   return (
     <Card variant="outline" padding={0}>
-      <Pressable
+      <PressableScale
         accessibilityRole="button"
         accessibilityState={{ expanded }}
         onPress={onToggle}
@@ -676,7 +678,7 @@ function AccordionCard({
           {title}
         </Txt>
         <Icon name={expanded ? 'chevron-up' : 'chevron-down'} size={18} color="primaryAccent" />
-      </Pressable>
+      </PressableScale>
       {expanded ? (
         <>
           <Divider />
@@ -702,12 +704,12 @@ function AccordionRow({
   const styles = useThemeStyles(createStyles);
   return (
     <View>
-      <Pressable accessibilityRole="button" accessibilityState={{ expanded }} onPress={onToggle} style={styles.accordionRow}>
+      <PressableScale accessibilityRole="button" accessibilityState={{ expanded }} onPress={onToggle} style={styles.accordionRow}>
         <Txt variant="titleLg" style={styles.accordionTitle}>
           {title}
         </Txt>
         <Icon name={expanded ? 'chevron-up' : 'chevron-down'} size={18} color="onSurfaceVariant" />
-      </Pressable>
+      </PressableScale>
       {expanded ? <View style={styles.accordionBody}>{children}</View> : null}
     </View>
   );
@@ -767,6 +769,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   },
   back: { width: 28, height: 28, alignItems: 'flex-start', justifyContent: 'center' },
   crumbs: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  crumbLast: { flexShrink: 1 },
+  crumbFixed: { flexShrink: 0 },
   barActions: { flexDirection: 'row', alignItems: 'center' },
   hero: {
     width: '100%',

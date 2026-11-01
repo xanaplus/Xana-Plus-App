@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
 
 import { Button } from '@/components/ui/button';
 import { Icon, type IconName } from '@/components/ui/icon';
@@ -40,10 +41,11 @@ export type EmptyStateProps = {
 export function EmptyState({ icon, title, description, children, style }: EmptyStateProps) {
   const { colors } = useTheme();
   return (
-    <View style={[styles.empty, style]}>
-      <View style={[styles.emptyIcon, { backgroundColor: colors.mintSurface }]}>
+    // Eases in rather than popping: the icon settles first, then the words rise under it.
+    <Animated.View entering={FadeInDown.duration(320)} style={[styles.empty, style]}>
+      <Animated.View entering={ZoomIn.springify().damping(16).delay(60)} style={[styles.emptyIcon, { backgroundColor: colors.mintSurface }]}>
         <Icon name={icon} size={32} color="primaryAccent" />
-      </View>
+      </Animated.View>
       <Txt variant="headlineSm" align="center">
         {title}
       </Txt>
@@ -52,8 +54,8 @@ export function EmptyState({ icon, title, description, children, style }: EmptyS
           {description}
         </Txt>
       ) : null}
-      {children}
-    </View>
+      {children ? <View style={styles.emptyActions}>{children}</View> : null}
+    </Animated.View>
   );
 }
 
@@ -81,6 +83,8 @@ export function LoadState({ status, noun = 'products', placeholder = 'grid', ins
 
 const styles = StyleSheet.create({
   empty: { alignItems: 'center', gap: spacing.md, paddingVertical: spacing.huge, paddingHorizontal: spacing.xl },
+  // A little more air between the message and its action.
+  emptyActions: { alignSelf: 'stretch', alignItems: 'center', marginTop: spacing.xs },
   emptyIcon: {
     width: 72,
     height: 72,

@@ -29,6 +29,8 @@ export type ButtonProps = {
   disabled?: boolean;
   loading?: boolean;
   fullWidth?: boolean;
+  /** Fuller name for screen readers when the label leans on its card (e.g. "Book Blood Pressure Check"). */
+  accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -42,6 +44,7 @@ export function Button({
   disabled,
   loading,
   fullWidth = true,
+  accessibilityLabel,
   style,
 }: ButtonProps) {
   const { colors } = useTheme();
@@ -61,6 +64,7 @@ export function Button({
   return (
     <PressableScale
       accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
       accessibilityState={{ disabled: !!inactive, busy: !!loading }}
       disabled={inactive}
       onPress={onPress}

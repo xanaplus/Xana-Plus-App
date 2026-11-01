@@ -1,14 +1,15 @@
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Linking, Pressable, StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 
-import { Chip, Icon, Screen, Txt, TopBar, TopBarAction } from '@/components/ui';
+import { Button, Chip, Icon, Screen, Txt, TopBar, TopBarAction } from '@/components/ui';
 import { CLINICAL_CATEGORY_LABELS, CLINICAL_SERVICES, type ClinicalCategory } from '@/data/clinical';
 import { useFulfilment } from '@/store/fulfilment';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { formatKes } from '@/lib/format';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 /** Screen 1: Clinical Services Directory (FR-F.10). */
 export default function ClinicalDirectoryRoute() {
@@ -100,15 +101,14 @@ export default function ClinicalDirectoryRoute() {
                 <Txt variant="caption" color="onSurfaceVariant">{service.priceLabel}</Txt>
                 <Txt variant="titleLg" color="primaryAccent">{formatKes(service.price)}</Txt>
               </View>
-              <Pressable
-                accessibilityRole="button"
+              <Button
+                label="Book Now"
+                size="sm"
+                icon="arrow-right"
+                fullWidth={false}
                 accessibilityLabel={`Book ${service.name}`}
                 onPress={() => router.push({ pathname: '/pharmacy/clinical/[serviceId]', params: { serviceId: service.id } })}
-                style={styles.bookButton}
-              >
-                <Txt variant="buttonSm" tint={colors.onPrimary}>Book Now</Txt>
-                <Icon name="arrow-right" size={14} color="onPrimary" />
-              </Pressable>
+              />
             </View>
           </View>
         ))}
@@ -125,7 +125,7 @@ export default function ClinicalDirectoryRoute() {
             </Txt>
           </View>
         </View>
-        <Pressable
+        <PressableScale
           accessibilityRole="button"
           accessibilityLabel="Call 999 for a medical emergency"
           onPress={() => Linking.openURL('tel:999')}
@@ -134,7 +134,7 @@ export default function ClinicalDirectoryRoute() {
           <Icon name="alert" size={14} color="error" />
           <Txt variant="caption" tint={colors.error} style={styles.flex}>For acute medical emergencies call 999</Txt>
           <Txt variant="label" tint={colors.error}>Call</Txt>
-        </Pressable>
+        </PressableScale>
       </View>
     </Screen>
   );
@@ -163,7 +163,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   metaChip: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.sm, paddingVertical: spacing.xxs, borderRadius: radius.xs, backgroundColor: colors.surfaceContainerLow },
 
   priceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  bookButton: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.lg, height: 40, borderRadius: radius.pill, backgroundColor: colors.primary },
 
   footer: { gap: spacing.md },
   regNote: { flexDirection: 'row', gap: spacing.sm },

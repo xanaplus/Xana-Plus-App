@@ -60,7 +60,8 @@ export function NoticePill({ label, tone = 'info', icon, style }: NoticePillProp
   return (
     <View style={[styles.notice, { backgroundColor: t.bg }, style]}>
       {icon ? <Icon name={icon} size={12} color={t.fg} /> : null}
-      <Txt variant="labelSm" tint={colors[t.fg]} numberOfLines={1}>
+      {/* Long notices wrap inside the screen instead of running off its edge. */}
+      <Txt variant="labelSm" tint={colors[t.fg]} numberOfLines={2} style={styles.noticeText}>
         {label}
       </Txt>
     </View>
@@ -79,8 +80,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.xs,
     alignSelf: 'flex-start',
+    maxWidth: '100%',
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
-    borderRadius: radius.pill,
+    // Round on one line, still tidy when a long notice takes two.
+    borderRadius: radius.lg,
   },
+  noticeText: { flexShrink: 1 },
 });

@@ -115,7 +115,9 @@ export default function RequestReturnRoute() {
     return (
       <Screen padded>
         <TopBar title="Request a Return" onBack={goBack} />
-        <EmptyState icon="delivery" title="Order not found" />
+        <EmptyState icon="delivery" title="Order not found">
+          <Button label="Back to my orders" onPress={() => router.replace('/orders')} />
+        </EmptyState>
       </Screen>
     );
   }
