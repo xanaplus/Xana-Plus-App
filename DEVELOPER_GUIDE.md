@@ -26,9 +26,10 @@ EAS project **`@xana_plus/xanaplus`**, project id `bacdd557-2635-4341-b310-5c681
 
 Real: sign-in (Supabase + SMS), the live Business Central catalogue and search, barcode
 lookup, cart and checkout, orders saved to Postgres (as **test** orders), customer accounts
-and addresses, Staff tools, return requests, clinic bookings, Xana Club points, product
+and addresses, return requests, clinic bookings, Xana Club points, product
 photos from the POS, promo codes, order ratings, usage/crash analytics, and push
-notifications.
+notifications. Staff and pharmacist work (orders, prescription approval) is done in
+the admin site, not in the app (1 Nov 2026).
 
 Not real yet: **M-Pesa is a countdown timer** with an "I've paid" button, not Safaricom
 Daraja. Prescription photos are not stored anywhere. The Home hero and Trending Deals copy

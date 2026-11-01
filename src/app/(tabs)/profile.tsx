@@ -259,7 +259,6 @@ export default function ProfileRoute() {
     preferencesError,
     retryPreferences,
     deleteAccount,
-    isStaff,
     isDemo,
     kraPin,
     email,
@@ -586,22 +585,6 @@ export default function ProfileRoute() {
           </Txt>
         </PressableScale>
       </Card>
-
-      {isStaff ? (
-        <View style={styles.section}>
-          <SectionHeader title="For staff" style={styles.inset} />
-          <RowGroup
-            rows={[
-              {
-                key: 'staff',
-                icon: 'store',
-                title: 'Staff tools',
-                onPress: () => router.push('/staff'),
-              },
-            ]}
-          />
-        </View>
-      ) : null}
 
       {/* Orders, addresses, payments, rewards and alerts all belong to an account; guests see the Log in card instead. */}
       {isAuthenticated ? (

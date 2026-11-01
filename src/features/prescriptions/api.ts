@@ -16,7 +16,6 @@ export type Prescription = {
   review_note: string; valid_until: string | null; quoted_at: string | null; created_at: string;
   order_no: string | null; clarification_response: string;
 };
-export type QuoteChoice = { itemNo: string; quantity: number; instructions: string };
 export type PrescriptionEvent = {
   id: number; status: PrescriptionStatus; review_note: string; created_at: string;
 };
@@ -59,7 +58,7 @@ async function rpc<T>(name: string, args: Record<string, unknown>): Promise<T> {
   if (error) throw error;
   return data as T;
 }
-export function usePrescriptionList(review = false) {
+export function usePrescriptionList() {
   const [records, setRecords] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -69,14 +68,14 @@ export function usePrescriptionList(review = false) {
       const { data: session, error: sessionError } = await supabase.auth.getSession();
       if (sessionError) throw sessionError;
       if (!session.session) { setRecords([]); return; }
-      let query = supabase.from('prescriptions').select('*').order('created_at', { ascending: false }).limit(100);
-      if (!review) query = query.eq('user_id', session.session.user.id);
-      const result = await query;
+      // Staff accounts can read every prescription, so ask for the customer's own.
+      const result = await supabase.from('prescriptions').select('*').eq('user_id', session.session.user.id)
+        .order('created_at', { ascending: false }).limit(100);
       if (result.error) throw result.error;
       setRecords(result.data as Prescription[]);
     } catch (cause) { setError(prescriptionError(cause)); }
     finally { setLoading(false); }
-  }, [review]);
+  }, []);
   useEffect(() => {
     const initialRefresh = setTimeout(() => { void refresh(); }, 0);
     const { data } = supabase.auth.onAuthStateChange(() => {
@@ -106,16 +105,11 @@ export const createPrescription = (patientName: string, patientKind: string, doc
   rpc<string>('create_prescription', { p_patient: patientName, p_kind: patientKind, p_doctor: doctor, p_notes: notes, p_consent: true });
 export const submitPrescription = (id: string) => rpc<void>('submit_prescription', { p_id: id });
 export const cancelPrescription = (id: string) => rpc<void>('cancel_prescription', { p_id: id });
-export const isPharmacyReviewer = () => rpc<boolean>('is_pharmacy_reviewer', {});
-export const reviewPrescription = (id: string, lines: QuoteChoice[], note: string, validUntil: string, reject = false) =>
-  rpc<void>('review_prescription', { p_id: id, p_lines: lines, p_note: note, p_valid_until: validUntil || null, p_reject: reject });
 /** Still with the pharmacist or awaiting the customer: a medicine can be added to these. */
 export const OPEN_STATUSES: readonly PrescriptionStatus[] = ['submitted', 'clarification', 'held', 'quoted'];
 /** Asks for one more medicine on a request already sent; a quoted request goes back to the pharmacist. */
 export const addPrescriptionItem = (id: string, item: string) =>
   rpc<void>('add_prescription_item', { p_id: id, p_item: item });
-export const setPrescriptionReviewStatus = (id: string, status: 'clarification' | 'held', note: string) =>
-  rpc<void>('set_prescription_review_status', { p_id: id, p_status: status, p_note: note });
 export const respondToPrescription = (id: string, message: string) =>
   rpc<void>('respond_to_prescription', { p_id: id, p_message: message });
 
