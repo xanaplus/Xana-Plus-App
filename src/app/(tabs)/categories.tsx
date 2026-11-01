@@ -146,12 +146,6 @@ const WHOLESALE_DELIVERY = {
   body: 'Direct pallet delivery anywhere across Nairobi & Kiambu counties.',
 } as const;
 
-/** Screen 3g age notice that stands in front of the liquor aisle. */
-const LIQUOR_NOTICE = {
-  title: 'Drink responsibly · 18+ only',
-  body: 'Please drink in moderation and avoid driving.',
-} as const;
-
 const SORTERS: Record<SortKey, (a: Product, b: Product) => number> = {
   top: () => 0,
   'price-asc': (a, b) => a.price - b.price,
@@ -180,9 +174,9 @@ const cardBadge = (product: Product, vertical: CategoryVertical): CardBadge | un
       tone: 'warning',
     };
   }
-  if (vertical === 'retail' || vertical === 'wholesale' || vertical === 'liquor') {
+  if (vertical === 'retail' || vertical === 'wholesale') {
     const descriptor = (product.pack.split('·')[0] ?? product.pack).trim();
-    return { label: descriptor, tone: vertical === 'liquor' ? 'info' : 'warning' };
+    return { label: descriptor, tone: 'warning' };
   }
   const badge = product.badges?.[0];
   if (!badge) return undefined;
@@ -223,7 +217,6 @@ export default function CategoriesRoute() {
 
   const definition = verticalBySlug(vertical);
   const isPharmacy = vertical === 'pharmacy';
-  const isLiquor = vertical === 'liquor';
   const showsGrid = GRID_VERTICALS.includes(vertical);
   const sortKey: SortKey = isPharmacy ? 'top' : sort;
   const filters: FilterState = { sort: sortKey, scope, inStockOnly, priceCap, storeId };
@@ -286,10 +279,8 @@ export default function CategoriesRoute() {
   // Then scroll to the tapped category's row, or to the top when the aisle has none.
   useEffect(() => {
     if (!openedAt) return;
-    // Liquor always opens at its 18+ notice rather than scrolling past it.
-    const target = verticalParam === 'liquor' ? undefined : focus;
-    pendingFocus.current = target ?? null;
-    if (target && scrollToSection(target)) pendingFocus.current = null;
+    pendingFocus.current = focus ?? null;
+    if (focus && scrollToSection(focus)) pendingFocus.current = null;
     else scrollRef.current?.scrollTo({ y: 0, animated: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openedAt]);
@@ -386,27 +377,19 @@ export default function CategoriesRoute() {
           <Segmented options={VERTICAL_OPTIONS} value={vertical} onChange={selectVertical} scrollable style={styles.chipTrack} />
         </View>
 
-        {isLiquor ? (
-          <View style={[styles.inset, styles.bannerSection]}>
-            {/* Screen 3g stands the age notice in front of the aisle. */}
-            <InfoBanner icon="shield" title={LIQUOR_NOTICE.title} subtitle={LIQUOR_NOTICE.body} />
-          </View>
-        ) : (
-          <View style={[styles.inset, styles.bannerSection]}>
-            <InfoBanner
-              icon="pharmacy"
-              title={PHARMACY_ADVICE.title}
-              subtitle={PHARMACY_ADVICE.subtitle}
-              subtitleTail={vertical === 'wholesale' ? PHARMACY_ADVICE.wholesaleSubtitle : undefined}
-              onPress={() => (isPharmacy ? router.push('/(tabs)/pharmacy') : selectVertical('pharmacy'))}
-            />
-          </View>
-        )}
+        <View style={[styles.inset, styles.bannerSection]}>
+          <InfoBanner
+            icon="pharmacy"
+            title={PHARMACY_ADVICE.title}
+            subtitle={PHARMACY_ADVICE.subtitle}
+            subtitleTail={vertical === 'wholesale' ? PHARMACY_ADVICE.wholesaleSubtitle : undefined}
+            onPress={() => (isPharmacy ? router.push('/(tabs)/pharmacy') : selectVertical('pharmacy'))}
+          />
+        </View>
 
         <View style={[styles.inset, styles.titleRow]}>
           <View style={styles.titleLeft}>
             <Txt variant="headlineLg">{definition.title}</Txt>
-            {isLiquor ? <Chip label="18+" tone="amber" /> : null}
           </View>
           <Pressable
             accessibilityRole="button"
@@ -599,7 +582,7 @@ export default function CategoriesRoute() {
   );
 }
 
-/** Mint advice strip: pharmacy guidance, or the liquor age notice standing in for it. */
+/** Mint advice strip with pharmacy guidance. */
 function InfoBanner({
   icon,
   title,
@@ -680,7 +663,7 @@ function BulkTiers({ product }: { product: Product }) {
   );
 }
 
-/** Deli, wholesale, pharmacy, liquor and beauty aisles scroll wide rail cards. */
+/** Deli, wholesale, pharmacy and beauty aisles scroll wide rail cards. */
 function RailCard({
   product,
   vertical,
@@ -703,7 +686,7 @@ function RailCard({
   const badge = cardBadge(product, vertical);
   const savingNote =
     product.wasPrice && vertical !== 'wholesale' && vertical !== 'pharmacy'
-      ? `Save ${formatKes(product.wasPrice - product.price)}${vertical === 'retail' || vertical === 'liquor' ? ' vs singles' : ''}`
+      ? `Save ${formatKes(product.wasPrice - product.price)}${vertical === 'retail' ? ' vs singles' : ''}`
       : undefined;
   const bulk = vertical === 'wholesale' && product.wholesalePrice && product.wholesaleMinQty ? product : undefined;
   const outOfStock = !useStoreStock().inStock(product);
@@ -716,11 +699,6 @@ function RailCard({
           {badge ? <Badge label={badge.label} tone={badge.tone} /> : null}
           {product.rxRequired ? <Badge label="Rx Required" tone="brand" /> : null}
         </View>
-        {vertical === 'liquor' ? (
-          <View style={styles.railAge}>
-            <Badge label="18+" tone="warning" />
-          </View>
-        ) : null}
       </View>
 
       {/* Card-wide tap target; a sibling of the stepper/add control, never its parent. */}
@@ -916,7 +894,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     backgroundColor: colors.surface,
   },
   railBadges: { position: 'absolute', top: spacing.sm, left: spacing.sm, right: spacing.sm, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.xs },
-  railAge: { position: 'absolute', top: spacing.sm, right: spacing.sm },
   railBody: { gap: spacing.xs, padding: spacing.md, flex: 1 },
   railTitle: { minHeight: 38 },
   railPack: { minHeight: 15 },
