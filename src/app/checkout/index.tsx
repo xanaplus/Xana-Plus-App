@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 
 import {
   BottomSheet,
@@ -46,6 +46,7 @@ import { RxCheckoutPanel, useRxAttachment } from '@/features/prescriptions/check
 import { layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 /** Payment rows in the order Screen 6 stacks them. */
 type PaymentMethodCopy = { id: PaymentMethodId; title: string; icon: IconName; showsTotal: boolean };
@@ -427,11 +428,7 @@ export default function CheckoutRoute() {
         </View>
       }
     >
-      <TopBar
-        centered
-        title="Checkout"
-        onBack={goBack}
-      />
+      <TopBar title="Checkout" onBack={goBack} />
 
       {empty ? (
         <View style={styles.inset}>
@@ -449,7 +446,7 @@ export default function CheckoutRoute() {
                 </View>
                 <Txt variant="titleLg">{fulfilment.mode === 'pickup' ? 'Pickup Address' : 'Delivery Address'}</Txt>
               </View>
-              <Pressable
+              <PressableScale
                 accessibilityRole="button"
                 accessibilityLabel="Change delivery address"
                 hitSlop={8}
@@ -459,7 +456,7 @@ export default function CheckoutRoute() {
                 <Txt variant="label" color="primaryAccent">
                   Change
                 </Txt>
-              </Pressable>
+              </PressableScale>
             </View>
 
             {needsAddress ? (
@@ -496,7 +493,7 @@ export default function CheckoutRoute() {
               </View>
             )}
             {fulfilment.mode === 'delivery' ? (
-              <Pressable
+              <PressableScale
                 accessibilityRole="button"
                 accessibilityLabel={`Packed at ${fulfilment.store.name}, change store`}
                 hitSlop={6}
@@ -510,7 +507,7 @@ export default function CheckoutRoute() {
                 <Txt variant="label" color="primaryAccent">
                   Change store
                 </Txt>
-              </Pressable>
+              </PressableScale>
             ) : null}
           </Card>
 
@@ -522,7 +519,7 @@ export default function CheckoutRoute() {
                 </View>
                 <Txt variant="titleLg">Delivery Slot</Txt>
               </View>
-              <Pressable
+              <PressableScale
                 accessibilityRole="button"
                 accessibilityLabel="Change delivery slot"
                 hitSlop={8}
@@ -532,7 +529,7 @@ export default function CheckoutRoute() {
                 <Txt variant="label" color="primaryAccent">
                   Change
                 </Txt>
-              </Pressable>
+              </PressableScale>
             </View>
 
             <View style={styles.slotBody}>
@@ -606,7 +603,7 @@ export default function CheckoutRoute() {
 
           {session.user ? (
             <Card variant="outline" padding={spacing.lg} style={styles.inset}>
-              <Pressable
+              <PressableScale
                 accessibilityRole="button"
                 accessibilityLabel={pointsExpanded ? 'Hide points redemption' : 'Use Xana Club points'}
                 onPress={() => setPointsExpanded(previous => !previous)}
@@ -622,7 +619,7 @@ export default function CheckoutRoute() {
                   </Txt>
                 </View>
                 <Icon name={pointsExpanded ? 'chevron-up' : 'chevron-down'} size={18} color="onSurfaceVariant" />
-              </Pressable>
+              </PressableScale>
 
               {/* One tap to spend them all, as on McDonald's and Jumia; the section below still allows other amounts. */}
               {!pointsExpanded && pointsUsed === 0 && maxRedeemable > 0 ? (
@@ -776,7 +773,7 @@ export default function CheckoutRoute() {
           ) : null}
 
           <Card variant="outline" padding={spacing.lg} style={styles.inset}>
-            <Pressable
+            <PressableScale
               accessibilityRole="button"
               accessibilityLabel={itemsExpanded ? 'Hide order items' : 'Show order items'}
               onPress={() => setItemsExpanded(previous => !previous)}
@@ -789,7 +786,7 @@ export default function CheckoutRoute() {
                 </Txt>
               </View>
               <Icon name={itemsExpanded ? 'chevron-up' : 'chevron-down'} size={18} color="onSurfaceVariant" />
-            </Pressable>
+            </PressableScale>
 
             {itemsExpanded ? (
               <>

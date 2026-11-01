@@ -1,10 +1,13 @@
-import type { ReactNode, RefObject } from 'react';
+import { Children, isValidElement, type ReactNode, type RefObject } from 'react';
 import { ScrollView, StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { elevation, layout, spacing } from '@/theme';
 import { useTheme } from '@/theme/provider';
 import type { ColorToken } from '@/theme';
+
+import { ScreenPadding } from './screen-padding';
+import { TopBar } from './top-bar';
 
 export type ScreenProps = {
   children: ReactNode;
@@ -57,11 +60,13 @@ export function Screen({
   const pageBackground = backgroundToken ? colors[backgroundToken] : backgroundColor ?? colors.background;
   const insetBackground = topInsetColor ?? colors.surface;
   const insets = useSafeAreaInsets();
+  // A page that opens with its app bar keeps the bar pinned while the content scrolls under it.
+  const pinnedHeader = scroll && (() => { const first = Children.toArray(children)[0]; return isValidElement(first) && first.type === TopBar; })();
   const content = [
     {
       paddingHorizontal: padded ? layout.screenMargin : 0,
       paddingBottom: footer ? spacing.xl : spacing.xl + insets.bottom,
-      paddingTop: spacing.xs,
+      paddingTop: pinnedHeader ? 0 : spacing.xs,
     },
     bottomSpace ? { paddingBottom: bottomSpace } : null,
     contentStyle,
@@ -70,12 +75,14 @@ export function Screen({
   return (
     <View testID={testID} style={[styles.root, { backgroundColor: pageBackground }]}>
       {edgeToEdgeTop ? null : <View style={{ height: insets.top, alignSelf: 'stretch', backgroundColor: insetBackground }} />}
+      <ScreenPadding.Provider value={padded ? layout.screenMargin : 0}>
       <View style={styles.column}>
         {scroll ? (
           <ScrollView
             ref={scrollRef}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
+            stickyHeaderIndices={pinnedHeader ? [0] : undefined}
             contentContainerStyle={content}
             scrollEventThrottle={onScroll ? 64 : undefined}
             onScroll={
@@ -92,6 +99,7 @@ export function Screen({
         )}
         {footer ? <View style={[styles.footer, { paddingBottom: insets.bottom + spacing.md, backgroundColor: colors.surface, borderTopColor: colors.surfaceContainerHigh }]}>{footer}</View> : null}
       </View>
+      </ScreenPadding.Provider>
     </View>
   );
 }

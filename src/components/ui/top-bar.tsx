@@ -1,6 +1,6 @@
 import { BlurView } from 'expo-blur';
 import type { ReactNode } from 'react';
-import { Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import { elevation, layout, radius, spacing } from '@/theme';
@@ -8,7 +8,9 @@ import { useTheme } from '@/theme/provider';
 
 import { Icon, type IconName } from './icon';
 import { useBump } from './motion';
+import { useScreenPadding } from './screen-padding';
 import { Txt } from './text';
+import { PressableScale } from './pressable-scale';
 
 export type TopBarProps = {
   title?: string;
@@ -27,6 +29,9 @@ export type TopBarProps = {
 /** Fixed app bar: 64pt tall with a hairline under translucent variants. */
 export function TopBar({ title, subtitle, onBack, actions, translucent, centered, style }: TopBarProps) {
   const { colors, resolved } = useTheme();
+  // Inside a padded page the bar still runs edge to edge, like every other screen's.
+  const pad = useScreenPadding();
+  const bleed = pad ? { marginHorizontal: -pad } : null;
   // The status-bar gap belongs to <Screen>, which keeps it fixed while the page scrolls.
   const body = (
     <View style={[styles.bar, centered ? styles.barCentered : null]}>
@@ -34,9 +39,9 @@ export function TopBar({ title, subtitle, onBack, actions, translucent, centered
       {onBack || centered ? (
         <View style={styles.side}>
           {onBack ? (
-            <Pressable accessibilityRole="button" accessibilityLabel="Go back" onPress={onBack} hitSlop={8} style={styles.back}>
+            <PressableScale accessibilityRole="button" accessibilityLabel="Go back" onPress={onBack} hitSlop={8} style={styles.back}>
               <Icon name="chevron-left" size={22} color="onSurface" />
-            </Pressable>
+            </PressableScale>
           ) : null}
         </View>
       ) : null}
@@ -56,10 +61,10 @@ export function TopBar({ title, subtitle, onBack, actions, translucent, centered
     </View>
   );
 
-  if (!translucent) return <View style={[{ backgroundColor: colors.surface }, style]}>{body}</View>;
+  if (!translucent) return <View style={[{ backgroundColor: colors.surface }, bleed, style]}>{body}</View>;
 
   return (
-    <BlurView intensity={Platform.OS === 'web' ? 0 : 24} tint={resolved === 'dark' ? 'dark' : 'light'} style={[styles.translucent, { backgroundColor: colors.surface }, elevation.stickyTop, style]}>
+    <BlurView intensity={Platform.OS === 'web' ? 0 : 24} tint={resolved === 'dark' ? 'dark' : 'light'} style={[styles.translucent, { backgroundColor: colors.surface }, elevation.stickyTop, bleed, style]}>
       {body}
     </BlurView>
   );
@@ -81,7 +86,7 @@ export function TopBarAction({
   const { colors } = useTheme();
   const bump = useBump(badge ?? 0);
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={onPress} hitSlop={6} style={styles.action}>
+    <PressableScale accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={onPress} hitSlop={6} style={styles.action}>
       <Icon name={name} size={20} color="onSurface" />
       {badge ? (
         <Animated.View style={[styles.badge, { backgroundColor: colors.primaryContainer, borderColor: colors.surface }, bump]}>
@@ -90,7 +95,7 @@ export function TopBarAction({
           </Txt>
         </Animated.View>
       ) : null}
-    </Pressable>
+    </PressableScale>
   );
 }
 
