@@ -2,7 +2,7 @@ import { CameraView, useCameraPermissions, type BarcodeScanningResult } from 'ex
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useRef, useState } from 'react';
-import { Linking, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Linking, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button, Icon, Screen, Txt } from '@/components/ui';
@@ -15,6 +15,7 @@ import { useStoreStock } from '@/store/fulfilment';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 /**
  * Screen: Barcode Scanner (FR-B.7). The camera reads the barcode and the
@@ -77,7 +78,7 @@ export default function ScanRoute() {
   const scanning = lookup.state === 'scanning';
 
   return (
-    <Screen padded={false} edgeToEdgeTop backgroundToken="inverseSurface" contentStyle={styles.content}>
+    <Screen padded={false} edgeToEdgeTop backgroundToken="chrome" contentStyle={styles.content}>
       {/* Light clock and battery icons over the dark scanner. */}
       <StatusBar style="light" />
 
@@ -93,33 +94,34 @@ export default function ScanRoute() {
 
       {/* Full-bleed dark screen: the header clears the status bar itself. */}
       <View style={[styles.header, { paddingTop: insets.top + spacing.lg }]}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Close scanner" onPress={close} style={styles.headerButton}>
-          <Icon name="close" size={20} color="inverseOnSurface" />
-        </Pressable>
+        <PressableScale accessibilityRole="button" accessibilityLabel="Close scanner" onPress={close} style={styles.headerButton}>
+          <Icon name="close" size={20} color="onChrome" />
+        </PressableScale>
         <View style={styles.headerPill}>
-          <Txt variant="labelSm" tint={colors.inverseOnSurface}>
+          <Txt variant="labelSm" tint={colors.onChrome}>
             Xana Plus Scanner
           </Txt>
         </View>
         {cameraReady ? (
-          <Pressable
+          <PressableScale
             accessibilityRole="button"
             accessibilityLabel={torch ? 'Turn off the light' : 'Turn on the light'}
             onPress={() => setTorch(on => !on)}
             style={[styles.headerButton, torch ? styles.headerButtonOn : null]}
           >
-            <Icon name="flame" size={18} color={torch ? 'onPrimary' : 'inverseOnSurface'} />
-          </Pressable>
+            <Icon name="flame" size={18} color={torch ? 'onPrimary' : 'onChrome'} />
+          </PressableScale>
         ) : (
-          <View style={styles.headerButton} />
+          // Keeps the title centred; invisible, so no empty button shows.
+          <View style={styles.headerSpacer} />
         )}
       </View>
 
       <View style={styles.viewfinderWrap}>
         {scanning && cameraReady ? (
           <View style={styles.tipBadge}>
-            <Icon name="scan" size={14} color="inverseOnSurface" />
-            <Txt variant="labelSm" tint={colors.inverseOnSurface}>
+            <Icon name="scan" size={14} color="onChrome" />
+            <Txt variant="labelSm" tint={colors.onChrome}>
               Align barcode within frame
             </Txt>
           </View>
@@ -133,8 +135,8 @@ export default function ScanRoute() {
           </View>
         ) : (
           <View style={styles.noCamera}>
-            <Icon name="scan" size={40} color="inverseOnSurface" />
-            <Txt variant="title" tint={colors.inverseOnSurface} align="center">
+            <Icon name="scan" size={40} color="onChrome" />
+            <Txt variant="title" tint={colors.onChrome} align="center">
               {permission === null ? 'Starting the camera…' : 'Camera access is off'}
             </Txt>
             {permission && !permission.granted ? (
@@ -201,11 +203,11 @@ export default function ScanRoute() {
                 onPress={() => router.replace(`/product/${lookup.product.id}`)}
               />
             </View>
-            <Pressable accessibilityRole="button" onPress={scanAgain} style={styles.manualLink}>
+            <PressableScale accessibilityRole="button" onPress={scanAgain} style={styles.manualLink}>
               <Txt variant="label" color="primaryAccent">
                 Scan another item
               </Txt>
-            </Pressable>
+            </PressableScale>
           </View>
         ) : lookup.state === 'looking' ? (
           <View style={styles.status}>
@@ -258,11 +260,11 @@ export default function ScanRoute() {
             <Txt variant="bodySm" color="onSurfaceVariant" align="center" style={styles.helperBody}>
               See the price and whether your store has it.
             </Txt>
-            <Pressable accessibilityRole="button" onPress={() => setTyping(true)} style={styles.manualLink}>
+            <PressableScale accessibilityRole="button" onPress={() => setTyping(true)} style={styles.manualLink}>
               <Txt variant="label" color="primaryAccent">
                 Having trouble scanning? Enter code manually
               </Txt>
-            </Pressable>
+            </PressableScale>
           </>
         )}
       </View>
@@ -279,6 +281,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
   },
+  headerSpacer: { width: 36, height: 36 },
   headerButton: {
     width: 36,
     height: 36,

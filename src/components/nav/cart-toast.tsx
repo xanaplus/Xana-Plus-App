@@ -1,6 +1,6 @@
 import { usePathname, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -10,6 +10,7 @@ import { productById } from '@/data/catalog';
 import { useCart } from '@/store/cart';
 import { elevation, layout, radius, spacing } from '@/theme';
 import { useTheme } from '@/theme/provider';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 /** How long "Added to cart" stays up before sliding away. */
 const SHOW_MS = 2200;
@@ -50,24 +51,24 @@ export function CartToast() {
         entering={FadeInDown.duration(220)}
         exiting={FadeOutDown.duration(180)}
         accessibilityLiveRegion="polite"
-        style={[styles.toast, { backgroundColor: colors.inverseSurface }, elevation.floating]}
+        style={[styles.toast, { backgroundColor: colors.chrome }, elevation.floating]}
       >
         <View style={[styles.check, { backgroundColor: colors.primaryContainer }]}>
           <Icon name="check" size={16} color="onPrimary" />
         </View>
         <View style={styles.copy}>
-          <Txt variant="label" tint={colors.inverseOnSurface} numberOfLines={1}>
+          <Txt variant="label" tint={colors.onChrome} numberOfLines={1}>
             {lastAdded.quantity > 1 ? `${lastAdded.quantity} × ${name}` : name}
           </Txt>
           <Txt variant="caption" tint={colors.white70} numberOfLines={1}>
             {`Added to cart · ${itemCount} ${itemCount === 1 ? 'item' : 'items'}`}
           </Txt>
         </View>
-        <Pressable accessibilityRole="button" accessibilityLabel="View cart" onPress={openCart} hitSlop={8} style={styles.action}>
+        <PressableScale accessibilityRole="button" accessibilityLabel="View cart" onPress={openCart} hitSlop={8} style={styles.action}>
           <Txt variant="label" tint={colors.primaryFixed}>
             View cart
           </Txt>
-        </Pressable>
+        </PressableScale>
       </Animated.View>
     </View>
   );

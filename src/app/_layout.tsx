@@ -139,6 +139,8 @@ function AppFrame() {
         <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
         <Stack.Screen name="login" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="checkout/mpesa" options={{ gestureEnabled: false }} />
+        {/* The camera opens over everything and slides away when closed, as in other shopping apps. */}
+        <Stack.Screen name="scan" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
       </Stack>
       <CartToast />
       <NamePrompt />

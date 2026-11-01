@@ -1,6 +1,6 @@
 import type { ImagePickerAsset } from 'expo-image-picker';
 import { useState } from 'react';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import { Button, Icon, SelectableOption, Txt } from '@/components/ui';
 import { TextField } from '@/features/auth/auth-sheet';
@@ -8,6 +8,7 @@ import { createPrescription, pickPrescriptionPhotos, prescriptionError, uploadPr
 import { radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 /**
  * The prescription attached at checkout when the basket has prescription
@@ -105,7 +106,7 @@ export function RxCheckoutPanel({ rx, medicines, onRemove }: { rx: RxAttachment;
           {rx.photos.map(photo => (
             <View key={photo.uri} style={styles.photo}>
               <Image source={{ uri: photo.uri }} style={styles.photoImage} accessibilityLabel="Prescription photo" />
-              <Pressable
+              <PressableScale
                 accessibilityRole="button"
                 accessibilityLabel="Remove this photo"
                 hitSlop={8}
@@ -113,7 +114,7 @@ export function RxCheckoutPanel({ rx, medicines, onRemove }: { rx: RxAttachment;
                 style={styles.photoRemove}
               >
                 <Icon name="close" size={12} color="onPrimary" />
-              </Pressable>
+              </PressableScale>
             </View>
           ))}
         </View>
@@ -139,11 +140,11 @@ export function RxCheckoutPanel({ rx, medicines, onRemove }: { rx: RxAttachment;
         </Txt>
       ) : null}
 
-      <Pressable accessibilityRole="button" onPress={onRemove} style={styles.removeLink}>
+      <PressableScale accessibilityRole="button" onPress={onRemove} style={styles.removeLink}>
         <Txt variant="label" color="primaryAccent">
           No prescription? Remove these medicines
         </Txt>
-      </Pressable>
+      </PressableScale>
     </View>
   );
 }
@@ -166,7 +167,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   photoImage: { width: '100%', height: '100%' },
   photoRemove: {
     position: 'absolute', top: 4, right: 4, width: 20, height: 20, borderRadius: radius.pill,
-    backgroundColor: colors.inverseSurface, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.chrome, alignItems: 'center', justifyContent: 'center',
   },
   actions: { flexDirection: 'row', gap: spacing.sm },
   removeLink: { alignSelf: 'flex-start', paddingVertical: spacing.xs },

@@ -19,6 +19,9 @@ export const colors = {
   surfaceContainerHighest: '#e5e2e1',
   inverseSurface: '#313030',
   inverseOnSurface: '#f3f0ef',
+  /** Always-dark chrome (camera screen, cart bar, cart toast): dark in both themes, unlike inverseSurface. */
+  chrome: '#1c1b1b',
+  onChrome: '#f3f0ef',
 
   // ── Content ─────────────────────────────────────────────────────────────
   onSurface: '#1c1b1b',
@@ -115,6 +118,9 @@ export const darkColors: Palette = {
   surfaceContainerHighest: '#323232',
   inverseSurface: '#e8e8e8',
   inverseOnSurface: '#252525',
+  // Lifted off the black page so the bar and toast still read as floating.
+  chrome: '#2c2c2c',
+  onChrome: '#f2f2f2',
   onSurface: '#f2f2f2',
   onSurfaceVariant: '#bfbfbf',
   outline: '#9a9a9a',
