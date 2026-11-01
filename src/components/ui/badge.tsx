@@ -22,7 +22,7 @@ export function Badge({ label, tone = 'neutral', style }: BadgeProps) {
   const tones: Record<BadgeTone, { bg: string; fg: ColorToken }> = {
     discount: { bg: colors.secondaryContainer, fg: 'onSecondary' },
     fresh: { bg: colors.primaryContainer, fg: 'onPrimary' },
-    new: { bg: colors.tertiaryContainer, fg: 'onTertiary' },
+    new: { bg: colors.tertiaryContainer, fg: 'onTertiaryContainer' },
     info: { bg: colors.mintSurface, fg: 'primaryAccent' },
     warning: { bg: colors.secondaryFixed, fg: 'secondary' },
     danger: { bg: colors.errorContainer, fg: 'onErrorContainer' },
@@ -49,7 +49,7 @@ export function NoticePill({ label, tone = 'info', icon, style }: NoticePillProp
   const tones: Record<BadgeTone, { bg: string; fg: ColorToken }> = {
     discount: { bg: colors.secondaryContainer, fg: 'onSecondary' },
     fresh: { bg: colors.primaryContainer, fg: 'onPrimary' },
-    new: { bg: colors.tertiaryContainer, fg: 'onTertiary' },
+    new: { bg: colors.tertiaryContainer, fg: 'onTertiaryContainer' },
     info: { bg: colors.mintSurface, fg: 'primaryAccent' },
     warning: { bg: colors.secondaryFixed, fg: 'secondary' },
     danger: { bg: colors.errorContainer, fg: 'onErrorContainer' },

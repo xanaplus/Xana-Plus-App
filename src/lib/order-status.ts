@@ -52,7 +52,8 @@ export const PICKUP_STAGES: { status: OrderStatus; label: string }[] = [
 
 /** The pharmacist's step and the customer's, ahead of the usual stages. */
 const RX_STAGES: { status: OrderStatus; label: string }[] = [
-  { status: 'awaiting-approval', label: 'Pharmacist' },
+  // "Pharmacy", not "Pharmacist": six stages leave each label ~53pt, and the longer word broke mid-word.
+  { status: 'awaiting-approval', label: 'Pharmacy' },
   { status: 'approved', label: 'You confirm' },
 ];
 

@@ -141,6 +141,8 @@ export const darkColors: Palette = {
   onSecondary: '#ffddb8',
   secondaryContainer: '#70420d',
   onSecondaryContainer: '#ffddb8',
+  // Warning badges: a dark amber fill so their light amber text stays readable.
+  secondaryFixed: '#3f2608',
   tertiary: '#e8d46a',
   tertiaryAccent: '#e8d46a',
   onTertiary: '#393000',
