@@ -92,3 +92,7 @@ export const supabase = {
 export async function callFunction() {
   return { error: 'network' as const };
 }
+
+export function authErrorCode() {
+  return 'server_error' as const;
+}

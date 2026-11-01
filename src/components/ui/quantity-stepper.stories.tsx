@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-native-web-vite';
 import { useState } from 'react';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
 
 import { QuantityStepper } from './quantity-stepper';
 
@@ -33,8 +33,9 @@ export const Counting: Story = {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByLabelText('Increase quantity'));
     await userEvent.click(canvas.getByLabelText('Increase quantity'));
-    await expect(canvas.getByText('3')).toBeVisible();
+    // The number rolls in (fades up), so wait for it to finish.
+    await waitFor(() => expect(canvas.getByText('3')).toBeVisible());
     await userEvent.click(canvas.getByLabelText('Decrease quantity'));
-    await expect(canvas.getByText('2')).toBeVisible();
+    await waitFor(() => expect(canvas.getByText('2')).toBeVisible());
   },
 };
