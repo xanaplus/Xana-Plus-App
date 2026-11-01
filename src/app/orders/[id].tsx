@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 
 import {
   Badge,
@@ -310,6 +310,18 @@ export default function OrderStatusScreen() {
           </Txt>
         </View>
       </Card>
+
+      {/* The KRA verification link, once the order is signed for real (the same link as the receipt QR). */}
+      {order.kraReceiptUrl ? (
+        <Button
+          label="View KRA receipt"
+          variant="outline"
+          icon="receipt"
+          iconPosition="leading"
+          onPress={() => void Linking.openURL(order.kraReceiptUrl!)}
+          style={styles.help}
+        />
+      ) : null}
 
       {completed ? <RateOrder orderNo={order.id} pickup={pickup || order.slotLabel.startsWith('Pickup')} /> : null}
 

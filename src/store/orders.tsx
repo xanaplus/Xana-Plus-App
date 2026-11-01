@@ -75,6 +75,8 @@ export type PlacedOrder = {
   pharmacistNote?: string;
   /** ISO time an approved order must be confirmed by. */
   expiresAt?: string;
+  /** KRA verification link once the order is signed for real (never for a test-mode signature). */
+  kraReceiptUrl?: string;
   /** Saved in Supabase as a test order (payment simulated). */
   isTest?: boolean;
 };
@@ -335,6 +337,17 @@ async function pharmacistNotes(orderNos: string[]): Promise<Map<string, string>>
   return notes;
 }
 
+/** KRA receipt links for orders signed by the Ruiru device; test-mode signatures are not tax receipts. */
+async function kraReceipts(orderNos: string[]): Promise<Map<string, string>> {
+  const links = new Map<string, string>();
+  if (orderNos.length === 0) return links;
+  const { data } = await supabase.from('orders').select('order_no, etims_receipt_sign, etims_signed_as_test').in('order_no', orderNos);
+  for (const row of (data ?? []) as { order_no: string; etims_receipt_sign: string | null; etims_signed_as_test: boolean | null }[]) {
+    if (row.etims_receipt_sign?.startsWith('http') && row.etims_signed_as_test === false) links.set(row.order_no, row.etims_receipt_sign);
+  }
+  return links;
+}
+
 const displayDate = (iso: string): string => {
   const d = new Date(iso);
   return `${String(d.getDate()).padStart(2, '0')} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
@@ -506,6 +519,9 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         const saved = (data as OrderRow[]).map(fromRow);
         const notes = await pharmacistNotes(saved.filter(order => order.prescription).map(order => order.id)).catch(() => new Map<string, string>());
         for (const order of saved) order.pharmacistNote = notes.get(order.id);
+        // Read apart from ORDER_COLUMNS so the list still loads if these columns are ever out of reach.
+        const receipts = await kraReceipts(saved.filter(order => order.status !== 'cancelled').map(order => order.id)).catch(() => new Map<string, string>());
+        for (const order of saved) order.kraReceiptUrl = receipts.get(order.id);
         // Order screens look lines up by id, so load any item this device hasn't seen yet.
         const missing = [...new Set(saved.flatMap(order => order.lines.map(line => line.productId)))].filter(id => !productById(id));
         await fetchProducts(missing).catch(() => []);
