@@ -4,10 +4,24 @@ import { StyleSheet, View } from 'react-native';
 
 import { Icon } from '@/components/ui/icon';
 import { Txt } from '@/components/ui/text';
+import { supabase } from '@/lib/supabase';
 import { spacing } from '@/theme';
 import { useTheme } from '@/theme/provider';
 
 type ProductPhotoSource = number | { uri: string };
+
+/** Items already reported this session, so a list of broken photos asks once each. */
+const reported = new Set<string>();
+
+/**
+ * A POS photo address that won't load may have moved (product-image-api.md §3):
+ * ask the server to re-check the item, and the photo sync fetches a fresh address.
+ */
+function reportBrokenPhoto(productId: string, source?: ProductPhotoSource) {
+  if (typeof source !== 'object' || !source.uri.startsWith('http') || reported.has(productId)) return;
+  reported.add(productId);
+  void supabase.rpc('report_broken_photo', { p_item_no: productId }).then(() => undefined, () => undefined);
+}
 
 type ProductPhotoProps = {
   source?: ProductPhotoSource;
@@ -34,7 +48,7 @@ export function ProductPhoto({ source, productId, accessibilityLabel, variant }:
   );
 }
 
-function ProductPhotoContent({ source, accessibilityLabel, variant }: ProductPhotoProps) {
+function ProductPhotoContent({ source, productId, accessibilityLabel, variant }: ProductPhotoProps) {
   const { colors } = useTheme();
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -57,7 +71,10 @@ function ProductPhotoContent({ source, accessibilityLabel, variant }: ProductPho
           cachePolicy="memory-disk"
           transition={140}
           onLoad={() => setLoaded(true)}
-          onError={() => setFailed(true)}
+          onError={() => {
+            setFailed(true);
+            reportBrokenPhoto(productId, source);
+          }}
         />
       ) : null}
       {available && !loaded ? (
