@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 
 import { Button, Card, Divider, EmptyState, Icon, Screen, SelectableOption, TopBar, Txt } from '@/components/ui';
 import { clinicalServiceById } from '@/data/clinical';
@@ -13,6 +13,7 @@ import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { formatKes } from '@/lib/format';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 const TIME_SLOTS = ['09:30 AM', '10:15 AM', '11:00 AM', '02:30 PM', '04:00 PM', '05:15 PM'];
 
@@ -189,11 +190,11 @@ export default function ClinicalBookingRoute() {
         {days.map((entry, index) => {
           const active = dayIndex === index;
           return (
-            <Pressable key={entry.label + entry.date} accessibilityRole="button" onPress={() => setDayIndex(index)} style={[styles.dateChip, active ? styles.dateChipActive : null]}>
+            <PressableScale key={entry.label + entry.date} accessibilityRole="button" onPress={() => setDayIndex(index)} style={[styles.dateChip, active ? styles.dateChipActive : null]}>
               <Txt variant="micro" tint={active ? colors.onPrimary : colors.onSurfaceVariant}>{entry.label}</Txt>
               <Txt variant="titleLg" tint={active ? colors.onPrimary : colors.onSurface}>{entry.date}</Txt>
               <Txt variant="caption" tint={active ? colors.onPrimary : colors.onSurfaceVariant}>{entry.day}</Txt>
-            </Pressable>
+            </PressableScale>
           );
         })}
       </View>
@@ -206,9 +207,9 @@ export default function ClinicalBookingRoute() {
         {TIME_SLOTS.map(time => {
           const active = slot === time;
           return (
-            <Pressable key={time} accessibilityRole="button" onPress={() => setSlot(time)} style={[styles.slotChip, active ? styles.slotChipActive : null]}>
+            <PressableScale key={time} accessibilityRole="button" onPress={() => setSlot(time)} style={[styles.slotChip, active ? styles.slotChipActive : null]}>
               <Txt variant="label" tint={active ? colors.onPrimary : colors.onSurface}>{time}</Txt>
-            </Pressable>
+            </PressableScale>
           );
         })}
       </View>

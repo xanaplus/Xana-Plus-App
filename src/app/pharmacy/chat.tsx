@@ -10,6 +10,7 @@ import { formatKes } from '@/lib/format';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 /** Screen 08e — Pharmacy: Consultation Chat. */
 
@@ -106,14 +107,14 @@ export default function ConsultationChatScreen() {
               style={styles.input}
               onSubmitEditing={() => send(draft)}
             />
-            <Pressable
+            <PressableScale
               accessibilityRole="button"
               accessibilityLabel="Send confidential message"
               onPress={() => send(draft)}
               style={[styles.send, draft.trim() ? null : styles.sendOff]}
             >
               <Icon name="arrow-right" size={18} color="onPrimary" />
-            </Pressable>
+            </PressableScale>
           </View>
         </View>
       }

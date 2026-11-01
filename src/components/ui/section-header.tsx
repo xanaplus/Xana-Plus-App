@@ -1,9 +1,10 @@
-import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { spacing } from '@/theme';
 
 import { Icon } from './icon';
 import { Txt } from './text';
+import { PressableScale } from './pressable-scale';
 
 export type SectionHeaderProps = {
   title: string;
@@ -25,12 +26,12 @@ export function SectionHeader({ title, actionLabel, onAction, icon, style }: Sec
         </Txt>
       </View>
       {actionLabel ? (
-        <Pressable accessibilityRole="button" onPress={onAction} hitSlop={8} style={styles.action}>
+        <PressableScale accessibilityRole="button" onPress={onAction} hitSlop={8} style={styles.action}>
           <Txt variant="label" color="primaryAccent">
             {actionLabel}
           </Txt>
           <Icon name="chevron-right" size={14} color="primaryAccent" />
-        </Pressable>
+        </PressableScale>
       ) : null}
     </View>
   );

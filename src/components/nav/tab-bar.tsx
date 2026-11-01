@@ -1,5 +1,5 @@
 import type { BottomTabBarProps } from 'expo-router/tabs';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -10,6 +10,7 @@ import { tapFeedback } from '@/lib/haptics';
 import { useCart } from '@/store/cart';
 import { elevation, layout, radius, spacing } from '@/theme';
 import { useTheme } from '@/theme/provider';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 type TabMeta = {
   label: string;
@@ -56,7 +57,7 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
 
         if (meta.fab) {
           return (
-            <Pressable
+            <PressableScale
               key={route.key}
               accessibilityRole="tab"
               accessibilityLabel={`${meta.label}, ${position}`}
@@ -70,12 +71,12 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
               <Txt variant="tab" tint={focused ? colors.primaryAccent : colors.outline}>
                 {meta.label}
               </Txt>
-            </Pressable>
+            </PressableScale>
           );
         }
 
         return (
-          <Pressable
+          <PressableScale
             key={route.key}
             accessibilityRole="tab"
             accessibilityLabel={`${meta.label}${badge > 0 ? `, ${badge} ${badge === 1 ? 'item' : 'items'}` : ''}, ${position}`}
@@ -100,7 +101,7 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
             <Txt variant="tab" tint={focused ? colors.primaryAccent : colors.outline}>
               {meta.label}
             </Txt>
-          </Pressable>
+          </PressableScale>
         );
       })}
     </View>

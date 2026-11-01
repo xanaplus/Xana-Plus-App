@@ -5,6 +5,7 @@ import { useTheme } from '@/theme/provider';
 
 import { Icon, type IconName } from './icon';
 import { Txt } from './text';
+import { selectFeedback } from '@/lib/haptics';
 
 export type ChipTone = 'neutral' | 'brand' | 'mint' | 'amber' | 'outline';
 
@@ -33,7 +34,7 @@ export function Chip({ label, tone = 'neutral', icon, selected, onPress, style }
       accessibilityRole={onPress ? 'button' : 'text'}
       accessibilityState={{ selected: !!selected }}
       disabled={!onPress}
-      onPress={onPress}
+      onPress={onPress ? () => { selectFeedback(); onPress(); } : undefined}
       style={({ pressed }) => [
         styles.chip,
         {

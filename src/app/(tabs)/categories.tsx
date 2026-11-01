@@ -40,6 +40,7 @@ import { useSession } from '@/store/session';
 import { elevation, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 /** Sort keys behind the sort row. BC items carry no was-price, rating or "new" badge, so the row sorts on price. */
 type SortKey = 'top' | 'price-asc' | 'price-desc';
@@ -324,7 +325,7 @@ export default function CategoriesRoute() {
         title="Categories"
         actions={
           <>
-            <Pressable
+            <PressableScale
               accessibilityRole="button"
               accessibilityLabel={`Shopping at ${store.name}, change store`}
               onPress={() => setStoreSheetOpen(true)}
@@ -335,9 +336,9 @@ export default function CategoriesRoute() {
               <Txt variant="label" numberOfLines={1}>
                 {store.name.replace('Xana Plus ', '')}
               </Txt>
-            </Pressable>
+            </PressableScale>
             <TopBarAction name="bell" accessibilityLabel="Notifications" onPress={() => router.push('/(tabs)/profile')} />
-            <Pressable
+            <PressableScale
               accessibilityRole="button"
               accessibilityLabel={user ? 'Your account' : 'Log in or sign up'}
               onPress={() => router.push(user ? '/(tabs)/profile' : '/login')}
@@ -351,7 +352,7 @@ export default function CategoriesRoute() {
               ) : (
                 <Icon name="user" size={18} color="onSurfaceVariant" />
               )}
-            </Pressable>
+            </PressableScale>
           </>
         }
       />
@@ -391,7 +392,7 @@ export default function CategoriesRoute() {
           <View style={styles.titleLeft}>
             <Txt variant="headlineLg">{definition.title}</Txt>
           </View>
-          <Pressable
+          <PressableScale
             accessibilityRole="button"
             accessibilityLabel={`Browse all ${definition.label} products`}
             onPress={() => openSearch(definition.label)}
@@ -400,7 +401,7 @@ export default function CategoriesRoute() {
             <Txt variant="label" color="primaryAccent">
               Browse all
             </Txt>
-          </Pressable>
+          </PressableScale>
         </View>
 
         <View style={[styles.inset, styles.tiles]}>
@@ -633,9 +634,9 @@ function InfoBanner({
       style={styles.banner}
     >
       {onPress ? (
-        <Pressable accessibilityRole="button" accessibilityLabel={title} onPress={onPress} style={styles.bannerPress}>
+        <PressableScale accessibilityRole="button" accessibilityLabel={title} onPress={onPress} style={styles.bannerPress}>
           {body}
-        </Pressable>
+        </PressableScale>
       ) : (
         <View style={styles.bannerPress}>{body}</View>
       )}

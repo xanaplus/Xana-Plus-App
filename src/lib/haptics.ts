@@ -12,6 +12,11 @@ export function tapFeedback(): void {
   if (enabled) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
 }
 
+/** The lightest tick: choosing a chip, tab or option. */
+export function selectFeedback(): void {
+  if (enabled) Haptics.selectionAsync().catch(() => {});
+}
+
 /** A success buzz: order placed, booking or return sent. */
 export function successFeedback(): void {
   if (enabled) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});

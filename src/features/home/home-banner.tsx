@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { ScrollView, StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
 import { Txt } from '@/components/ui';
 import { figmaAsset } from '@/data/images';
@@ -12,6 +12,7 @@ import { formatKes } from '@/lib/format';
 import { useStoreStock } from '@/store/fulfilment';
 import { radius, spacing } from '@/theme';
 import { useTheme } from '@/theme/provider';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 /** The website's slide colours (Web2 index.html `.offer-slide.tone-*`), so a banner looks the same on both. */
 const TONES: Record<SlideTone, { background: string; panel: string; text: string; ctaBackground: string; ctaText: string }> = {
@@ -115,7 +116,7 @@ export function HomeBanner({ width }: { width: number }) {
         style={[styles.clip, { width }]}
       >
         {slides.map((slide, position) => (
-          <Pressable
+          <PressableScale
             key={slide.id}
             accessibilityRole="button"
             accessibilityLabel={`${slide.title}. ${slide.cta}. Slide ${position + 1} of ${count}`}
@@ -123,7 +124,7 @@ export function HomeBanner({ width }: { width: number }) {
             style={{ width }}
           >
             <SlideView slide={slide} />
-          </Pressable>
+          </PressableScale>
         ))}
       </ScrollView>
       {count > 1 ? (

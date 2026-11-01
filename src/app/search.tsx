@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Animated, Linking, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Animated, Linking, Platform, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Reanimated, { FadeInDown } from 'react-native-reanimated';
 
 import {
@@ -26,6 +26,7 @@ import { useFulfilment } from '@/store/fulfilment';
 import { elevation, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 type SortBy = ResultSort;
 
@@ -240,15 +241,16 @@ export default function SearchRoute() {
       scroll={false}
       padded={false}
       contentStyle={styles.screenBody}
-      footer={
-        <View style={styles.cartBar}>
+      // The basket bar appears once something is in the basket, never as "KES 0 · 0 items".
+      footer={cart.itemCount > 0 ? (
+        <Reanimated.View entering={FadeInDown.duration(240)} style={styles.cartBar}>
           <View style={styles.cartCount}>
             <Txt variant="label" tint={colors.onSecondary}>
               {cart.itemCount}
             </Txt>
           </View>
           <View style={styles.cartCopy}>
-            <Txt variant="titleSm" tint={colors.inverseOnSurface} numberOfLines={1}>
+            <Txt variant="titleSm" tint={colors.onChrome} numberOfLines={1}>
               {formatKes(cart.summary.total)}
             </Txt>
             <Txt variant="caption" tint={colors.white70} numberOfLines={1}>
@@ -262,12 +264,12 @@ export default function SearchRoute() {
             fullWidth={false}
             onPress={() => router.push('/(tabs)/cart')}
           />
-        </View>
-      }
+        </Reanimated.View>
+      ) : undefined}
     >
       <View style={styles.header}>
         <View style={styles.inputRow}>
-          <Pressable
+          <PressableScale
             accessibilityRole="button"
             accessibilityLabel="Go back"
             onPress={() => router.back()}
@@ -275,7 +277,7 @@ export default function SearchRoute() {
             style={styles.back}
           >
             <Icon name="chevron-left" size={20} color="onSurface" />
-          </Pressable>
+          </PressableScale>
           <View style={styles.inputWrap}>
             <SearchBar
               value={query}
@@ -297,7 +299,7 @@ export default function SearchRoute() {
           style={styles.quickRow}
           contentContainerStyle={styles.quickTrack}
         >
-          <Pressable
+          <PressableScale
             accessibilityRole="button"
             accessibilityLabel="Filter and sort"
             onPress={() => setFilterOpen(true)}
@@ -312,7 +314,7 @@ export default function SearchRoute() {
                 </Txt>
               </View>
             ) : null}
-          </Pressable>
+          </PressableScale>
           {/* Quick filters: an active one shows a cross and clears on tap; Sort and Price open the sheet to choose. */}
           <Chip
             label={sortBy === 'relevance' ? 'Sort' : sortLabel}
@@ -609,7 +611,8 @@ function PopularSearches({ onPick }: { onPick: (label: string) => void }) {
         {popularSearches.map(entry => (
           <Chip
             key={entry.label}
-            label={`${entry.emoji} ${entry.label}`}
+            label={entry.label}
+            icon="search"
             tone="outline"
             onPress={() => onPick(entry.label)}
           />
@@ -629,7 +632,7 @@ function ContactBranch({ store }: { store: (typeof stores)[number] }) {
       <Txt variant="caption" color="onSurfaceVariant">
         {"Can't find your item?"}
       </Txt>
-      <Pressable
+      <PressableScale
         accessibilityRole="button"
         accessibilityLabel={`Call ${store.name} on ${store.phone}`}
         onPress={() => {
@@ -642,7 +645,7 @@ function ContactBranch({ store }: { store: (typeof stores)[number] }) {
         <Txt variant="caption" color="primaryAccent">
           {`(${store.phone})`}
         </Txt>
-      </Pressable>
+      </PressableScale>
     </View>
   );
 }
@@ -843,7 +846,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     gap: spacing.md,
     padding: spacing.md,
     borderRadius: radius.xl,
-    backgroundColor: colors.onSurface,
+    backgroundColor: colors.chrome,
   },
   cartCount: {
     width: 28,

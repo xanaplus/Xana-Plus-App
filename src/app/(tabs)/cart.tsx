@@ -1,6 +1,6 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
@@ -36,6 +36,7 @@ import { useSession } from '@/store/session';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 const SUBSTITUTION_COPY: Record<SubstitutionPreference, { title: string; description: string }> = {
   similar: { title: 'Replace with similar', description: 'We’ll swap in the closest matching brand or size' },
@@ -101,13 +102,13 @@ export default function CartRoute() {
         actions={
           <>
             <TopBarAction name="search" accessibilityLabel="Search products" onPress={() => router.push('/search')} />
-            <Pressable accessibilityRole="button" accessibilityLabel="Account" onPress={() => router.push('/profile')}>
+            <PressableScale accessibilityRole="button" accessibilityLabel="Account" onPress={() => router.push('/profile')}>
               <View style={styles.avatar}>
                 <Txt variant="label" tint={colors.onPrimary}>
                   {user ? user.name.charAt(0) : 'A'}
                 </Txt>
               </View>
-            </Pressable>
+            </PressableScale>
           </>
         }
       />
@@ -151,9 +152,9 @@ export default function CartRoute() {
                 {slot.label} · {cart.itemCount} active {cart.itemCount === 1 ? 'item' : 'items'}
               </Txt>
             </View>
-            <Pressable accessibilityRole="button" accessibilityLabel="Change delivery slot" hitSlop={8} onPress={() => router.push('/checkout')}>
+            <PressableScale accessibilityRole="button" accessibilityLabel="Change delivery slot" hitSlop={8} onPress={() => router.push('/checkout')}>
               <Icon name="more" size={18} color="onSurfaceVariant" />
-            </Pressable>
+            </PressableScale>
           </View>
         </Card>
 
@@ -204,7 +205,7 @@ export default function CartRoute() {
           </View>
         ) : null}
 
-        <Pressable accessibilityRole="button" onPress={() => setSheetOpen(true)} style={[styles.inset, styles.substitutionRow]}>
+        <PressableScale accessibilityRole="button" onPress={() => setSheetOpen(true)} style={[styles.inset, styles.substitutionRow]}>
           <Icon name="refresh" size={20} color="primaryAccent" />
           <View style={styles.substitutionBody}>
             <Txt variant="title">If an item is unavailable</Txt>
@@ -213,7 +214,7 @@ export default function CartRoute() {
             </Txt>
           </View>
           <Icon name="chevron-right" size={18} color="onSurfaceVariant" />
-        </Pressable>
+        </PressableScale>
         </>
       )}
 
@@ -258,7 +259,7 @@ export default function CartRoute() {
         </View>
         {/* Points this order earns, before checkout (McDonald's, Jumia); guests are nudged to log in. */}
         {earnable > 0 ? (
-          <Pressable
+          <PressableScale
             accessibilityRole={user ? 'text' : 'button'}
             disabled={!!user}
             onPress={() => router.push('/login')}
@@ -270,7 +271,7 @@ export default function CartRoute() {
                 ? `You'll earn ${earnable} Xana Club ${earnable === 1 ? 'point' : 'points'}`
                 : `Log in to earn ${earnable} Xana Club ${earnable === 1 ? 'point' : 'points'} on this order`}
             </Txt>
-          </Pressable>
+          </PressableScale>
         ) : null}
       </Card>
       )}
@@ -326,9 +327,9 @@ function CartLineRow({
 
   return (
     <View style={styles.line}>
-      <Pressable accessibilityRole="button" accessibilityLabel={product.name} onPress={onPress} style={styles.lineImageWrap}>
+      <PressableScale accessibilityRole="button" accessibilityLabel={product.name} onPress={onPress} style={styles.lineImageWrap}>
         <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="row" />
-      </Pressable>
+      </PressableScale>
 
       <View style={styles.lineBody}>
         <View style={styles.lineHead}>

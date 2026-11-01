@@ -2,7 +2,7 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
 import {
@@ -35,6 +35,7 @@ import { useSession } from '@/store/session';
 import { elevation, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 /** Deal card geometry (the frame's 216pt deal card). */
 const DEAL_CARD_WIDTH = 216;
@@ -143,7 +144,7 @@ export default function HomeRoute() {
         title="Home"
         actions={
           <>
-            <Pressable
+            <PressableScale
               accessibilityRole="button"
               accessibilityLabel={`Shopping at ${store.name}, change store`}
               onPress={() => setStoreSheetOpen(true)}
@@ -154,8 +155,8 @@ export default function HomeRoute() {
               <Txt variant="label" numberOfLines={1}>
                 {storeShortName}
               </Txt>
-            </Pressable>
-            <Pressable
+            </PressableScale>
+            <PressableScale
               accessibilityRole="button"
               accessibilityLabel={alertsUnread ? 'Notifications, unread' : 'Notifications'}
               onPress={() => setAlertsOpen(true)}
@@ -164,8 +165,8 @@ export default function HomeRoute() {
             >
               <Icon name="bell" size={20} color="onSurface" />
               {alertsUnread ? <View style={styles.unreadDot} /> : null}
-            </Pressable>
-            <Pressable
+            </PressableScale>
+            <PressableScale
               accessibilityRole="button"
               accessibilityLabel={user ? 'Your account' : 'Log in or sign up'}
               onPress={() => router.push(user ? '/(tabs)/profile' : '/login')}
@@ -179,7 +180,7 @@ export default function HomeRoute() {
               ) : (
                 <Icon name="user" size={18} color="onSurfaceVariant" />
               )}
-            </Pressable>
+            </PressableScale>
           </>
         }
       />
@@ -192,7 +193,7 @@ export default function HomeRoute() {
             onPress={() => router.push('/search')}
             style={styles.searchField}
           />
-          <Pressable
+          <PressableScale
             accessibilityRole="button"
             accessibilityLabel="Scan a barcode"
             onPress={() => router.push('/scan')}
@@ -200,7 +201,7 @@ export default function HomeRoute() {
             style={styles.scanButton}
           >
             <Icon name="scan" size={20} color="onSurface" />
-          </Pressable>
+          </PressableScale>
         </View>
 
         {/* 3. Banners from the admin app's Homepage ads, the same ones the website shows */}
@@ -299,7 +300,7 @@ export default function HomeRoute() {
                   <Txt variant="caption" tint={colors.white70} style={styles.clubFootText}>
                     {club.caption}
                   </Txt>
-                  <Pressable
+                  <PressableScale
                     accessibilityRole="button"
                     accessibilityLabel="View Xana Club rewards"
                     onPress={() => router.push('/(tabs)/profile')}
@@ -310,7 +311,7 @@ export default function HomeRoute() {
                       View rewards
                     </Txt>
                     <Icon name="chevron-right" size={16} color={colors.onPrimary} />
-                  </Pressable>
+                  </PressableScale>
                 </View>
               </>
             ) : (
@@ -324,7 +325,7 @@ export default function HomeRoute() {
                 <Txt variant="bodySm" tint={colors.onPrimaryContainer}>
                   Join free and earn points on groceries, pharmacy refills and wholesale cartons.
                 </Txt>
-                <Pressable
+                <PressableScale
                   accessibilityRole="button"
                   accessibilityLabel="Join Xana Club"
                   onPress={() => router.push('/login')}
@@ -335,7 +336,7 @@ export default function HomeRoute() {
                     Join the club
                   </Txt>
                   <Icon name="chevron-right" size={16} color={colors.onPrimary} />
-                </Pressable>
+                </PressableScale>
               </>
             )}
           </LinearGradient>
@@ -382,7 +383,7 @@ export default function HomeRoute() {
 
         {/* 7. M-Pesa micro-banner */}
         <View style={styles.section}>
-          <Pressable
+          <PressableScale
             accessibilityRole="button"
             accessibilityLabel="1-Tap M-Pesa Checkout"
             onPress={() => router.push('/checkout')}
@@ -395,7 +396,7 @@ export default function HomeRoute() {
               <Txt variant="title">1-Tap M-Pesa Checkout</Txt>
             </View>
             <Icon name="chevron-right" size={18} color="onSurfaceVariant" />
-          </Pressable>
+          </PressableScale>
         </View>
       </ScrollView>
 
@@ -452,7 +453,7 @@ function DealCard({ deal, onPress }: { deal: Deal; onPress: () => void }) {
       : null;
 
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       accessibilityLabel={deal.title}
       onPress={onPress}
@@ -484,7 +485,7 @@ function DealCard({ deal, onPress }: { deal: Deal; onPress: () => void }) {
           <Icon name="arrow-right" size={14} color="primaryAccent" />
         </View>
       </View>
-    </Pressable>
+    </PressableScale>
   );
 }
 

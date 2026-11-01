@@ -37,6 +37,7 @@ import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { isPharmacyReviewer } from '@/features/prescriptions/api';
 import { PharmacistWhatsAppSheet } from '@/features/pharmacy/whatsapp-sheet';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 /** Filter chips above the product groups — `null` shows every group. */
 const PHARMACY_FILTERS: readonly { label: string; categorySlugs: readonly string[] | null }[] = [
@@ -220,9 +221,9 @@ export default function PharmacyRoute() {
           actions={
             <>
               <TopBarAction name="search" accessibilityLabel="Search medicines and wellness products" onPress={() => router.push('/search')} />
-              <Pressable accessibilityRole="button" accessibilityLabel="Account" onPress={() => router.push('/profile')} style={styles.avatar}>
+              <PressableScale accessibilityRole="button" accessibilityLabel="Account" onPress={() => router.push('/profile')} style={styles.avatar}>
                 <Icon name="profile" size={18} color="onPrimary" />
-              </Pressable>
+              </PressableScale>
             </>
           }
         />
@@ -439,7 +440,7 @@ function PharmacyCard({
         ) : product.rxRequired ? (
           <ProductAddButton productName={product.name} onPress={onAdd} rxRequired />
         ) : (
-          <Pressable
+          <PressableScale
             accessibilityRole="button"
             accessibilityLabel={`Add ${product.name} to cart`}
             onPress={onAdd}
@@ -447,7 +448,7 @@ function PharmacyCard({
             style={styles.addButton}
           >
             <Icon name="plus" size={18} color="onPrimary" />
-          </Pressable>
+          </PressableScale>
         )}
       </View>
     </View>

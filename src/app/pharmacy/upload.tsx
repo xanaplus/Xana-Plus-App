@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import type { ImagePickerAsset } from 'expo-image-picker';
 import { Button, Card, Chip, Icon, Screen, TopBar, Txt } from '@/components/ui';
 import {
@@ -12,6 +12,7 @@ import { useSession } from '@/store/session';
 import { radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 export default function UploadPrescriptionScreen() {
   const styles = useThemeStyles(createStyles);
@@ -91,10 +92,10 @@ export default function UploadPrescriptionScreen() {
       <Field label="Doctor or facility (optional)" value={doctor} onChangeText={setDoctor} editable={!draftId && !busy} placeholder="Prescriber or clinic" />
       <Field label="Note for pharmacist (optional)" value={notes} onChangeText={setNotes} editable={!draftId && !busy} placeholder="Anything relevant to the review" multiline />
     </Card>
-    <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: consent }} onPress={() => setConsent(v => !v)} style={styles.consent}>
+    <PressableScale accessibilityRole="checkbox" accessibilityState={{ checked: consent }} onPress={() => setConsent(v => !v)} style={styles.consent}>
       <View style={[styles.checkbox, consent && styles.checked]}>{consent ? <Icon name="check" size={13} color="onPrimary" /> : null}</View>
       <Txt variant="caption" color="onSurfaceVariant" style={styles.consentText}>I am authorised to share this prescription and consent to pharmacist review and pricing. This does not place an order.</Txt>
-    </Pressable>
+    </PressableScale>
     {!isAuthenticated ? <Card variant="flat" padding={spacing.md}><Txt variant="label">Sign in is required before submission.</Txt><Button label="Sign in" size="sm" variant="outline" onPress={() => router.push('/login')} /></Card> : null}
     {error ? <>
       {backendUnavailable ? <Card variant="tinted" padding={spacing.md}><Txt variant="caption" color="onSurfaceVariant">The prescription backend or private photo storage service is unavailable in this environment. No request has been confirmed.</Txt></Card> : null}

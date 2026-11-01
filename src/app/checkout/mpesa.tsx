@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Button, Icon, MpesaLogo, ProgressBar, Screen, TopBar, Txt } from '@/components/ui';
 import { formatKes } from '@/lib/format';
@@ -13,6 +13,7 @@ import { useSession } from '@/store/session';
 import { layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 /** Seconds an M-Pesa STK prompt stays live before it has to be re-sent. */
 const STK_WINDOW_SECONDS = 60;
@@ -195,7 +196,7 @@ export default function MpesaPendingRoute() {
             <Txt variant="bodySm" color="onSurfaceVariant">
               {"Didn't get the prompt?"}
             </Txt>
-            <Pressable
+            <PressableScale
               accessibilityRole="button"
               accessibilityLabel="Resend M-Pesa prompt"
               hitSlop={8}
@@ -207,13 +208,13 @@ export default function MpesaPendingRoute() {
               <Txt variant="label" color="primaryAccent">
                 Resend
               </Txt>
-            </Pressable>
+            </PressableScale>
           </View>
-          <Pressable accessibilityRole="button" accessibilityLabel="Change payment method" hitSlop={8} onPress={cancel}>
+          <PressableScale accessibilityRole="button" accessibilityLabel="Change payment method" hitSlop={8} onPress={cancel}>
             <Txt variant="label" color="onSurfaceVariant">
               Change payment method
             </Txt>
-          </Pressable>
+          </PressableScale>
         </View>
       </LinearGradient>
     </Screen>

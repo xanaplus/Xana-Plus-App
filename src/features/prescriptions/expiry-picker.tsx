@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Chip, Icon, Txt } from '@/components/ui';
 import { radius, spacing } from '@/theme';
 import { useTheme } from '@/theme/provider';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -68,7 +69,7 @@ export function ExpiryPicker({ value, onChange, disabled }: { value: string; onC
         })}
       </View>
 
-      <Pressable
+      <PressableScale
         accessibilityRole="button"
         accessibilityLabel={value ? `Quote expires ${longDay(value)}. Change date` : 'Choose the quote expiry date'}
         accessibilityState={{ expanded: open, disabled }}
@@ -81,18 +82,18 @@ export function ExpiryPicker({ value, onChange, disabled }: { value: string; onC
           {value ? longDay(value) : 'Choose a date'}
         </Txt>
         <Icon name={open ? 'chevron-up' : 'chevron-down'} size={18} color="onSurfaceVariant" />
-      </Pressable>
+      </PressableScale>
 
       {open ? (
         <View style={[styles.calendar, { borderColor: colors.outlineVariant, backgroundColor: colors.surface }]}>
           <View style={styles.header}>
-            <Pressable accessibilityRole="button" accessibilityLabel="Previous month" disabled={!canBack} onPress={() => move(-1)} hitSlop={8} style={!canBack && styles.off}>
+            <PressableScale accessibilityRole="button" accessibilityLabel="Previous month" disabled={!canBack} onPress={() => move(-1)} hitSlop={8} style={!canBack && styles.off}>
               <Icon name="chevron-left" size={20} color="onSurface" />
-            </Pressable>
+            </PressableScale>
             <Txt variant="title">{`${MONTHS[shown.month]} ${shown.year}`}</Txt>
-            <Pressable accessibilityRole="button" accessibilityLabel="Next month" disabled={!canForward} onPress={() => move(1)} hitSlop={8} style={!canForward && styles.off}>
+            <PressableScale accessibilityRole="button" accessibilityLabel="Next month" disabled={!canForward} onPress={() => move(1)} hitSlop={8} style={!canForward && styles.off}>
               <Icon name="chevron-right" size={20} color="onSurface" />
-            </Pressable>
+            </PressableScale>
           </View>
           <View style={styles.grid}>
             {WEEKDAYS.map(name => (
@@ -106,7 +107,7 @@ export function ExpiryPicker({ value, onChange, disabled }: { value: string; onC
               const allowed = day >= first && day <= last;
               const chosen = day === value;
               return (
-                <Pressable
+                <PressableScale
                   key={day}
                   accessibilityRole="button"
                   accessibilityLabel={longDay(day)}
@@ -118,7 +119,7 @@ export function ExpiryPicker({ value, onChange, disabled }: { value: string; onC
                   <View style={[styles.dayDot, chosen && { backgroundColor: colors.primary }]}>
                     <Txt variant="body" color={chosen ? 'onPrimary' : allowed ? 'onSurface' : 'outlineVariant'}>{date}</Txt>
                   </View>
-                </Pressable>
+                </PressableScale>
               );
             })}
           </View>

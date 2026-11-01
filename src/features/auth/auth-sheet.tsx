@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Linking, Pressable, StyleSheet, Switch, TextInput, View, type TextInputProps, type ViewStyle } from 'react-native';
+import { Linking, StyleSheet, Switch, TextInput, View, type TextInputProps, type ViewStyle } from 'react-native';
 
 import { BottomSheet, Button, Icon, ProgressBar, Txt, type IconName } from '@/components/ui';
 import type { FunctionError } from '@/lib/supabase';
@@ -7,6 +7,7 @@ import { isValidEmail, useSession, type SignInResult } from '@/store/session';
 import { fonts, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 /**
  * Screen 6a — Checkout (Login Sheet): the sign-in prompt opened from checkout,
@@ -198,7 +199,7 @@ export function PhoneSignInForm({
           {CHANNELS.map(channel => {
             const selected = value.channel === channel.value;
             return (
-              <Pressable
+              <PressableScale
                 key={channel.value}
                 accessibilityRole="radio"
                 accessibilityState={{ selected }}
@@ -213,7 +214,7 @@ export function PhoneSignInForm({
                 <Txt variant="label" color={selected ? 'primaryAccent' : 'onSurfaceVariant'}>
                   {channel.label}
                 </Txt>
-              </Pressable>
+              </PressableScale>
             );
           })}
         </View>
@@ -312,14 +313,14 @@ export function TextField({
           style={styles.input}
         />
         {secure ? (
-          <Pressable
+          <PressableScale
             accessibilityRole="button"
             accessibilityLabel={shown ? 'Hide password' : 'Show password'}
             hitSlop={8}
             onPress={() => setShown(value => !value)}
           >
             <Icon name="eye" size={18} color={shown ? 'primaryAccent' : 'onSurfaceVariant'} />
-          </Pressable>
+          </PressableScale>
         ) : null}
       </View>
       {hint ? (
@@ -341,11 +342,11 @@ function AltLink({ prompt, label, onPress }: { prompt?: string; label: string; o
           {prompt}
         </Txt>
       ) : null}
-      <Pressable accessibilityRole="button" hitSlop={8} onPress={onPress}>
+      <PressableScale accessibilityRole="button" hitSlop={8} onPress={onPress}>
         <Txt variant="label" color="primaryAccent" align="center">
           {label}
         </Txt>
-      </Pressable>
+      </PressableScale>
     </View>
   );
 }
@@ -354,11 +355,11 @@ function AltLink({ prompt, label, onPress }: { prompt?: string; label: string; o
 export function ChangeNumberLink({ onPress, label = 'Change number' }: { onPress: () => void; label?: string }) {
   const styles = useThemeStyles(createStyles);
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={label} hitSlop={8} onPress={onPress} style={styles.changeNumber}>
+    <PressableScale accessibilityRole="button" accessibilityLabel={label} hitSlop={8} onPress={onPress} style={styles.changeNumber}>
       <Txt variant="label" color="primaryAccent">
         {label}
       </Txt>
-    </Pressable>
+    </PressableScale>
   );
 }
 
@@ -677,7 +678,7 @@ function WayChoice({ value, onChange }: { value: CodeWay; onChange: (next: CodeW
       {WAYS.map(option => {
         const selected = value === option.value;
         return (
-          <Pressable
+          <PressableScale
             key={option.value}
             accessibilityRole="radio"
             accessibilityState={{ selected }}
@@ -692,7 +693,7 @@ function WayChoice({ value, onChange }: { value: CodeWay; onChange: (next: CodeW
             <Txt variant="label" color={selected ? 'primaryAccent' : 'onSurfaceVariant'}>
               {option.label}
             </Txt>
-          </Pressable>
+          </PressableScale>
         );
       })}
     </View>
@@ -1109,7 +1110,7 @@ export function OtpCodeField({
             </Txt>
           </View>
         ) : (
-          <Pressable
+          <PressableScale
             accessibilityRole="button"
             accessibilityLabel="Resend verification code"
             disabled={busy}
@@ -1122,7 +1123,7 @@ export function OtpCodeField({
             <Txt variant="labelSm" color="primaryAccent">
               Resend code
             </Txt>
-          </Pressable>
+          </PressableScale>
         )}
       </View>
 

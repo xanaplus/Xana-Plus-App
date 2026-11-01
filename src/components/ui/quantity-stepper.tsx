@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 
 import { Icon } from '@/components/ui/icon';
@@ -7,6 +7,7 @@ import { Txt } from '@/components/ui/text';
 import { radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { PressableScale } from './pressable-scale';
 
 export type QuantityStepperProps = {
   quantity: number;
@@ -35,7 +36,7 @@ export function QuantityStepper({ quantity, onIncrement, onDecrement, size = 're
 
   return (
     <View style={[styles.stepper, style]}>
-      <Pressable
+      <PressableScale
         accessibilityRole="button"
         accessibilityLabel="Decrease quantity"
         disabled={quantity <= min}
@@ -43,7 +44,7 @@ export function QuantityStepper({ quantity, onIncrement, onDecrement, size = 're
         style={[styles.button, { width: button, height: button, opacity: quantity <= min ? 0.4 : 1 }]}
       >
         <Icon name="minus" size={iconSize} color={tone === 'brand' ? 'primaryAccent' : 'onSurface'} />
-      </Pressable>
+      </PressableScale>
       {/* Clipped, so the rolling number stays inside the pill. */}
       <View style={styles.countClip}>
         <Animated.View key={quantity} entering={entering}>
@@ -53,14 +54,14 @@ export function QuantityStepper({ quantity, onIncrement, onDecrement, size = 're
           </Txt>
         </Animated.View>
       </View>
-      <Pressable
+      <PressableScale
         accessibilityRole="button"
         accessibilityLabel="Increase quantity"
         onPress={onIncrement}
         style={[styles.button, tone === 'brand' ? styles.brandButton : null, { width: button, height: button }]}
       >
         <Icon name="plus" size={iconSize} color={tone === 'brand' ? 'onPrimary' : 'onSurface'} />
-      </Pressable>
+      </PressableScale>
     </View>
   );
 }

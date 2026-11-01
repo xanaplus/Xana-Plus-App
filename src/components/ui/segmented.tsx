@@ -1,9 +1,11 @@
-import { Pressable, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { Icon, type IconName } from '@/components/ui/icon';
 import { Txt } from '@/components/ui/text';
 import { elevation, radius, spacing } from '@/theme';
 import { useTheme } from '@/theme/provider';
+import { PressableScale } from './pressable-scale';
+import { selectFeedback } from '@/lib/haptics';
 
 export type SegmentedOption<T extends string> = { value: T; label: string; icon?: IconName };
 
@@ -22,18 +24,18 @@ export function Segmented<T extends string>({ options, value, onChange, scrollab
   const pills = options.map(option => {
     const selected = option.value === value;
     return (
-      <Pressable
+      <PressableScale
         key={option.value}
         accessibilityRole="button"
         accessibilityState={{ selected }}
-        onPress={() => onChange(option.value)}
+        onPress={() => { selectFeedback(); onChange(option.value); }}
         style={[styles.pill, { backgroundColor: selected ? colors.primaryContainer : colors.surfaceContainerLow }, selected ? styles.pillSelected : null]}
       >
         {option.icon ? <Icon name={option.icon} size={14} color={selected ? 'onPrimary' : 'onSurfaceVariant'} /> : null}
         <Txt variant="label" tint={selected ? colors.onPrimary : colors.onSurfaceVariant}>
           {option.label}
         </Txt>
-      </Pressable>
+      </PressableScale>
     );
   });
 

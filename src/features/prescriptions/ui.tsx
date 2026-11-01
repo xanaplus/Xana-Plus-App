@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Image } from 'expo-image';
-import { Alert, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Alert, StyleSheet, TextInput, View } from 'react-native';
 import type { ImagePickerAsset } from 'expo-image-picker';
 import { Button, Card, Icon, Txt } from '@/components/ui';
 import { prescriptionPhotoUrl, type PrescriptionFile } from './api';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 export function Field({ label, value, onChangeText, placeholder, multiline = false, keyboardType, editable = true }: {
   label: string; value: string; onChangeText: (value: string) => void; placeholder?: string;
@@ -33,7 +34,7 @@ export function PhotoQueue({ assets, onRemove, onCamera, onGallery, disabled }: 
       <Image source={{ uri: asset.uri }} contentFit="cover" style={styles.thumb} />
       <View style={styles.fileInfo}><Txt variant="label" numberOfLines={1}>{asset.fileName || `Photo ${i + 1}`}</Txt>
         <Txt variant="caption" color="onSurfaceVariant">{((asset.fileSize ?? 0) / 1024 / 1024).toFixed(1)} MB</Txt></View>
-      <Pressable accessibilityRole="button" accessibilityLabel="Remove photo" disabled={disabled} onPress={() => onRemove(asset.uri)}><Icon name="close" size={18} color="onSurfaceVariant" /></Pressable>
+      <PressableScale accessibilityRole="button" accessibilityLabel="Remove photo" disabled={disabled} onPress={() => onRemove(asset.uri)}><Icon name="close" size={18} color="onSurfaceVariant" /></PressableScale>
     </View>)}
   </Card>;
 }

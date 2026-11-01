@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, TextInput, View } from 'react-native';
 import type { ImagePickerAsset } from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Badge, BottomSheet, Button, Card, Chip, Icon, Screen, SelectableOption, TopBar, Txt } from '@/components/ui';
@@ -17,6 +17,7 @@ import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { formatKes } from '@/lib/format';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 function formatDate(value: string | null | undefined) {
   if (!value) return 'Not specified';
@@ -380,14 +381,14 @@ export default function PrescriptionDetailScreen() {
             <Txt variant="titleLg">{record.patient_name || 'Patient name not provided'}</Txt>
           </View>
           <Badge label={STATUS_LABELS[record.status]} tone={statusTone(record.status)} />
-          <Pressable accessibilityRole="button" accessibilityLabel="Refresh prescription details" accessibilityState={{ disabled: loading || busy }} disabled={loading || busy} onPress={() => void load()} hitSlop={8}>
+          <PressableScale accessibilityRole="button" accessibilityLabel="Refresh prescription details" accessibilityState={{ disabled: loading || busy }} disabled={loading || busy} onPress={() => void load()} hitSlop={8}>
             <Txt variant="label" color="primaryAccent">Refresh</Txt>
-          </Pressable>
+          </PressableScale>
         </View>
         <View style={styles.metaLine}><Icon name="calendar" size={16} color="onSurfaceVariant" /><Txt variant="bodySm" color="onSurfaceVariant">Created {new Date(record.created_at).toLocaleDateString('en-KE')}</Txt></View>
-        {record.order_no ? <Pressable accessibilityRole="link" accessibilityLabel={`Open order ${record.order_no}`} onPress={() => router.push(`/orders/${encodeURIComponent(record.order_no!)}`)} style={styles.orderLine}>
+        {record.order_no ? <PressableScale accessibilityRole="link" accessibilityLabel={`Open order ${record.order_no}`} onPress={() => router.push(`/orders/${encodeURIComponent(record.order_no!)}`)} style={styles.orderLine}>
           <Icon name="receipt" size={17} color="primaryAccent" /><Txt variant="label" color="primaryAccent">View order {record.order_no}</Txt><Icon name="arrow-right" size={16} color="primaryAccent" />
-        </Pressable> : null}
+        </PressableScale> : null}
       </Card>
 
       {record.status === 'ordered' && record.order_no ? <Card variant="tinted" padding={spacing.lg} style={styles.orderSuccess}>

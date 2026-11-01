@@ -43,6 +43,7 @@ import { useSession } from '@/store/session';
 import { elevation, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles, type AppearanceChoice } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 /** Xana Club tier ladder — the thresholds the rewards card measures against. */
 const CLUB_TIERS = [
@@ -452,7 +453,7 @@ export default function ProfileRoute() {
               </Txt>
             </View>
             <View style={styles.identityBody}>
-              <Pressable
+              <PressableScale
                 accessibilityRole="button"
                 accessibilityLabel="Edit your name"
                 hitSlop={8}
@@ -463,7 +464,7 @@ export default function ProfileRoute() {
                   {user.name}
                 </Txt>
                 <Icon name="edit" size={16} color="primaryAccent" />
-              </Pressable>
+              </PressableScale>
               <Txt variant="bodySm" color="onSurfaceVariant">
                 {user.phone}
               </Txt>
@@ -516,12 +517,12 @@ export default function ProfileRoute() {
               <Txt variant="caption" tint={colors.white70} style={styles.clubFootText}>
                 {nextTier ? `${pointsToNext.toLocaleString('en-KE')} points to ${nextTier.tier}` : 'Top tier unlocked. Earn on every order'}
               </Txt>
-              <Pressable accessibilityRole="button" accessibilityLabel="View Xana Club rewards" hitSlop={8} onPress={() => setSheet('rewards')} style={styles.clubAction}>
+              <PressableScale accessibilityRole="button" accessibilityLabel="View Xana Club rewards" hitSlop={8} onPress={() => setSheet('rewards')} style={styles.clubAction}>
                 <Txt variant="label" tint={colors.onPrimary}>
                   View rewards
                 </Txt>
                 <Icon name="chevron-right" size={16} color={colors.onPrimary} />
-              </Pressable>
+              </PressableScale>
             </View>
           </>
         ) : (
@@ -535,12 +536,12 @@ export default function ProfileRoute() {
             <Txt variant="bodySm" tint={colors.onPrimaryContainer}>
               Join free and earn points on groceries, pharmacy refills and wholesale cartons.
             </Txt>
-            <Pressable accessibilityRole="button" accessibilityLabel="Join Xana Club" hitSlop={8} onPress={signIn} style={styles.clubAction}>
+            <PressableScale accessibilityRole="button" accessibilityLabel="Join Xana Club" hitSlop={8} onPress={signIn} style={styles.clubAction}>
               <Txt variant="label" tint={colors.onPrimary}>
                 Join the club
               </Txt>
               <Icon name="chevron-right" size={16} color={colors.onPrimary} />
-            </Pressable>
+            </PressableScale>
           </>
         )}
       </LinearGradient>
@@ -570,7 +571,7 @@ export default function ProfileRoute() {
           </View>
         </View>
         <Segmented options={MODE_OPTIONS} value={mode} onChange={setMode} />
-        <Pressable accessibilityRole="button" accessibilityLabel="Change fulfilment store" onPress={() => setSheet('settings')} style={styles.storeRow}>
+        <PressableScale accessibilityRole="button" accessibilityLabel="Change fulfilment store" onPress={() => setSheet('settings')} style={styles.storeRow}>
           <Icon name="store" size={18} color="primaryAccent" />
           <View style={styles.storeText}>
             <Txt variant="label" numberOfLines={1}>
@@ -583,7 +584,7 @@ export default function ProfileRoute() {
           <Txt variant="labelSm" color="primaryAccent">
             Change
           </Txt>
-        </Pressable>
+        </PressableScale>
       </Card>
 
       {isStaff ? (
@@ -745,7 +746,7 @@ export default function ProfileRoute() {
             ) : null}
             {addresses.map(entry => (
               <View key={entry.id} style={styles.addressItem}>
-              <Pressable
+              <PressableScale
                 accessibilityRole="button"
                 accessibilityLabel={`Deliver to ${entry.label}`}
                 onPress={() => {
@@ -763,7 +764,7 @@ export default function ProfileRoute() {
                   <Txt variant="bodySm" color="onSurfaceVariant">{entry.line}</Txt>
                   <Txt variant="bodySm" color="onSurfaceVariant">{entry.phone}</Txt>
                 </Card>
-              </Pressable>
+              </PressableScale>
               {/* A sibling of the card, not inside it: a button can't sit inside another button. */}
               <Button
                 label={removingId === entry.id ? 'Tap again to delete' : 'Delete address'}
@@ -1255,7 +1256,7 @@ function OrderBlock({ order, onReorder, onOpenProduct }: { order: OrderRecord; o
       </View>
       <View>
         {items.map(item => (
-          <Pressable
+          <PressableScale
             key={item.product.id}
             accessibilityRole="button"
             accessibilityLabel={item.product.name}
@@ -1269,7 +1270,7 @@ function OrderBlock({ order, onReorder, onOpenProduct }: { order: OrderRecord; o
               ×{item.quantity}
             </Txt>
             <Icon name="chevron-right" size={14} color="onSurfaceVariant" />
-          </Pressable>
+          </PressableScale>
         ))}
       </View>
       <Divider />
@@ -1301,9 +1302,9 @@ function Stat({ value, label, onPress }: { value: string; label: string; onPress
   if (!onPress) return <View style={styles.stat}>{body}</View>;
 
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={`${label}: ${value}. View breakdown`} onPress={onPress} style={styles.stat}>
+    <PressableScale accessibilityRole="button" accessibilityLabel={`${label}: ${value}. View breakdown`} onPress={onPress} style={styles.stat}>
       {body}
-    </Pressable>
+    </PressableScale>
   );
 }
 

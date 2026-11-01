@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Badge, Button, Card, Chip, Divider, Icon, Screen, TopBar, Txt } from '@/components/ui';
 import { formatKes } from '@/lib/format';
@@ -10,6 +10,7 @@ import { useSession } from '@/store/session';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 /**
  * Checkout — M-Pesa payment could not be completed.
@@ -104,11 +105,11 @@ export default function PaymentFailedScreen() {
             fullWidth
             onPress={payOnDelivery}
           />
-          <Pressable accessibilityRole="button" accessibilityLabel="Change payment method" onPress={() => router.replace('/checkout')}>
+          <PressableScale accessibilityRole="button" accessibilityLabel="Change payment method" onPress={() => router.replace('/checkout')}>
             <Txt variant="label" color="primaryAccent" align="center">
               Change payment method
             </Txt>
-          </Pressable>
+          </PressableScale>
         </View>
       }
     >

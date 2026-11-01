@@ -1,10 +1,11 @@
-import { Platform, Pressable, StyleSheet, TextInput, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, TextInput, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { fonts, radius, spacing } from '@/theme';
 import { useTheme } from '@/theme/provider';
 
 import { Icon, type IconName } from './icon';
 import { Txt } from './text';
+import { PressableScale } from './pressable-scale';
 
 export type SearchBarProps = {
   value?: string;
@@ -40,11 +41,11 @@ export function SearchBar({
     <View style={[styles.field, { backgroundColor: colors.surfaceContainerLow }, style]}>
       <Icon name="search" size={18} color="outline" />
       {onPress ? (
-        <Pressable accessibilityRole="search" accessibilityLabel={placeholder} onPress={onPress} style={styles.flex}>
+        <PressableScale accessibilityRole="search" accessibilityLabel={placeholder} onPress={onPress} style={styles.flex}>
           <Txt variant="body" color="outline" numberOfLines={1}>
             {placeholder}
           </Txt>
-        </Pressable>
+        </PressableScale>
       ) : (
         <TextInput
           value={value}
@@ -59,9 +60,9 @@ export function SearchBar({
         />
       )}
       {trailingIcon ? (
-        <Pressable accessibilityRole="button" accessibilityLabel={TRAILING_LABELS[trailingIcon] ?? 'Filters'} onPress={onTrailingPress} hitSlop={8}>
+        <PressableScale accessibilityRole="button" accessibilityLabel={TRAILING_LABELS[trailingIcon] ?? 'Filters'} onPress={onTrailingPress} hitSlop={8}>
           <Icon name={trailingIcon} size={18} color="onSurfaceVariant" />
-        </Pressable>
+        </PressableScale>
       ) : null}
     </View>
   );

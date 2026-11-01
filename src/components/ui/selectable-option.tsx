@@ -5,6 +5,7 @@ import { Icon, type IconName } from '@/components/ui/icon';
 import { Txt } from '@/components/ui/text';
 import { radius, spacing } from '@/theme';
 import { useTheme } from '@/theme/provider';
+import { selectFeedback } from '@/lib/haptics';
 
 export type SelectableOptionProps = {
   title: string;
@@ -52,7 +53,7 @@ export function SelectableOption({
       accessibilityState={{ checked: selected, disabled: !!disabled }}
       aria-checked={selected}
       disabled={disabled}
-      onPress={onPress}
+      onPress={() => { selectFeedback(); onPress(); }}
       style={({ pressed }) => [
         styles.row,
         { borderColor: colors.outlineSoft30, backgroundColor: colors.surface },

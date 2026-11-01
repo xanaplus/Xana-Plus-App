@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, TextInput, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Badge, Button, Card, Icon, Screen, TopBar, Txt } from '@/components/ui';
 import { LIVE_PHARMACY_CATEGORIES, searchCatalogue } from '@/data/live-catalogue';
@@ -16,6 +16,7 @@ import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { formatKes } from '@/lib/format';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 type Access = 'checking' | 'allowed' | 'denied' | 'failed';
 type DraftLine = QuoteChoice & { name: string; unitPrice: number };
@@ -240,7 +241,7 @@ export default function PharmacyReviewScreen() {
       {reviewableRecords.length > 0 ? <View style={styles.queueSection}>
           <View style={styles.queueHeader}><Txt variant="titleLg">Requests</Txt><Button label="Refresh" size="sm" variant="outline" disabled={busy} onPress={() => void refresh()} /></View>
         <View style={styles.queue}>
-          {reviewableRecords.map(record => <Pressable key={record.id} accessibilityRole="button" accessibilityLabel={`Review request for ${record.patient_name}, ${STATUS_LABELS[record.status]}`} accessibilityState={{ disabled: busy }} disabled={busy} onPress={() => choose(record)}>
+          {reviewableRecords.map(record => <PressableScale key={record.id} accessibilityRole="button" accessibilityLabel={`Review request for ${record.patient_name}, ${STATUS_LABELS[record.status]}`} accessibilityState={{ disabled: busy }} disabled={busy} onPress={() => choose(record)}>
             <Card variant={selectedId === record.id ? 'tinted' : 'elevated'} padding={spacing.md} style={styles.queueCard}>
               <View style={styles.queueTop}><View style={styles.flex}>
                 <Txt variant="label">{record.patient_name || 'Patient name not provided'}</Txt>
@@ -249,7 +250,7 @@ export default function PharmacyReviewScreen() {
               {record.doctor ? <Txt variant="caption" color="onSurfaceVariant">Prescriber: {record.doctor}</Txt> : null}
               {selectedId === record.id ? <Txt variant="label" color="primaryAccent">Selected for review</Txt> : null}
             </Card>
-          </Pressable>)}
+          </PressableScale>)}
         </View>
       </View> : null}
       {selected ? <View style={styles.editor}>
@@ -281,20 +282,20 @@ export default function PharmacyReviewScreen() {
               <View style={styles.quantity}>
                 <Txt variant="caption" color="onSurfaceVariant">Quantity</Txt>
                 <View style={styles.quantityActions}>
-                  <Pressable accessibilityRole="button" accessibilityLabel={`Decrease ${line.name} quantity`} accessibilityState={{ disabled: busy || line.quantity <= 1 }} disabled={busy || line.quantity <= 1} onPress={() => updateLine(line.itemNo, { quantity: line.quantity - 1 })} style={styles.quantityButton}>
+                  <PressableScale accessibilityRole="button" accessibilityLabel={`Decrease ${line.name} quantity`} accessibilityState={{ disabled: busy || line.quantity <= 1 }} disabled={busy || line.quantity <= 1} onPress={() => updateLine(line.itemNo, { quantity: line.quantity - 1 })} style={styles.quantityButton}>
                     <Icon name="minus" size={16} color="primaryAccent" />
-                  </Pressable>
+                  </PressableScale>
                   <Txt variant="label">{line.quantity}</Txt>
-                  <Pressable accessibilityRole="button" accessibilityLabel={`Increase ${line.name} quantity`} accessibilityState={{ disabled: busy || line.quantity >= 999 }} disabled={busy || line.quantity >= 999} onPress={() => updateLine(line.itemNo, { quantity: Math.min(999, line.quantity + 1) })} style={styles.quantityButton}>
+                  <PressableScale accessibilityRole="button" accessibilityLabel={`Increase ${line.name} quantity`} accessibilityState={{ disabled: busy || line.quantity >= 999 }} disabled={busy || line.quantity >= 999} onPress={() => updateLine(line.itemNo, { quantity: Math.min(999, line.quantity + 1) })} style={styles.quantityButton}>
                     <Icon name="plus" size={16} color="primaryAccent" />
-                  </Pressable>
+                  </PressableScale>
                 </View>
               </View>
               <TextInput accessibilityLabel={`Instructions for ${line.name}`} value={line.instructions} maxLength={500} editable={!busy} onChangeText={value => updateLine(line.itemNo, { instructions: value })} placeholder="Instructions for customer (optional)" placeholderTextColor={colors.outline} style={styles.input} />
             </View>
-            <Pressable accessibilityRole="button" accessibilityLabel={`Remove ${line.name} from quote`} accessibilityState={{ disabled: busy }} disabled={busy} onPress={() => removeLine(line.itemNo)} style={styles.removeButton}>
+            <PressableScale accessibilityRole="button" accessibilityLabel={`Remove ${line.name} from quote`} accessibilityState={{ disabled: busy }} disabled={busy} onPress={() => removeLine(line.itemNo)} style={styles.removeButton}>
               <Txt variant="label" color="primaryAccent">Remove</Txt>
-            </Pressable>
+            </PressableScale>
           </View>)}
           {lines.length ? <View style={styles.totalPreview}>
             <Txt variant="caption" color="onSurfaceVariant">Subtotal · prices rechecked on save</Txt>

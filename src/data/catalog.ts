@@ -812,12 +812,12 @@ export const shelfForTerm = (term: string): LiveQuery | undefined => {
 
 /** Quick suggestions shown on the empty search screen (Screen 12b). */
 export const popularSearches = [
-  { emoji: '🥛', label: 'Fresh Milk' },
-  { emoji: '🍞', label: 'Farm Bread' },
-  { emoji: '🌾', label: 'Basmati Rice' },
-  { emoji: '💊', label: 'Paracetamol 500mg' },
-  { emoji: '🥑', label: 'Hass Avocado' },
-  { emoji: '🧴', label: 'Hand Wash' },
+  { label: 'Fresh Milk' },
+  { label: 'Farm Bread' },
+  { label: 'Basmati Rice' },
+  { label: 'Paracetamol 500mg' },
+  { label: 'Hass Avocado' },
+  { label: 'Hand Wash' },
 ];
 
 export const searchSortOptions = ['Sort: Relevance', 'Category', 'In Stock Only', 'Price: Low-High'] as const;

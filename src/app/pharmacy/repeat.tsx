@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Badge, Button, Card, Icon, Screen, TopBar, Txt } from '@/components/ui';
 import { STATUS_LABELS, usePrescriptionList, type Prescription } from '@/features/prescriptions/api';
@@ -8,6 +8,7 @@ import { useSession } from '@/store/session';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
+import { PressableScale } from '@/components/ui/pressable-scale';
 
 function tone(status: Prescription['status']): 'neutral' | 'info' | 'fresh' | 'warning' {
   const tones: Record<string, 'neutral' | 'info' | 'fresh' | 'warning'> = {
@@ -49,8 +50,8 @@ export default function PrescriptionHistoryScreen() {
         <Txt variant="title">No prescription history yet</Txt>
         <Button label="Upload a new prescription" onPress={() => router.push('/pharmacy/upload')} />
       </Card> : <View style={styles.list}>
-        <View style={styles.listHead}><Txt variant="titleLg">Requests</Txt><Pressable accessibilityRole="button" accessibilityLabel="Refresh prescription history" onPress={() => void refresh()}><Txt variant="label" color="primaryAccent">Refresh</Txt></Pressable></View>
-        {records.map(record => <Pressable key={record.id} accessibilityRole="button" accessibilityLabel={`Open prescription for ${record.patient_name}`} onPress={() => router.push(`/pharmacy/prescription/${record.id}`)}>
+        <View style={styles.listHead}><Txt variant="titleLg">Requests</Txt><PressableScale accessibilityRole="button" accessibilityLabel="Refresh prescription history" onPress={() => void refresh()}><Txt variant="label" color="primaryAccent">Refresh</Txt></PressableScale></View>
+        {records.map(record => <PressableScale key={record.id} accessibilityRole="button" accessibilityLabel={`Open prescription for ${record.patient_name}`} onPress={() => router.push(`/pharmacy/prescription/${record.id}`)}>
           <Card variant="elevated" padding={spacing.lg} style={styles.record}>
             <View style={styles.recordHead}>
               <View style={styles.flex}><Txt variant="title">{record.patient_name}</Txt><Txt variant="caption" color="onSurfaceVariant">{new Date(record.created_at).toLocaleDateString('en-KE')}</Txt></View>
@@ -60,7 +61,7 @@ export default function PrescriptionHistoryScreen() {
             {record.order_no ? <Txt variant="caption" color="onSurfaceVariant">Existing order {record.order_no}</Txt> : null}
             <View style={styles.openRow}><Txt variant="label" color="primaryAccent">View request</Txt><Icon name="arrow-right" size={16} color="primaryAccent" /></View>
           </Card>
-        </Pressable>)}
+        </PressableScale>)}
       </View>}
       {loading && records.length > 0 ? <Txt variant="caption" color="onSurfaceVariant" align="center">Refreshing…</Txt> : null}
     </>}
