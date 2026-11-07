@@ -22,6 +22,8 @@ vi.mock('@/components/ui/product-photo', () => ({ ProductPhoto: 'photo' }));
 vi.mock('@/components/ui/quantity-stepper', () => ({ QuantityStepper: 'stepper' }));
 const cart = vi.hoisted(() => ({ setQuantity: vi.fn() }));
 vi.mock('@/store/cart', () => ({ useCart: () => cart }));
+vi.mock('@/store/session', () => ({ useSession: () => ({ isAuthenticated: true, user: { id: 'test-user', name: 'Test' } }) }));
+vi.mock('@/store/fulfilment', () => ({ useStoreStock: () => ({ inStock: (item: Product) => item.inStock !== false, storeShortName: 'Syokimau' }) }));
 vi.mock('@/components/ui/text', () => ({ Txt: 'text' }));
 const router = vi.hoisted(() => ({ push: vi.fn() }));
 vi.mock('expo-router', () => ({ router }));
@@ -45,7 +47,7 @@ describe('product card add pills', () => {
     const add = vi.fn(), open = vi.fn();
     const root = await mount(<ProductCard product={product} onAdd={add} onPress={open} />);
     const button = root.root.findByProps({ accessibilityLabel: `Add ${product.name} to cart` });
-    expect(button.findByType('icon').props.name).toBe('plus');
+    expect(button.findByType('icon' as never).props.name).toBe('plus');
     await act(async () => button.props.onPress());
     expect(add).toHaveBeenCalledTimes(1);
     expect(open).not.toHaveBeenCalled();
@@ -55,24 +57,23 @@ describe('product card add pills', () => {
   it('keeps the quantity replacement and recorded current/previous prices', async () => {
     const root = await mount(<ProductCard product={{ ...product, wasPrice: 160 }} quantity={2} onAdd={vi.fn()} />);
     expect(root.root.findAllByProps({ accessibilityLabel: `Add ${product.name} to cart` })).toHaveLength(0);
-    const stepper = root.root.findByType('stepper');
+    const stepper = root.root.findByType('stepper' as never);
     expect(stepper.props.quantity).toBe(2);
     await act(async () => stepper.props.onDecrement());
     expect(cart.setQuantity).toHaveBeenCalledWith(product.id, 1);
-    const text = root.root.findAllByType('text').flatMap(node => [node.props.children].flat(Infinity));
+    const text = root.root.findAllByType('text' as never).flatMap(node => [node.props.children].flat(Infinity));
     expect(text).toContain('KES 139');
     expect(text).toContain('KES 160');
     await act(async () => root.unmount());
   });
-  it('sends prescription-only items to the upload flow instead of the cart', async () => {
+  it('adds prescription medicines to the cart, with the prescription asked for at checkout (29 Oct 2026)', async () => {
     const add = vi.fn();
     const root = await mount(<ProductCard product={{ ...product, rxRequired: true }} onAdd={add} />);
-    expect(root.root.findAllByProps({ accessibilityLabel: `Add ${product.name} to cart` })).toHaveLength(0);
-    const button = root.root.findByProps({ accessibilityLabel: `Prescription needed for ${product.name}. Upload a prescription` });
-    expect(button.findByType('icon').props.name).toBe('prescription');
+    const button = root.root.findByProps({ accessibilityLabel: `Add ${product.name} to cart. Prescription needed at checkout` });
+    expect(button.findByType('icon' as never).props.name).toBe('prescription');
     await act(async () => button.props.onPress());
-    expect(add).not.toHaveBeenCalled();
-    expect(router.push).toHaveBeenCalledWith({ pathname: '/pharmacy/upload', params: { item: product.name } });
+    expect(add).toHaveBeenCalledTimes(1);
+    expect(router.push).not.toHaveBeenCalled();
     await act(async () => root.unmount());
   });
   it('does not expose an add action for sold-out cards', async () => {
@@ -83,13 +84,13 @@ describe('product card add pills', () => {
   it('preserves custom trailing controls in product rows', async () => {
     const root = await mount(<ProductRow product={product} trailing={<span>Custom quantity control</span>} onAdd={vi.fn()} />);
     expect(root.root.findAllByProps({ accessibilityLabel: `Add ${product.name} to cart` })).toHaveLength(0);
-    expect(root.root.findByType('span').props.children).toBe('Custom quantity control');
+    expect(root.root.findByType('span' as never).props.children).toBe('Custom quantity control');
     await act(async () => root.unmount());
   });
   it('keeps add controls as siblings, not nested within the card navigation button', async () => {
     const root = await mount(<ProductRow product={product} onAdd={vi.fn()} onPress={vi.fn()} />);
     const open = root.root.findByProps({ accessibilityLabel: product.name });
-    expect(open.findAllByType('button')).toHaveLength(1);
+    expect(open.findAllByType('button' as never)).toHaveLength(1);
     expect(open.findAllByProps({ accessibilityLabel: `Add ${product.name} to cart` })).toHaveLength(0);
     await act(async () => root.unmount());
   });

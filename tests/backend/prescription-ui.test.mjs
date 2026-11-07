@@ -54,7 +54,6 @@ vi.mock('@/features/prescriptions/api', () => {
 });
 import Upload from '@/app/pharmacy/upload';
 import Details from '@/app/pharmacy/prescription/[id]';
-import Review from '@/app/pharmacy/review';
 import List from '@/app/pharmacy/prescriptions';
 
 let root;
@@ -231,43 +230,8 @@ describe('customer detail interactions (offline mocks)', () => {
   });
 });
 
-describe('authorised review and list interactions (offline mocks)', () => {
-  it('denies ordinary customers without exposing the review editor', async () => {
-    m.api.isPharmacyReviewer.mockResolvedValue(false);
-    await render(Review);
-    expect(visibleText()).toContain('Reviewer access required');
-    expect(button('Send priced quote')).toBeUndefined();
-    expect(visibleText()).not.toContain('Synthetic patient');
-  });
-  const choose = async () => press(nodes('Pressable').find(n => n.props.accessibilityLabel?.startsWith('Review request')));
-  it.each([['Request clarification', 'clarification'], ['Place on hold', 'held']])('sends %s with a mandatory note', async (label, status) => {
-    m.record.review_note = '';
-    await render(Review); await choose();
-    await press(button(label));
-    expect(m.api.setPrescriptionReviewStatus).not.toHaveBeenCalled();
-    await input('Reviewer note', '  Synthetic reason  ');
-    await press(button(label));
-    expect(m.api.setPrescriptionReviewStatus).toHaveBeenCalledWith(m.record.id, status, 'Synthetic reason');
-    expect(m.list.refresh).toHaveBeenCalled();
-  });
-  it('requires a decline reason and submits it without placing an order', async () => {
-    m.record.review_note = '';
-    await render(Review); await choose();
-    await press(button('Decline request'));
-    expect(m.api.reviewPrescription).not.toHaveBeenCalled();
-    await input('Reviewer note', 'Synthetic decline reason');
-    await press(button('Decline request'));
-    expect(m.api.reviewPrescription.mock.calls[0][4]).toBe(true);
-    expect(m.api.orderPrescription).not.toHaveBeenCalled();
-  });
-  it('sends quantities/instructions, not client-supplied prices, for backend repricing', async () => {
-    await render(Review); await choose();
-    await input('Quote expiry date', new Date(Date.now() + 86400000).toISOString().slice(0, 10));
-    await press(button('Send priced quote'));
-    expect(m.api.reviewPrescription).toHaveBeenCalledWith(m.record.id,
-      [{ itemNo: 'TEST-RX', quantity: 2, instructions: 'Test only' }], 'Synthetic review', expect.any(String), false);
-    expect(m.api.orderPrescription).not.toHaveBeenCalled();
-  });
+describe('customer list interactions (offline mocks)', () => {
+  // The pharmacist review screen left the app on 1 Nov 2026 (the admin site reviews now); its tests went with it.
   it('opens an existing prescription from the customer list', async () => {
     await render(List);
     const row = nodes('Pressable').find(n => n.findAllByType('Badge').length);

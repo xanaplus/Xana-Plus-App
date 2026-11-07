@@ -9,10 +9,11 @@ vi.mock('react-native', () => ({
   useWindowDimensions: () => ({ width: 390, height: 844 }),
   Linking: { openURL: vi.fn() },
 }));
-vi.mock('react-native-reanimated', () => ({
-  default: { View: 'AnimatedView' },
-  FadeInDown: { duration: () => ({ delay: () => ({}) }) },
-}));
+vi.mock('react-native-reanimated', () => {
+  const chain = { duration: () => chain, delay: () => chain, springify: () => chain };
+  const api = { View: 'AnimatedView', createAnimatedComponent: c => c, useSharedValue: value => ({ value }), useAnimatedStyle: () => ({}), withTiming: v => v, withSpring: v => v, FadeInDown: chain, FadeIn: chain, ZoomIn: chain };
+  return { ...api, default: api };
+});
 vi.mock('expo-linear-gradient', () => ({ LinearGradient: 'LinearGradient' }));
 vi.mock('expo-router', () => ({ useRouter: () => ({ push: vi.fn(), replace: vi.fn(), back: vi.fn(), canGoBack: () => false }) }));
 vi.mock('@/components/ui', () => {

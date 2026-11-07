@@ -31,14 +31,14 @@ describe('store chooser', () => {
     const chosen = vi.fn();
     let root!: ReturnType<typeof create>;
     await act(async () => { root = create(<StoreChooser visible onClose={close} onChosen={chosen} />); });
-    const options = root.root.findAllByType('SelectableOption');
+    const options = root.root.findAllByType('SelectableOption' as never);
     expect(options.map(node => node.props.title)).toEqual(['Syokimau', 'Ruiru']);
     expect(options.every(node => node.props.selected === false)).toBe(true);
-    expect(root.root.findByType('Button').props.disabled).toBe(true);
+    expect(root.root.findByType('Button' as never).props.disabled).toBe(true);
 
     await act(async () => options[1].props.onPress());
-    expect(root.root.findByType('Button').props.disabled).toBe(false);
-    await act(async () => root.root.findByType('Button').props.onPress());
+    expect(root.root.findByType('Button' as never).props.disabled).toBe(false);
+    await act(async () => root.root.findByType('Button' as never).props.onPress());
     expect(mocks.fulfilment.setStoreId).toHaveBeenCalledWith('ruiru');
     expect(close).toHaveBeenCalledOnce();
     expect(chosen).toHaveBeenCalledWith('ruiru');
@@ -48,7 +48,7 @@ describe('store chooser', () => {
     mocks.fulfilment = { storeId: 'ruiru', storeChosen: true, setStoreId: vi.fn() };
     let root!: ReturnType<typeof create>;
     await act(async () => { root = create(<StoreChooser visible onClose={vi.fn()} />); });
-    expect(root.root.findAllByType('SelectableOption').map(node => node.props.selected)).toEqual([false, true]);
+    expect(root.root.findAllByType('SelectableOption' as never).map(node => node.props.selected)).toEqual([false, true]);
   });
 });
 
