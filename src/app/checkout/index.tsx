@@ -53,9 +53,9 @@ import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 type PaymentMethodCopy = { id: PaymentMethodId; title: string; icon: IconName; showsTotal: boolean };
 
 const PAYMENT_METHODS: PaymentMethodCopy[] = [
-  { id: 'mpesa', title: 'M-Pesa', icon: 'mpesa', showsTotal: true },
+  // M-Pesa is simulated until DPO Pay is live (LAUNCH_SCOPE.mpesa); Card likewise (23 Oct).
+  ...(LAUNCH_SCOPE.mpesa ? [{ id: 'mpesa', title: 'M-Pesa', icon: 'mpesa', showsTotal: true } as PaymentMethodCopy] : []),
   { id: 'cod', title: 'Cash on Delivery', icon: 'cash', showsTotal: false },
-  // Card is hidden until DPO Pay is live (23 Oct): it placed the order without charging anyone.
 ];
 
 
@@ -121,7 +121,7 @@ export default function CheckoutRoute() {
   const [phoneDraft, setPhoneDraft] = useState<PhoneInput>(EMPTY_PHONE_INPUT);
   const [authOpen, setAuthOpen] = useState(false);
   const [pendingPay, setPendingPay] = useState(false);
-  const [placed, setPlaced] = useState<{ method: PaymentMethodId; total: number; points: number } | null>(null);
+  const [placed, setPlaced] = useState<{ method: PaymentMethodId; total: number; points: number; orderNo: string; pickup: boolean } | null>(null);
   const [pointsExpanded, setPointsExpanded] = useState(false);
   const [promoDraft, setPromoDraft] = useState('');
   const [promoChecking, setPromoChecking] = useState(false);
@@ -173,10 +173,15 @@ export default function CheckoutRoute() {
 
   const placedCopy = placed
     ? placed.method === 'cod'
-      ? {
-          title: 'Cash on delivery confirmed',
-          description: `Pay ${formatKes(placed.total)} in cash when the rider hands over your order at ${orderAddress.line}.`,
-        }
+      ? placed.pickup
+        ? {
+            title: `Order ${placed.orderNo} placed`,
+            description: `Pay ${formatKes(placed.total)} at the counter when you collect your order at ${fulfilment.store.name}.`,
+          }
+        : {
+            title: `Order ${placed.orderNo} placed`,
+            description: `Pay ${formatKes(placed.total)} in cash when the rider hands over your order at ${orderAddress.line}.`,
+          }
       : {
           title: 'Card payment authorised',
           description: `The card gateway charges ${formatKes(placed.total)} once your order is packed and leaves ${fulfilment.store.name}.`,
@@ -279,7 +284,7 @@ export default function CheckoutRoute() {
       }
       return;
     }
-    if (!hasRx) setPlaced({ method: method.id, total: amountDue, points: clubPoints });
+    if (!hasRx) setPlaced({ method: method.id, total: amountDue, points: clubPoints, orderNo: result.id, pickup: fulfilment.mode === 'pickup' });
     cart.clear();
     session.spendPoints(pointsUsed);
     fulfilment.setPointsRedeemed(0);
@@ -550,7 +555,7 @@ export default function CheckoutRoute() {
                 return (
                   <View key={entry.id}>
                     <SelectableOption
-                      title={entry.title}
+                      title={entry.id === 'cod' && fulfilment.mode === 'pickup' ? 'Cash at pickup' : entry.title}
                       icon={entry.icon}
                       leading={entry.id === 'mpesa' ? <MpesaLogo width={56} /> : undefined}
                       selected={selected}
@@ -592,7 +597,9 @@ export default function CheckoutRoute() {
                         <View style={styles.cashNote}>
                           <Icon name="info" size={14} color="warningDeep" />
                           <Txt variant="caption" tint={colors.warningDeep} style={styles.flex}>
-                            Pay the rider or in-store when your order arrives. Please have the exact amount if possible, as our riders carry limited change.
+                            {fulfilment.mode === 'pickup'
+                              ? `Pay at the counter in ${fulfilment.store.name} when you collect your order.`
+                              : 'Pay the rider when your order arrives. Please have the exact amount if possible, as our riders carry limited change.'}
                           </Txt>
                         </View>
                       </View>
@@ -928,10 +935,12 @@ export default function CheckoutRoute() {
           <SelectableOption
             key={slot.id}
             title={slot.window}
-            description={`${slot.label} · ${slot.free ? 'Free' : 'Delivery fee applies'}`}
+            description={`${slot.mode === 'pickup' ? `Pickup · ${fulfilment.store.name}` : slot.label} · ${slot.free ? 'Free' : 'Delivery fee applies'}`}
             icon={slot.mode === 'pickup' ? 'pickup' : 'delivery'}
-            selected={fulfilment.slotId === slot.id}
+            selected={fulfilment.slot.id === slot.id}
             onPress={() => {
+              // Picking the pickup time switches the order to pickup; a delivery time back to delivery.
+              fulfilment.setMode(slot.mode);
               fulfilment.setSlotId(slot.id);
               closeSheet();
             }}

@@ -1,4 +1,6 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
+
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { useMemo, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 
@@ -34,7 +36,7 @@ const upcomingDays = () => {
 };
 
 /** Screen 2: Clinical Service Booking Detail (FR-F.10). */
-export default function ClinicalBookingRoute() {
+function ClinicalBookingRoute() {
   const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
@@ -284,3 +286,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   confirmIcon: { width: 48, height: 48, borderRadius: radius.pill, backgroundColor: colors.mintSurface, alignItems: 'center', justifyContent: 'center' },
   footer: { gap: spacing.sm },
 });
+
+/** Hidden for launch (LAUNCH_SCOPE.clinicalServices): a typed-in link goes back instead of opening it. */
+export default function GatedClinicalBookingRoute() {
+  return LAUNCH_SCOPE.clinicalServices ? <ClinicalBookingRoute /> : <Redirect href="/(tabs)/pharmacy" />;
+}

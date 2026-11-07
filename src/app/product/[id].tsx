@@ -23,7 +23,7 @@ import {
 import { ProductPhoto } from '@/components/ui/product-photo';
 import { deliverySlots, productById, productsByCategory, productsByIds, verticalBySlug, verticals } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
-import { fetchProduct, LIVE_PHARMACY_CATEGORIES, liveProductById, useLive } from '@/data/live-catalogue';
+import { fetchProduct, LIVE_PHARMACY_CATEGORIES, liveProductById, liveProductsByCategory, useLive } from '@/data/live-catalogue';
 import type { CategoryVertical, Product } from '@/data/types';
 import { discountPercent, formatKes } from '@/lib/format';
 import { PharmacistWhatsAppSheet } from '@/features/pharmacy/whatsapp-sheet';
@@ -113,17 +113,18 @@ const PRODUCT_COPY: Record<string, ProductCopy> = {
 const BULK_BADGE = 'BULK SAVINGS';
 const PHARMACIST_REVIEW = 'Requires Pharmacist Review';
 const UNAVAILABLE_NOTE = 'Currently unavailable. Check back soon';
-const REGULATED_NOTE = 'Fixed regulated retail price • Incl. VAT';
+const REGULATED_NOTE = 'Incl. VAT';
 const RX_NOTICE = 'Prescription needed · add it once, attach the prescription at checkout, and the pharmacist sets the quantity';
 const AGE_NOTICE = '18+ only · Confirm your age at checkout';
 const RETURN_NOTE =
-  'Unopened items can be returned within 24 hours for a full M-Pesa refund. Our shopper collects them from your door.';
+  // Returns happen at the store counter until the admin site handles them (LAUNCH_SCOPE.returns, 7 Nov 2026).
+  'To return an item, bring it to the counter at the store it came from.';
 
 
 const PHARMACIST_SERVICE = {
   title: 'Collection or delivery after pharmacist approval',
   description:
-    'Our registered Nairobi superintendent pharmacist verifies medical safety before dispatch. Ready within 45 mins.',
+    'A pharmacist checks your prescription before your order is packed.',
 };
 
 /** Patient-leaflet wording for the collapsed safety row (the frame never prints its body). */
@@ -162,10 +163,11 @@ const humanize = (slug: string): string =>
 
 /** The frame's cross-aisle picks first, then same-aisle neighbours — three cards, never the pack itself. */
 function relatedProducts(product: Product): Product[] {
-  // Business Central items skip the frame's sample picks and show real neighbours only.
+  // Business Central items show real neighbours only: no sample picks, no sample products from the same aisle.
   const fromBc = liveProductById(product.id) !== undefined;
   const rail = fromBc ? [] : PHARMACY_CATEGORY[product.category] ? PHARMACY_RAIL : GROCERY_RAIL;
-  const candidates = [...productsByIds(rail), ...productsByCategory(product.category)];
+  const neighbours = fromBc ? liveProductsByCategory(product.category) : productsByCategory(product.category);
+  const candidates = [...productsByIds(rail), ...neighbours];
   const picked: Product[] = [];
   const seen = new Set([product.id]);
 
@@ -321,10 +323,9 @@ function ProductDetail({ product }: { product: Product }) {
                 onDecrement={() => cart.setQuantity(product.id, inCart - 1)}
                 onIncrement={() => cart.setQuantity(product.id, inCart + 1)}
               />
+              {/* Short label, no icon: "View Cart · KES 32,400" was cut off on a phone (7 Nov 2026). */}
               <Button
-                label={`View Cart · ${formatKes(lineTotal)}`}
-                icon="cart"
-                iconPosition="leading"
+                label={`Cart · ${formatKes(lineTotal)}`}
                 fullWidth={false}
                 style={styles.cta}
                 onPress={() => router.push('/(tabs)/cart')}
@@ -382,7 +383,7 @@ function ProductDetail({ product }: { product: Product }) {
       <View style={styles.hero}>
         <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="hero" />
         <View style={styles.heroBadges}>
-          {isPharmacy ? <NoticePill icon="shieldPlus" label={PHARMACIST_REVIEW} tone="brand" /> : null}
+          {product.rxRequired ? <NoticePill icon="shieldPlus" label={PHARMACIST_REVIEW} tone="brand" /> : null}
           {!isPharmacy && tiers.length > 0 ? <Badge label={BULK_BADGE} tone="discount" /> : null}
           {!isPharmacy && eyebrow ? <NoticePill label={eyebrow} tone="info" /> : null}
         </View>
@@ -492,7 +493,7 @@ function ProductDetail({ product }: { product: Product }) {
           </View>
         ) : null}
 
-        {isPharmacy ? (
+        {product.rxRequired ? (
           <Card variant="outline" padding={spacing.md}>
             <View style={styles.serviceRow}>
               <View style={styles.serviceIcon}>
@@ -597,7 +598,11 @@ function ProductDetail({ product }: { product: Product }) {
                   {RETURN_NOTE}
                 </Txt>
                 {deliverySlots.map(slot => (
-                  <SlotRow key={slot.id} label={`${slot.label} · ${slot.window}`} note={slot.free ? 'Free' : undefined} />
+                  <SlotRow
+                    key={slot.id}
+                    label={`${slot.mode === 'pickup' ? `Pickup · ${store.name}` : slot.label} · ${slot.window}`}
+                    note={slot.free ? 'Free' : undefined}
+                  />
                 ))}
               </AccordionRow>
               <Divider />

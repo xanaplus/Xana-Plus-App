@@ -97,13 +97,13 @@ const packFromName = (name: string): string => {
 /**
  * Pharmacy's rule (17 Oct 2026): items in these BC groups are listed without a
  * photo, on the app and the website. The slugs are the app categories they map to.
- * Owner, 29 Oct 2026: no photo for any prescription medicine (`requires_rx`, which
- * also covers class B and CONTR / CTRL items outside these groups).
+ * Owner, 7 Nov 2026: ONLY these three groups hide photos; other prescription items
+ * (e.g. class B elsewhere) still need a prescription but keep their photo.
  */
 const NO_PHOTO_GROUPS = new Set(['GENERAL', 'CHRONIC', 'CONTROLLED']);
 const NO_PHOTO_CATEGORIES = new Set(['medicines', 'chronic-care', 'controlled-medicines']);
 const photoOf = (row: CatalogueRow): string | null =>
-  row.requires_rx || NO_PHOTO_GROUPS.has(row.category?.trim().toUpperCase() ?? '') ? null : row.photo_url;
+  NO_PHOTO_GROUPS.has(row.category?.trim().toUpperCase() ?? '') ? null : row.photo_url;
 
 /** Owner-approved department rule; BC's regulatory flags remain independent. */
 const isDeliItem = (itemNo: string): boolean => itemNo.toUpperCase().startsWith('DEL');
@@ -120,11 +120,34 @@ const toProduct = (row: CatalogueRow): Product => {
     category: isDeliItem(row.item_no) ? 'deli-cold-cuts' : BC_GROUP_CATEGORY[row.category ?? ''] ?? 'general-merchandise',
     rxRequired: row.requires_rx,
     ageRestricted: row.age_restricted,
-    inStock: Number(row.stock) > 0,
+    inStock: Number(row.stock) - stockBuffer > 0,
     stockByStore: Object.fromEntries(
-      Object.entries(row.stock_by_location ?? {}).map(([branch, units]) => [branch.toUpperCase(), Number(units ?? 0)]),
+      Object.entries(row.stock_by_location ?? {}).map(([branch, units]) => [branch.toUpperCase(), sellable(Number(units ?? 0))]),
     ),
   };
+};
+
+/**
+ * Units kept back at each branch, as the website and create_order() do (`stock_buffer`
+ * in public_settings, 2 on 7 Nov 2026): the shop shows a branch's stock less this, in
+ * whole units. Read once on the first catalogue fetch; 2 until then or if unreadable.
+ */
+let stockBuffer = 2;
+let bufferRequested = false;
+const sellable = (units: number): number => (Number.isFinite(units) ? Math.max(0, Math.floor(units - stockBuffer)) : 0);
+const loadStockBuffer = () => {
+  if (bufferRequested) return;
+  bufferRequested = true;
+  try {
+    void Promise.resolve(supabase.from('public_settings').select('value').eq('key', 'stock_buffer'))
+      .then(({ data }) => {
+        const value = Number((data as { value?: unknown }[] | null)?.[0]?.value);
+        if (Number.isFinite(value) && value >= 0) stockBuffer = value;
+      })
+      .catch(() => undefined);
+  } catch {
+    // Keep the default; the catalogue itself must still load.
+  }
 };
 
 // ── Product cache ────────────────────────────────────────────────────────────
@@ -230,6 +253,7 @@ const safeWords = (text: string): string[] =>
     .slice(0, 5);
 
 async function run(request: PromiseLike<{ data: unknown; error: { message: string } | null }>): Promise<Product[]> {
+  loadStockBuffer();
   const { data, error } = await request;
   if (error) throw new Error(error.message);
   const rows = (data ?? []) as CatalogueRow[];
@@ -266,14 +290,28 @@ export function searchCatalogue(query: string, limit = 60, options: ResultOption
     else if (word.startsWith('del')) fields.push(`item_no.ilike.${word}*`);
     return `or(${fields.join(',')})`;
   }).join(',');
-  return run(
+  const results = run(
     ordered(refine(supabase.from('catalogue').select(COLUMNS).or(`and(${clauses})`), options), options.sort)
       .order('in_stock', { ascending: false })
       .order('has_photo', { ascending: false })
       .order('stock', { ascending: false })
       .limit(limit),
   );
+  // With no sort chosen, names where every word starts a word ("Pishori Rice") come before
+  // ones that only contain it ("Downy Sunrice", "Licorice"); the order is kept within each group.
+  return options.sort ? results : results.then(list => rankWordStarts(list, words));
 }
+
+/** `word` comes from safeWords (letters and digits only), so it is safe inside a pattern. */
+const startsAWord = (name: string, word: string): boolean => new RegExp(`(^|[^a-z0-9])${word}`, 'i').test(name);
+
+/** In stock before out of stock still comes first; whole-word matches lead within each. */
+const rankWordStarts = (list: Product[], words: string[]): Product[] => {
+  const rank = (product: Product) => (product.inStock === false ? 2 : 0) + (words.every(word => startsAWord(product.name, word)) ? 0 : 1);
+  return list.map((product, index) => ({ product, index, key: rank(product) }))
+    .sort((a, b) => a.key - b.key || a.index - b.index)
+    .map(entry => entry.product);
+};
 
 /** Catalogue rows for a set of item numbers — e.g. the lines of past orders. */
 export function fetchProducts(itemNos: string[]): Promise<Product[]> {

@@ -4,6 +4,7 @@ import { deliverySlots, stores } from '@/data/catalog';
 import type { FulfilmentMode, PaymentMethodId, Product } from '@/data/types';
 import { parsePersisted, persisted, save, STORAGE_KEYS } from '@/lib/storage';
 import { supabase } from '@/lib/supabase';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { useSession } from '@/store/session';
 
 export type Address = {
@@ -222,12 +223,13 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
   const setAddress = (next: Address) => setAddressId(next.id);
   const [slotId, setSlotId] = useState(stored.slotId);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodId>(
-    // Card is hidden until DPO Pay is live: a saved card choice falls back to M-Pesa.
-    stored.paymentMethod === 'card' ? 'mpesa' : stored.paymentMethod,
+    // Card (and M-Pesa while LAUNCH_SCOPE.mpesa is off) wait for DPO Pay: a saved choice falls back to cash.
+    stored.paymentMethod === 'cod' || (stored.paymentMethod === 'mpesa' && LAUNCH_SCOPE.mpesa) ? stored.paymentMethod : LAUNCH_SCOPE.mpesa ? 'mpesa' : 'cod',
   );
   const [storedMpesaNumber, setMpesaNumber] = useState(stored.mpesaNumber);
   // The sample M-Pesa line is Amina's; a real account defaults to its own number.
-  const mpesaNumber = !isDemo && user && storedMpesaNumber === defaultAddress.phone ? user.phone : storedMpesaNumber;
+  // The sample number is never shown as anyone's: a signed-in shopper gets their own, a guest none.
+  const mpesaNumber = !isDemo && storedMpesaNumber === defaultAddress.phone ? (user?.phone ?? '') : storedMpesaNumber;
   const [pointsRedeemed, setPointsRedeemed] = useState(0);
   // Checkout answers, kept here so they survive the hop to the M-Pesa screen and back. Not persisted.
   const [ageConfirmed, setAgeConfirmed] = useState(false);
@@ -236,7 +238,15 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
   const [kraPinDraft, setKraPinDraft] = useState<string | null>(null);
 
   const store = useMemo(() => stores.find(s => s.id === storeId) ?? stores[0], [storeId]);
-  const slot = useMemo(() => deliverySlots.find(s => s.id === slotId) ?? deliverySlots[0], [slotId]);
+  // The slot always agrees with delivery / pickup, and pickup names the chosen store (7 Nov 2026).
+  const slot = useMemo(() => {
+    const chosen = deliverySlots.find(s => s.id === slotId) ?? deliverySlots[0];
+    if (mode === 'pickup') {
+      const pickup = deliverySlots.find(s => s.mode === 'pickup') ?? chosen;
+      return { ...pickup, label: `Pickup · ${store.name}` };
+    }
+    return chosen.mode === 'pickup' ? deliverySlots[0] : chosen;
+  }, [slotId, mode, store]);
 
   const address = useMemo<Address>(
     () =>

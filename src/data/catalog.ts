@@ -7,15 +7,16 @@ import type { Category, CategoryVertical, DeliverySlot, Deal, Product } from './
  * built from this data match the reference frames.
  */
 
+// Shop numbers as on the website (Web2 index.html); pharmacy numbers are in pharmacy-contacts.ts (7 Nov 2026).
 export const stores = [
   { id: 'syokimau', name: 'Xana Plus Syokimau', address: 'Syokimau, Mombasa Road', phone: '+254 718 666 661', hours: '7am to 9pm' },
-  { id: 'ruiru', name: 'Xana Plus Ruiru', address: 'Ruiru, Kamakis', phone: '+254 718 666 662', hours: '7am to 9pm' },
+  { id: 'ruiru', name: 'Xana Plus Ruiru', address: 'Ruiru, Kamakis', phone: '+254 718 555 559', hours: '7am to 9pm' },
 ] as const;
 
 export const deliverySlots: DeliverySlot[] = [
   { id: 'std-am', label: 'Standard Home Delivery', window: 'Tomorrow, 9:00 AM - 11:00 AM', mode: 'delivery', free: true },
   { id: 'std-pm', label: 'Standard Home Delivery', window: 'Tomorrow, 2:00 PM - 4:00 PM', mode: 'delivery', free: true },
-  { id: 'pickup-syokimau', label: 'Pickup · Xana Plus Syokimau', window: 'Ready in 45 minutes', mode: 'pickup', free: true },
+  { id: 'pickup-syokimau', label: 'Pickup · Xana Plus Syokimau', window: 'Collect at the store', mode: 'pickup', free: true },
 ];
 
 /** Home category grid, in the order shown on Screen 2a. */
@@ -812,11 +813,12 @@ export const shelfForTerm = (term: string): LiveQuery | undefined => {
 
 /** Quick suggestions shown on the empty search screen (Screen 12b). */
 export const popularSearches = [
-  { label: 'Fresh Milk' },
-  { label: 'Farm Bread' },
-  { label: 'Basmati Rice' },
-  { label: 'Paracetamol 500mg' },
-  { label: 'Hass Avocado' },
+  // Words that find products when typed too (7 Nov 2026: "Farm Bread" and "Paracetamol 500mg" found nothing).
+  { label: 'Milk' },
+  { label: 'Bread' },
+  { label: 'Rice' },
+  { label: 'Panadol' },
+  { label: 'Avocado' },
   { label: 'Hand Wash' },
 ];
 

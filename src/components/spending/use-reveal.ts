@@ -13,11 +13,7 @@ export function useRevealProgress(active: boolean, duration = REVEAL_MS): number
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    if (!active) return;
-    if (reduceMotion) {
-      setProgress(1);
-      return;
-    }
+    if (!active || reduceMotion) return;
     const start = Date.now();
     let frame = 0;
     const tick = () => {
@@ -29,5 +25,6 @@ export function useRevealProgress(active: boolean, duration = REVEAL_MS): number
     return () => cancelAnimationFrame(frame);
   }, [active, reduceMotion, duration]);
 
-  return progress;
+  // With Reduce Motion on, no animation runs: the chart is simply drawn in full once active.
+  return reduceMotion && active ? 1 : progress;
 }

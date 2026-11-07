@@ -1,4 +1,6 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
+
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { useMemo, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 
@@ -42,7 +44,7 @@ type RefundDestination = 'mpesa' | 'club-credit';
 const CLUB_CREDIT_BONUS = 0.05;
 
 /** Screen: Request a Return & Refund (FR-E.6) — reached from a delivered order. */
-export default function RequestReturnRoute() {
+function RequestReturnRoute() {
   const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
@@ -293,3 +295,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   confirmActions: { flexDirection: 'row', gap: spacing.sm },
   flex: { flex: 1 },
 });
+
+/** Hidden for launch (LAUNCH_SCOPE.returns): a typed-in link goes back instead of opening it. */
+export default function GatedRequestReturnRoute() {
+  return LAUNCH_SCOPE.returns ? <RequestReturnRoute /> : <Redirect href="/orders" />;
+}

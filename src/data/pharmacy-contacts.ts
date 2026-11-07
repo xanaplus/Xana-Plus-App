@@ -15,8 +15,8 @@ export type PharmacyContact = {
 };
 
 export const PHARMACY_CONTACTS: readonly PharmacyContact[] = [
-  { id: 'syokimau', name: 'Syokimau (Bellway Park)', storeId: 'syokimau', kind: 'branch', note: 'Pharmacy, shop and clinic', phone: '+254 718 555554', wa: '254718555554' },
-  { id: 'ruiru', name: 'Ruiru', storeId: 'ruiru', kind: 'branch', note: 'Pharmacy, shop and clinic', phone: '+254 142 631157', wa: '254142631157' },
+  { id: 'syokimau', name: 'Syokimau (Bellway Park)', storeId: 'syokimau', kind: 'branch', note: 'Branch pharmacy (the shop is +254 718 666 661)', phone: '+254 718 555554', wa: '254718555554' },
+  { id: 'ruiru', name: 'Ruiru', storeId: 'ruiru', kind: 'branch', note: 'Branch pharmacy (the shop is +254 718 555 559)', phone: '+254 142 631157', wa: '254142631157' },
   { id: 'trm-drive', name: 'TRM Drive', kind: 'standalone', note: 'Pharmacy', phone: '+254 142 605347', wa: '254142605347' },
   { id: 'lumumba-drive', name: 'Lumumba Drive', kind: 'standalone', note: 'Pharmacy', phone: '+254 142 605372', wa: '254142605372' },
   { id: 'githurai', name: 'Githurai', kind: 'standalone', note: 'Pharmacy', phone: '+254 142 605361', wa: '254142605361' },

@@ -303,13 +303,18 @@ export default function OrderStatusScreen() {
           <Line label="Club member savings" value={`− ${formatKesDecimal(order.summary.wholesaleSavings)}`} tint />
         ) : null}
         <Divider />
-        <Line label={rxPending ? 'Total' : 'Total paid'} value={formatKesDecimal(order.summary.total)} strong />
-        <View style={styles.points}>
-          <Icon name="sparkle" size={14} color="primaryAccent" />
-          <Txt variant="caption" color="onSurfaceVariant" style={styles.pointsText}>
-            {order.pointsEarned} points credited to your Xana Club balance
-          </Txt>
-        </View>
+        <Line label={order.paymentStatus === 'paid' ? 'Total paid' : 'Total'} value={formatKesDecimal(order.summary.total)} strong />
+        {/* Points are added when the order is completed, not when it is placed. */}
+        {order.pointsEarned > 0 ? (
+          <View style={styles.points}>
+            <Icon name="sparkle" size={14} color="primaryAccent" />
+            <Txt variant="caption" color="onSurfaceVariant" style={styles.pointsText}>
+              {completed
+                ? `${order.pointsEarned} points earned with this order`
+                : `You'll earn ${order.pointsEarned} points when this order is completed`}
+            </Txt>
+          </View>
+        ) : null}
       </Card>
 
       {/* The KRA verification link, once the order is signed for real (the same link as the receipt QR). */}

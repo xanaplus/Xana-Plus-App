@@ -1,4 +1,6 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
+
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
@@ -24,7 +26,7 @@ type Message = {
 
 const QUICK_REPLIES = ['Take it with meals?', 'Check drug interactions', 'Request prescription refill'];
 
-export default function ConsultationChatScreen() {
+function ConsultationChatScreen() {
   const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const scripts = useRepeatScripts();
@@ -272,3 +274,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   },
   sendOff: { opacity: 0.4 },
 });
+
+/** Hidden for launch (LAUNCH_SCOPE.pharmacistChat): a typed-in link goes back instead of opening it. */
+export default function GatedConsultationChatScreen() {
+  return LAUNCH_SCOPE.pharmacistChat ? <ConsultationChatScreen /> : <Redirect href="/(tabs)/pharmacy" />;
+}

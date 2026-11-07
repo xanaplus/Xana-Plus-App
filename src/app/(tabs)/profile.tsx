@@ -128,9 +128,9 @@ const DEFAULT_PRIVACY: Record<PrivacyKey, boolean> = {
 };
 
 const PAYMENT_METHODS: { id: PaymentMethodId; icon: IconName; title: string; description: string }[] = [
-  { id: 'mpesa', icon: 'mpesa', title: 'M-Pesa', description: 'STK Push prompt will be sent to this line' },
+  // M-Pesa and Card are hidden until DPO Pay is live, as at checkout.
+  ...(LAUNCH_SCOPE.mpesa ? [{ id: 'mpesa' as PaymentMethodId, icon: 'mpesa' as IconName, title: 'M-Pesa', description: 'STK Push prompt will be sent to this line' }] : []),
   { id: 'cod', icon: 'cash', title: 'Cash on Delivery', description: 'Pay the rider or in-store when your order arrives.' },
-  // Card is hidden until DPO Pay is live, as at checkout.
 ];
 
 const MODE_OPTIONS: SegmentedOption<FulfilmentMode>[] = [

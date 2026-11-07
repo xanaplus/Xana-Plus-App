@@ -16,4 +16,6 @@ export const LAUNCH_SCOPE = {
   clinicalServices: false,
   /** Return requests and the Returns & bookings list: the admin site has no Returns screen yet, so requests reach no one. Customers return at the counter. */
   returns: false,
+  /** M-Pesa at checkout: simulated until DPO Pay is live (it said "We sent the PIN prompt" and sent nothing). Cash only until then (7 Nov 2026). */
+  mpesa: false,
 } as const;

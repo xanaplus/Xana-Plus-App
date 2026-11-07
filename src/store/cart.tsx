@@ -7,6 +7,7 @@ import type { CartLine, OrderSummary, Product, SubstitutionPreference } from '@/
 import { parsePersisted, persisted, save, STORAGE_KEYS } from '@/lib/storage';
 import { track } from '@/lib/analytics';
 import { tapFeedback } from '@/lib/haptics';
+import { useFulfilment } from '@/store/fulfilment';
 
 const DELIVERY_FEE = 0;
 /** No packaging fee (owner, 15 Oct 2026); the field stays so past orders still show theirs. */
@@ -20,10 +21,10 @@ type CartState = {
 };
 
 type CartAction =
-  | { type: 'add'; productId: string; quantity?: number }
+  | { type: 'add'; productId: string; quantity?: number; max: number }
   | { type: 'remove'; productId: string }
-  | { type: 'setQuantity'; productId: string; quantity: number }
-  | { type: 'increment'; productId: string }
+  | { type: 'setQuantity'; productId: string; quantity: number; max: number }
+  | { type: 'increment'; productId: string; max: number }
   | { type: 'decrement'; productId: string }
   | { type: 'setSubstitution'; preference: SubstitutionPreference }
   | { type: 'clear' };
@@ -64,8 +65,12 @@ const hydrateCart = (): CartState => {
   };
 };
 
-/** A prescription medicine goes in the basket once; the pharmacist sets how many (owner, 29 Oct 2026). */
-const capped = (productId: string, quantity: number) => (productById(productId)?.rxRequired ? Math.min(quantity, 1) : quantity);
+/**
+ * A prescription medicine goes in the basket once; the pharmacist sets how many (owner, 29 Oct 2026).
+ * Nothing goes above what the chosen store has (`max`, Infinity when its stock is unknown).
+ */
+const capped = (productId: string, quantity: number, max: number) =>
+  Math.min(productById(productId)?.rxRequired ? Math.min(quantity, 1) : quantity, max);
 
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
@@ -74,18 +79,27 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       if (existing) {
         return {
           ...state,
-          lines: state.lines.map(l => (l.productId === action.productId ? { ...l, quantity: capped(l.productId, l.quantity + (action.quantity ?? 1)) } : l)),
+          lines: state.lines.map(l =>
+            l.productId === action.productId ? { ...l, quantity: Math.max(l.quantity, capped(l.productId, l.quantity + (action.quantity ?? 1), action.max)) } : l,
+          ),
         };
       }
-      return { ...state, lines: [...state.lines, { productId: action.productId, quantity: capped(action.productId, action.quantity ?? 1) }] };
+      const quantity = capped(action.productId, action.quantity ?? 1, action.max);
+      return quantity < 1 ? state : { ...state, lines: [...state.lines, { productId: action.productId, quantity }] };
     }
     case 'remove':
       return { ...state, lines: state.lines.filter(l => l.productId !== action.productId) };
     case 'setQuantity':
       if (action.quantity < 1) return { ...state, lines: state.lines.filter(l => l.productId !== action.productId) };
-      return { ...state, lines: state.lines.map(l => (l.productId === action.productId ? { ...l, quantity: capped(l.productId, action.quantity) } : l)) };
+      return {
+        ...state,
+        lines: state.lines.map(l => (l.productId === action.productId ? { ...l, quantity: Math.max(1, capped(l.productId, action.quantity, action.max)) } : l)),
+      };
     case 'increment':
-      return { ...state, lines: state.lines.map(l => (l.productId === action.productId ? { ...l, quantity: capped(l.productId, l.quantity + 1) } : l)) };
+      return {
+        ...state,
+        lines: state.lines.map(l => (l.productId === action.productId ? { ...l, quantity: Math.max(l.quantity, capped(l.productId, l.quantity + 1, action.max)) } : l)),
+      };
     case 'decrement':
       return {
         ...state,
@@ -167,16 +181,30 @@ export function CartProvider({ children }: { children: ReactNode }) {
     };
   }, [items]);
 
+  /** Units the chosen store has; Infinity when its stock isn't known (sample products, before a sync). */
+  const { storeId } = useFulfilment();
+  const maxFor = useCallback(
+    (productId: string): number => {
+      const product = liveProducts.get(productId) ?? productById(productId);
+      const units = product?.stockByStore?.[storeId.toUpperCase()];
+      return typeof units === 'number' && Number.isFinite(units) ? Math.max(0, Math.floor(units)) : Infinity;
+    },
+    [liveProducts, storeId],
+  );
+
   const [lastAdded, setLastAdded] = useState<CartContextValue['lastAdded']>(null);
   const add = useCallback((productId: string, quantity?: number) => {
     tapFeedback();
     track('add_to_cart', { item: productId, quantity: quantity ?? 1 });
-    dispatch({ type: 'add', productId, quantity });
+    dispatch({ type: 'add', productId, quantity, max: maxFor(productId) });
     setLastAdded(previous => ({ productId, quantity: quantity ?? 1, key: (previous?.key ?? 0) + 1 }));
-  }, []);
+  }, [maxFor]);
   const remove = useCallback((productId: string) => dispatch({ type: 'remove', productId }), []);
-  const setQuantity = useCallback((productId: string, quantity: number) => dispatch({ type: 'setQuantity', productId, quantity }), []);
-  const increment = useCallback((productId: string) => dispatch({ type: 'increment', productId }), []);
+  const setQuantity = useCallback(
+    (productId: string, quantity: number) => dispatch({ type: 'setQuantity', productId, quantity, max: maxFor(productId) }),
+    [maxFor],
+  );
+  const increment = useCallback((productId: string) => dispatch({ type: 'increment', productId, max: maxFor(productId) }), [maxFor]);
   const decrement = useCallback((productId: string) => dispatch({ type: 'decrement', productId }), []);
   const setSubstitution = useCallback((preference: SubstitutionPreference) => dispatch({ type: 'setSubstitution', preference }), []);
   const clear = useCallback(() => dispatch({ type: 'clear' }), []);

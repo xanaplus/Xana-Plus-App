@@ -1,4 +1,6 @@
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
+
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { useMemo, useState } from 'react';
 import { Linking, StyleSheet, View } from 'react-native';
 
@@ -12,7 +14,7 @@ import { formatKes } from '@/lib/format';
 import { PressableScale } from '@/components/ui/pressable-scale';
 
 /** Screen 1: Clinical Services Directory (FR-F.10). */
-export default function ClinicalDirectoryRoute() {
+function ClinicalDirectoryRoute() {
   const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
@@ -120,7 +122,7 @@ export default function ClinicalDirectoryRoute() {
           <View style={styles.flex}>
             <Txt variant="label">Regulatory Accreditation</Txt>
             <Txt variant="caption" color="onSurfaceVariant">
-              Kenya Pharmacy and Poisons Board (PPB) Licensed Premises · Reg PPB/NRB/RET-2024-884. Clinical screening
+              Kenya Pharmacy and Poisons Board (PPB) Licensed Premises. Clinical screening
               is for monitoring and preventive care, not a substitute for emergency hospital treatment.
             </Txt>
           </View>
@@ -168,3 +170,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   regNote: { flexDirection: 'row', gap: spacing.sm },
   emergency: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, backgroundColor: colors.errorContainer },
 });
+
+/** Hidden for launch (LAUNCH_SCOPE.clinicalServices): a typed-in link goes back instead of opening it. */
+export default function GatedClinicalDirectoryRoute() {
+  return LAUNCH_SCOPE.clinicalServices ? <ClinicalDirectoryRoute /> : <Redirect href="/(tabs)/pharmacy" />;
+}

@@ -1,4 +1,6 @@
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
+
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { useState } from 'react';
 import { StyleSheet, Switch, TextInput, View } from 'react-native';
 
@@ -11,7 +13,7 @@ import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
 /** Screen 08d — Pharmacy: Ask a Pharmacist (consultation intake). */
-export default function ConsultScreen() {
+function ConsultScreen() {
   const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
@@ -193,3 +195,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   footerBar: { gap: spacing.sm },
   footer: { gap: spacing.xxs, marginTop: spacing.lg },
 });
+
+/** Hidden for launch (LAUNCH_SCOPE.pharmacistChat): a typed-in link goes back instead of opening it. */
+export default function GatedConsultScreen() {
+  return LAUNCH_SCOPE.pharmacistChat ? <ConsultScreen /> : <Redirect href="/(tabs)/pharmacy" />;
+}

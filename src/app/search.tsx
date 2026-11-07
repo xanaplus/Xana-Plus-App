@@ -22,7 +22,7 @@ import type { PriceBand, ResultOptions, ResultSort } from '@/data/live-catalogue
 import type { CategoryVertical, Product } from '@/data/types';
 import { formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
-import { useFulfilment } from '@/store/fulfilment';
+import { inStockAt, useFulfilment } from '@/store/fulfilment';
 import { elevation, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
@@ -114,15 +114,6 @@ const DEPARTMENTS: { id: Department; title: string; subLabel?: string }[] = [
   { id: 'pharmacy', title: 'PHARMACY & WELLNESS', subLabel: 'Dispatched from Licensed Pharmacist counter' },
 ];
 
-/** Each suggestion chip searches the catalogue term behind its design label. */
-const SUGGESTION_TERMS: Record<string, string> = {
-  'Fresh Milk': 'Milk',
-  'Farm Bread': 'Bakery',
-  'Basmati Rice': 'Rice',
-  'Paracetamol 500mg': 'Panadol',
-  'Hass Avocado': 'Avocado',
-  'Hand Wash': 'Wash',
-};
 
 type ResultGroup = { id: string; title: string; subLabel: string; pharmacy: boolean; items: Product[] };
 
@@ -216,10 +207,16 @@ export default function SearchRoute() {
     setDepartments(current => (current.includes(value) ? current.filter(v => v !== value) : [...current, value]));
 
   // Sort, price, stock and prescription are applied by the database; departments narrow what came back.
-  const results = useMemo(
-    () => (departments.length > 0 ? base.filter(product => departments.includes(verticalForProduct(product))) : base),
-    [base, departments],
-  );
+  // Stock is the chosen store's (7 Nov 2026): the database only knows the company total, so an item
+  // sold out here but stocked at the other store used to lead the list. With no sort chosen, items
+  // on this store's shelves come first (order kept within each); "In stock only" means this store.
+  const results = useMemo(() => {
+    const inDepartments = departments.length > 0 ? base.filter(product => departments.includes(verticalForProduct(product))) : base;
+    const here = inDepartments.filter(product => inStockAt(product, store.id));
+    if (inStockOnly && !shelf) return here;
+    if (sortBy !== 'relevance') return inDepartments;
+    return [...here, ...inDepartments.filter(product => !here.includes(product))];
+  }, [base, departments, store.id, inStockOnly, shelf, sortBy]);
   // Only worth offering when the results span departments; no counts, as they would only cover the loaded page.
   const presentDepartments = useMemo(
     () => DEPARTMENT_OPTIONS.filter(option => base.some(product => verticalForProduct(product) === option.value)),
@@ -378,7 +375,7 @@ export default function SearchRoute() {
         ) : results.length === 0 ? (
           <>
             {hasQuery ? <NoResults query={trimmed} filtered={activeFilterCount > 0} onClear={clearFilters} /> : null}
-            <PopularSearches onPick={label => setQuery(SUGGESTION_TERMS[label] ?? label)} />
+            <PopularSearches onPick={label => setQuery(label)} />
             <ContactBranch store={store} />
           </>
         ) : (
@@ -400,11 +397,6 @@ export default function SearchRoute() {
                     </Txt>
                     <Txt variant="caption" color="onSurfaceVariant">
                       {group.subLabel}
-                    </Txt>
-                  </View>
-                  <View style={styles.ppb}>
-                    <Txt variant="labelSm" color="primaryAccent" numberOfLines={1}>
-                      PPB Verified
                     </Txt>
                   </View>
                 </LinearGradient>
@@ -641,7 +633,7 @@ function ContactBranch({ store }: { store: (typeof stores)[number] }) {
         hitSlop={8}
         style={styles.helpLink}
       >
-        <Txt variant="labelSm">{`Contact ${branch} Branch`}</Txt>
+        <Txt variant="labelSm">{`Call the ${branch} shop`}</Txt>
         <Txt variant="caption" color="primaryAccent">
           {`(${store.phone})`}
         </Txt>
@@ -771,14 +763,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     justifyContent: 'center',
   },
   rxCopy: { flex: 1, gap: spacing.xxs },
-  ppb: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: radius.pill,
-    backgroundColor: colors.white95,
-    borderWidth: 1,
-    borderColor: colors.mintEdge,
-  },
 
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: layout.gutter },
   /** Fills its row, so both cards in a row are the same height. */

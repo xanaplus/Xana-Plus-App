@@ -137,8 +137,8 @@ const UNIT_NOUNS: readonly [RegExp, string][] = [
 const PHARMACY_ADVICE = {
   title: 'Need medicine or health advice?',
   /** Frames 3b/3c/3e/3f print one line; Screen 3d splits it into two runs. */
-  subtitle: 'Pharmacy · PPB Verified Pharmacists',
-  wholesaleSubtitle: 'PPB Verified Pharmacists',
+  // No "PPB Verified" claim until it's confirmed (7 Nov 2026).
+  subtitle: 'Pharmacy · Ask our pharmacists',
 } as const;
 
 /** Screen 3d delivery band. */
@@ -383,7 +383,6 @@ export default function CategoriesRoute() {
             icon="pharmacy"
             title={PHARMACY_ADVICE.title}
             subtitle={PHARMACY_ADVICE.subtitle}
-            subtitleTail={vertical === 'wholesale' ? PHARMACY_ADVICE.wholesaleSubtitle : undefined}
             onPress={() => (isPharmacy ? router.push('/(tabs)/pharmacy') : selectVertical('pharmacy'))}
           />
         </View>

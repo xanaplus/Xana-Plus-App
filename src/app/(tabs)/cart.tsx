@@ -102,13 +102,18 @@ export default function CartRoute() {
         actions={
           <>
             <TopBarAction name="search" accessibilityLabel="Search products" onPress={() => router.push('/search')} />
-            <PressableScale accessibilityRole="button" accessibilityLabel="Account" onPress={() => router.push('/profile')}>
-              <View style={styles.avatar}>
-                <Txt variant="label" tint={colors.onPrimary}>
-                  {user ? user.name.charAt(0) : 'A'}
-                </Txt>
-              </View>
-            </PressableScale>
+            {/* A guest gets a plain account icon, not a letter that looks like a signed-in account. */}
+            {user ? (
+              <PressableScale accessibilityRole="button" accessibilityLabel="Account" onPress={() => router.push('/profile')}>
+                <View style={styles.avatar}>
+                  <Txt variant="label" tint={colors.onPrimary}>
+                    {user.name.charAt(0)}
+                  </Txt>
+                </View>
+              </PressableScale>
+            ) : (
+              <TopBarAction name="user" accessibilityLabel="Account" onPress={() => router.push('/profile')} />
+            )}
           </>
         }
       />
