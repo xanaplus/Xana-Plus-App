@@ -998,6 +998,8 @@ export function SignInBody({ flow }: { flow: SignInFlow }) {
         autoFocus
         busy={flow.busy}
       />
+      {/* Right under the code, not in the footer, so the keyboard never covers it (Roystone, 7 Nov 2026). */}
+      {flow.offerPassword ? <AltLink label="Use password instead" onPress={flow.usePassword} /> : null}
       {confirming ? (
         <AltLink prompt="You can confirm it later in Profile." label="Skip for now" onPress={flow.skipEmail} />
       ) : flow.codeBy === 'email' ? (
@@ -1177,9 +1179,8 @@ function EntryButtons({ flow }: { flow: SignInFlow }) {
 }
 
 /**
- * The bottom of the other sign-in screens, in both hosts: the main button, and
- * "Use password instead" under a sign-in code. Null where the screen has
- * nothing to pin there.
+ * The bottom of the other sign-in screens, in both hosts: the main button (and
+ * the terms line). Null where the screen has nothing to pin there.
  */
 export function SignInActions({ flow, terms = false }: { flow: SignInFlow; terms?: boolean }) {
   const styles = useThemeStyles(createStyles);
@@ -1188,7 +1189,6 @@ export function SignInActions({ flow, terms = false }: { flow: SignInFlow; terms
   return (
     <View style={styles.footer}>
       {inBody(flow.view) ? null : <PrimaryButton flow={flow} />}
-      {flow.offerPassword ? <AltLink label="Use password instead" onPress={flow.usePassword} /> : null}
       {showTerms ? <TermsNote /> : null}
     </View>
   );
