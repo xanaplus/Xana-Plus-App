@@ -66,6 +66,8 @@ export default function AddAddressRoute() {
         .join(', '),
       phone: withCountryCode(phone),
       isDefault: setDefault,
+      // Saved on its own as well, so the website's checkout can reuse it.
+      area: area.trim(),
     };
     setSaving(true);
     setSaveFailed(false);
@@ -136,7 +138,7 @@ export default function AddAddressRoute() {
 
         <Txt variant="overline" color="onSurfaceVariant" style={styles.sectionGap}>WHERE TO DELIVER</Txt>
 
-        <Field label="Area / Street" value={area} onChangeText={setArea} placeholder="Syokimau, Katani Road" />
+        <Field label="Area / Street" value={area} onChangeText={setArea} placeholder="Syokimau, Katani Road" maxLength={100} />
         <Field label="Estate / Apartment Name" value={estate} onChangeText={setEstate} placeholder="Green Park Estate" />
         <Field label="House / Unit / Door Number" value={houseNumber} onChangeText={setHouseNumber} placeholder="Block C, Door 14" />
         <Field label="Nearest Landmark" value={landmark} onChangeText={setLandmark} placeholder="Next to TotalEnergies Katani Rd" />
@@ -164,12 +166,14 @@ function Field({
   onChangeText,
   placeholder,
   keyboardType,
+  maxLength,
 }: {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
   placeholder: string;
   keyboardType?: 'default' | 'number-pad';
+  maxLength?: number;
 }) {
   const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
@@ -182,6 +186,7 @@ function Field({
         placeholder={placeholder}
         placeholderTextColor={colors.outline}
         keyboardType={keyboardType}
+        maxLength={maxLength}
         style={styles.input}
       />
     </View>

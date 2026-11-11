@@ -14,6 +14,8 @@ export type Address = {
   line: string;
   phone: string;
   isDefault: boolean;
+  /** Area or landmark, as the website asks for it (10 Nov 2026); also part of `line`. */
+  area?: string;
 };
 
 const defaultAddress: Address = {
@@ -62,16 +64,27 @@ const isPersistedFulfilment = (value: unknown): value is PersistedFulfilment => 
   );
 };
 
-type AddressRow = { id: string; label: string; contact: string; line: string; phone: string; is_default: boolean };
+type AddressRow = { id: string; label: string; contact: string; line: string; phone: string; is_default: boolean; area: string | null };
 
-const fromRow = (row: AddressRow): Address => ({
-  id: row.id,
-  label: row.label,
-  contact: row.contact,
-  line: row.line,
-  phone: row.phone,
-  isDefault: row.is_default,
-});
+const ADDRESS_COLUMNS = 'id, label, contact, line, phone, is_default, area';
+
+/**
+ * Addresses saved by a website delivery order keep the area apart from the line;
+ * the app shows and sends the line, so the area is added to it when it's missing.
+ */
+const fromRow = (row: AddressRow): Address => {
+  const area = row.area?.trim() ?? '';
+  const hasArea = area !== '' && !row.line.toLowerCase().includes(area.toLowerCase());
+  return {
+    id: row.id,
+    label: row.label,
+    contact: row.contact,
+    line: hasArea ? `${row.line}, ${area}` : row.line,
+    phone: row.phone,
+    isDefault: row.is_default,
+    ...(area ? { area } : {}),
+  };
+};
 
 const hydrateFulfilment = (): PersistedFulfilment | null => parsePersisted(persisted().fulfilment, isPersistedFulfilment);
 
@@ -174,7 +187,7 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
     let live = true;
     supabase
       .from('addresses')
-      .select('id, label, contact, line, phone, is_default')
+      .select(ADDRESS_COLUMNS)
       .order('created_at')
       .then(({ data, error }) => {
         if (!live || error || !data || data.length === 0) return;
@@ -192,8 +205,8 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
     if (userId) {
       const { data, error } = await supabase
         .from('addresses')
-        .insert({ label: next.label, contact: next.contact, line: next.line, phone: next.phone, is_default: next.isDefault })
-        .select('id, label, contact, line, phone, is_default')
+        .insert({ label: next.label, contact: next.contact, line: next.line, phone: next.phone, is_default: next.isDefault, area: next.area?.trim() || null })
+        .select(ADDRESS_COLUMNS)
         .single();
       if (error || !data) return false;
       entry = fromRow(data as AddressRow);
