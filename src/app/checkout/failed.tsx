@@ -51,7 +51,7 @@ export default function PaymentFailedScreen() {
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const cart = useCart();
-  const { mpesaNumber, setPaymentMethod, promo, pointsRedeemed } = useFulfilment();
+  const { mpesaNumber, setPaymentMethod, promo, pointsRedeemed, store } = useFulfilment();
   const session = useSession();
   // Same sum as the M-Pesa screen: promo code and points (10 pts = KES 1) come off the total.
   const pointsUsed = Math.min(pointsRedeemed, session.user?.clubPoints ?? 0);
@@ -174,8 +174,7 @@ export default function PaymentFailedScreen() {
         <Card variant="flat" padding={spacing.lg} style={styles.helperCard}>
           <Icon name="alert" size={16} color="warningDeep" />
           <Txt variant="caption" tint={colors.warningDeep} style={styles.helperText}>
-            Three attempts have been made on this order. For your security, try another payment method or contact
-            Xana Plus Syokimau Dispatch on +254 20 765 4321.
+            {`Three attempts have been made on this order. For your security, try another payment method or call ${store.name} on ${store.phone}.`}
           </Txt>
         </Card>
       ) : null}

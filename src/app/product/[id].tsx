@@ -13,7 +13,6 @@ import {
   NoticePill,
   ProductCard,
   QuantityStepper,
-  Rating,
   Screen,
   SectionHeader,
   Txt,
@@ -271,12 +270,6 @@ function ProductDetail({ product }: { product: Product }) {
   const saving = product.wasPrice !== undefined ? product.wasPrice - product.price : 0;
   const nextTier = tiers.find(priceTier => priceTier.minQty > quantity && priceTier.unitPrice < currentUnitPrice);
   const lineTotal = currentUnitPrice * quantity;
-  const reviewLabel =
-    product.reviewCount === undefined
-      ? undefined
-      : isPharmacy
-        ? `${product.reviewCount} verified patient reviews`
-        : `${product.reviewCount} customer reviews`;
 
   const highlights = product.highlights ?? [];
   const related = relatedProducts(product);
@@ -405,7 +398,7 @@ function ProductDetail({ product }: { product: Product }) {
           <Txt variant="bodySm" color="onSurfaceVariant">
             {isPharmacy && copy?.composition ? `${product.pack} • ${copy.composition}` : product.pack}
           </Txt>
-          {product.rating !== undefined ? <Rating value={product.rating} reviewLabel={reviewLabel} /> : null}
+          {/* No star ratings: there are no real customer reviews yet, and invented ones break App Store rules. */}
         </View>
 
         <View style={styles.priceBlock}>

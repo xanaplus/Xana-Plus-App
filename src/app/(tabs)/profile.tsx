@@ -904,9 +904,9 @@ export default function ProfileRoute() {
         </View>
 
         <Txt variant="caption" color="onSurfaceVariant" style={styles.cardStack}>
-          {`Order text messages go to your account phone number (${
-            user ? maskPhone(user.phone) : '+254 712 ••• •78'
-          }). You can turn them off under Terms & Privacy.`}
+          {user
+            ? `Order text messages go to your account phone number (${maskPhone(user.phone)}).`
+            : 'Log in to get order updates by text message.'}
         </Txt>
       </BottomSheet>
 
