@@ -432,6 +432,10 @@ verify_jwt = false
 verify_jwt = false
 
 # Same as place-order: checks the caller with auth.getUser().
+[functions.app-return]
+# DPO's browser return after paying in the app: no sign-in, it only redirects.
+verify_jwt = false
+
 [functions.delete-account]
 verify_jwt = false
 

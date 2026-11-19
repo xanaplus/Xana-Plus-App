@@ -42,7 +42,9 @@ export const checkPayment = (orderNo: string) => call<DpoCheck>('check', { order
  * (or closes it). Returns null when the page was shown, or an error code for payMessage().
  */
 export async function payOnline(orderNo: string): Promise<string | null> {
-  const returnTo = `${APP_RETURN_PREFIX}${orderNo}`;
+  // DPO breaks `xanaplus://` return links (it opens http://xanaplus://…), so it gets our
+  // https `app-return` function, which sends the phone on to xanaplus://orders/<no>.
+  const returnTo = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/app-return/${orderNo}`;
   type Start = { payUrl?: string; paid?: boolean };
   let started = await call<Start>('start', { orderNo, returnTo });
   // Until the function allows the app's link (APP_RETURN_PREFIXES), DPO returns to the
