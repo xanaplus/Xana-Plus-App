@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
@@ -22,25 +21,24 @@ import {
   Segmented,
   SelectableOption,
   Txt,
-  TopBar,
-  TopBarAction,
 } from '@/components/ui';
-import { useTabBack } from '@/components/nav/use-tab-back';
+import { Masthead } from '@/components/nav/masthead';
 import { ProductAddButton } from '@/components/ui/product-add-button';
 import { ProductPhoto } from '@/components/ui/product-photo';
 import type { BadgeTone, IconName, SegmentedOption } from '@/components/ui';
-import { stores, verticalBySlug } from '@/data/catalog';
+import { verticalBySlug } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
 import { useShelves } from '@/data/live-catalogue';
 import type { CategoryVertical, Product, ProductBadge } from '@/data/types';
 import { discountPercent, formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
 import { inStockAt, useFulfilment, useStoreStock } from '@/store/fulfilment';
-import { useSession } from '@/store/session';
 import { elevation, layout, radius, spacing } from '@/theme';
-import { useTheme, useThemeStyles } from '@/theme/provider';
+import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { PressableScale } from '@/components/ui/pressable-scale';
+import { StoreChooser } from '@/features/store/store-chooser';
+import { useOffer } from '@/lib/use-offer';
 
 /** Sort keys behind the sort row. BC items carry no was-price, rating or "new" badge, so the row sorts on price. */
 type SortKey = 'top' | 'price-asc' | 'price-desc';
@@ -141,12 +139,6 @@ const PHARMACY_ADVICE = {
   subtitle: 'Pharmacy · Ask our pharmacists',
 } as const;
 
-/** Screen 3d delivery band. */
-const WHOLESALE_DELIVERY = {
-  title: 'Free Next-Day Delivery on 10k+',
-  body: 'Direct pallet delivery anywhere across Nairobi & Kiambu counties.',
-} as const;
-
 const SORTERS: Record<SortKey, (a: Product, b: Product) => number> = {
   top: () => 0,
   'price-asc': (a, b) => a.price - b.price,
@@ -192,13 +184,10 @@ const cardBadge = (product: Product, vertical: CategoryVertical): CardBadge | un
  * sub-category grid, the sort/filter row and its product sections.
  */
 export default function CategoriesRoute() {
-  const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
-  const goBack = useTabBack();
   const cart = useCart();
-  const { user } = useSession();
-  const { store, storeId, setStoreId } = useFulfilment();
+  const { storeId } = useFulfilment();
   const { width } = useWindowDimensions();
   // Also scrolls back to the top when the Categories tab is tapped again.
   const scrollRef = useTabScrollTop();
@@ -320,53 +309,19 @@ export default function CategoriesRoute() {
   );
 
   return (
-    <Screen scroll={false} padded={false} contentStyle={styles.screenBody}>
-      <TopBar onBack={goBack}
-        title="Shop"
-        actions={
-          <>
-            <PressableScale
-              accessibilityRole="button"
-              accessibilityLabel={`Shopping at ${store.name}, change store`}
-              onPress={() => setStoreSheetOpen(true)}
-              hitSlop={6}
-              style={styles.locationPill}
-            >
-              <Icon name="map-pin" size={14} color="primaryAccent" />
-              <Txt variant="label" numberOfLines={1}>
-                {store.name.replace('Xana Plus ', '')}
-              </Txt>
-            </PressableScale>
-            <TopBarAction name="bell" accessibilityLabel="Notifications" onPress={() => router.push('/(tabs)/profile')} />
-            <PressableScale
-              accessibilityRole="button"
-              accessibilityLabel={user ? 'Your account' : 'Log in or sign up'}
-              onPress={() => router.push(user ? '/(tabs)/profile' : '/login')}
-              hitSlop={6}
-              style={[styles.account, user ? styles.accountSignedIn : null]}
-            >
-              {user ? (
-                <Txt variant="label" tint={colors.onPrimary}>
-                  {user.name.charAt(0)}
-                </Txt>
-              ) : (
-                <Icon name="user" size={18} color="onSurfaceVariant" />
-              )}
-            </PressableScale>
-          </>
-        }
-      />
-
+    <Screen scroll={false} padded={false} contentStyle={styles.screenBody} edgeToEdgeTop>
       <ScrollView
         ref={scrollRef}
         style={styles.scroll}
         showsVerticalScrollIndicator={false}
-        stickyHeaderIndices={[1]}
+        stickyHeaderIndices={[2]}
         contentContainerStyle={styles.page}
       >
+        <Masthead title="Shop" subtitle="Pharmacy, food and everyday essentials." onChangeStore={() => setStoreSheetOpen(true)} />
+
         <View style={[styles.inset, styles.searchSection]}>
           <SearchBar
-            placeholder="Search bulk packs, groceries & drinks..."
+            placeholder="Search medicines, food and more"
             onPress={() => openSearch()}
             trailingIcon="scan"
             onTrailingPress={() => router.push('/scan')}
@@ -494,19 +449,6 @@ export default function CategoriesRoute() {
           ))
         )}
 
-        {vertical === 'wholesale' ? (
-          <View style={[styles.inset, styles.deliveryBand]}>
-            <View style={styles.deliveryGlyph}>
-              <Icon name="delivery" size={20} color="warningDeep" />
-            </View>
-            <View style={styles.deliveryBody}>
-              <Txt variant="titleLg">{WHOLESALE_DELIVERY.title}</Txt>
-              <Txt variant="bodySm" color="onSurfaceVariant">
-                {WHOLESALE_DELIVERY.body}
-              </Txt>
-            </View>
-          </View>
-        ) : null}
       </ScrollView>
 
       <BottomSheet
@@ -559,25 +501,7 @@ export default function CategoriesRoute() {
         ) : null}
       </BottomSheet>
 
-      <BottomSheet
-        visible={storeSheetOpen}
-        onClose={() => setStoreSheetOpen(false)}
-        title="Shopping at"
-      >
-        {stores.map(entry => (
-          <SelectableOption
-            key={entry.id}
-            title={entry.name}
-            description={`${entry.address} · ${entry.phone}`}
-            indicator="radio"
-            selected={entry.id === storeId}
-            onPress={() => {
-              setStoreId(entry.id);
-              setStoreSheetOpen(false);
-            }}
-          />
-        ))}
-      </BottomSheet>
+      <StoreChooser visible={storeSheetOpen} onClose={() => setStoreSheetOpen(false)} />
     </Screen>
   );
 }
@@ -597,7 +521,6 @@ function InfoBanner({
   subtitleTail?: string;
   onPress?: () => void;
 }) {
-  const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const body = (
     <>
@@ -626,12 +549,7 @@ function InfoBanner({
   );
 
   return (
-    <LinearGradient
-      colors={[colors.mintPale, colors.surface]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.banner}
-    >
+    <View style={styles.banner}>
       {onPress ? (
         <PressableScale accessibilityRole="button" accessibilityLabel={title} onPress={onPress} style={styles.bannerPress}>
           {body}
@@ -639,7 +557,7 @@ function InfoBanner({
       ) : (
         <View style={styles.bannerPress}>{body}</View>
       )}
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -688,15 +606,19 @@ function RailCard({
     product.wasPrice && vertical !== 'wholesale' && vertical !== 'pharmacy'
       ? `Save ${formatKes(product.wasPrice - product.price)}${vertical === 'retail' ? ' vs singles' : ''}`
       : undefined;
-  const bulk = vertical === 'wholesale' && product.wholesalePrice && product.wholesaleMinQty ? product : undefined;
+  const offer = useOffer(product);
+  const bulk = vertical === 'wholesale' && !offer && product.wholesalePrice && product.wholesaleMinQty ? product : undefined;
   const outOfStock = !useStoreStock().inStock(product);
+  // The chosen store's POS offer: its price, the BC price struck, and its saving as the badge.
+  const shownBadge = offer ? { label: `SAVE ${discountPercent(offer.price, product.price)}%`, tone: 'discount' as BadgeTone } : badge;
+  const struck = offer ? product.price : !savingNote ? product.wasPrice : undefined;
 
   return (
     <View style={[styles.railCard, { width }]}>
       <View style={[styles.railImage, { height: width }]}>
         <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="card" />
         <View style={styles.railBadges}>
-          {badge ? <Badge label={badge.label} tone={badge.tone} /> : null}
+          {shownBadge ? <Badge label={shownBadge.label} tone={shownBadge.tone} /> : null}
           {product.rxRequired ? <Badge label="Rx Required" tone="brand" /> : null}
         </View>
       </View>
@@ -720,10 +642,10 @@ function RailCard({
         ) : null}
 
         <View style={styles.priceRow}>
-          <Txt variant="priceLg">{formatKes(product.price)}</Txt>
-          {!savingNote && product.wasPrice ? (
+          <Txt variant="priceLg">{formatKes(offer?.price ?? product.price)}</Txt>
+          {struck ? (
             <Txt variant="priceStrike" color="outline" style={styles.strike}>
-              {formatKes(product.wasPrice)}
+              {formatKes(struck)}
             </Txt>
           ) : null}
         </View>
@@ -829,17 +751,12 @@ const createStyles = (colors: Palette) => StyleSheet.create({
 
   /** Advice strip / age notice: 20pt margin, 12pt below the chip bar. */
   bannerSection: { paddingTop: spacing.sm },
-  banner: {
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.mintEdge,
-    ...elevation.hairline,
-  },
+  banner: { borderRadius: radius.card, backgroundColor: colors.mintSurface },
   bannerPress: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    padding: spacing.md,
+    padding: spacing.lg,
   },
   bannerGlyph: {
     width: 38,
@@ -918,25 +835,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   railFooter: { minHeight: 44 + spacing.sm, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md, marginTop: 'auto', paddingTop: spacing.sm },
   railFooterEnd: { justifyContent: 'flex-end' },
   railStepper: { flex: 1, justifyContent: 'space-between' },
-
-  deliveryBand: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginTop: spacing.xxxl,
-    padding: spacing.lg,
-    borderRadius: radius.lg,
-    backgroundColor: colors.surfaceContainerLow,
-  },
-  deliveryGlyph: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.pill,
-    backgroundColor: colors.amberTint15,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  deliveryBody: { flex: 1, gap: spacing.xxs },
 
   sheetGroup: { gap: spacing.md },
   sheetChips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },

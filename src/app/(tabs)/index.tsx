@@ -2,12 +2,10 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
-import Animated from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Masthead } from '@/components/nav/masthead';
 import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
 import { Icon, LoadState, ProductCard, Screen, SearchBar, SectionHeader, Txt } from '@/components/ui';
-import { useBump } from '@/components/ui/motion';
 import { PressableScale } from '@/components/ui/pressable-scale';
 import { figmaAsset } from '@/data/images';
 import { formatKes } from '@/lib/format';
@@ -45,15 +43,13 @@ const shopParams = (params?: Record<string, string>) => ({ ...params, t: String(
  */
 export default function HomeRoute() {
   const scrollTop = useTabScrollTop();
-  const { colors, resolved } = useTheme();
+  const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const cart = useCart();
-  const bump = useBump(cart.itemCount);
   const { user } = useSession();
   const buyAgain = useBuyAgain();
-  const { store, storeId, storeChosen, mode, address, hasAddress } = useFulfilment();
+  const { store, storeId, storeChosen } = useFulfilment();
   // First open: ask which store they shop from (orders are packed and stock-checked there).
   const [storeSheetOpen, setStoreSheetOpen] = useState(!storeChosen);
   const { width } = useWindowDimensions();
@@ -69,13 +65,6 @@ export default function HomeRoute() {
     return [...own, ...topUp].slice(0, PICKS);
   }, [buyAgain, fresh.data, storeId]);
 
-  // Tell the truth about how orders reach the customer (owner, 18 Nov 2026).
-  const where =
-    mode === 'pickup'
-      ? { lead: 'Collect from', place: shopName }
-      : hasAddress
-        ? { lead: 'Delivering to', place: address.area || address.line.split(',')[0] }
-        : { lead: 'Delivery from', place: shopName };
 
   const openShop = (params?: Record<string, string>) => router.push({ pathname: '/(tabs)/categories', params: shopParams(params) });
   const openNeed = (key: (typeof NEEDS)[number]['key']) =>
@@ -86,62 +75,12 @@ export default function HomeRoute() {
     <Screen scroll={false} padded={false} contentStyle={styles.screenBody} edgeToEdgeTop>
       <ScrollView ref={scrollTop} style={styles.scroll} showsVerticalScrollIndicator={false} contentContainerStyle={styles.page}>
         {/* Who we are, and where you shop. */}
-        <View style={[styles.masthead, { paddingTop: insets.top + spacing.md }]}>
-          <View style={styles.topRow}>
-            <Image
-              source={resolved === 'dark' ? require('@/assets/brand/wordmark-light.png') : require('@/assets/brand/wordmark.png')}
-              style={styles.wordmark}
-              contentFit="contain"
-              accessibilityLabel="Xana Plus"
-            />
-            <View style={styles.topActions}>
-              <PressableScale
-                accessibilityRole="button"
-                accessibilityLabel={user ? 'Your account' : 'Log in or sign up'}
-                onPress={() => router.push(user ? '/(tabs)/profile' : '/login')}
-                hitSlop={4}
-                style={[styles.roundButton, user ? styles.roundButtonSignedIn : null]}
-              >
-                {user ? (
-                  <Txt variant="titleSm" tint={colors.onPrimary}>{user.name.charAt(0)}</Txt>
-                ) : (
-                  <Icon name="user" size={20} color="onSurface" />
-                )}
-              </PressableScale>
-              <PressableScale
-                accessibilityRole="button"
-                accessibilityLabel={cart.itemCount > 0 ? `Cart, ${cart.itemCount} ${cart.itemCount === 1 ? 'item' : 'items'}` : 'Cart'}
-                onPress={() => router.push('/(tabs)/cart')}
-                hitSlop={4}
-                style={styles.roundButton}
-              >
-                <Icon name="cart" size={20} color="onSurface" />
-                {cart.itemCount > 0 ? (
-                  <Animated.View style={[styles.cartBadge, bump]}>
-                    <Txt variant="micro" tint={colors.onSecondary}>{cart.itemCount}</Txt>
-                  </Animated.View>
-                ) : null}
-              </PressableScale>
-            </View>
-          </View>
-
-          <View style={styles.greeting}>
-            <Txt variant="display" style={styles.headline} accessibilityLabel="Good for you, good for home.">{`Good for you,${'\n'}good for home.`}</Txt>
-            <Txt variant="body" color="onSurfaceVariant">Everyday health and fresh groceries, together.</Txt>
-          </View>
-
-          <PressableScale
-            accessibilityRole="button"
-            accessibilityLabel={`${where.lead} ${where.place}. Change store`}
-            onPress={() => setStoreSheetOpen(true)}
-            style={styles.where}
-          >
-            <Icon name={mode === 'pickup' ? 'store' : 'map-pin'} size={16} color="primaryAccent" />
-            <Txt variant="label" color="onSurfaceVariant">{where.lead}</Txt>
-            <Txt variant="label" color="primaryAccent" numberOfLines={1} style={styles.wherePlace}>{where.place}</Txt>
-            <Icon name="chevron-down" size={16} color="primaryAccent" />
-          </PressableScale>
-        </View>
+        <Masthead
+          wordmark
+          title={'Good for you,\ngood for home.'}
+          subtitle="Everyday health and fresh groceries, together."
+          onChangeStore={() => setStoreSheetOpen(true)}
+        />
 
         <View style={[styles.inset, styles.searchRow]}>
           <SearchBar placeholder="Search medicines, food and more" onPress={() => router.push('/search')} style={styles.flex} />
@@ -269,54 +208,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   flex: { flex: 1 },
   inset: { paddingHorizontal: layout.screenMargin },
   section: { paddingHorizontal: layout.screenMargin, marginTop: spacing.xxxl },
-
-  masthead: {
-    paddingHorizontal: layout.screenMargin,
-    paddingBottom: spacing.lg,
-    gap: spacing.lg,
-    backgroundColor: colors.mintSurface,
-    borderBottomLeftRadius: radius.xxl,
-    borderBottomRightRadius: radius.xxl,
-  },
-  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  wordmark: { width: 86, height: 32 },
-  topActions: { flexDirection: 'row', gap: spacing.sm },
-  roundButton: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.surface,
-    ...elevation.hairline,
-  },
-  roundButtonSignedIn: { backgroundColor: colors.primaryContainer },
-  cartBadge: {
-    position: 'absolute',
-    top: 4,
-    right: 2,
-    minWidth: 16,
-    height: 16,
-    paddingHorizontal: 3,
-    borderRadius: radius.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.secondaryContainer,
-  },
-  greeting: { gap: spacing.xs },
-  headline: { fontSize: 26, lineHeight: 32 },
-  where: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    alignSelf: 'flex-start',
-    maxWidth: '100%',
-    minHeight: 40,
-    paddingHorizontal: spacing.md,
-    borderRadius: radius.pill,
-    backgroundColor: colors.surface,
-  },
-  wherePlace: { flexShrink: 1 },
 
   searchRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginTop: spacing.lg },
   scanButton: {
