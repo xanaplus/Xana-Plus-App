@@ -9,7 +9,7 @@ import { Icon, LoadState, ProductCard, Screen, SearchBar, SectionHeader, Txt } f
 import { PressableScale } from '@/components/ui/pressable-scale';
 import { figmaAsset } from '@/data/images';
 import { formatKes } from '@/lib/format';
-import { fetchBranchOffers, groupsForCategory, useLive, useShelves } from '@/data/live-catalogue';
+import { fetchBestSellers, fetchBranchOffers, groupsForCategory, useLive, useShelves } from '@/data/live-catalogue';
 import type { Product } from '@/data/types';
 import { HomeBanner } from '@/features/home/home-banner';
 import { useBuyAgain } from '@/features/orders/buy-again';
@@ -29,7 +29,7 @@ const NEEDS = [
   { key: 'wellness', label: 'Wellness', image: 'vitamins-supplements' },
 ] as const;
 
-/** Tops up "Picked for your week" after the customer's own past orders. */
+/** Fallback top-up for "Picked for your week" until a branch has best sellers. */
 const FRESH = [{ title: 'Fresh', query: { groups: ['fresh-produce', 'dairy-eggs', 'bakery'].flatMap(groupsForCategory) } }];
 const PICKS = 4;
 /** `t` makes the Shop tab re-apply its filter even when it is already open. */
@@ -38,7 +38,8 @@ const shopParams = (params?: Record<string, string>) => ({ ...params, t: String(
 /**
  * Home (owner's design, 18 Nov 2026): who we are and where you shop, three ways in
  * (Shop, Member Plans, Member Benefits), search, the pharmacy / fresh / wellness doors,
- * this shop's real POS offers, picks from your past orders, and today's water check-in.
+ * this shop's real POS offers, picks from your past orders and this shop's best sellers,
+ * and today's water check-in.
  * Nothing here is invented: no member prices until BC has them.
  */
 export default function HomeRoute() {
@@ -58,12 +59,18 @@ export default function HomeRoute() {
   const branch = storeId.toUpperCase();
 
   const offers = useLive(`offers:${branch}`, () => fetchBranchOffers(branch), [] as Product[]);
+  const bestSellers = useLive(`best:${branch}`, () => fetchBestSellers(branch), [] as Product[]);
   const fresh = useShelves(FRESH, 12);
   const picks = useMemo(() => {
-    const own = buyAgain.filter(product => inStockAt(product, storeId) && !product.rxRequired && !product.ageRestricted);
-    const topUp = (fresh.data.Fresh ?? []).filter(product => inStockAt(product, storeId) && !own.some(mine => mine.id === product.id));
-    return [...own, ...topUp].slice(0, PICKS);
-  }, [buyAgain, fresh.data, storeId]);
+    const suitable = (product: Product) => inStockAt(product, storeId) && !product.rxRequired && !product.ageRestricted;
+    const own = buyAgain.filter(suitable);
+    // Best sellers at this shop with a photo first (their order kept), then the fresh shelf as a fallback.
+    const best = bestSellers.data.filter(suitable);
+    const ranked = [...best.filter(product => product.image), ...best.filter(product => !product.image)];
+    const topUp = [...ranked, ...(fresh.data.Fresh ?? []).filter(suitable)];
+    const seen = new Set<string>();
+    return [...own, ...topUp].filter(product => !seen.has(product.id) && Boolean(seen.add(product.id))).slice(0, PICKS);
+  }, [buyAgain, bestSellers.data, fresh.data, storeId]);
 
 
   const openShop = (params?: Record<string, string>) => router.push({ pathname: '/(tabs)/categories', params: shopParams(params) });
@@ -165,10 +172,10 @@ export default function HomeRoute() {
           <WaterCheckIn compact onOpen={() => router.push('/(tabs)/wellness')} />
         </View>
 
-        {/* Past orders first, topped up with fresh lines in stock at this shop (owner, 18 Nov 2026). */}
+        {/* Past orders first, topped up with this shop's best sellers (owner, 18 Nov 2026). */}
         <View style={styles.section}>
           <SectionHeader title="Picked for your week" actionLabel="Browse" onAction={() => openShop()} />
-          {picks.length === 0 && fresh.status !== 'ready' ? <LoadState status={fresh.status} placeholder="rail" onRetry={fresh.retry} /> : null}
+          {picks.length === 0 && bestSellers.status !== 'ready' && fresh.status !== 'ready' ? <LoadState status={fresh.status} placeholder="rail" onRetry={fresh.retry} /> : null}
           <View style={styles.grid}>
             {picks.map(product => (
               <ProductCard

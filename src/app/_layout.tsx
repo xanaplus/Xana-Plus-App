@@ -10,6 +10,7 @@ import { CartToast } from '@/components/nav/cart-toast';
 import { Button, Txt } from '@/components/ui';
 import { EmailPrompt } from '@/features/account/email-sheet';
 import { NamePrompt } from '@/features/account/name-sheet';
+import { connectWellness } from '@/features/wellness/store';
 import { CartProvider } from '@/store/cart';
 import { FulfilmentProvider } from '@/store/fulfilment';
 import { OrdersProvider } from '@/store/orders';
@@ -51,6 +52,16 @@ function TrackingBridge() {
 function PushBridge() {
   const { user } = useSession();
   usePushNotifications(user?.id ?? null);
+  return null;
+}
+
+/** Saves wellness check-ins to the signed-in account when they said yes (Wellness → Today). */
+function WellnessBridge() {
+  const { user, isDemo } = useSession();
+  const userId = user && !isDemo ? user.id : null;
+  useEffect(() => {
+    void connectWellness(userId);
+  }, [userId]);
   return null;
 }
 
@@ -147,6 +158,7 @@ function AppFrame() {
       <EmailPrompt />
       <TrackingBridge />
       <PushBridge />
+      <WellnessBridge />
     </>
   );
 }

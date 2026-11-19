@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Badge, Button, Divider, Icon, IconButton, Txt } from '@/components/ui';
@@ -7,7 +8,7 @@ import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
-import { useWellness, wellness, type Mood, type WeeklyAnswer } from './store';
+import { useWellness, useWellnessSync, wellness, type Mood, type WeeklyAnswer } from './store';
 import { WaterCheckIn } from './water-check-in';
 import { THEMES_ARE_SAMPLE, themeOfTheWeek } from './weekly-themes';
 
@@ -36,7 +37,8 @@ type TodayCardProps = {
 
 /**
  * The Wellness "Today" card: water, how you feel, moving and this week's question in one
- * place, about ten seconds a day. No streaks, no scores; check-ins stay on this phone.
+ * place, about ten seconds a day. No streaks, no scores; check-ins stay on this phone
+ * unless the signed-in customer chooses to save them to their account.
  */
 export function TodayCard({ onAskPharmacist }: TodayCardProps) {
   const styles = useThemeStyles(createStyles);
@@ -150,12 +152,89 @@ export function TodayCard({ onAskPharmacist }: TodayCardProps) {
         </View>
       </View>
 
+      <SavePlace started={today.water > 0 || Boolean(today.mood) || Boolean(today.moved) || Boolean(today.weekly)} />
+    </View>
+  );
+}
+
+/**
+ * Where check-ins are kept (owner, 18 Nov 2026: saved to the account only with consent).
+ * A signed-in customer is asked once, after their first check-in; "Keep on this phone"
+ * works just as well. Saved copies can be stopped and deleted at any time.
+ */
+function SavePlace({ started }: { started: boolean }) {
+  const styles = useThemeStyles(createStyles);
+  const status = useWellnessSync();
+  const [busy, setBusy] = useState(false);
+  const [confirmStop, setConfirmStop] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  const run = async (action: () => Promise<boolean>) => {
+    setBusy(true);
+    setFailed(false);
+    const ok = await action();
+    setBusy(false);
+    setFailed(!ok);
+    if (ok) setConfirmStop(false);
+  };
+  const tryAgain = failed ? <Txt variant="caption" color="error">{"That didn't work. Check your connection and try again."}</Txt> : null;
+
+  if (status === 'unasked' && started) {
+    return (
+      <View style={styles.ask}>
+        <Txt variant="title">Save your check-ins to your account?</Txt>
+        <Txt variant="bodySm" color="onSurfaceVariant">
+          Then they show on any phone you sign in on. Only you can see them, not Xana staff or pharmacists, and you can stop and delete them at any time.
+        </Txt>
+        <View style={styles.askActions}>
+          <Button label="Save to my account" size="sm" loading={busy} onPress={() => void run(wellness.saveToAccount)} />
+          <Button label="Keep on this phone" size="sm" variant="ghost" disabled={busy} onPress={() => void run(wellness.keepOnPhone)} />
+        </View>
+        {tryAgain}
+      </View>
+    );
+  }
+
+  if (status === 'sync') {
+    return (
+      <View style={styles.footer}>
+        <View style={styles.privacy}>
+          <Icon name="lock" size={14} color="onSurfaceVariant" />
+          <Txt variant="caption" color="onSurfaceVariant" style={styles.flex}>
+            Saved to your account. Only you can see them.
+          </Txt>
+          {confirmStop ? null : (
+            <Button label="Stop saving" size="sm" variant="ghost" onPress={() => setConfirmStop(true)} />
+          )}
+        </View>
+        {confirmStop ? (
+          <View style={styles.ask}>
+            <Txt variant="bodySm" color="onSurfaceVariant">
+              This deletes the check-ins saved to your account. The ones on this phone stay.
+            </Txt>
+            <View style={styles.askActions}>
+              <Button label="Stop and delete" size="sm" variant="danger" loading={busy} onPress={() => void run(wellness.stopSaving)} />
+              <Button label="Cancel" size="sm" variant="ghost" disabled={busy} onPress={() => setConfirmStop(false)} />
+            </View>
+          </View>
+        ) : null}
+        {tryAgain}
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.footer}>
       <View style={styles.privacy}>
         <Icon name="lock" size={14} color="onSurfaceVariant" />
         <Txt variant="caption" color="onSurfaceVariant" style={styles.flex}>
           Your check-ins stay on this phone. Nobody at Xana sees them.
         </Txt>
+        {status === 'phone' ? (
+          <Button label="Save to account" size="sm" variant="ghost" loading={busy} onPress={() => void run(wellness.saveToAccount)} />
+        ) : null}
       </View>
+      {tryAgain}
     </View>
   );
 }
@@ -256,4 +335,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     backgroundColor: colors.mintSurface,
   },
   privacy: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.xs },
+  footer: { gap: spacing.sm },
+  ask: { gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, backgroundColor: colors.surfaceContainerLow },
+  askActions: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.sm },
 });

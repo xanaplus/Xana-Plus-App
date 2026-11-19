@@ -338,6 +338,26 @@ const rankWordStarts = (list: Product[], words: string[]): Product[] => {
     .map(entry => entry.product);
 };
 
+/**
+ * This branch's best sellers (receipts in the last 30 days, from BC's till sales, refreshed
+ * nightly by best-sellers-sync), best first. Only items the app sells come back: carrier
+ * bags and anything else outside the catalogue drop out here.
+ */
+export async function fetchBestSellers(branch: string, limit = 40): Promise<Product[]> {
+  const code = branch.toUpperCase().replace(/[^A-Z]/g, '');
+  const { data, error } = await supabase
+    .from('branch_best_sellers')
+    .select('item_no')
+    .eq('branch', code)
+    .order('rank')
+    .limit(limit);
+  if (error) throw error;
+  const order = (data ?? []).map(row => row.item_no as string);
+  const products = await fetchProducts(order);
+  const rank = new Map(order.map((itemNo, index) => [itemNo, index]));
+  return products.sort((a, b) => (rank.get(a.id) ?? 0) - (rank.get(b.id) ?? 0));
+}
+
 /** Catalogue rows for a set of item numbers — e.g. the lines of past orders. */
 export function fetchProducts(itemNos: string[]): Promise<Product[]> {
   if (itemNos.length === 0) return Promise.resolve([]);
