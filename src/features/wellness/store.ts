@@ -2,13 +2,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useSyncExternalStore } from 'react';
 
 /**
- * Daily wellness check-ins (owner, 18 Nov 2026): water, how you feel, and moving.
+ * Daily wellness check-ins (owner, 18 Nov 2026): water, how you feel, moving, and the
+ * question that goes with this week's theme.
  * Health data under Kenya's Data Protection Act 2019, so it stays on this phone: no
  * account sync until the consent step and its private table exist. No streaks, no
  * scores: "Low" is a valid answer.
  */
 export type Mood = 'great' | 'okay' | 'low';
-export type DayCheckIn = { water: number; mood?: Mood; moved?: boolean };
+/** The answer to this week's theme question; "not today" is as fine as "yes". */
+export type WeeklyAnswer = 'yes' | 'notToday';
+export type DayCheckIn = { water: number; mood?: Mood; moved?: boolean; weekly?: WeeklyAnswer };
 type WellnessState = { goal: number; days: Record<string, DayCheckIn> };
 
 const KEY = 'xanaplus.wellness.v1';
@@ -68,6 +71,7 @@ export const wellness = {
   removeGlass: () => updateToday(day => ({ ...day, water: Math.max(0, day.water - 1) })),
   setMood: (mood: Mood) => updateToday(day => ({ ...day, mood: day.mood === mood ? undefined : mood })),
   toggleMoved: () => updateToday(day => ({ ...day, moved: !day.moved })),
+  setWeekly: (answer: WeeklyAnswer) => updateToday(day => ({ ...day, weekly: day.weekly === answer ? undefined : answer })),
   setGoal: (goal: number) => commit({ ...state, goal: Math.min(MAX_GLASSES, Math.max(1, Math.round(goal))) }),
 };
 
