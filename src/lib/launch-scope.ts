@@ -18,4 +18,10 @@ export const LAUNCH_SCOPE = {
   returns: false,
   /** M-Pesa at checkout: simulated until DPO Pay is live (it said "We sent the PIN prompt" and sent nothing). Cash only until then (7 Nov 2026). */
   mpesa: false,
+  /**
+   * "Pay online" (DPO's page: M-Pesa, Airtel Money or card). Real money since 19 Nov 2026.
+   * Off = only staff, pharmacist and admin accounts see it, for the first KSh 5 tests;
+   * place-order refuses it for everyone else unless its APP_PAY_ONLINE secret is `all`.
+   */
+  payOnline: false,
 } as const;

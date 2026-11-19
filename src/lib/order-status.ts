@@ -34,7 +34,7 @@ export type PaymentStatus =
 export type Fulfilment = 'delivery' | 'pickup';
 
 /** How an order was paid: the app's choices, plus online (DPO) and at the counter for pickup. */
-export type OrderPaymentMethod = PaymentMethodId | 'dpo' | 'counter';
+export type OrderPaymentMethod = PaymentMethodId | 'counter';
 
 export const ORDER_STAGES: { status: OrderStatus; label: string }[] = [
   { status: 'received', label: 'Received' },
@@ -91,7 +91,7 @@ export const ORDER_PAYMENT_LABEL: Record<OrderPaymentMethod, string> = {
   mpesa: 'M-Pesa',
   cod: 'Cash on delivery',
   card: 'Card',
-  dpo: 'Paid online',
+  dpo: 'Online (M-Pesa, Airtel Money or card)',
   counter: 'Pay at pickup',
 };
 

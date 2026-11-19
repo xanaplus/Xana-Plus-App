@@ -22,6 +22,12 @@ import { lineTotal, quantityUnitPrice } from '../../../src/lib/quantity-pricing.
  * shared create_order() as the website's do. It then waits for a pharmacist in the
  * admin app (awaiting-approval) and the customer confirms what was approved. Every
  * other order is saved here as before (owner, 23 Oct: keep this function until DPO).
+ *
+ * Pay online (`dpo`, owner 19 Nov 2026): the order also goes through create_order(),
+ * which saves it awaiting-payment (30 minutes, stock held); the app then opens DPO's
+ * page through the shared `dpo` function. Real money: DPO is live. Only staff,
+ * pharmacist and admin accounts may use it until the APP_PAY_ONLINE secret is `all`.
+ * It is a test order only while the shop's online payment switch is off, as on the website.
  */
 
 /** No packaging fee (owner, 15 Oct 2026); the field stays so past orders still show theirs. */
@@ -34,7 +40,9 @@ const KES_PER_POINT_EARNED = 120;
 const MAX_LINES = 100;
 const MAX_QUANTITY = 999;
 
-const PAYMENT_METHODS = ['mpesa', 'cod', 'card'];
+const PAYMENT_METHODS = ['mpesa', 'cod', 'card', 'dpo'];
+/** Accounts that may pay online before it is open to every customer (as the website's web-checkout). */
+const STAFF_ROLES = ['staff', 'pharmacist', 'admin'];
 const SUBSTITUTIONS = ['similar', 'refund', 'call'];
 /** The app's stores, as stock_locations codes. Syokimau is the app's default store. */
 const BRANCHES = ['SYOKIMAU', 'RUIRU'];
@@ -49,6 +57,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** create_order() refusals passed on to the app as they are; anything else is a server error. */
 const SHARED_ERRORS = [
   'unavailable', 'rx_missing', 'not_sold_online', 'age_unconfirmed', 'points_unavailable', 'invalid_branch', 'price_mismatch', 'invalid_order',
+  'checkout_off',
 ];
 
 const text = (value: unknown, max = 300): string | null =>
@@ -82,6 +91,8 @@ Deno.serve(async request => {
   const branchCode = branchFor(text(body.branchCode, 20), storeName);
   const pointsRedeemed = Number.isInteger(body.pointsRedeemed) && body.pointsRedeemed > 0 ? body.pointsRedeemed : 0;
   const promoCode = text(body.promoCode, 30)?.toUpperCase() ?? null;
+  // Only an order paid online is saved as pickup for now; every other app order stays delivery, as before.
+  const pickup = body.fulfilment === 'pickup';
 
   if (
     lines.length === 0 ||
@@ -157,23 +168,31 @@ Deno.serve(async request => {
   // Optional buyer's KRA PIN for the receipt. A malformed one is dropped, never refused (as the POS and create_order() do).
   const kraPin = cleanKraPin(body.kraPin);
 
-  const { data: profile } = await db.from('profiles').select('club_points').eq('id', user.id).maybeSingle();
+  const { data: profile } = await db.from('profiles').select('club_points, role').eq('id', user.id).maybeSingle();
+  const staff = STAFF_ROLES.includes(String(profile?.role ?? ''));
+  const payOnline = paymentMethod === 'dpo';
+  if (payOnline && !staff && Deno.env.get('APP_PAY_ONLINE') !== 'all') return reply(403, { error: 'not_available' });
   const maxRedeemable = Math.min(profile?.club_points ?? 0, Math.floor(total * POINTS_PER_KES));
   if (pointsRedeemed > maxRedeemable) return reply(400, { error: 'points_unavailable' });
 
   const amountDue = Math.max(0, total - pointsRedeemed / POINTS_PER_KES);
   const pointsEarned = Math.floor(amountDue / KES_PER_POINT_EARNED);
 
-  if (hasRx) {
+  if (hasRx || payOnline) {
     // The shared order: stock held at the branch, points taken off, the pharmacy texted (rx_review).
+    let isTest = true;
+    if (payOnline) {
+      const { data: setting } = await db.from('settings').select('value').eq('key', 'online_payment_enabled').maybeSingle();
+      isTest = staff && setting?.value !== true;
+    }
     const { data: created, error: createError } = await db.rpc('create_order', {
       p_user: user.id,
       p_channel: 'app',
       p_order: {
         idempotencyKey: crypto.randomUUID(),
-        // App orders are test orders until M-Pesa is real, like the ones saved below.
-        isTest: true,
-        fulfilment: 'delivery',
+        // Cash orders stay test orders, like the ones saved below; paid online, see isTest above.
+        isTest,
+        fulfilment: payOnline && pickup ? 'pickup' : 'delivery',
         branchCode,
         storeName,
         paymentMethod,
@@ -204,7 +223,8 @@ Deno.serve(async request => {
     // Tell the customer it arrived, as for other app orders: the "order received" SMS
     // (outbox-send owns the wording) and an app notification, which the status trigger
     // only sends on later changes (approved, received…). The order is saved either way.
-    const { data: saved } = await db.from('orders').select('id').eq('order_no', created.orderNo).maybeSingle();
+    // An order paid online is announced once it is paid (the shared sale effects), not now.
+    const { data: saved } = payOnline && !hasRx ? { data: null } : await db.from('orders').select('id').eq('order_no', created.orderNo).maybeSingle();
     if (saved) {
       const { error: smsError } = await db.from('outbox').insert({
         order_id: saved.id,
@@ -215,7 +235,7 @@ Deno.serve(async request => {
     }
     const pushSecret = Deno.env.get('BC_SYNC_SECRET');
     let notified = pushSecret ? 'not_sent' : 'no_secret';
-    if (pushSecret) {
+    if (pushSecret && created.status !== 'awaiting-payment') {
       try {
         const pushed = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/send-push`, {
           method: 'POST',
@@ -241,6 +261,9 @@ Deno.serve(async request => {
       total: Number(created.total),
       amountDue: Number(created.amountDue),
       pointsEarned,
+      expiresAt: created.expiresAt ?? null,
+      paymentStatus: created.paymentStatus ?? null,
+      isTest,
       notified,
     });
   }

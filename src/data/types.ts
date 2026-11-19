@@ -6,7 +6,8 @@
 
 export type FulfilmentMode = 'delivery' | 'pickup';
 
-export type PaymentMethodId = 'mpesa' | 'cod' | 'card';
+/** `dpo` = Pay online on DPO's page (M-Pesa, Airtel Money or card), real money since 19 Nov 2026. */
+export type PaymentMethodId = 'mpesa' | 'cod' | 'card' | 'dpo';
 
 export type ProductBadge = 'discount' | 'fresh' | 'new' | 'organic' | 'bulk';
 

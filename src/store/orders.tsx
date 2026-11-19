@@ -206,6 +206,8 @@ export type PlaceOrderInput = {
   kraPin?: string;
   /** The draft prescription (photos attached) sent with prescription medicines, for the pharmacist. */
   prescriptionId?: string;
+  /** Pickup or delivery; the server keeps pickup only for orders paid online (`dpo`). */
+  fulfilment?: Fulfilment;
 };
 
 /** Error codes `place-order` returns, plus `network` for no reply and `timeout` for a reply that never came. */
@@ -219,6 +221,8 @@ export type PlaceOrderError =
   | 'not_sold_online'
   | 'points_unavailable'
   | 'price_changed'
+  | 'not_available'
+  | 'checkout_off'
   | PromoError
   | 'server_error'
   | 'network'
@@ -267,6 +271,9 @@ export const placeOrderErrorMessage = (error: PlaceOrderError): string => {
       return 'Some items in your cart cannot be ordered online. Remove them and try again.';
     case 'points_unavailable':
       return 'Those Xana Club points are no longer available. Adjust the points and try again.';
+    case 'not_available':
+    case 'checkout_off':
+      return 'Paying online is not available right now. Choose another way to pay. You have not been charged.';
     case 'price_changed':
       return 'A price or wholesale tier has changed. Refresh your basket and review the total before trying again. You have not been charged.';
     case 'network':
@@ -292,6 +299,10 @@ type PlaceOrderReply = {
   platformFee: number;
   total: number;
   pointsEarned: number;
+  /** Orders paid online: how long they wait for payment, and whether they are test orders. */
+  expiresAt?: string | null;
+  paymentStatus?: PaymentStatus | null;
+  isTest?: boolean;
 };
 
 type OrderRow = {
@@ -409,6 +420,8 @@ type OrdersContextValue = {
   orderById: (id: string) => PlacedOrder | undefined;
   /** Saves a new order in Supabase and returns its number, or why it was refused. */
   placeOrder: (input: PlaceOrderInput) => Promise<PlaceOrderResult>;
+  /** What the `dpo` function says about an order paid online (status, payment, collection code). */
+  applyPayment: (orderId: string, state: { status: OrderStatus; paymentStatus: PaymentStatus; collectionCode: string | null; expiresAt: string | null }) => void;
   /** Applies the customer's answer to an out-of-stock item. */
   resolveSubstitution: (orderId: string, preference: SubstitutionPreference) => void;
   advanceStatus: (orderId: string) => void;
@@ -573,6 +586,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         promoCode: input.promoCode,
         kraPin: input.kraPin,
         prescriptionId: input.prescriptionId,
+        fulfilment: input.fulfilment,
       },
     });
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -628,7 +642,10 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       storeName: input.storeName,
       substitution: input.substitution,
       pointsEarned: data.pointsEarned,
-      isTest: true,
+      paymentStatus: data.paymentStatus ?? undefined,
+      expiresAt: data.expiresAt ?? undefined,
+      fulfilment: input.paymentMethod === 'dpo' ? input.fulfilment : undefined,
+      isTest: data.isTest ?? true,
     };
     placedHere.current.add(order.id);
     track('order_placed', { method: input.paymentMethod, lines: input.lines.length, total: data.total, promo: input.promoCode ?? null });
@@ -663,6 +680,13 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     save(STORAGE_KEYS.orders, { userId: userId ?? '', orders });
   }, [orders, userId]);
 
+  const applyPayment = useCallback<OrdersContextValue['applyPayment']>((orderId, state) => {
+    if (!STATUSES.includes(state.status)) return;
+    setOrders(prev => prev.map(o => (o.id === orderId
+      ? { ...o, status: state.status, paymentStatus: state.paymentStatus, collectionCode: state.collectionCode ?? o.collectionCode, expiresAt: state.expiresAt ?? undefined }
+      : o)));
+  }, []);
+
   const orderById = useCallback((id: string) => orders.find(o => o.id === id), [orders]);
 
   const confirmApproved = useCallback(async (orderId: string) => {
@@ -676,8 +700,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<OrdersContextValue>(
-    () => ({ orders, historyLoading, historyError, retryHistory, orderById, placeOrder, resolveSubstitution, advanceStatus, confirmApproved }),
-    [orders, historyLoading, historyError, retryHistory, orderById, placeOrder, resolveSubstitution, advanceStatus, confirmApproved],
+    () => ({ orders, historyLoading, historyError, retryHistory, orderById, placeOrder, applyPayment, resolveSubstitution, advanceStatus, confirmApproved }),
+    [orders, historyLoading, historyError, retryHistory, orderById, placeOrder, applyPayment, resolveSubstitution, advanceStatus, confirmApproved],
   );
 
   return <OrdersContext.Provider value={value}>{children}</OrdersContext.Provider>;

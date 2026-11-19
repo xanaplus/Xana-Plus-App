@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Linking, StyleSheet, View } from 'react-native';
 
 import {
@@ -28,6 +28,10 @@ import { radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { LAUNCH_SCOPE } from '@/lib/launch-scope';
+import { checkPayment, payMessage, payOnline } from '@/lib/dpo';
+
+/** After DPO's page: ask every 5 s for 3 minutes, then every 20 s (as the website's order page). */
+const FAST_CHECKS = 36;
 
 /**
  * Screens 09a / 09b — Order Status, with the Substitution Resolution sheet
@@ -56,9 +60,56 @@ const SUBSTITUTION_OPTIONS: { value: SubstitutionPreference; title: string; desc
 export default function OrderStatusScreen() {
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
-  const { id, placed } = useLocalSearchParams<{ id: string; placed?: string }>();
-  const { orderById, resolveSubstitution, advanceStatus, confirmApproved } = useOrders();
+  const { id, placed, pay } = useLocalSearchParams<{ id: string; placed?: string; pay?: string }>();
+  const { orderById, resolveSubstitution, advanceStatus, confirmApproved, applyPayment } = useOrders();
   const order = orderById(String(id));
+
+  // Paying online (DPO): open the page, then ask the dpo function until the order is paid.
+  const awaitingOnline = order?.paymentMethod === 'dpo' && order.status === 'awaiting-payment';
+  const [paying, setPaying] = useState(false);
+  const [payError, setPayError] = useState<string | null>(null);
+  const [checking, setChecking] = useState(false);
+  const [amountDue, setAmountDue] = useState<number | null>(null);
+  const [checks, setChecks] = useState(0);
+  const autoPaid = useRef(false);
+
+  const startPayment = async () => {
+    if (!order) return;
+    setPaying(true);
+    setPayError(null);
+    const failed = await payOnline(order.id);
+    setPaying(false);
+    if (failed) setPayError(payMessage(failed));
+    else {
+      setChecking(true);
+      setChecks(0);
+    }
+  };
+
+  // Straight from checkout: open DPO's page once.
+  useEffect(() => {
+    if (pay === '1' && awaitingOnline && !autoPaid.current) {
+      autoPaid.current = true;
+      void startPayment();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pay, awaitingOnline]);
+
+  // While the order waits for an online payment, ask the dpo function (which asks DPO).
+  useEffect(() => {
+    const orderNo = order?.id;
+    if (!awaitingOnline || paying || !orderNo) return;
+    const timer = setTimeout(async () => {
+      const result = await checkPayment(orderNo);
+      if (result.ok) {
+        setAmountDue(result.data.amountDue);
+        applyPayment(orderNo, result.data);
+        if (result.data.paymentStatus !== 'pending') setChecking(false);
+      }
+      setChecks(count => count + 1);
+    }, checks === 0 ? 0 : checks < FAST_CHECKS ? 5_000 : 20_000);
+    return () => clearTimeout(timer);
+  }, [awaitingOnline, paying, checks, order?.id, applyPayment]);
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [choice, setChoice] = useState<SubstitutionPreference>('similar');
@@ -82,7 +133,8 @@ export default function OrderStatusScreen() {
   const stage = stages.findIndex(s => s.status === order.status);
   const pickup = order.fulfilment === 'pickup';
   const completed = isCompleted(order.status);
-  const moneyNote = paymentNote(order);
+  const moneyNote = awaitingOnline ? null : paymentNote(order);
+  const payAmount = amountDue ?? order.summary.total;
   // Saved orders (app or website) carry isTest; only the demo's sample baskets don't.
   const sample = order.isTest === undefined;
   const blockedProduct = order.substitutionNeeded ? productById(order.substitutionNeeded.productId) : undefined;
@@ -200,6 +252,31 @@ export default function OrderStatusScreen() {
           <Button label="Advance status (demo)" size="sm" variant="ghost" onPress={() => advanceStatus(order.id)} />
         ) : null}
       </Card>
+
+      {/* Paying online: the website's words (assets/order-rules.js), with Pay now / Pay again. */}
+      {awaitingOnline ? (
+        <Card variant="elevated" padding={spacing.lg} style={styles.alertCard}>
+          <View style={styles.alertHead}>
+            <Icon name="lock" size={16} color="primaryAccent" />
+            <Txt variant="label">{checking && order.paymentStatus === 'pending' ? 'Checking your payment with DPO…' : 'Waiting for payment'}</Txt>
+          </View>
+          <Txt variant="caption" color="onSurfaceVariant">
+            {`${order.paymentStatus === 'failed' ? 'Your last payment did not go through. ' : ''}Pay ${formatKesDecimal(payAmount)} online${order.expiresAt ? ` by ${formatDeadline(order.expiresAt)}` : ''} to confirm your order. We hold the items until then.`}
+          </Txt>
+          {payError ? (
+            <Txt variant="caption" color="error">
+              {payError}
+            </Txt>
+          ) : null}
+          <Button
+            label={order.paymentStatus === 'failed' ? 'Pay again' : `Pay ${formatKesDecimal(payAmount)} now`}
+            icon="lock"
+            iconPosition="leading"
+            loading={paying}
+            onPress={() => void startPayment()}
+          />
+        </Card>
+      ) : null}
 
       {/* The pharmacist approved: the customer accepts the quantities and total. */}
       {order.status === 'approved' ? (

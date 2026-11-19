@@ -57,6 +57,8 @@ const PAYMENT_METHODS: PaymentMethodCopy[] = [
   ...(LAUNCH_SCOPE.mpesa ? [{ id: 'mpesa', title: 'M-Pesa', icon: 'mpesa', showsTotal: true } as PaymentMethodCopy] : []),
   { id: 'cod', title: 'Cash on Delivery', icon: 'cash', showsTotal: false },
 ];
+/** DPO's page: M-Pesa, Airtel Money or card. Real money; staff only until LAUNCH_SCOPE.payOnline. */
+const PAY_ONLINE: PaymentMethodCopy = { id: 'dpo', title: 'Pay online', icon: 'card', showsTotal: true };
 
 
 /** Redemption rate on the "Use Xana Club Points" frame: 10 points = KES 1. */
@@ -132,7 +134,8 @@ export default function CheckoutRoute() {
   /** Items sold out at the chosen store, and another store that has them all. */
   const [otherStore, setOtherStore] = useState<(typeof stores)[number] | null>(null);
 
-  const method = PAYMENT_METHODS.find(entry => entry.id === fulfilment.paymentMethod) ?? PAYMENT_METHODS[0];
+  const paymentMethods = LAUNCH_SCOPE.payOnline || session.isStaff ? [PAY_ONLINE, ...PAYMENT_METHODS] : PAYMENT_METHODS;
+  const method = paymentMethods.find(entry => entry.id === fulfilment.paymentMethod) ?? PAYMENT_METHODS[0];
   const blockedItems = cart.items.filter(item => item.product.rxRequired);
   // Prescription medicines go to the pharmacist with the prescription attached here (owner, 29 Oct 2026).
   const hasRx = blockedItems.length > 0;
@@ -261,6 +264,7 @@ export default function CheckoutRoute() {
       promoCode: promo?.code,
       kraPin: cleanKraPin(kraPinValue) ?? undefined,
       prescriptionId,
+      fulfilment: fulfilment.mode,
     });
     setPlacing(false);
     if (!result.ok) {
@@ -284,7 +288,8 @@ export default function CheckoutRoute() {
       }
       return;
     }
-    if (!hasRx) setPlaced({ method: method.id, total: amountDue, points: clubPoints, orderNo: result.id, pickup: fulfilment.mode === 'pickup' });
+    const payNow = method.id === 'dpo' && !hasRx;
+    if (!hasRx && !payNow) setPlaced({ method: method.id, total: amountDue, points: clubPoints, orderNo: result.id, pickup: fulfilment.mode === 'pickup' });
     cart.clear();
     session.spendPoints(pointsUsed);
     fulfilment.setPointsRedeemed(0);
@@ -299,6 +304,8 @@ export default function CheckoutRoute() {
       rx.reset();
       router.replace({ pathname: '/orders/[id]', params: { id: result.id } });
     }
+    // Paying online: the order page opens DPO's page straight away and then checks the payment.
+    if (payNow) router.replace({ pathname: '/orders/[id]', params: { id: result.id, pay: '1' } });
   };
 
   const applyPromo = async () => {
@@ -549,7 +556,7 @@ export default function CheckoutRoute() {
             <Txt variant="titleLg">Payment Method</Txt>
 
             <View style={styles.methodList}>
-              {PAYMENT_METHODS.map(entry => {
+              {paymentMethods.map(entry => {
                 const selected = method.id === entry.id;
                 const attached = selected && entry.id !== 'card';
                 return (
@@ -587,6 +594,17 @@ export default function CheckoutRoute() {
                           <Icon name="check-circle" size={14} color="primaryAccent" />
                           <Txt variant="caption" color="primaryAccent">
                             The M-Pesa prompt goes to this number
+                          </Txt>
+                        </View>
+                      </View>
+                    ) : null}
+
+                    {selected && entry.id === 'dpo' ? (
+                      <View style={styles.detailPanel}>
+                        <View style={styles.cashNote}>
+                          <Icon name="lock" size={14} color="primaryAccent" />
+                          <Txt variant="caption" color="primaryAccent" style={styles.flex}>
+                            Pay now with M-Pesa, Airtel Money or card on our payment partner DPO’s secure page. Pay within 30 minutes; we hold your items until then.
                           </Txt>
                         </View>
                       </View>
