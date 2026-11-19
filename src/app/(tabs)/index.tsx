@@ -7,14 +7,17 @@ import { Masthead } from '@/components/nav/masthead';
 import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
 import { Icon, LoadState, ProductCard, Screen, SearchBar, SectionHeader, Txt } from '@/components/ui';
 import { PressableScale } from '@/components/ui/pressable-scale';
+import { BULK_WORDS, verticalBySlug } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
 import { formatKes } from '@/lib/format';
-import { fetchBestSellers, fetchBranchOffers, groupsForCategory, useLive, useShelves } from '@/data/live-catalogue';
+import { activePriceTiers } from '@/lib/quantity-pricing';
+import { fetchBestSellers, fetchBranchOffers, useLive, useShelves } from '@/data/live-catalogue';
 import type { Product } from '@/data/types';
 import { HomeBanner } from '@/features/home/home-banner';
 import { useBuyAgain } from '@/features/orders/buy-again';
 import { StoreChooser } from '@/features/store/store-chooser';
 import { WaterCheckIn } from '@/features/wellness/water-check-in';
+import { weekIndex } from '@/features/wellness/weekly-themes';
 import { useCart } from '@/store/cart';
 import { inStockAt, useFulfilment } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
@@ -29,9 +32,57 @@ const NEEDS = [
   { key: 'wellness', label: 'Wellness', image: 'vitamins-supplements' },
 ] as const;
 
-/** Fallback top-up for "Picked for your week" until a branch has best sellers. */
-const FRESH = [{ title: 'Fresh', query: { groups: ['fresh-produce', 'dairy-eggs', 'bakery'].flatMap(groupsForCategory) } }];
-const PICKS = 4;
+/**
+ * "Picked for your week" always mixes the three ways people shop at Xana (Roystone,
+ * 19 Nov 2026): Retail, Wholesale and Deli, two retail picks and one of each other.
+ * Each slot takes the customer's own past buys first, then this shop's best sellers,
+ * then the first shelf of that Shop department, so a slot is never left empty. Every
+ * pick says honestly why it is there, and the choice rotates among the top few each
+ * Monday: different every week, the same all week.
+ */
+type PickKind = 'retail' | 'wholesale' | 'deli';
+const PICK_SLOTS: PickKind[] = ['retail', 'wholesale', 'deli', 'retail'];
+const PICK_LABEL: Record<PickKind, string> = { retail: 'Retail', wholesale: 'Wholesale', deli: 'Deli' };
+/**
+ * Till add-ons (a KSh 5 matchbox, sweets, a mandazi) sell often but make poor picks
+ * (Roystone, 19 Nov 2026): picks start at this price, at the price the shop charges.
+ */
+const MIN_PICK_PRICE = 50;
+/** How many of the top candidates in each group take turns, week by week. */
+const ROTATE_AMONG = 6;
+type PickSource = 'yours' | 'popular' | 'shelf';
+/** Why this pick is here, always from real data. Wholesale says what buying more saves. */
+const pickReason = (product: Product, source: PickSource, kind: PickKind, shop: string, branch: string): string => {
+  const tier = kind === 'wholesale' ? bulkTier(product, branch) : undefined;
+  if (tier) {
+    const saving = Math.round((1 - tier.unitPrice / product.price) * 100);
+    return saving >= 1 ? `Buy ${tier.minQty}+ and save ${saving}%` : `Buy ${tier.minQty}+ for ${formatKes(tier.unitPrice)} each`;
+  }
+  if (source === 'yours') return 'You bought this before';
+  if (source === 'popular') return `Popular at ${shop}`;
+  return kind === 'deli' ? 'Fresh from our kitchen' : kind === 'wholesale' ? 'Bulk pack for shops and kitchens' : `In stock at ${shop}`;
+};
+const BULK_NAME = new RegExp(String.raw`\b(${BULK_WORDS.join('|')})\b`, 'i');
+/**
+ * BC's quantity price: the first step that is cheaper than buying one. Not claimed when
+ * the shop has an offer on the item, so the line never contradicts the price on the card.
+ */
+const bulkTier = (product: Product, branch?: string) =>
+  branch && product.offers?.[branch]
+    ? undefined
+    : activePriceTiers(product.priceTiers).find(tier => tier.unitPrice < product.price);
+/** Share saved per unit at the first bulk step, 0 when there is none. */
+const bulkSaving = (product: Product, branch: string) => {
+  const tier = bulkTier(product, branch);
+  return tier ? 1 - tier.unitPrice / product.price : 0;
+};
+/** DEL items are Deli; a quantity price or a bulk pack (as the Shop's Wholesale aisle) is Wholesale. */
+const pickKind = (product: Product): PickKind =>
+  product.category === 'deli-cold-cuts' ? 'deli' : bulkTier(product) || BULK_NAME.test(product.name) ? 'wholesale' : 'retail';
+const FALLBACK_SHELVES = (['retail', 'wholesale', 'deli'] as const).map(kind => {
+  const section = verticalBySlug(kind).sections.find(entry => kind !== 'deli' || entry.query.deli === 'only') ?? verticalBySlug(kind).sections[0];
+  return { title: kind, query: section.query };
+});
 /** `t` makes the Shop tab re-apply its filter even when it is already open. */
 const shopParams = (params?: Record<string, string>) => ({ ...params, t: String(Date.now()) });
 
@@ -59,23 +110,46 @@ export default function HomeRoute() {
   const branch = storeId.toUpperCase();
 
   const offers = useLive(`offers:${branch}`, () => fetchBranchOffers(branch), [] as Product[]);
-  const bestSellers = useLive(`best:${branch}`, () => fetchBestSellers(branch), [] as Product[]);
-  const fresh = useShelves(FRESH, 12);
+  const bestSellers = useLive(`best:${branch}`, () => fetchBestSellers(branch, 200), [] as Product[]);
+  const fallback = useShelves(FALLBACK_SHELVES, 12);
   const picks = useMemo(() => {
-    const suitable = (product: Product) => inStockAt(product, storeId) && !product.rxRequired && !product.ageRestricted;
-    const own = buyAgain.filter(suitable);
-    // Best sellers at this shop with a photo first (their order kept), then the fresh shelf as a fallback.
+    const suitable = (product: Product) =>
+      inStockAt(product, storeId) && !product.rxRequired && !product.ageRestricted &&
+      (product.offers?.[branch]?.price ?? product.price) >= MIN_PICK_PRICE;
+    // Best sellers with a photo first, their order kept.
     const best = bestSellers.data.filter(suitable);
     const ranked = [...best.filter(product => product.image), ...best.filter(product => !product.image)];
-    const topUp = [...ranked, ...(fresh.data.Fresh ?? []).filter(suitable)];
-    const seen = new Set<string>();
-    return [...own, ...topUp].filter(product => !seen.has(product.id) && Boolean(seen.add(product.id))).slice(0, PICKS);
-  }, [buyAgain, bestSellers.data, fresh.data, storeId]);
+    const week = weekIndex();
+    const used = new Set<string>();
+    const chosen: { product: Product; kind: PickKind; reason: string }[] = [];
+    PICK_SLOTS.forEach((kind, slot) => {
+      const groups: [PickSource, Product[]][] = [
+        ['yours', buyAgain.filter(suitable)],
+        ['popular', ranked],
+        ['shelf', (fallback.data[kind] ?? []).filter(suitable)],
+      ];
+      for (const [source, list] of groups) {
+        let options = list.filter(product => pickKind(product) === kind && !used.has(product.id));
+        // Wholesale: of the 30 most popular, the ones where buying more saves the most.
+        if (kind === 'wholesale' && source === 'popular') {
+          options = options.slice(0, 30).sort((a, b) => bulkSaving(b, branch) - bulkSaving(a, branch));
+        }
+        options = options.slice(0, ROTATE_AMONG);
+        if (options.length === 0) continue;
+        // A different turn each week; items already picked above are skipped.
+        const product = options[(week + slot) % options.length];
+        used.add(product.id);
+        chosen.push({ product, kind, reason: pickReason(product, source, kind, shopName, branch) });
+        return;
+      }
+    });
+    return chosen;
+  }, [buyAgain, bestSellers.data, fallback.data, storeId, shopName, branch]);
 
 
   const openShop = (params?: Record<string, string>) => router.push({ pathname: '/(tabs)/categories', params: shopParams(params) });
   const openNeed = (key: (typeof NEEDS)[number]['key']) =>
-    key === 'pharmacy' ? router.push('/(tabs)/pharmacy') : key === 'wellness' ? router.push('/(tabs)/wellness') : openShop({ vertical: 'groceries' });
+    key === 'pharmacy' ? router.push('/(tabs)/pharmacy') : key === 'wellness' ? router.push('/(tabs)/wellness') : openShop({ vertical: 'groceries', focus: 'fresh-produce' });
   const needWidth = (contentWidth - spacing.md * 2) / 3;
 
   return (
@@ -172,20 +246,47 @@ export default function HomeRoute() {
           <WaterCheckIn compact onOpen={() => router.push('/(tabs)/wellness')} />
         </View>
 
-        {/* Past orders first, topped up with this shop's best sellers (owner, 18 Nov 2026). */}
+        {/* Retail, Wholesale and Deli: past orders first, then this shop's best sellers. */}
         <View style={styles.section}>
-          <SectionHeader title="Picked for your week" actionLabel="Browse" onAction={() => openShop()} />
-          {picks.length === 0 && bestSellers.status !== 'ready' && fresh.status !== 'ready' ? <LoadState status={fresh.status} placeholder="rail" onRetry={fresh.retry} /> : null}
+          <SectionHeader title="Picked for your week" />
+          <Txt variant="bodySm" color="onSurfaceVariant">{`Retail, wholesale and deli at ${shopName}. New picks every Monday.`}</Txt>
+          {picks.length === 0 && bestSellers.status !== 'ready' && fallback.status !== 'ready' ? <LoadState status={fallback.status} placeholder="rail" onRetry={fallback.retry} /> : null}
           <View style={styles.grid}>
-            {picks.map(product => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                width={(contentWidth - layout.gutter) / 2}
-                quantity={cart.quantityOf(product.id)}
-                onPress={() => router.push(`/product/${product.id}`)}
-                onAdd={() => cart.add(product.id)}
-              />
+            {picks.map(({ product, kind, reason }) => (
+              <View key={product.id} style={styles.pick}>
+                <PressableScale
+                  accessibilityRole="link"
+                  accessibilityLabel={`Shop ${PICK_LABEL[kind]}`}
+                  onPress={() => openShop({ vertical: kind })}
+                  hitSlop={6}
+                  style={styles.pickKind}
+                >
+                  <Txt variant="label" color="primaryAccent">{PICK_LABEL[kind]}</Txt>
+                  <Icon name="chevron-right" size={12} color="primaryAccent" />
+                </PressableScale>
+                <Txt variant="caption" color="onSurfaceVariant" numberOfLines={1} style={styles.pickReason}>{reason}</Txt>
+                <ProductCard
+                  product={product}
+                  width={(contentWidth - layout.gutter) / 2}
+                  quantity={cart.quantityOf(product.id)}
+                  onPress={() => router.push(`/product/${product.id}`)}
+                  onAdd={() => cart.add(product.id)}
+                />
+              </View>
+            ))}
+          </View>
+          {/* Browse goes to the right department, never to search. */}
+          <View style={styles.browseRow}>
+            {(['retail', 'wholesale', 'deli'] as const).map(kind => (
+              <PressableScale
+                key={kind}
+                accessibilityRole="link"
+                accessibilityLabel={`Browse ${PICK_LABEL[kind]}`}
+                onPress={() => openShop({ vertical: kind })}
+                style={styles.browseChip}
+              >
+                <Txt variant="label" color="primaryAccent">{`Browse ${PICK_LABEL[kind]}`}</Txt>
+              </PressableScale>
             ))}
           </View>
         </View>
@@ -250,6 +351,17 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   rail: { gap: spacing.md, paddingHorizontal: layout.screenMargin, paddingTop: spacing.sm },
   railBleed: { marginHorizontal: -layout.screenMargin },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: layout.gutter, marginTop: spacing.sm },
+  pick: { gap: spacing.xxs },
+  pickReason: { marginBottom: spacing.xxs },
+  pickKind: { flexDirection: 'row', alignItems: 'center', gap: spacing.xxs, alignSelf: 'flex-start', minHeight: 24 },
+  browseRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.md },
+  browseChip: {
+    minHeight: 40,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.pill,
+    backgroundColor: colors.mintSurface,
+  },
 
   notice: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
 });

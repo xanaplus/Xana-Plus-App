@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -8,7 +9,7 @@ import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
-import { useWellness, useWellnessSync, wellness, type Mood, type WeeklyAnswer } from './store';
+import { NUDGE_AFTER_DAYS, useWellness, useWellnessSync, wellness, type Mood, type WeeklyAnswer } from './store';
 import { WaterCheckIn } from './water-check-in';
 import { THEMES_ARE_SAMPLE, themeOfTheWeek } from './weekly-themes';
 
@@ -42,6 +43,7 @@ type TodayCardProps = {
  */
 export function TodayCard({ onAskPharmacist }: TodayCardProps) {
   const styles = useThemeStyles(createStyles);
+  const router = useRouter();
   const { colors } = useTheme();
   const { today, goal } = useWellness();
   const mood = MOODS.find(entry => entry.id === today.mood);
@@ -120,12 +122,21 @@ export function TodayCard({ onAskPharmacist }: TodayCardProps) {
 
       <Divider />
 
-      <View style={styles.block}>
+      {/* This month's health theme: its own amber panel, so it reads as the month's focus. */}
+      <View style={styles.themePanel}>
         <View style={styles.themeHead}>
-          <Badge label={theme.name} tone="info" />
+          <View style={styles.themeIcon}>
+            <Icon name="heartPulse" size={20} color="secondaryAccent" />
+          </View>
+          <View style={styles.flex}>
+            <Txt variant="headline" accessibilityRole="header">{theme.name}</Txt>
+            <Txt variant="caption" color="secondaryAccent">{`Week ${theme.week + 1} of 4`}</Txt>
+          </View>
           {THEMES_ARE_SAMPLE ? <Badge label="Sample" tone="neutral" /> : null}
         </View>
-        <Txt variant="title">{theme.question}</Txt>
+        <Txt variant="bodySm" color="onSurfaceVariant">{theme.intro}</Txt>
+
+        <Txt variant="title" style={styles.themeQuestion}>{theme.question}</Txt>
         <View style={styles.answers} accessibilityRole="radiogroup">
           {WEEKLY.map(entry => {
             const selected = today.weekly === entry.id;
@@ -147,12 +158,22 @@ export function TodayCard({ onAskPharmacist }: TodayCardProps) {
           })}
         </View>
         <View style={styles.tip}>
-          <Icon name="sparkle" size={16} color="primaryAccent" />
-          <Txt variant="bodySm" color="onSurfaceVariant" style={styles.flex}>{theme.tip}</Txt>
+          <Icon name="sparkle" size={16} color="secondaryAccent" />
+          <Txt variant="bodySm" style={styles.flex}>{theme.tip}</Txt>
         </View>
+        <Button
+          label="Tips and shop picks"
+          icon="chevron-right"
+          iconPosition="trailing"
+          variant="outline"
+          size="sm"
+          accessibilityLabel={`${theme.name}: all tips and shop picks`}
+          onPress={() => router.push('/health-theme')}
+          style={styles.themeButton}
+        />
       </View>
 
-      <SavePlace started={today.water > 0 || Boolean(today.mood) || Boolean(today.moved) || Boolean(today.weekly)} />
+      <SavePlace />
     </View>
   );
 }
@@ -162,9 +183,14 @@ export function TodayCard({ onAskPharmacist }: TodayCardProps) {
  * A signed-in customer is asked once, after their first check-in; "Keep on this phone"
  * works just as well. Saved copies can be stopped and deleted at any time.
  */
-function SavePlace({ started }: { started: boolean }) {
+function SavePlace() {
   const styles = useThemeStyles(createStyles);
+  const router = useRouter();
   const status = useWellnessSync();
+  const { daysLogged, nudgeHidden } = useWellness();
+  // Asked as soon as there is something to save: after the first check-in, or straight
+  // after signing in from the note below with check-ins already on the phone.
+  const started = daysLogged > 0;
   const [busy, setBusy] = useState(false);
   const [confirmStop, setConfirmStop] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -223,8 +249,27 @@ function SavePlace({ started }: { started: boolean }) {
     );
   }
 
+  const signedOut = status === 'signedOut';
+  // Signed out with a few days logged: a gentle, helpful note, never a pop-up. "Not now" = a week.
+  const showNudge = signedOut && daysLogged >= NUDGE_AFTER_DAYS && !nudgeHidden;
+
   return (
     <View style={styles.footer}>
+      {showNudge ? (
+        <View style={styles.nudge}>
+          <View style={styles.nudgeHead}>
+            <Icon name="shield" size={18} color="primaryAccent" />
+            <Txt variant="title" style={styles.flex}>Keep your check-ins safe</Txt>
+          </View>
+          <Txt variant="bodySm" color="onSurfaceVariant">
+            {`You've checked in on ${daysLogged} days, and they're only on this phone. If you change or reset it, they're gone. Sign in to keep them on your account, where only you can see them.`}
+          </Txt>
+          <View style={styles.askActions}>
+            <Button label="Sign in" size="sm" icon="user" iconPosition="leading" onPress={() => router.push('/login')} />
+            <Button label="Not now" size="sm" variant="ghost" onPress={wellness.hideSignInNudge} />
+          </View>
+        </View>
+      ) : null}
       <View style={styles.privacy}>
         <Icon name="lock" size={14} color="onSurfaceVariant" />
         <Txt variant="caption" color="onSurfaceVariant" style={styles.flex}>
@@ -234,6 +279,9 @@ function SavePlace({ started }: { started: boolean }) {
           <Button label="Save to account" size="sm" variant="ghost" loading={busy} onPress={() => void run(wellness.saveToAccount)} />
         ) : null}
       </View>
+      {signedOut && !showNudge ? (
+        <Button label="Sign in to keep them on any phone" icon="user" iconPosition="leading" variant="tonal" size="sm" onPress={() => router.push('/login')} style={styles.signInButton} />
+      ) : null}
       {tryAgain}
     </View>
   );
@@ -312,7 +360,18 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   },
   checkboxOn: { backgroundColor: colors.primaryContainer, borderColor: colors.primaryContainer },
 
-  themeHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  themePanel: { gap: spacing.sm, padding: spacing.lg, borderRadius: radius.xl, backgroundColor: colors.amberTint15 },
+  themeHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  themeIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: radius.pill,
+    backgroundColor: colors.amberTint15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  themeQuestion: { marginTop: spacing.sm },
+  themeButton: { alignSelf: 'flex-start', marginTop: spacing.xs },
   answers: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xs },
   answer: {
     flex: 1,
@@ -320,7 +379,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     justifyContent: 'center',
     minHeight: 44,
     borderRadius: radius.pill,
-    backgroundColor: colors.surfaceContainerLow,
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.outlineSoft30,
   },
@@ -332,10 +391,13 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     marginTop: spacing.xs,
     padding: spacing.md,
     borderRadius: radius.lg,
-    backgroundColor: colors.mintSurface,
+    backgroundColor: colors.surface,
   },
   privacy: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.xs },
   footer: { gap: spacing.sm },
   ask: { gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, backgroundColor: colors.surfaceContainerLow },
   askActions: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.sm },
+  nudge: { gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, backgroundColor: colors.mintSurface },
+  nudgeHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  signInButton: { alignSelf: 'flex-start' },
 });

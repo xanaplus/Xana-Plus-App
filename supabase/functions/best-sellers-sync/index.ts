@@ -18,7 +18,7 @@ const BRANCHES: { location: string; prefix: string }[] = [
   { location: 'RUIRU', prefix: 'RUI' },
 ];
 const WINDOW_DAYS = 30;
-const KEEP = 60;
+const KEEP = 200;
 const PAGE_SIZE = 5000;
 const MAX_PAGES = 40;
 

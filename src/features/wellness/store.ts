@@ -15,7 +15,14 @@ export type Mood = 'great' | 'okay' | 'low';
 export type WeeklyAnswer = 'yes' | 'notToday';
 /** `at` = when this day last changed on this phone (ms), so the newer copy wins when syncing. */
 export type DayCheckIn = { water: number; mood?: Mood; moved?: boolean; weekly?: WeeklyAnswer; at?: number };
-type WellnessState = { goal: number; days: Record<string, DayCheckIn> };
+/** `nudgeHiddenUntil`: "Not now" on the sign-in note hides it until this day (YYYY-MM-DD, Nairobi). */
+type WellnessState = {
+  goal: number;
+  days: Record<string, DayCheckIn>;
+  nudgeHiddenUntil?: string;
+  /** The sign-up sheet after logging a glass: last day it showed, and how often it was waved off. */
+  signUpAsk?: { lastShown?: string; dismissed: number };
+};
 
 /**
  * signedOut: on this phone only, nothing to ask. loading: checking the account.
@@ -28,6 +35,12 @@ const KEEP_DAYS = 31;
 export const DEFAULT_WATER_GOAL = 8;
 const MAX_GLASSES = 20;
 const PUSH_DELAY_MS = 1500;
+/** The sign-in note shows once the phone holds check-ins from this many days. */
+export const NUDGE_AFTER_DAYS = 3;
+const NUDGE_SNOOZE_DAYS = 7;
+/** The sign-up sheet: at most once every 3 days, and never again after 3 "Maybe later"s. */
+const ASK_EVERY_DAYS = 3;
+const ASK_MAX_DISMISSALS = 3;
 
 let state: WellnessState = { goal: DEFAULT_WATER_GOAL, days: {} };
 let sync: { status: SyncStatus; userId: string | null } = { status: 'signedOut', userId: null };
@@ -54,7 +67,7 @@ function load(): Promise<void> {
       if (!raw) return;
       const parsed: unknown = JSON.parse(raw);
       // A change made before the file finished loading wins over the file.
-      if (isState(parsed)) state = { goal: parsed.goal, days: { ...parsed.days, ...state.days } };
+      if (isState(parsed)) state = { ...parsed, days: { ...parsed.days, ...state.days } };
     })
     .catch(() => undefined)
     .finally(notify);
@@ -64,7 +77,7 @@ function load(): Promise<void> {
 function commit(next: WellnessState) {
   // Keep the last month only.
   const keys = Object.keys(next.days).sort().slice(-KEEP_DAYS);
-  state = { goal: next.goal, days: Object.fromEntries(keys.map(key => [key, next.days[key]])) };
+  state = { ...next, days: Object.fromEntries(keys.map(key => [key, next.days[key]])) };
   notify();
   AsyncStorage.setItem(KEY, JSON.stringify(state)).catch(() => undefined);
 }
@@ -234,14 +247,39 @@ export const wellness = {
   saveToAccount: () => choose(true),
   keepOnPhone: () => choose(false),
   stopSaving,
+  /** "Not now" on the sign-in note: hidden for a week. */
+  /** Call after logging a glass: true when the sign-up sheet should show now (and records it). */
+  takeSignUpAsk: (): boolean => {
+    if (sync.status !== 'signedOut') return false;
+    const ask = state.signUpAsk ?? { dismissed: 0 };
+    if (ask.dismissed >= ASK_MAX_DISMISSALS) return false;
+    const today = todayKey();
+    if (ask.lastShown) {
+      const days = (Date.parse(today) - Date.parse(ask.lastShown)) / 86_400_000;
+      if (days < ASK_EVERY_DAYS) return false;
+    }
+    commit({ ...state, signUpAsk: { ...ask, lastShown: today } });
+    return true;
+  },
+  /** "Maybe later" on the sign-up sheet. */
+  dismissSignUpAsk: () => {
+    const ask = state.signUpAsk ?? { dismissed: 0 };
+    commit({ ...state, signUpAsk: { ...ask, dismissed: ask.dismissed + 1 } });
+  },
+  hideSignInNudge: () => commit({ ...state, nudgeHiddenUntil: todayKey(new Date(Date.now() + NUDGE_SNOOZE_DAYS * 86_400_000)) }),
 };
+
+const hasAnything = (day: DayCheckIn) => day.water > 0 || Boolean(day.mood) || Boolean(day.moved) || Boolean(day.weekly);
 
 /** Today's check-in and the water goal, shared by Home and the Wellness tab. */
 export function useWellness() {
   useEffect(() => { void load(); }, []);
   const current = useSyncExternalStore(subscribe, snapshot, snapshot);
   const today = current.days[todayKey()] ?? { water: 0 };
-  return { today, goal: current.goal };
+  /** Days with any check-in on this phone (the last month). */
+  const daysLogged = Object.values(current.days).filter(hasAnything).length;
+  const nudgeHidden = typeof current.nudgeHiddenUntil === 'string' && current.nudgeHiddenUntil > todayKey();
+  return { today, goal: current.goal, daysLogged, nudgeHidden };
 }
 
 /** Whether check-ins are saved to the account, for the Today card. */

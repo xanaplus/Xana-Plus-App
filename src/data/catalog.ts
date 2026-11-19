@@ -637,7 +637,7 @@ export type VerticalSection = { title: string; subtitle: string; categorySlug: s
 const shelf = (slug: string, nameHas?: string[]): LiveQuery => ({ groups: groupsForCategory(slug), nameHas });
 
 /** Names that mark a bulk pack in BC ("... Box 12 pcs", "... Outer", "Bale x 6Pc"). */
-const BULK_WORDS = ['box', 'outer', 'carton', 'ctn', 'bale', 'crate'];
+export const BULK_WORDS = ['box', 'outer', 'carton', 'ctn', 'bale', 'crate'];
 
 export type VerticalDefinition = {
   slug: CategoryVertical;

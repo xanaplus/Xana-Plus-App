@@ -15,7 +15,8 @@ export default function LoginRoute() {
     if (router.canGoBack()) router.back();
     else router.replace('/(tabs)');
   };
-  const flow = useSignInFlow(() => router.replace('/(tabs)'));
+  // Signed in: back to where they came from (Wellness, Cart, Pharmacy...), as retail apps do.
+  const flow = useSignInFlow(leave);
 
   return (
     <Screen

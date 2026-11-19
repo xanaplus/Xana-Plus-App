@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, Icon, IconButton, Txt } from '@/components/ui';
@@ -7,6 +8,7 @@ import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
+import { SignUpSheet } from './sign-up-sheet';
 import { useWellness, wellness } from './store';
 import { WaterGlass } from './water-glass';
 
@@ -23,10 +25,20 @@ export function WaterCheckIn({ compact = false, onOpen }: WaterCheckInProps) {
   const { today, goal } = useWellness();
   const reached = today.water >= goal;
 
+  const [askOpen, setAskOpen] = useState(false);
+  const askTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const log = () => {
     wellness.addGlass();
     if (today.water + 1 === goal) successFeedback();
     else selectFeedback();
+    // Signed out: offer an account once the glass has filled (the store limits how often).
+    if (!askTimer.current && wellness.takeSignUpAsk()) {
+      askTimer.current = setTimeout(() => {
+        askTimer.current = null;
+        setAskOpen(true);
+      }, 900);
+    }
   };
 
   const line = reached
@@ -37,6 +49,7 @@ export function WaterCheckIn({ compact = false, onOpen }: WaterCheckInProps) {
 
   return (
     <View style={[styles.card, compact ? styles.cardCompact : null]}>
+      <SignUpSheet visible={askOpen} onClose={() => setAskOpen(false)} />
       <WaterGlass value={today.water} goal={goal} size={compact ? 52 : 76} />
       <View style={styles.body}>
         {compact ? (
