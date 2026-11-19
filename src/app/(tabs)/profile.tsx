@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Linking, Pressable, StyleSheet, Switch, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
+import { appVersionLabel } from '@/lib/app-version';
 import { useTabBack } from '@/components/nav/use-tab-back';
 import {
   BottomSheet,
@@ -615,6 +616,11 @@ export default function ProfileRoute() {
           </Txt>
         </View>
       ) : null}
+
+      {/* Which copy this is, so testers can see a quick update has loaded (19 Nov 2026). */}
+      <Txt variant="caption" color="onSurfaceVariant" align="center">
+        {appVersionLabel()}
+      </Txt>
 
       <BottomSheet
         visible={sheet === 'orders'}
