@@ -41,6 +41,7 @@ vi.mock('@/store/orders', () => ({
 vi.mock('@/store/cart', () => ({
   useCart: () => ({ add: vi.fn(), summary: { wholesaleSavings: mocks.cartSavings } }), unitPrice: product => product.price,
 }));
+vi.mock('@/components/nav/masthead', () => ({ Masthead: () => null }));
 vi.mock('@/lib/app-version', () => ({ appVersionLabel: () => 'Version 1.0.0 · test' }));
 vi.mock('@/store/fulfilment', () => ({ useFulfilment: () => mocks.fulfilment }));
 
