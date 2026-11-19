@@ -21,8 +21,14 @@ type MastheadProps = {
   subtitle?: string;
   /** Home leads with the xana wordmark; other tabs with their own name. */
   wordmark?: boolean;
-  /** Opens the store chooser. */
-  onChangeStore: () => void;
+  /** Opens the store chooser; without it the "Collect from" row is left out. */
+  onChangeStore?: () => void;
+  /** Screens reached from Home rather than the tab bar (Pharmacy, Profile) get a back button. */
+  onBack?: () => void;
+  /** Replaces the account and cart buttons (Profile's settings); `null` shows none. */
+  actions?: ReactNode;
+  /** The Cart tab leaves out its own cart button. */
+  hideCart?: boolean;
   children?: ReactNode;
 };
 
@@ -31,7 +37,7 @@ type MastheadProps = {
  * wordmark or tab name, account and cart buttons, a big heading, and where the
  * customer's order comes from ("Collect from Syokimau").
  */
-export function Masthead({ title, subtitle, wordmark = false, onChangeStore, children }: MastheadProps) {
+export function Masthead({ title, subtitle, wordmark = false, onChangeStore, onBack, actions, hideCart = false, children }: MastheadProps) {
   const styles = useThemeStyles(createStyles);
   const { colors, resolved } = useTheme();
   const router = useRouter();
@@ -53,6 +59,11 @@ export function Masthead({ title, subtitle, wordmark = false, onChangeStore, chi
   return (
     <View style={[styles.masthead, { paddingTop: insets.top + spacing.md }]}>
       <View style={styles.topRow}>
+        {onBack ? (
+          <PressableScale accessibilityRole="button" accessibilityLabel="Back" onPress={onBack} hitSlop={4} style={styles.roundButton}>
+            <Icon name="arrow-left" size={20} color="onSurface" />
+          </PressableScale>
+        ) : null}
         {wordmark ? (
           <Image
             source={resolved === 'dark' ? require('@/assets/brand/wordmark-light.png') : require('@/assets/brand/wordmark.png')}
@@ -61,9 +72,9 @@ export function Masthead({ title, subtitle, wordmark = false, onChangeStore, chi
             accessibilityLabel="Xana Plus"
           />
         ) : (
-          <Txt variant="display" accessibilityRole="header" style={styles.heading}>{title}</Txt>
+          <Txt variant="display" accessibilityRole="header" style={[styles.heading, styles.flex]}>{title}</Txt>
         )}
-        <View style={styles.actions}>
+        {actions !== undefined ? <View style={styles.actions}>{actions}</View> : <View style={styles.actions}>
           <PressableScale
             accessibilityRole="button"
             accessibilityLabel={user ? 'Your account' : 'Log in or sign up'}
@@ -73,7 +84,7 @@ export function Masthead({ title, subtitle, wordmark = false, onChangeStore, chi
           >
             {user ? <Txt variant="titleSm" tint={colors.onPrimary}>{user.name.charAt(0)}</Txt> : <Icon name="user" size={20} color="onSurface" />}
           </PressableScale>
-          <PressableScale
+          {hideCart ? null : <PressableScale
             accessibilityRole="button"
             accessibilityLabel={cart.itemCount > 0 ? `Cart, ${cart.itemCount} ${cart.itemCount === 1 ? 'item' : 'items'}` : 'Cart'}
             onPress={() => router.push('/(tabs)/cart')}
@@ -86,8 +97,8 @@ export function Masthead({ title, subtitle, wordmark = false, onChangeStore, chi
                 <Txt variant="micro" tint={colors.onSecondary}>{cart.itemCount}</Txt>
               </Animated.View>
             ) : null}
-          </PressableScale>
-        </View>
+          </PressableScale>}
+        </View>}
       </View>
 
       {wordmark || subtitle ? (
@@ -99,7 +110,7 @@ export function Masthead({ title, subtitle, wordmark = false, onChangeStore, chi
         </View>
       ) : null}
 
-      <PressableScale
+      {onChangeStore ? <PressableScale
         accessibilityRole="button"
         accessibilityLabel={`${where.lead} ${where.place}. Change store`}
         onPress={onChangeStore}
@@ -109,7 +120,7 @@ export function Masthead({ title, subtitle, wordmark = false, onChangeStore, chi
         <Txt variant="label" color="onSurfaceVariant">{where.lead}</Txt>
         <Txt variant="label" color="primaryAccent" numberOfLines={1} style={styles.wherePlace}>{where.place}</Txt>
         <Icon name="chevron-down" size={16} color="primaryAccent" />
-      </PressableScale>
+      </PressableScale> : null}
       {children}
     </View>
   );
@@ -125,7 +136,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     borderBottomRightRadius: radius.xxl,
   },
   topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md },
-  wordmark: { width: 86, height: 32 },
+  flex: { flex: 1 },
+  wordmark: { width: 86, height: 32, marginRight: 'auto' },
   heading: { fontSize: 26, lineHeight: 32, flexShrink: 1 },
   actions: { flexDirection: 'row', gap: spacing.sm },
   roundButton: {

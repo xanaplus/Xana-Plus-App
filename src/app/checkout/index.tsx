@@ -859,7 +859,7 @@ export default function CheckoutRoute() {
             <View style={styles.financials}>
               <SummaryLine label="Items Subtotal" value={formatKes(cart.summary.itemsSubtotal)} />
               {cart.summary.wholesaleSavings > 0 ? (
-                <SummaryLine label="Quantity Wholesale Savings" value={`-${formatKes(cart.summary.wholesaleSavings)}`} tone="primary" />
+                <SummaryLine label="Offer and wholesale savings" value={`-${formatKes(cart.summary.wholesaleSavings)}`} tone="primary" />
               ) : null}
               <SummaryLine
                 label={`Delivery Fee (${storeArea} / Ruiru)`}

@@ -6,6 +6,7 @@ import { Linking, Pressable, StyleSheet, Switch, View, type StyleProp, type View
 import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
 import { appVersionLabel } from '@/lib/app-version';
 import { useTabBack } from '@/components/nav/use-tab-back';
+import { Masthead } from '@/components/nav/masthead';
 import {
   BottomSheet,
   Button,
@@ -20,8 +21,6 @@ import {
   Segmented,
   MpesaLogo,
   SelectableOption,
-  TopBar,
-  TopBarAction,
   Txt,
   type IconName,
   type SegmentedOption,
@@ -433,8 +432,17 @@ export default function ProfileRoute() {
   const activeSlot = slot.mode === mode ? slot : (deliverySlots.find(entry => entry.mode === mode) ?? slot);
 
   return (
-    <Screen padded={false} contentStyle={styles.content} scrollRef={scrollTop}>
-      <TopBar title="Profile" onBack={goBack} actions={<TopBarAction name="settings" accessibilityLabel="Settings" onPress={() => setSheet('settings')} />} />
+    <Screen padded={false} contentStyle={styles.content} scrollRef={scrollTop} edgeToEdgeTop>
+      <Masthead
+        title="Your account"
+        subtitle={user ? 'Orders, addresses, points and settings.' : 'Log in to see your orders and points.'}
+        onBack={goBack}
+        actions={
+          <PressableScale accessibilityRole="button" accessibilityLabel="Settings" onPress={() => setSheet('settings')} hitSlop={4} style={styles.settingsButton}>
+            <Icon name="settings" size={20} color="onSurface" />
+          </PressableScale>
+        }
+      />
 
       {preferencesSaving || preferencesError ? (
         <PreferencesSyncFeedback
@@ -1300,6 +1308,15 @@ function Stat({ value, label, onPress }: { value: string; label: string; onPress
 
 const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.lg },
+  settingsButton: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surface,
+    ...elevation.hairline,
+  },
   inset: { marginHorizontal: layout.screenMargin },
   section: { gap: spacing.sm },
   /** Multi-line card bodies (sheets) need their own vertical rhythm. */

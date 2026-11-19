@@ -16,19 +16,20 @@ import {
   SearchBar,
   SectionHeader,
   SelectableOption,
-  TopBar,
-  TopBarAction,
   Txt,
   type IconName,
 } from '@/components/ui';
 import { useTabBack } from '@/components/nav/use-tab-back';
+import { Masthead } from '@/components/nav/masthead';
+import { StoreChooser } from '@/features/store/store-chooser';
 import { ProductAddButton } from '@/components/ui/product-add-button';
 import { ProductPhoto } from '@/components/ui/product-photo';
 import { pharmacyQuickActions, verticalBySlug } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
 import { useShelves } from '@/data/live-catalogue';
 import type { Product } from '@/data/types';
-import { formatKes } from '@/lib/format';
+import { discountPercent, formatKes } from '@/lib/format';
+import { useOffer } from '@/lib/use-offer';
 import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
@@ -153,6 +154,7 @@ export default function PharmacyRoute() {
   const [choice, setChoice] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [askOpen, setAskOpen] = useState(false);
+  const [storeSheetOpen, setStoreSheetOpen] = useState(false);
 
   const vertical = verticalBySlug('pharmacy');
   const sections = filter.categorySlugs
@@ -202,25 +204,19 @@ export default function PharmacyRoute() {
   };
 
   return (
-    <Screen padded={false} contentStyle={styles.content} scrollRef={scrollTop}>
+    <Screen padded={false} contentStyle={styles.content} scrollRef={scrollTop} edgeToEdgeTop>
       {/* App bar, search field and quick actions sit flush; groups below are spaced. */}
       <View>
-        <TopBar onBack={goBack}
-          title={vertical.label}
-          subtitle={store.name}
-          actions={
-            <>
-              <TopBarAction name="search" accessibilityLabel="Search medicines and wellness products" onPress={() => router.push('/search')} />
-              <PressableScale accessibilityRole="button" accessibilityLabel="Account" onPress={() => router.push('/profile')} style={styles.avatar}>
-                <Icon name="profile" size={18} color="onPrimary" />
-              </PressableScale>
-            </>
-          }
+        <Masthead
+          title="Pharmacy"
+          subtitle={`Licensed pharmacy at ${store.name.replace('Xana Plus ', '')}. Prescription orders are checked by a pharmacist.`}
+          onBack={goBack}
+          onChangeStore={() => setStoreSheetOpen(true)}
         />
 
         <View style={styles.inset}>
           <SearchBar
-            placeholder="Search medicines & wellness products..."
+            placeholder="Search medicines and wellness products"
             onPress={() => router.push('/search')}
             trailingIcon="scan"
             onTrailingPress={() => router.push('/scan')}
@@ -369,6 +365,7 @@ export default function PharmacyRoute() {
         ) : null}
       </BottomSheet>
       <PharmacistWhatsAppSheet visible={askOpen} onClose={() => setAskOpen(false)} />
+      <StoreChooser visible={storeSheetOpen} onClose={() => setStoreSheetOpen(false)} />
     </Screen>
   );
 }
@@ -391,12 +388,17 @@ function PharmacyCard({
   const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const image = figmaAsset(product.image);
+  const offer = useOffer(product);
 
   return (
     <View style={styles.card}>
       <View style={styles.cardImageWrap}>
         <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="card" />
-        {product.rxRequired ? <Badge label="Rx Required" tone="brand" style={styles.rxBadge} /> : null}
+        {product.rxRequired ? (
+          <Badge label="Rx Required" tone="brand" style={styles.rxBadge} />
+        ) : offer ? (
+          <Badge label={`SAVE ${discountPercent(offer.price, product.price)}%`} tone="discount" style={styles.rxBadge} />
+        ) : null}
       </View>
 
       <View style={styles.cardText}>
@@ -413,7 +415,7 @@ function PharmacyCard({
 
       <View style={styles.cardFooter}>
         <Txt variant="titleLg" tint={colors.primaryAccent} style={styles.cardPrice}>
-          {formatKes(product.price)}
+          {formatKes(offer?.price ?? product.price)}
         </Txt>
         {quantity > 0 ? (
           <View style={styles.qtyPill}>

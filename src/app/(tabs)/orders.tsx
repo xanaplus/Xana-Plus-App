@@ -12,18 +12,17 @@ import {
   Icon,
   Screen,
   Segmented,
-  TopBar,
   Txt,
   type BadgeTone,
   type SegmentedOption,
 } from '@/components/ui';
-import { useTabBack } from '@/components/nav/use-tab-back';
+import { Masthead } from '@/components/nav/masthead';
 import { productById } from '@/data/catalog';
 import { formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
 import { isActiveOrder, isCompleted, stagesFor, type OrderStatus } from '@/lib/order-status';
 import { useOrders, type PlacedOrder } from '@/store/orders';
-import { radius, spacing } from '@/theme';
+import { layout, radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
@@ -47,8 +46,6 @@ const STATUS_META: Record<OrderStatus, { label: string; tone: BadgeTone }> = {
 export default function OrderHistoryScreen() {
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
-  // A tab since 19 Nov 2026 (owner's five tabs): back returns to where the customer came from.
-  const goBack = useTabBack();
   const cart = useCart();
   const { orders, historyLoading, historyError, retryHistory } = useOrders();
   const [filter, setFilter] = useState<Filter>('all');
@@ -82,12 +79,12 @@ export default function OrderHistoryScreen() {
   };
 
   return (
-    <Screen padded contentStyle={styles.content}>
-      <TopBar
-        title="My Orders"
-        subtitle={`${orders.length} ${orders.length === 1 ? 'order' : 'orders'}`}
-        onBack={goBack}
+    <Screen padded={false} contentStyle={styles.screenBody} edgeToEdgeTop>
+      <Masthead
+        title="Your orders"
+        subtitle={orders.length === 0 ? 'From the app and the website, in one place.' : `${orders.length} ${orders.length === 1 ? 'order' : 'orders'} from the app and the website.`}
       />
+      <View style={styles.content}>
 
       <Segmented options={options} value={filter} onChange={setFilter} style={styles.filter} />
 
@@ -187,12 +184,14 @@ export default function OrderHistoryScreen() {
           );
         })
       )}
+      </View>
     </Screen>
   );
 }
 
 const createStyles = (colors: Palette) => StyleSheet.create({
-  content: { gap: spacing.md, paddingBottom: spacing.giant },
+  screenBody: { paddingTop: spacing.none },
+  content: { gap: spacing.md, paddingTop: spacing.lg, paddingHorizontal: layout.screenMargin, paddingBottom: spacing.giant },
   filter: { marginTop: spacing.sm },
   syncNotice: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, padding: spacing.md, borderRadius: radius.md },
   syncNoticeError: { backgroundColor: colors.amberTint15 },

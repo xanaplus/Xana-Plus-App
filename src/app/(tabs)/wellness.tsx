@@ -2,9 +2,9 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { useTabBack } from '@/components/nav/use-tab-back';
+import { Masthead } from '@/components/nav/masthead';
 import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
-import { Badge, Button, Divider, Icon, IconButton, Screen, TopBar, Txt, type IconName } from '@/components/ui';
+import { Badge, Button, Divider, Icon, IconButton, Screen, Txt, type IconName } from '@/components/ui';
 import { PressableScale } from '@/components/ui/pressable-scale';
 import { PharmacistWhatsAppSheet } from '@/features/pharmacy/whatsapp-sheet';
 import { useWellness, wellness, type Mood } from '@/features/wellness/store';
@@ -39,22 +39,15 @@ export default function WellnessRoute() {
   const styles = useThemeStyles(createStyles);
   const { colors } = useTheme();
   const router = useRouter();
-  const goBack = useTabBack();
   const scrollTop = useTabScrollTop();
   const { today, goal } = useWellness();
   const [askOpen, setAskOpen] = useState(false);
   const mood = MOODS.find(entry => entry.id === today.mood);
 
   return (
-    <Screen scroll={false} padded={false} contentStyle={styles.screenBody}>
-      <TopBar title="Wellness" onBack={goBack} />
+    <Screen scroll={false} padded={false} contentStyle={styles.screenBody} edgeToEdgeTop>
       <ScrollView ref={scrollTop} showsVerticalScrollIndicator={false} contentContainerStyle={styles.page}>
-        <View style={styles.intro}>
-          <Txt variant="display">Wellness, your way.</Txt>
-          <Txt variant="body" color="onSurfaceVariant">
-            A moment for you. Little check-ins can help you notice how your day is going.
-          </Txt>
-        </View>
+        <Masthead title="Wellness" subtitle="Wellness, your way. A moment for you: little check-ins can help you notice how your day is going." />
 
         <View style={styles.section}>
           <WaterCheckIn />
@@ -210,7 +203,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   screenBody: { paddingTop: spacing.none, paddingBottom: spacing.none },
   page: { paddingBottom: spacing.colossal },
   flex: { flex: 1 },
-  intro: { paddingHorizontal: layout.screenMargin, paddingTop: spacing.lg, gap: spacing.xs },
   section: { paddingHorizontal: layout.screenMargin, marginTop: spacing.xxxl, gap: spacing.sm },
   headRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
 

@@ -18,10 +18,9 @@ import {
   Screen,
   SelectableOption,
   Txt,
-  TopBar,
-  TopBarAction,
 } from '@/components/ui';
-import { useTabBack } from '@/components/nav/use-tab-back';
+import { Masthead } from '@/components/nav/masthead';
+import { StoreChooser } from '@/features/store/store-chooser';
 import { ProductPhoto } from '@/components/ui/product-photo';
 import { stores } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
@@ -50,12 +49,12 @@ export default function CartRoute() {
   const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
-  const goBack = useTabBack();
   const cart = useCart();
   const { slot, store, storeId, setStoreId } = useFulfilment();
   const { inStock, storeShortName } = useStoreStock();
   const { user } = useSession();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [storeSheetOpen, setStoreSheetOpen] = useState(false);
 
   const isEmpty = cart.itemCount === 0;
   const inCart = new Set(cart.lines.map(l => l.productId));
@@ -83,6 +82,7 @@ export default function CartRoute() {
     <Screen
       scrollRef={scrollTop}
       padded={false}
+      edgeToEdgeTop
       contentStyle={styles.content}
       footer={
         isEmpty ? undefined : (
@@ -97,41 +97,12 @@ export default function CartRoute() {
         )
       }
     >
-      <TopBar onBack={goBack}
-        title="Cart Checkout"
-        actions={
-          <>
-            <TopBarAction name="search" accessibilityLabel="Search products" onPress={() => router.push('/search')} />
-            {/* A guest gets a plain account icon, not a letter that looks like a signed-in account. */}
-            {user ? (
-              <PressableScale accessibilityRole="button" accessibilityLabel="Account" onPress={() => router.push('/profile')}>
-                <View style={styles.avatar}>
-                  <Txt variant="label" tint={colors.onPrimary}>
-                    {user.name.charAt(0)}
-                  </Txt>
-                </View>
-              </PressableScale>
-            ) : (
-              <TopBarAction name="user" accessibilityLabel="Account" onPress={() => router.push('/profile')} />
-            )}
-          </>
-        }
+      <Masthead
+        title="Cart"
+        subtitle={isEmpty ? 'Nothing in your cart yet.' : formatCartCounts(cart.itemCount, cart.unitCount)}
+        onChangeStore={() => setStoreSheetOpen(true)}
+        hideCart
       />
-
-      <View style={[styles.inset, styles.masthead]}>
-        <View style={styles.mastheadText}>
-          <Txt variant="display">Cart</Txt>
-          <Txt variant="bodySm" color="onSurfaceVariant">
-            ({formatCartCounts(cart.itemCount, cart.unitCount)})
-          </Txt>
-        </View>
-        <View style={styles.expressChip}>
-          <View style={styles.expressDot} />
-          <Txt variant="labelSm" color="primaryAccent">
-            {store.name.replace('Xana Plus ', '')}
-          </Txt>
-        </View>
-      </View>
 
       {isEmpty ? (
         <View style={[styles.inset, styles.emptyBlock]}>
@@ -205,7 +176,7 @@ export default function CartRoute() {
           <View style={[styles.inset, styles.savingsNote]}>
             <Icon name="check-circle" size={16} color="primaryAccent" />
             <Txt variant="labelSm" color="primaryAccent">
-              Wholesale pricing applied. You’re saving {formatKes(cart.summary.wholesaleSavings)}
+              Offer and wholesale prices applied. You’re saving {formatKes(cart.summary.wholesaleSavings)}
             </Txt>
           </View>
         ) : null}
@@ -250,7 +221,7 @@ export default function CartRoute() {
       <Card variant="elevated" padding={spacing.lg} style={[styles.inset, styles.summary]}>
         <SummaryRow label={`Items Subtotal (${formatCartCounts(cart.itemCount, cart.unitCount)})`} value={formatKes(cart.summary.itemsSubtotal)} />
         {cart.summary.wholesaleSavings > 0 ? (
-          <SummaryRow label="Wholesale savings already included" value={formatKes(cart.summary.wholesaleSavings)} tone="primary" />
+          <SummaryRow label="Savings already included" value={formatKes(cart.summary.wholesaleSavings)} tone="primary" />
         ) : null}
         <SummaryRow
           label={`Delivery Fee (${store.name.replace('Xana Plus ', '')})`}
@@ -300,6 +271,7 @@ export default function CartRoute() {
           />
         ))}
       </BottomSheet>
+      <StoreChooser visible={storeSheetOpen} onClose={() => setStoreSheetOpen(false)} />
     </Screen>
   );
 }
@@ -361,16 +333,16 @@ function CartLineRow({
         ) : null}
         <View style={styles.lineFooter}>
           <View style={styles.linePrices}>
-            <Txt variant="titleLg">{formatKes(price * quantity)}</Txt>
+            <Txt variant="titleLg" numberOfLines={1}>{formatKes(price * quantity)}</Txt>
             {wholesale ? (
-              <>
+              <View style={styles.lineUnit}>
                 <Txt variant="caption" color="onSurfaceVariant">
                   {formatKes(price)} ea
                 </Txt>
                 <Txt variant="caption" color="outline" style={styles.strike}>
                   {formatKes(product.price)}
                 </Txt>
-              </>
+              </View>
             ) : null}
           </View>
           <QuantityStepper quantity={quantity} onIncrement={onIncrement} onDecrement={onDecrement} size="compact" />
@@ -420,7 +392,9 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   lineHead: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
   lineTitle: { flex: 1 },
   lineFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm, marginTop: spacing.xxs },
-  linePrices: { flexDirection: 'row', alignItems: 'baseline', gap: spacing.sm, flexShrink: 1 },
+  // Total on top, the unit price and the crossed-out price under it, so neither wraps.
+  linePrices: { gap: spacing.xxs, flexShrink: 1 },
+  lineUnit: { flexDirection: 'row', alignItems: 'baseline', gap: spacing.xs },
   strike: { textDecorationLine: 'line-through' },
   soldOut: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, backgroundColor: colors.errorContainer },
   soldOutBody: { flex: 1, gap: spacing.xs },
