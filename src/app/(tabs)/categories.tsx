@@ -1,6 +1,8 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import Animated, { useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
 import {
@@ -13,7 +15,6 @@ import {
   Icon,
   LoadState,
   NoticePill,
-  ProductCard,
   QuantityStepper,
   Screen,
   SearchBar,
@@ -31,12 +32,14 @@ import { figmaAsset } from '@/data/images';
 import { useShelves } from '@/data/live-catalogue';
 import type { CategoryVertical, Product, ProductBadge } from '@/data/types';
 import { discountPercent, formatKes } from '@/lib/format';
+import { activePriceTiers } from '@/lib/quantity-pricing';
 import { useCart } from '@/store/cart';
 import { inStockAt, useFulfilment, useStoreStock } from '@/store/fulfilment';
 import { elevation, layout, radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { PressableScale } from '@/components/ui/pressable-scale';
+import { ShopCard } from '@/components/ui/shop-card';
 import { StoreChooser } from '@/features/store/store-chooser';
 import { useOffer } from '@/lib/use-offer';
 
@@ -102,7 +105,8 @@ const SUBCATEGORY_COLUMNS: Record<CategoryVertical, number> = {
 };
 
 /** Frames that lay section products out as a two-column card grid. */
-const GRID_VERTICALS: CategoryVertical[] = ['retail', 'groceries', 'household'];
+// Wholesale joined the grid on 19 Nov 2026: the same card as Retail, plus its quantity prices.
+const GRID_VERTICALS: CategoryVertical[] = ['retail', 'groceries', 'household', 'wholesale'];
 
 /** Wholesale's frame labels the section action "View all"; every other aisle says "See All". */
 const SECTION_ACTION: Partial<Record<CategoryVertical, string>> = { wholesale: 'View all' };
@@ -155,7 +159,8 @@ const applyFilters = (products: Product[], filters: FilterState, pharmacyOnly: b
       if (pharmacyOnly && filters.scope === 'otc') return product.rxRequired !== true;
       return true;
     })
-    .sort(SORTERS[filters.sort]);
+    // Stable sort: in stock at the chosen shop first, then the sort row's order (19 Nov 2026).
+    .sort((a, b) => Number(inStockAt(b, filters.storeId)) - Number(inStockAt(a, filters.storeId)) || SORTERS[filters.sort](a, b));
 
 const unitNoun = (product: Product): string => UNIT_NOUNS.find(([pattern]) => pattern.test(product.pack))?.[1] ?? 'pack';
 
@@ -167,6 +172,10 @@ const cardBadge = (product: Product, vertical: CategoryVertical): CardBadge | un
       tone: 'warning',
     };
   }
+  // Wholesale is the quantity price itself (19 Nov 2026): say what buying more costs each.
+  const tier = vertical === 'wholesale' ? activePriceTiers(product.priceTiers).find(step => step.unitPrice < product.price) : undefined;
+  // Whole shillings on the label, rounded up so it never shows less than the till charges.
+  if (tier) return { label: `${tier.minQty}+ at ${formatKes(Math.ceil(tier.unitPrice))} each`, tone: 'warning' };
   if (vertical === 'retail' || vertical === 'wholesale') {
     const descriptor = (product.pack.split('·')[0] ?? product.pack).trim();
     return { label: descriptor, tone: 'warning' };
@@ -194,6 +203,17 @@ export default function CategoriesRoute() {
   /** Home's Top Categories open a department and, where it has one, that category's product row. */
   const { vertical: verticalParam, focus, t: openedAt } = useLocalSearchParams<{ vertical?: string; focus?: string; t?: string }>();
   const chipBarHeight = useRef(0);
+  // The chip bar sticks just below the phone's status bar (clock, battery), not under it
+  // (Roystone's phone, 19 Nov 2026). The sticky block starts a status bar's height above the
+  // chips with a see-through top, so when it pins to the top the chips sit below the clock;
+  // a plain strip then covers the status bar so products don't scroll behind the clock.
+  const statusBar = useSafeAreaInsets().top;
+  const scrollY = useSharedValue(0);
+  const stickyY = useSharedValue(Number.MAX_SAFE_INTEGER);
+  const onScroll = useAnimatedScrollHandler(event => {
+    scrollY.value = event.contentOffset.y;
+  });
+  const scrim = useAnimatedStyle(() => ({ opacity: scrollY.value >= stickyY.value ? 1 : 0 }));
   const sectionOffsets = useRef<Record<string, number>>({});
   const pendingFocus = useRef<string | null>(null);
 
@@ -218,7 +238,8 @@ export default function CategoriesRoute() {
   const gridCardWidth = Math.floor((contentWidth - layout.gutter) / 2);
   const railCardWidth = Math.floor((contentWidth - layout.gutter) / RAIL_PEEK);
 
-  const shelves = useShelves(definition.sections, showsGrid ? GRID_SHELF_SIZE : RAIL_SHELF_SIZE);
+  // Only what the chosen shop has on hand (19 Nov 2026): BC's total stock includes other locations.
+  const shelves = useShelves(definition.sections, showsGrid ? GRID_SHELF_SIZE : RAIL_SHELF_SIZE, { branch: storeId });
   const sections = definition.sections
     .map(section => ({ ...section, products: applyFilters(shelves.data[section.title] ?? [], filters, isPharmacy) }))
     .filter(section => section.products.length > 0);
@@ -310,8 +331,10 @@ export default function CategoriesRoute() {
 
   return (
     <Screen scroll={false} padded={false} contentStyle={styles.screenBody} edgeToEdgeTop>
-      <ScrollView
+      <Animated.ScrollView
         ref={scrollRef}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
         style={styles.scroll}
         showsVerticalScrollIndicator={false}
         stickyHeaderIndices={[2]}
@@ -329,8 +352,21 @@ export default function CategoriesRoute() {
         </View>
 
         {/* Sticky vertical switcher: the body below always changes under it. */}
-        <View style={styles.chipBar} onLayout={event => (chipBarHeight.current = event.nativeEvent.layout.height)}>
-          <Segmented options={VERTICAL_OPTIONS} value={vertical} onChange={selectVertical} scrollable style={styles.chipTrack} />
+        {/* Plain Views only: React Native's sticky header moves this View's style onto its own
+            wrapper, which can't take an animated style (that crashed on the phone, 19 Nov).
+            */}
+        <View
+          // As a style, not a prop: the sticky wrapper takes this View's style, so taps on the
+          // see-through top still reach the search bar underneath.
+          style={{ marginTop: -statusBar, paddingTop: statusBar, pointerEvents: 'box-none' }}
+          onLayout={event => {
+            chipBarHeight.current = event.nativeEvent.layout.height;
+            stickyY.value = event.nativeEvent.layout.y;
+          }}
+        >
+          <View style={styles.chipBar}>
+            <Segmented options={VERTICAL_OPTIONS} value={vertical} onChange={selectVertical} scrollable style={styles.chipTrack} />
+          </View>
         </View>
 
         <View style={[styles.inset, styles.bannerSection]}>
@@ -418,6 +454,7 @@ export default function CategoriesRoute() {
                       key={product.id}
                       product={product}
                       width={gridCardWidth}
+                      showQuantityPrices={vertical === 'wholesale'}
                       quantity={cart.quantityOf(product.id)}
                       savingNote={
                         /carton|crate|box/i.test(section.title) && product.wasPrice
@@ -449,7 +486,8 @@ export default function CategoriesRoute() {
           ))
         )}
 
-      </ScrollView>
+      </Animated.ScrollView>
+      <Animated.View pointerEvents="none" style={[styles.statusScrim, { height: statusBar }, scrim]} />
 
       <BottomSheet
         visible={filtersOpen}
@@ -693,6 +731,7 @@ function GridCard({
   width,
   quantity,
   savingNote,
+  showQuantityPrices,
   onPress,
   onAdd,
 }: {
@@ -700,13 +739,14 @@ function GridCard({
   width: number;
   quantity: number;
   savingNote?: string;
+  showQuantityPrices?: boolean;
   onPress: () => void;
   onAdd: () => void;
 }) {
   const styles = useThemeStyles(createStyles);
   return (
     <View style={{ width }}>
-      <ProductCard product={product} width={width} quantity={quantity} onPress={onPress} onAdd={onAdd} />
+      <ShopCard product={product} quantity={quantity} showQuantityPrices={showQuantityPrices} onPress={onPress} onAdd={onAdd} />
       {quantity > 0 ? (
         <Txt variant="labelSm" color="onSurfaceVariant" style={styles.gridQty}>
           {`${quantity} ${unitNoun(product)}`}
@@ -747,6 +787,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
 
   searchSection: { paddingTop: spacing.lg },
   chipBar: { backgroundColor: colors.background, paddingVertical: spacing.md },
+  statusScrim: { position: 'absolute', top: 0, left: 0, right: 0, backgroundColor: colors.background },
   chipTrack: { paddingHorizontal: layout.screenMargin, gap: spacing.sm },
 
   /** Advice strip / age notice: 20pt margin, 12pt below the chip bar. */

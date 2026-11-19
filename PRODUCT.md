@@ -31,7 +31,7 @@ The only app that puts a licensed Xana pharmacy and a full supermarket in one ba
 ## Capabilities and Constraints
 
 - Live: catalogue with real photos, per-branch stock, quantity (wholesale) prices, cart, checkout (cash; Pay online for staff accounts since 19 Nov 2026), orders with live status, prescription upload, Xana Club points (to be replaced by the POS balance), push.
-- Owner, 18 Nov 2026: five tabs (Home, Shop, Wellness, Orders, Cart); Home is the first screen; "Picked for your week" = the customer's past orders, then the branch's best sellers; never prescription-only or age-restricted items on Home.
+- Five tabs: Home, Shop, Pharmacy, Wellness, Cart (19 Nov 2026: Pharmacy got a tab because it was too hard to find; Orders moved into the account; first set 18 Nov had Orders instead of Pharmacy). Owner, 18 Nov 2026: Home is the first screen; "Picked for your week" = the customer's past orders, then the branch's best sellers; never prescription-only or age-restricted items on Home.
 - Membership (owner): Associate free, Member KSh 200/month, KSh 2,000/year, VAT included. Payment, member prices (BC customer price group) and POS points sync are NOT built: they wait on BC, finance and William. Until then show plans as information and never show a "Member price" or "You save" that isn't real.
 - Wellness check-ins (water, mood, movement) are health data under Kenya's Data Protection Act 2019: kept on the phone unless the user agrees to save them to the account. Community Groups stay a preview until pharmacists moderate.
 - Undecided: free health check details (owner), membership BC item numbers (finance), how redeemed points show on KRA receipts (finance).

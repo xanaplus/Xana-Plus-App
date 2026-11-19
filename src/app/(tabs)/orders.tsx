@@ -17,6 +17,7 @@ import {
   type SegmentedOption,
 } from '@/components/ui';
 import { Masthead } from '@/components/nav/masthead';
+import { useTabBack } from '@/components/nav/use-tab-back';
 import { productById } from '@/data/catalog';
 import { formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
@@ -44,6 +45,8 @@ const STATUS_META: Record<OrderStatus, { label: string; tone: BadgeTone }> = {
 };
 
 export default function OrderHistoryScreen() {
+  // No tab of its own since 19 Nov 2026 (reached from the account), so it needs a way back.
+  const goBack = useTabBack();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const cart = useCart();
@@ -82,6 +85,7 @@ export default function OrderHistoryScreen() {
     <Screen padded={false} contentStyle={styles.screenBody} edgeToEdgeTop>
       <Masthead
         title="Your orders"
+        onBack={goBack}
         subtitle={orders.length === 0 ? 'From the app and the website, in one place.' : `${orders.length} ${orders.length === 1 ? 'order' : 'orders'} from the app and the website.`}
       />
       <View style={styles.content}>

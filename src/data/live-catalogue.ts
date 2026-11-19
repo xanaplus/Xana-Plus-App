@@ -214,13 +214,27 @@ export const liveProductsByCategory = (slug: string): Product[] => {
 // ── Queries ──────────────────────────────────────────────────────────────────
 
 /** BC shelves exclude DEL items unless explicitly browsing the Deli department. */
-export type LiveQuery = { groups: string[]; nameHas?: string[]; limit?: number; deli?: 'only' | 'include' };
+/**
+ * `minPrice`: leave out cheaper items (Wholesale: no KES 5 singles).
+ * `quantityPriced`: only items with a BC quantity price ("buy 6, pay less each"). That is
+ * what Wholesale is: shop items whose price drops at a quantity; cartons and bales are no
+ * longer sold (Roystone, 19 Nov 2026).
+ */
+export type LiveQuery = {
+  groups: string[];
+  nameHas?: string[];
+  limit?: number;
+  deli?: 'only' | 'include';
+  minPrice?: number;
+  quantityPriced?: boolean;
+};
 
 export type ResultSort = 'relevance' | 'price-asc' | 'price-desc';
 export type PriceBand = 'under-500' | '500-1500' | 'over-1500';
 
 /** Search-screen filters, applied by the database so they cover every match, not just the first page. */
-export type ResultOptions = { sort?: ResultSort; priceBand?: PriceBand | null; inStockOnly?: boolean; noRx?: boolean };
+/** `branch`: only items with sellable stock at that shop (e.g. `SYOKIMAU`), not just stock somewhere in BC. */
+export type ResultOptions = { sort?: ResultSort; priceBand?: PriceBand | null; inStockOnly?: boolean; noRx?: boolean; branch?: string };
 
 /** The few query-builder methods the filters use, so they fit any catalogue request. */
 type Refinable<T> = {
@@ -232,13 +246,16 @@ type Refinable<T> = {
   order(column: string, options: { ascending: boolean }): T;
 };
 
-const refine = <T extends Refinable<T>>(request: T, { priceBand, inStockOnly, noRx }: ResultOptions): T => {
+const refine = <T extends Refinable<T>>(request: T, { priceBand, inStockOnly, noRx, branch }: ResultOptions): T => {
   let refined = request;
   if (priceBand === 'under-500') refined = refined.lt('price', 500);
   if (priceBand === '500-1500') refined = refined.gte('price', 500).lte('price', 1500);
   if (priceBand === 'over-1500') refined = refined.gt('price', 1500);
   if (inStockOnly) refined = refined.gt('stock', 0);
   if (noRx) refined = refined.eq('requires_rx', false);
+  // Same rule as `sellable`: more than the stock buffer on hand at that shop.
+  const code = branch?.toUpperCase().replace(/[^A-Z]/g, '');
+  if (code) refined = refined.gt(`stock_by_location->${code}`, stockBuffer);
   return refined;
 };
 
@@ -270,8 +287,10 @@ async function run(request: PromiseLike<{ data: unknown; error: { message: strin
  * In-stock products for a shelf: ones with a photo first, then best-stocked
  * first (BC has no sales ranking to sort by).
  */
-export function fetchShelf({ groups, nameHas, limit = 8, deli }: LiveQuery, options: ResultOptions = {}): Promise<Product[]> {
+export function fetchShelf({ groups, nameHas, limit = 8, deli, minPrice, quantityPriced }: LiveQuery, options: ResultOptions = {}): Promise<Product[]> {
   let request = supabase.from('catalogue').select(COLUMNS).gt('stock', 0);
+  if (minPrice) request = request.gte('price', minPrice);
+  if (quantityPriced) request = request.neq('price_tiers', '[]');
   if (deli === 'only') {
     request = request.ilike('item_no', 'DEL%');
   } else {
@@ -419,13 +438,13 @@ export function useLive<T>(key: string, load: () => Promise<T>, empty: T): { sta
 }
 
 /** Loads each section's shelf in parallel, keyed by section title. */
-export function useShelves(sections: { title: string; query: LiveQuery }[], limit: number) {
-  const key = JSON.stringify([limit, sections.map(section => [section.title, section.query])]);
+export function useShelves(sections: { title: string; query: LiveQuery }[], limit: number, options: ResultOptions = {}) {
+  const key = JSON.stringify([limit, options, sections.map(section => [section.title, section.query])]);
   return useLive(
     key,
     async () =>
       Object.fromEntries(
-        await Promise.all(sections.map(async section => [section.title, await fetchShelf({ ...section.query, limit })] as const)),
+        await Promise.all(sections.map(async section => [section.title, await fetchShelf({ ...section.query, limit }, options)] as const)),
       ) as Record<string, Product[]>,
     NO_SHELVES,
   );

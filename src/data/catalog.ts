@@ -637,7 +637,13 @@ export type VerticalSection = { title: string; subtitle: string; categorySlug: s
 const shelf = (slug: string, nameHas?: string[]): LiveQuery => ({ groups: groupsForCategory(slug), nameHas });
 
 /** Names that mark a bulk pack in BC ("... Box 12 pcs", "... Outer", "Bale x 6Pc"). */
-export const BULK_WORDS = ['box', 'outer', 'carton', 'ctn', 'bale', 'crate'];
+/**
+ * Wholesale = shop items with a BC quantity price ("buy 6, pay less each"); cartons and
+ * bales are no longer sold. Items under KSh 50 stay out, e.g. a KES 5 single matchbox
+ * (Roystone, 19 Nov 2026).
+ */
+const WHOLESALE_MIN_PRICE = 50;
+const wholesaleShelf = (slug: string): LiveQuery => ({ groups: groupsForCategory(slug), quantityPriced: true, minPrice: WHOLESALE_MIN_PRICE });
 
 export type VerticalDefinition = {
   slug: CategoryVertical;
@@ -703,16 +709,14 @@ export const verticals: VerticalDefinition[] = [
       { slug: 'beverages', name: 'Beverages', image: 'beverages' },
       { slug: 'beauty-personal-care', name: 'Personal Care', image: 'beauty-personal-care' },
     ],
+    // The groups with the most quantity-priced items in stock at Syokimau and Ruiru (19 Nov 2026).
     sections: [
-      { title: 'Detergents & Cleaning', subtitle: 'Boxes and outers', categorySlug: 'cleaning-products', query: shelf('cleaning-products', BULK_WORDS) },
-      {
-        title: 'Staples & Dry Goods',
-        subtitle: 'Bulk packs for shops and kitchens',
-        categorySlug: 'staples',
-        query: { groups: [...groupsForCategory('staples'), ...groupsForCategory('cooking-oil')], nameHas: BULK_WORDS },
-      },
-      { title: 'Beverages', subtitle: 'Crates and outers', categorySlug: 'beverages', query: shelf('beverages', BULK_WORDS) },
-      { title: 'Snacks & Sweets', subtitle: 'Boxes for resale', categorySlug: 'snacks', query: shelf('snacks', BULK_WORDS) },
+      { title: 'Detergents & Cleaning', subtitle: 'Buy more, pay less each', categorySlug: 'cleaning-products', query: wholesaleShelf('cleaning-products') },
+      { title: 'Tissue, Diapers & Pads', subtitle: 'Buy more, pay less each', categorySlug: 'tissue-sanitary', query: wholesaleShelf('tissue-sanitary') },
+      { title: 'Snacks & Sweets', subtitle: 'Buy more, pay less each', categorySlug: 'snacks', query: wholesaleShelf('snacks') },
+      { title: 'Beverages & Water', subtitle: 'Buy more, pay less each', categorySlug: 'beverages', query: wholesaleShelf('beverages') },
+      { title: 'Spices & Flavours', subtitle: 'Buy more, pay less each', categorySlug: 'spices', query: wholesaleShelf('spices') },
+      { title: 'Stationery', subtitle: 'Buy more, pay less each', categorySlug: 'books-stationery', query: wholesaleShelf('books-stationery') },
     ],
   },
   {

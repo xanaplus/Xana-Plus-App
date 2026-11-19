@@ -1,6 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useRef, useState } from 'react';
+import { useReducedMotion } from 'react-native-reanimated';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
@@ -40,12 +41,36 @@ import { PharmacistWhatsAppSheet } from '@/features/pharmacy/whatsapp-sheet';
 import { PressableScale } from '@/components/ui/pressable-scale';
 import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 
+/**
+ * The three prescription groups (GENERAL / CHRONIC / CONTROLLED in BC). Their photos are
+ * hidden, so they share one text list instead of three rails of empty photo boxes.
+ */
+const RX_SLUGS: readonly string[] = ['medicines', 'chronic-care', 'controlled-medicines'];
+/** Rows in the prescription list on "All"; the Prescription chip shows every loaded row. */
+const RX_PREVIEW_ROWS = 6;
+
+/**
+ * Photo rows, in screen order: beauty leads (best photos, browsed rather than searched,
+ * December gifting), then everyday remedies, then vitamins (owner, 19 Nov 2026).
+ */
+const PHOTO_SLUGS: readonly string[] = ['skin-care', 'otc-medicines', 'vitamins-supplements'];
+const PHOTO_SECTIONS = PHOTO_SLUGS.flatMap(slug => verticalBySlug('pharmacy').sections.filter(section => section.categorySlug === slug));
+
+/** Shop-tab params for a Pharmacy aisle row; `t` makes a repeat tap re-open it (as Home does). */
+const aisleParams = (focus: string) => ({ vertical: 'pharmacy', focus, t: String(Date.now()) });
+
+/** The first rail's "you can swipe me" hint plays once per app launch. */
+let railHintShown = false;
+/** How far the hint slides the first rail, and when. */
+const RAIL_HINT = { distance: 72, delayMs: 700, holdMs: 450 } as const;
+
 /** Filter chips above the product groups — `null` shows every group. */
 const PHARMACY_FILTERS: readonly { label: string; categorySlugs: readonly string[] | null }[] = [
   { label: 'All Pharmacy', categorySlugs: null },
-  // One chip for the three prescription groups together, as on the website (owner, 29 Oct 2026).
-  { label: 'Prescription Medication', categorySlugs: ['medicines', 'chronic-care', 'controlled-medicines'] },
-  ...verticalBySlug('pharmacy').sections.map(section => ({ label: section.title, categorySlugs: [section.categorySlug] })),
+  // Buy-now groups with photos first, then one chip for the prescription groups together,
+  // as on the website (owner, 29 Oct 2026).
+  ...PHOTO_SECTIONS.map(section => ({ label: section.title, categorySlugs: [section.categorySlug] })),
+  { label: 'Prescription', categorySlugs: RX_SLUGS },
 ];
 
 type IntakeChoice = { id: string; title: string; description: string; icon: IconName };
@@ -157,10 +182,60 @@ export default function PharmacyRoute() {
   const [storeSheetOpen, setStoreSheetOpen] = useState(false);
 
   const vertical = verticalBySlug('pharmacy');
-  const sections = filter.categorySlugs
-    ? vertical.sections.filter(section => filter.categorySlugs?.includes(section.categorySlug))
-    : vertical.sections;
+  const shows = (slug: string) => !filter.categorySlugs || filter.categorySlugs.includes(slug);
+  const photoSections = PHOTO_SECTIONS.filter(section => shows(section.categorySlug));
+  const showRx = RX_SLUGS.some(shows);
   const shelves = useShelves(vertical.sections, 8);
+
+  // Swipe hint: once the first rail has products, slide it a little left and back,
+  // so customers see the row scrolls sideways. Skipped with Reduce Motion, and a
+  // touch on the rail before it plays cancels it.
+  const firstRail = useRef<ScrollView>(null);
+  const reduceMotion = useReducedMotion();
+  const firstRailCount = photoSections[0] ? (shelves.data[photoSections[0].title] ?? []).length : 0;
+  const hintTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const cancelHint = () => {
+    railHintShown = true;
+    hintTimers.current.forEach(clearTimeout);
+    hintTimers.current = [];
+  };
+  useFocusEffect(
+    useCallback(() => {
+      if (railHintShown || reduceMotion || firstRailCount < 3) return undefined;
+      hintTimers.current = [
+        setTimeout(() => {
+          railHintShown = true;
+          firstRail.current?.scrollTo({ x: RAIL_HINT.distance, animated: true });
+        }, RAIL_HINT.delayMs),
+        setTimeout(() => {
+          hintTimers.current = [];
+          firstRail.current?.scrollTo({ x: 0, animated: true });
+        }, RAIL_HINT.delayMs + RAIL_HINT.holdMs),
+      ];
+      return () => {
+        // Leaving mid-hint: stop it and put the row back at the start.
+        if (hintTimers.current.length) firstRail.current?.scrollTo({ x: 0, animated: false });
+        hintTimers.current.forEach(clearTimeout);
+        hintTimers.current = [];
+      };
+    }, [reduceMotion, firstRailCount]),
+  );
+  // Take turns across Medicines, Chronic Care and Controlled so the short list shows all three.
+  const rxProducts = (() => {
+    const lists = vertical.sections
+      .filter(section => RX_SLUGS.includes(section.categorySlug))
+      .map(section => shelves.data[section.title] ?? []);
+    const merged: Product[] = [];
+    for (let row = 0; lists.some(list => row < list.length); row += 1) {
+      lists.forEach(list => {
+        if (row < list.length) merged.push(list[row]);
+      });
+    }
+    return filter.categorySlugs ? merged : merged.slice(0, RX_PREVIEW_ROWS);
+  })();
+  /** "See all" opens that group's row in the Shop tab's Pharmacy aisle, never a search. */
+  const openAisle = (focus: string) =>
+    router.push({ pathname: '/(tabs)/categories', params: aisleParams(focus) });
   const intake = INTAKE_ACTIONS.find(action => action.id === openIntake) ?? null;
 
   /** Quick actions and the promo link: gate account-bound flows, then open the sheet. */
@@ -224,23 +299,41 @@ export default function PharmacyRoute() {
           />
         </View>
 
-        <View style={[styles.inset, styles.quickRow]}>
-          {pharmacyQuickActions.filter(action => LAUNCH_SCOPE.clinicalServices || action.id !== 'consult').map(action => (
-            <Pressable
-              key={action.id}
-              accessibilityRole="button"
-              accessibilityLabel={action.label}
-              onPress={() => runAction(action.id)}
-              style={({ pressed }) => [styles.quickAction, pressed ? styles.pressed : null]}
-            >
-              <View style={styles.quickGlyph}>
-                <Icon name={action.icon} size={22} color="primaryAccent" />
+        {/* The reason to open a pharmacy: send a prescription. One clear action, then the two helpers. */}
+        <View style={[styles.inset, styles.rxBlock]}>
+          <Card variant="flat" padding={spacing.lg} radiusSize={radius.xl} style={styles.rxHero}>
+            <View style={styles.rxHeroHead}>
+              <View style={styles.rxHeroGlyph}>
+                <Icon name="prescription" size={22} color="onPrimary" />
               </View>
-              <Txt variant="label" align="center" numberOfLines={2}>
-                {action.label}
-              </Txt>
-            </Pressable>
-          ))}
+              <View style={styles.rxHeroText}>
+                <Txt variant="headlineSm">Have a prescription?</Txt>
+                <Txt variant="bodySm" color="onSurfaceVariant">
+                  Send a photo. A pharmacist checks it before your order is packed.
+                </Txt>
+              </View>
+            </View>
+            <Button label="Upload prescription" icon="scan" iconPosition="leading" onPress={() => runAction('upload-rx')} />
+          </Card>
+
+          <View style={styles.helperRow}>
+            {pharmacyQuickActions
+              .filter(action => action.id !== 'upload-rx' && (LAUNCH_SCOPE.clinicalServices || action.id !== 'consult'))
+              .map(action => (
+                <PressableScale
+                  key={action.id}
+                  accessibilityRole="button"
+                  accessibilityLabel={action.label}
+                  onPress={() => runAction(action.id)}
+                  style={styles.helper}
+                >
+                  <Icon name={action.icon} size={20} color="primaryAccent" />
+                  <Txt variant="label" numberOfLines={2} style={styles.helperLabel}>
+                    {action.label}
+                  </Txt>
+                </PressableScale>
+              ))}
+          </View>
         </View>
       </View>
 
@@ -257,10 +350,17 @@ export default function PharmacyRoute() {
 
       {shelves.status !== 'ready' ? <LoadState status={shelves.status} placeholder="rail" inset onRetry={shelves.retry} /> : null}
 
-      {sections.map(section => (
+      {photoSections.map((section, index) => (
         <View key={section.title} style={[styles.inset, styles.section]}>
-          <SectionHeader title={section.title} actionLabel="See All" onAction={() => router.push({ pathname: '/search', params: { q: section.title } })} />
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.railBleed} contentContainerStyle={styles.rail}>
+          <SectionHeader title={section.title} actionLabel="See All" onAction={() => openAisle(section.categorySlug)} />
+          <ScrollView
+            ref={index === 0 ? firstRail : undefined}
+            onScrollBeginDrag={index === 0 ? cancelHint : undefined}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.railBleed}
+            contentContainerStyle={styles.rail}
+          >
             {(shelves.data[section.title] ?? []).map(product => (
               <PharmacyCard
                 key={product.id}
@@ -273,6 +373,39 @@ export default function PharmacyRoute() {
           </ScrollView>
         </View>
       ))}
+
+      {showRx && rxProducts.length > 0 ? (
+        <View style={[styles.inset, styles.section]}>
+          <View style={styles.rxListHead}>
+            <SectionHeader title="Prescription medicines" />
+            <Txt variant="bodySm" color="onSurfaceVariant">
+              Add to your basket, then attach your prescription at checkout.
+            </Txt>
+          </View>
+          <View style={styles.rxList}>
+            {rxProducts.map((product, index) => (
+              <RxRow
+                key={product.id}
+                product={product}
+                first={index === 0}
+                quantity={cart.quantityOf(product.id)}
+                onPress={() => router.push(`/product/${product.id}`)}
+                onAdd={() => cart.add(product.id)}
+              />
+            ))}
+            <PressableScale
+              accessibilityRole="button"
+              onPress={() => openAisle('medicines')}
+              style={styles.rxSeeAll}
+            >
+              <Txt variant="label" color="primaryAccent">
+                See all prescription medicines
+              </Txt>
+              <Icon name="chevron-right" size={14} color="primaryAccent" />
+            </PressableScale>
+          </View>
+        </View>
+      ) : null}
 
       <View style={[styles.inset, styles.bottomBand]}>
         {LAUNCH_SCOPE.skinAnalysis ? <LinearGradient colors={gradients.promoHero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.promo}>
@@ -297,19 +430,6 @@ export default function PharmacyRoute() {
             <Icon name="arrow-right" size={16} color="primaryAccent" />
           </Pressable>
         </LinearGradient> : null}
-
-        <Card variant="flat" padding={spacing.lg} radiusSize={radius.xl} style={styles.pharmacist}>
-          <View style={styles.pharmacistHead}>
-            <View style={styles.pharmacistGlyph}>
-              <Icon name="message" size={20} color="onPrimary" />
-            </View>
-            <Txt variant="headlineSm">Ask a Pharmacist</Txt>
-          </View>
-          <Txt variant="bodySm" color="onSurfaceVariant">
-            Free and confidential. No account needed.
-          </Txt>
-          <Button label="Ask a pharmacist on WhatsApp" icon="whatsapp" iconPosition="leading" onPress={() => setAskOpen(true)} />
-        </Card>
 
         <View style={styles.licence}>
           <View style={styles.licenceOverline}>
@@ -441,6 +561,60 @@ function PharmacyCard({
   );
 }
 
+/**
+ * One prescription medicine as a price-list row: name and pack, the till price and the
+ * prescription add control. No photo box: these groups' photos are hidden.
+ */
+function RxRow({
+  product,
+  first,
+  quantity,
+  onPress,
+  onAdd,
+}: {
+  product: Product;
+  first: boolean;
+  quantity: number;
+  onPress: () => void;
+  onAdd: () => void;
+}) {
+  const { colors } = useTheme();
+  const styles = useThemeStyles(createStyles);
+  const offer = useOffer(product);
+
+  return (
+    <View style={[styles.rxRow, first ? null : styles.rxRowDivider]}>
+      {/* Row-wide tap target; a sibling of the add control, never its parent. */}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${product.name}, ${product.pack}, ${formatKes(offer?.price ?? product.price)}`}
+        onPress={onPress}
+        style={({ pressed }) => [styles.cardOverlay, pressed ? styles.rxRowPressed : null]}
+      />
+      <View style={styles.rxRowText} pointerEvents="none">
+        <Txt variant="title" numberOfLines={2}>
+          {product.name}
+        </Txt>
+        <Txt variant="label" color="onSurfaceVariant" numberOfLines={1}>
+          {product.pack}
+        </Txt>
+      </View>
+      <Txt variant="title" tint={colors.primaryAccent} style={styles.rxRowPrice}>
+        {formatKes(offer?.price ?? product.price)}
+      </Txt>
+      {quantity > 0 ? (
+        <View style={styles.qtyPill}>
+          <Txt variant="label" tint={colors.onPrimary}>
+            {quantity}
+          </Txt>
+        </View>
+      ) : (
+        <ProductAddButton productName={product.name} onPress={onAdd} rxRequired />
+      )}
+    </View>
+  );
+}
+
 const createStyles = (colors: Palette) => StyleSheet.create({
   content: { gap: spacing.xxxl },
   inset: { marginHorizontal: layout.screenMargin },
@@ -455,15 +629,51 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     justifyContent: 'center',
   },
   searchField: { borderRadius: radius.lg },
-  quickRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, marginTop: spacing.md },
-  quickAction: { flex: 1, alignItems: 'center', gap: spacing.sm },
-  quickGlyph: {
-    width: layout.touchTarget,
-    height: layout.touchTarget,
-    borderRadius: radius.pill,
-    backgroundColor: colors.surfaceContainerLow,
+  rxBlock: { gap: spacing.sm, marginTop: spacing.md },
+  rxHero: { gap: spacing.md },
+  rxHeroHead: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
+  rxHeroGlyph: {
+    width: spacing.giant,
+    height: spacing.giant,
+    borderRadius: radius.lg,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  rxHeroText: { flex: 1, gap: spacing.xxs },
+  helperRow: { flexDirection: 'row', gap: spacing.sm },
+  helper: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    minHeight: layout.touchTarget,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.lg,
+    backgroundColor: colors.surfaceContainerLow,
+  },
+  helperLabel: { flexShrink: 1 },
+  rxListHead: { gap: spacing.xxs },
+  rxList: {
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.xl,
+    backgroundColor: colors.surface,
+    ...elevation.card,
+  },
+  rxRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.md },
+  rxRowDivider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.outlineVariant },
+  rxRowPressed: { backgroundColor: colors.surfaceContainerLow },
+  rxRowText: { flex: 1, gap: spacing.xxs },
+  rxRowPrice: { flexShrink: 0 },
+  rxSeeAll: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+    minHeight: layout.touchTarget,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.outlineVariant,
   },
   chipRow: { gap: spacing.sm, paddingHorizontal: layout.screenMargin },
   section: { gap: spacing.md },
@@ -524,16 +734,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   },
   promoBody: { flex: 1 },
   promoLink: { flexDirection: 'row', alignItems: 'center', gap: spacing.xxs, paddingVertical: spacing.sm },
-  pharmacist: { gap: spacing.md },
-  pharmacistHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  pharmacistGlyph: {
-    width: spacing.giant,
-    height: spacing.giant,
-    borderRadius: radius.lg,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   licence: { alignItems: 'center', gap: spacing.xs, marginTop: spacing.md },
   licenceOverline: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   confirmation: { gap: spacing.sm, alignItems: 'flex-start' },

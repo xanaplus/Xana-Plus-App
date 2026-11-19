@@ -7,7 +7,7 @@ import { Masthead } from '@/components/nav/masthead';
 import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
 import { Icon, LoadState, ProductCard, Screen, SearchBar, SectionHeader, Txt } from '@/components/ui';
 import { PressableScale } from '@/components/ui/pressable-scale';
-import { BULK_WORDS, verticalBySlug } from '@/data/catalog';
+import { verticalBySlug } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
 import { formatKes } from '@/lib/format';
 import { activePriceTiers } from '@/lib/quantity-pricing';
@@ -56,13 +56,12 @@ const pickReason = (product: Product, source: PickSource, kind: PickKind, shop: 
   const tier = kind === 'wholesale' ? bulkTier(product, branch) : undefined;
   if (tier) {
     const saving = Math.round((1 - tier.unitPrice / product.price) * 100);
-    return saving >= 1 ? `Buy ${tier.minQty}+ and save ${saving}%` : `Buy ${tier.minQty}+ for ${formatKes(tier.unitPrice)} each`;
+    return saving >= 1 ? `Buy ${tier.minQty}+ and save ${saving}%` : `Buy ${tier.minQty}+ for ${formatKes(Math.ceil(tier.unitPrice))} each`;
   }
   if (source === 'yours') return 'You bought this before';
   if (source === 'popular') return `Popular at ${shop}`;
-  return kind === 'deli' ? 'Fresh from our kitchen' : kind === 'wholesale' ? 'Bulk pack for shops and kitchens' : `In stock at ${shop}`;
+  return kind === 'deli' ? 'Fresh from our kitchen' : kind === 'wholesale' ? 'Buy more, pay less each' : `In stock at ${shop}`;
 };
-const BULK_NAME = new RegExp(String.raw`\b(${BULK_WORDS.join('|')})\b`, 'i');
 /**
  * BC's quantity price: the first step that is cheaper than buying one. Not claimed when
  * the shop has an offer on the item, so the line never contradicts the price on the card.
@@ -76,9 +75,9 @@ const bulkSaving = (product: Product, branch: string) => {
   const tier = bulkTier(product, branch);
   return tier ? 1 - tier.unitPrice / product.price : 0;
 };
-/** DEL items are Deli; a quantity price or a bulk pack (as the Shop's Wholesale aisle) is Wholesale. */
+/** DEL items are Deli; an item with a quantity price is Wholesale (no cartons or bales any more). */
 const pickKind = (product: Product): PickKind =>
-  product.category === 'deli-cold-cuts' ? 'deli' : bulkTier(product) || BULK_NAME.test(product.name) ? 'wholesale' : 'retail';
+  product.category === 'deli-cold-cuts' ? 'deli' : bulkTier(product) ? 'wholesale' : 'retail';
 const FALLBACK_SHELVES = (['retail', 'wholesale', 'deli'] as const).map(kind => {
   const section = verticalBySlug(kind).sections.find(entry => kind !== 'deli' || entry.query.deli === 'only') ?? verticalBySlug(kind).sections[0];
   return { title: kind, query: section.query };

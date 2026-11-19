@@ -22,14 +22,14 @@ type TabMeta = {
 };
 
 /**
- * The owner's five tabs (18 Nov 2026), in the `(tabs)` group's order. Pharmacy and
- * Profile are routes without a tab: they are skipped here.
+ * The five tabs (19 Nov 2026), in the `(tabs)` group's order. Orders and Profile are
+ * routes without a tab (reached from the account button): they are skipped here.
  */
 const TAB_META: Record<string, TabMeta> = {
   index: { label: 'Home', icon: 'home', activeIcon: 'home-filled' },
   categories: { label: 'Shop', icon: 'categories', activeIcon: 'categories-filled' },
+  pharmacy: { label: 'Pharmacy', icon: 'pharmacy-tab', activeIcon: 'pharmacy-tab-filled' },
   wellness: { label: 'Wellness', icon: 'heart', activeIcon: 'heart-filled' },
-  orders: { label: 'Orders', icon: 'receipt' },
   cart: { label: 'Cart', icon: 'cart', activeIcon: 'cart-filled' },
 };
 const TAB_COUNT = Object.keys(TAB_META).length;

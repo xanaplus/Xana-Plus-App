@@ -14,6 +14,9 @@ const glyphs = {
   categories: ['mci', 'view-grid-outline'],
   'categories-filled': ['mci', 'view-grid'],
   pharmacy: ['mci', 'medical-bag'],
+  // Tab bar pair: outline when not selected, solid when selected, like Home and Cart.
+  'pharmacy-tab': ['ion', 'medkit-outline'],
+  'pharmacy-tab-filled': ['ion', 'medkit'],
   profile: ['ion', 'person-outline'],
   'profile-filled': ['ion', 'person'],
   cart: ['ion', 'cart-outline'],
