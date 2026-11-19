@@ -17,6 +17,7 @@ import {
   type BadgeTone,
   type SegmentedOption,
 } from '@/components/ui';
+import { useTabBack } from '@/components/nav/use-tab-back';
 import { productById } from '@/data/catalog';
 import { formatKes } from '@/lib/format';
 import { useCart } from '@/store/cart';
@@ -26,7 +27,7 @@ import { radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
-/** Screen 10 — Order History: active, completed and cancelled orders, from the app and the website. */
+/** Screen 10 (the Orders tab) — Order History: active, completed and cancelled orders, from the app and the website. */
 
 type Filter = 'all' | 'active' | 'delivered' | 'cancelled';
 
@@ -46,6 +47,8 @@ const STATUS_META: Record<OrderStatus, { label: string; tone: BadgeTone }> = {
 export default function OrderHistoryScreen() {
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
+  // A tab since 19 Nov 2026 (owner's five tabs): back returns to where the customer came from.
+  const goBack = useTabBack();
   const cart = useCart();
   const { orders, historyLoading, historyError, retryHistory } = useOrders();
   const [filter, setFilter] = useState<Filter>('all');
@@ -83,7 +86,7 @@ export default function OrderHistoryScreen() {
       <TopBar
         title="My Orders"
         subtitle={`${orders.length} ${orders.length === 1 ? 'order' : 'orders'}`}
-        onBack={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/profile'))}
+        onBack={goBack}
       />
 
       <Segmented options={options} value={filter} onChange={setFilter} style={styles.filter} />

@@ -8,6 +8,7 @@ import { parsePersisted, persisted, save, STORAGE_KEYS } from '@/lib/storage';
 import { track } from '@/lib/analytics';
 import { tapFeedback } from '@/lib/haptics';
 import { useFulfilment } from '@/store/fulfilment';
+import { activeOffer, pricingBranch, subscribePricingBranch } from '@/lib/branch-offers';
 
 const DELIVERY_FEE = 0;
 /** No packaging fee (owner, 15 Oct 2026); the field stays so past orders still show theirs. */
@@ -115,9 +116,13 @@ function cartReducer(state: CartState, action: CartAction): CartState {
   }
 }
 
-/** Price for one unit, applying the wholesale tier when the quantity qualifies. */
-export const unitPrice = (product: Product, quantity: number): number =>
-  quantityUnitPrice(product.price, quantity, product.priceTiers ?? (
+/**
+ * Price for one unit: the chosen store's POS offer when one is running (every quantity,
+ * no quantity prices, as create_order() charges it), else the wholesale tier when the
+ * quantity qualifies.
+ */
+export const unitPrice = (product: Product, quantity: number, branch: string = pricingBranch()): number =>
+  activeOffer(product, branch)?.price ?? quantityUnitPrice(product.price, quantity, product.priceTiers ?? (
     product.wholesalePrice && product.wholesaleMinQty
       ? [{ minQty: product.wholesaleMinQty, unitPrice: product.wholesalePrice }] : []
   ));
@@ -147,16 +152,18 @@ const CartContext = createContext<CartContextValue | null>(null);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, undefined, hydrateCart);
   const liveProducts = useSyncExternalStore(subscribeCatalogue, catalogueVersion, catalogueVersion);
+  // Offers are per store: re-price the basket when the customer changes store.
+  const branch = useSyncExternalStore(subscribePricingBranch, pricingBranch, pricingBranch);
 
   const items = useMemo(
     () =>
       state.lines.flatMap(line => {
         const product = liveProducts.get(line.productId) ?? productById(line.productId);
         if (!product) return [];
-        const price = unitPrice(product, line.quantity);
+        const price = unitPrice(product, line.quantity, branch);
         return [{ product, quantity: line.quantity, unitPrice: price, lineTotal: lineTotal(price, line.quantity) }];
       }),
-    [state.lines, liveProducts],
+    [state.lines, liveProducts, branch],
   );
 
   const summary = useMemo<OrderSummary>(() => {

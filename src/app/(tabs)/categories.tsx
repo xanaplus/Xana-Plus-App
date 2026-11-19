@@ -322,7 +322,7 @@ export default function CategoriesRoute() {
   return (
     <Screen scroll={false} padded={false} contentStyle={styles.screenBody}>
       <TopBar onBack={goBack}
-        title="Categories"
+        title="Shop"
         actions={
           <>
             <PressableScale

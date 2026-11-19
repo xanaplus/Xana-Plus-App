@@ -1,6 +1,7 @@
 import { adminClient, preflight, reply } from '../_shared/otp.ts';
 import { cleanKraPin } from '../../../src/lib/kra-pin.ts';
 import { lineTotal, quantityUnitPrice } from '../../../src/lib/quantity-pricing.ts';
+import { activeOffer, parseOffers } from '../../../src/lib/branch-offers.ts';
 
 /**
  * POST (signed in) { lines: [{ itemNo, quantity }], paymentMethod, contact,
@@ -111,7 +112,7 @@ Deno.serve(async request => {
   const itemNos = [...new Set(lines.map(line => line.itemNo))];
   const { data: rows, error: catalogueError } = await db
     .from('catalogue')
-    .select('item_no, name, price, stock, stock_by_location, requires_rx, age_restricted, price_tiers')
+    .select('item_no, name, price, stock, stock_by_location, requires_rx, age_restricted, price_tiers, offers_by_location')
     .in('item_no', itemNos);
   if (catalogueError) return reply(500, { error: 'server_error' });
 
@@ -126,8 +127,13 @@ Deno.serve(async request => {
 
   const items = lines.map(line => {
     const row = byNo.get(line.itemNo)!;
-    const unitPrice = quantityUnitPrice(Number(row.price), line.quantity, row.price_tiers ?? []);
+    // The branch's POS offer, when one runs, for every quantity (as create_order() charges it, 18 Nov 2026).
+    const offer = activeOffer({ price: Number(row.price), offers: parseOffers(row.offers_by_location) }, branchCode);
+    const listPrice = quantityUnitPrice(Number(row.price), line.quantity, row.price_tiers ?? []);
+    const unitPrice = offer?.price ?? listPrice;
     return {
+      // Prices the app may have shown: the offer, or (an app from before offers) the BC / quantity price.
+      accepted: [unitPrice, listPrice],
       item_no: line.itemNo,
       name: row.name ?? line.itemNo,
       unit_price: unitPrice,
@@ -138,8 +144,10 @@ Deno.serve(async request => {
     };
   });
 
+  // As create_order(): a line priced at the offer or at the BC / quantity price is accepted and
+  // charged the offer, so a customer never pays more than shown; any other price is refused.
   if (lines.some((line, index) => line.expectedUnitPrice !== undefined &&
-    (!Number.isFinite(line.expectedUnitPrice) || Math.abs(line.expectedUnitPrice - items[index].unit_price) >= 0.005))) {
+    (!Number.isFinite(line.expectedUnitPrice) || !items[index].accepted.some(price => Math.abs(line.expectedUnitPrice! - price) < 0.005)))) {
     return reply(409, { error: 'price_changed' });
   }
 
@@ -306,7 +314,7 @@ Deno.serve(async request => {
   }
   if (!order) return reply(500, { error: 'server_error' });
 
-  const { error: itemsError } = await db.from('order_items').insert(items.map(item => ({ ...item, order_id: order!.id })));
+  const { error: itemsError } = await db.from('order_items').insert(items.map(({ accepted: _accepted, ...item }) => ({ ...item, order_id: order!.id })));
   if (itemsError) {
     // No multi-statement transactions through PostgREST: undo the header so no empty order is left behind.
     await db.from('orders').delete().eq('id', order.id);

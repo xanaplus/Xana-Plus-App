@@ -1,499 +1,264 @@
 import { Image } from 'expo-image';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
-import {
-  Badge,
-  BottomSheet,
-  Button,
-  CategoryTile,
-  EmptyState,
-  Icon,
-  LoadState,
-  ProductCard,
-  ProductRow,
-  ProgressBar,
-  Screen,
-  SearchBar,
-  SectionHeader,
-  Txt,
-  TopBar,
-} from '@/components/ui';
-import type { IconName } from '@/components/ui';
-import { homeCategoryTiles, trendingDeals } from '@/data/catalog';
+import { Icon, LoadState, ProductCard, Screen, SearchBar, SectionHeader, Txt } from '@/components/ui';
+import { useBump } from '@/components/ui/motion';
+import { PressableScale } from '@/components/ui/pressable-scale';
 import { figmaAsset } from '@/data/images';
-import { groupsForCategory, useShelves } from '@/data/live-catalogue';
-import type { Deal, User } from '@/data/types';
+import { formatKes } from '@/lib/format';
+import { fetchBranchOffers, groupsForCategory, useLive, useShelves } from '@/data/live-catalogue';
+import type { Product } from '@/data/types';
 import { HomeBanner } from '@/features/home/home-banner';
 import { useBuyAgain } from '@/features/orders/buy-again';
 import { StoreChooser } from '@/features/store/store-chooser';
+import { WaterCheckIn } from '@/features/wellness/water-check-in';
 import { useCart } from '@/store/cart';
-import { useFulfilment } from '@/store/fulfilment';
+import { inStockAt, useFulfilment } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
 import { elevation, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
-import { PressableScale } from '@/components/ui/pressable-scale';
-import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 
-/** Deal card geometry (the frame's 216pt deal card). */
-const DEAL_CARD_WIDTH = 216;
-const DEAL_CARD_HEIGHT = 150;
-
-/** Xana Club ladder — kept in step with the Profile tab's rewards card. */
-const CLUB_TIERS = [
-  { tier: 'Bronze', from: 0 },
-  { tier: 'Silver', from: 1_000 },
-  { tier: 'Gold', from: 2_000 },
-  { tier: 'Platinum', from: 5_000 },
+/** "What do you need?" (owner, 18 Nov 2026): three doors into the shop. */
+const NEEDS = [
+  { key: 'pharmacy', label: 'Pharmacy', image: 'omron-m2-bp-monitor' },
+  { key: 'fresh', label: 'Fresh food', image: 'fresh-produce' },
+  { key: 'wellness', label: 'Wellness', image: 'vitamins-supplements' },
 ] as const;
 
-/** Where each promotional card sends the shopper. */
-const DEAL_ROUTES: Record<Deal['tone'], '/(tabs)/categories' | '/(tabs)/pharmacy'> = {
-  promo: '/(tabs)/categories',
-  harvest: '/(tabs)/categories',
-  wellness: '/(tabs)/pharmacy',
-  breakfast: '/(tabs)/categories',
-};
-
-/** Tint per deal family, so the rail reads as three different aisles. */
-const dealSurface = (tone: Deal['tone'], palette: Palette) => ({
-  promo: palette.surface,
-  harvest: palette.mintPale,
-  wellness: palette.mintSurface,
-  breakfast: palette.surfaceContainerLow,
-})[tone];
-
-type Alert = { id: string; icon: IconName; title: string; body: string; time: string };
-
-/** Notification feed behind the app-bar bell. */
-const SAMPLE_ALERTS: Alert[] = [
-  {
-    id: 'mpesa-cashback',
-    icon: 'mpesa',
-    title: 'M-Pesa cashback is live',
-    body: 'KES 200 comes back to your M-Pesa line on orders over KES 1,000 this week.',
-    time: '2h ago',
-  },
-  {
-    id: 'fresh-everyday',
-    icon: 'delivery',
-    title: 'Fresh Everyday restocked',
-    body: 'Chilled dairy and produce were picked this morning at the Syokimau store.',
-    time: 'Today',
-  },
-];
-
-/** The sample alerts are invented offers; the bell stays empty until real notices exist. */
-const ALERTS: Alert[] = LAUNCH_SCOPE.homeOffers ? SAMPLE_ALERTS : [];
-
-/** The Fresh Everyday rail: in-stock chilled and fresh lines from the BC catalogue. */
-const FRESH_EVERYDAY = [
-  {
-    title: 'Fresh Everyday',
-    query: { groups: ['fresh-produce', 'dairy-eggs', 'bakery', 'meat-poultry'].flatMap(groupsForCategory) },
-  },
-];
-const FRESH_EVERYDAY_SIZE = 10;
-/** Narrowest gap the category grid allows between tiles before dropping a column. */
-const TILE_MIN_GAP = 8;
-
-/** Progress and caption towards the member's next club tier. */
-function clubStanding(points: number, tierName: User['clubTier']): { progress: number; caption: string } {
-  const index = Math.max(0, CLUB_TIERS.findIndex(entry => entry.tier === tierName));
-  const current = CLUB_TIERS[index];
-  const next = CLUB_TIERS[index + 1];
-  if (!next) return { progress: 1, caption: 'Top tier unlocked. Earn on every order' };
-  const span = next.from - current.from;
-  return {
-    progress: span > 0 ? Math.min(1, Math.max(0, (points - current.from) / span)) : 0,
-    caption: `${Math.max(0, next.from - points).toLocaleString('en-KE')} points to ${next.tier}`,
-  };
-}
+/** Tops up "Picked for your week" after the customer's own past orders. */
+const FRESH = [{ title: 'Fresh', query: { groups: ['fresh-produce', 'dairy-eggs', 'bakery'].flatMap(groupsForCategory) } }];
+const PICKS = 4;
+/** `t` makes the Shop tab re-apply its filter even when it is already open. */
+const shopParams = (params?: Record<string, string>) => ({ ...params, t: String(Date.now()) });
 
 /**
- * Screen 2a — Home: search trigger, the shared banners, the 17-tile category grid,
- * the Xana Club card, Trending Deals, the Fresh Everyday rail and the M-Pesa
- * micro-banner. The app bar is fixed above the scroll body.
+ * Home (owner's design, 18 Nov 2026): who we are and where you shop, three ways in
+ * (Shop, Member Plans, Member Benefits), search, the pharmacy / fresh / wellness doors,
+ * this shop's real POS offers, picks from your past orders, and today's water check-in.
+ * Nothing here is invented: no member prices until BC has them.
  */
 export default function HomeRoute() {
   const scrollTop = useTabScrollTop();
-  const { colors, gradients } = useTheme();
+  const { colors, resolved } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const cart = useCart();
+  const bump = useBump(cart.itemCount);
   const { user } = useSession();
   const buyAgain = useBuyAgain();
-  const { store, storeChosen } = useFulfilment();
+  const { store, storeId, storeChosen, mode, address, hasAddress } = useFulfilment();
   // First open: ask which store they shop from (orders are packed and stock-checked there).
   const [storeSheetOpen, setStoreSheetOpen] = useState(!storeChosen);
-  const [alertsOpen, setAlertsOpen] = useState(false);
-  const [alertsUnread, setAlertsUnread] = useState(ALERTS.length > 0);
   const { width } = useWindowDimensions();
-  // Blank cells pad the last grid row so its tiles line up under the columns above.
-  const gridWidth = Math.min(width, layout.maxContentWidth) - layout.screenMargin * 2;
-  const gridColumns = Math.max(1, Math.floor((gridWidth + TILE_MIN_GAP) / (layout.categoryTileSize + TILE_MIN_GAP)));
-  const gridFillers = (gridColumns - (homeCategoryTiles.length % gridColumns)) % gridColumns;
+  const contentWidth = Math.min(width, layout.maxContentWidth) - layout.screenMargin * 2;
+  const shopName = store.name.replace('Xana Plus ', '');
+  const branch = storeId.toUpperCase();
 
-  const storeShortName = store.name.replace('Xana Plus ', '');
-  const fresh = useShelves(FRESH_EVERYDAY, FRESH_EVERYDAY_SIZE);
-  const freshEveryday = fresh.data[FRESH_EVERYDAY[0].title] ?? [];
-  const club = user ? clubStanding(user.clubPoints, user.clubTier) : null;
+  const offers = useLive(`offers:${branch}`, () => fetchBranchOffers(branch), [] as Product[]);
+  const fresh = useShelves(FRESH, 12);
+  const picks = useMemo(() => {
+    const own = buyAgain.filter(product => inStockAt(product, storeId) && !product.rxRequired && !product.ageRestricted);
+    const topUp = (fresh.data.Fresh ?? []).filter(product => inStockAt(product, storeId) && !own.some(mine => mine.id === product.id));
+    return [...own, ...topUp].slice(0, PICKS);
+  }, [buyAgain, fresh.data, storeId]);
+
+  // Tell the truth about how orders reach the customer (owner, 18 Nov 2026).
+  const where =
+    mode === 'pickup'
+      ? { lead: 'Collect from', place: shopName }
+      : hasAddress
+        ? { lead: 'Delivering to', place: address.area || address.line.split(',')[0] }
+        : { lead: 'Delivery from', place: shopName };
+
+  const openShop = (params?: Record<string, string>) => router.push({ pathname: '/(tabs)/categories', params: shopParams(params) });
+  const openNeed = (key: (typeof NEEDS)[number]['key']) =>
+    key === 'pharmacy' ? router.push('/(tabs)/pharmacy') : key === 'wellness' ? router.push('/(tabs)/wellness') : openShop({ vertical: 'groceries' });
+  const needWidth = (contentWidth - spacing.md * 2) / 3;
 
   return (
-    <Screen scroll={false} padded={false} contentStyle={styles.screenBody}>
-      <TopBar
-        title="Home"
-        actions={
-          <>
-            <PressableScale
-              accessibilityRole="button"
-              accessibilityLabel={`Shopping at ${store.name}, change store`}
-              onPress={() => setStoreSheetOpen(true)}
-              hitSlop={6}
-              style={styles.locationPill}
-            >
-              <Icon name="map-pin" size={14} color="primaryAccent" />
-              <Txt variant="label" numberOfLines={1}>
-                {storeShortName}
-              </Txt>
-            </PressableScale>
-            <PressableScale
-              accessibilityRole="button"
-              accessibilityLabel={alertsUnread ? 'Notifications, unread' : 'Notifications'}
-              onPress={() => setAlertsOpen(true)}
-              hitSlop={6}
-              style={styles.bell}
-            >
-              <Icon name="bell" size={20} color="onSurface" />
-              {alertsUnread ? <View style={styles.unreadDot} /> : null}
-            </PressableScale>
-            <PressableScale
-              accessibilityRole="button"
-              accessibilityLabel={user ? 'Your account' : 'Log in or sign up'}
-              onPress={() => router.push(user ? '/(tabs)/profile' : '/login')}
-              hitSlop={6}
-              style={[styles.account, user ? styles.accountSignedIn : null]}
-            >
-              {user ? (
-                <Txt variant="label" tint={colors.onPrimary}>
-                  {user.name.charAt(0)}
-                </Txt>
-              ) : (
-                <Icon name="user" size={18} color="onSurfaceVariant" />
-              )}
-            </PressableScale>
-          </>
-        }
-      />
-
+    <Screen scroll={false} padded={false} contentStyle={styles.screenBody} edgeToEdgeTop>
       <ScrollView ref={scrollTop} style={styles.scroll} showsVerticalScrollIndicator={false} contentContainerStyle={styles.page}>
-        {/* 2. Search trigger */}
-        <View style={[styles.inset, styles.searchSection, styles.searchRow]}>
-          <SearchBar
-            placeholder="Search groceries, meds & more"
-            onPress={() => router.push('/search')}
-            style={styles.searchField}
-          />
+        {/* Who we are, and where you shop. */}
+        <View style={[styles.masthead, { paddingTop: insets.top + spacing.md }]}>
+          <View style={styles.topRow}>
+            <Image
+              source={resolved === 'dark' ? require('@/assets/brand/wordmark-light.png') : require('@/assets/brand/wordmark.png')}
+              style={styles.wordmark}
+              contentFit="contain"
+              accessibilityLabel="Xana Plus"
+            />
+            <View style={styles.topActions}>
+              <PressableScale
+                accessibilityRole="button"
+                accessibilityLabel={user ? 'Your account' : 'Log in or sign up'}
+                onPress={() => router.push(user ? '/(tabs)/profile' : '/login')}
+                hitSlop={4}
+                style={[styles.roundButton, user ? styles.roundButtonSignedIn : null]}
+              >
+                {user ? (
+                  <Txt variant="titleSm" tint={colors.onPrimary}>{user.name.charAt(0)}</Txt>
+                ) : (
+                  <Icon name="user" size={20} color="onSurface" />
+                )}
+              </PressableScale>
+              <PressableScale
+                accessibilityRole="button"
+                accessibilityLabel={cart.itemCount > 0 ? `Cart, ${cart.itemCount} ${cart.itemCount === 1 ? 'item' : 'items'}` : 'Cart'}
+                onPress={() => router.push('/(tabs)/cart')}
+                hitSlop={4}
+                style={styles.roundButton}
+              >
+                <Icon name="cart" size={20} color="onSurface" />
+                {cart.itemCount > 0 ? (
+                  <Animated.View style={[styles.cartBadge, bump]}>
+                    <Txt variant="micro" tint={colors.onSecondary}>{cart.itemCount}</Txt>
+                  </Animated.View>
+                ) : null}
+              </PressableScale>
+            </View>
+          </View>
+
+          <View style={styles.greeting}>
+            <Txt variant="display" style={styles.headline} accessibilityLabel="Good for you, good for home.">{`Good for you,${'\n'}good for home.`}</Txt>
+            <Txt variant="body" color="onSurfaceVariant">Everyday health and fresh groceries, together.</Txt>
+          </View>
+
           <PressableScale
             accessibilityRole="button"
-            accessibilityLabel="Scan a barcode"
-            onPress={() => router.push('/scan')}
-            hitSlop={8}
-            style={styles.scanButton}
+            accessibilityLabel={`${where.lead} ${where.place}. Change store`}
+            onPress={() => setStoreSheetOpen(true)}
+            style={styles.where}
           >
+            <Icon name={mode === 'pickup' ? 'store' : 'map-pin'} size={16} color="primaryAccent" />
+            <Txt variant="label" color="onSurfaceVariant">{where.lead}</Txt>
+            <Txt variant="label" color="primaryAccent" numberOfLines={1} style={styles.wherePlace}>{where.place}</Txt>
+            <Icon name="chevron-down" size={16} color="primaryAccent" />
+          </PressableScale>
+        </View>
+
+        <View style={[styles.inset, styles.searchRow]}>
+          <SearchBar placeholder="Search medicines, food and more" onPress={() => router.push('/search')} style={styles.flex} />
+          <PressableScale accessibilityRole="button" accessibilityLabel="Scan a barcode" onPress={() => router.push('/scan')} hitSlop={4} style={styles.scanButton}>
             <Icon name="scan" size={20} color="onSurface" />
           </PressableScale>
         </View>
 
-        {/* 3. Banners from the admin app's Homepage ads, the same ones the website shows */}
+        {/* Three ways in: Shop leads; the two membership doors sit under it. */}
         <View style={styles.section}>
-          <HomeBanner width={gridWidth} />
+          <PressableScale accessibilityRole="button" accessibilityLabel="Shop now: pharmacy, food and everyday essentials" onPress={() => openShop()} style={styles.shopCard}>
+            <View style={styles.shopCopy}>
+              <Txt variant="headlineLg" tint={colors.onPrimary}>Shop now</Txt>
+              <Txt variant="bodySm" tint={colors.onPrimaryContainer}>Browse pharmacy, food and everyday essentials.</Txt>
+              <View style={styles.shopGo}>
+                <Txt variant="label" tint={colors.onPrimary}>{`From ${shopName}`}</Txt>
+                <Icon name="arrow-right" size={16} color={colors.onPrimary} />
+              </View>
+            </View>
+            <Image source={figmaAsset('cheese-counter')} style={styles.shopArt} contentFit="cover" accessible={false} />
+          </PressableScale>
+          <View style={styles.memberRow}>
+            <PressableScale
+              accessibilityRole="button"
+              accessibilityLabel="Sign up for Member Plans"
+              onPress={() => router.push({ pathname: '/membership', params: { section: 'plans' } })}
+              style={[styles.memberCard, styles.memberCardPlans]}
+            >
+              <Icon name="star" size={20} color="secondaryAccent" />
+              <Txt variant="titleSm">{user ? 'Become a Member' : 'Sign up for Member Plans'}</Txt>
+              <Txt variant="caption" color="onSurfaceVariant">
+                {user ? `Plans from ${formatKes(200)} a month.` : 'Start with your name and mobile number.'}
+              </Txt>
+            </PressableScale>
+            <PressableScale
+              accessibilityRole="button"
+              accessibilityLabel="Member Services and Benefits"
+              onPress={() => router.push('/membership')}
+              style={[styles.memberCard, styles.memberCardBenefits]}
+            >
+              <Icon name="gift" size={20} color="primaryAccent" />
+              <Txt variant="titleSm">Member Services and Benefits</Txt>
+              <Txt variant="caption" color="onSurfaceVariant">What comes with membership.</Txt>
+            </PressableScale>
+          </View>
         </View>
 
-        {/* Buy it again: past-order items near the top, as on Amazon and Instacart. Signed-in shoppers with orders only. */}
-        {user && buyAgain.length > 0 ? (
+        <View style={styles.section}>
+          <SectionHeader title="What do you need?" actionLabel="See all" onAction={() => openShop()} />
+          <View style={styles.needs}>
+            {NEEDS.map(need => (
+              <PressableScale key={need.key} accessibilityRole="button" accessibilityLabel={need.label} onPress={() => openNeed(need.key)} style={[styles.need, { width: needWidth }]}>
+                <Image source={figmaAsset(need.image)} style={[styles.needImage, { height: needWidth }]} contentFit="cover" accessible={false} />
+                <Txt variant="titleSm" style={styles.needLabel}>{need.label}</Txt>
+              </PressableScale>
+            ))}
+          </View>
+        </View>
+
+        {/* This shop's offers, straight from the till: real prices, real end dates. */}
+        {offers.status !== 'ready' || offers.data.length > 0 ? (
           <View style={styles.section}>
-            <SectionHeader title="Buy it again" actionLabel="My Orders" onAction={() => router.push('/orders')} />
-            {/* One or two items fill the width as rows; a lone card in a rail left the right side empty. */}
-            {buyAgain.length < 3 ? (
-              <View style={styles.buyAgainList}>
-                {buyAgain.map(product => (
-                  <ProductRow
-                    key={product.id}
-                    product={product}
-                    quantity={cart.quantityOf(product.id)}
-                    onPress={() => router.push(`/product/${product.id}`)}
-                    onAdd={() => cart.add(product.id)}
-                  />
-                ))}
-              </View>
-            ) : (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.railBleed} contentContainerStyle={styles.rail}>
-                {buyAgain.map(product => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    width={layout.productCardWidth}
-                    quantity={cart.quantityOf(product.id)}
-                    onPress={() => router.push(`/product/${product.id}`)}
-                    onAdd={() => cart.add(product.id)}
-                  />
-                ))}
-              </ScrollView>
-            )}
+            <SectionHeader title={`Offers at ${shopName}`} />
+            <Txt variant="caption" color="onSurfaceVariant">The same offer prices as the till in the shop.</Txt>
+            {offers.status !== 'ready' ? <LoadState status={offers.status} placeholder="rail" onRetry={offers.retry} /> : null}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.railBleed} contentContainerStyle={styles.rail}>
+              {offers.data.map(product => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  width={layout.productCardWidth}
+                  quantity={cart.quantityOf(product.id)}
+                  onPress={() => router.push(`/product/${product.id}`)}
+                  onAdd={() => cart.add(product.id)}
+                />
+              ))}
+            </ScrollView>
           </View>
         ) : null}
 
-        {/* 4. Top Categories */}
         <View style={styles.section}>
-          <SectionHeader title="Top Categories" actionLabel="See All" onAction={() => router.push('/(tabs)/categories')} />
+          <WaterCheckIn compact onOpen={() => router.push('/(tabs)/wellness')} />
+        </View>
+
+        {/* Past orders first, topped up with fresh lines in stock at this shop (owner, 18 Nov 2026). */}
+        <View style={styles.section}>
+          <SectionHeader title="Picked for your week" actionLabel="Browse" onAction={() => openShop()} />
+          {picks.length === 0 && fresh.status !== 'ready' ? <LoadState status={fresh.status} placeholder="rail" onRetry={fresh.retry} /> : null}
           <View style={styles.grid}>
-            {homeCategoryTiles.map(category => (
-              <View key={category.slug} style={styles.tileWrap}>
-                <CategoryTile
-                  name={category.name}
-                  image={category.image}
-                  onPress={() =>
-                    router.push({
-                      pathname: '/(tabs)/categories',
-                      params: { vertical: category.vertical, focus: category.slug, t: String(Date.now()) },
-                    })
-                  }
-                />
-                {category.featured ? (
-                  <View style={styles.tilePlus}>
-                    <Icon name="plus" size={11} color="onPrimary" />
-                  </View>
-                ) : null}
-              </View>
-            ))}
-            {Array.from({ length: gridFillers }, (_, index) => (
-              <View key={`filler-${index}`} style={styles.tileWrap} />
-            ))}
-          </View>
-        </View>
-
-        {/* 5. Xana Club rewards */}
-        <View style={styles.section}>
-          <LinearGradient colors={gradients.club} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.clubCard}>
-            {user && club ? (
-              <>
-                <View style={styles.clubHead}>
-                  <View style={styles.clubHeadText}>
-                    <Txt variant="overline" tint={colors.onPrimaryContainer}>
-                      Xana Club
-                    </Txt>
-                    <Txt variant="headlineLg" tint={colors.onPrimary}>
-                      {`${user.clubTier} member`}
-                    </Txt>
-                  </View>
-                  <View style={styles.clubPoints}>
-                    <Txt variant="display" tint={colors.onPrimary}>
-                      {user.clubPoints.toLocaleString('en-KE')}
-                    </Txt>
-                    <Txt variant="caption" tint={colors.white70}>
-                      points
-                    </Txt>
-                  </View>
-                </View>
-                <ProgressBar value={club.progress} height={6} trackColor={colors.white70} fillColor={colors.tertiaryFixed} />
-                <View style={styles.clubFoot}>
-                  <Txt variant="caption" tint={colors.white70} style={styles.clubFootText}>
-                    {club.caption}
-                  </Txt>
-                  <PressableScale
-                    accessibilityRole="button"
-                    accessibilityLabel="View Xana Club rewards"
-                    onPress={() => router.push('/(tabs)/profile')}
-                    hitSlop={8}
-                    style={styles.clubAction}
-                  >
-                    <Txt variant="label" tint={colors.onPrimary}>
-                      View rewards
-                    </Txt>
-                    <Icon name="chevron-right" size={16} color={colors.onPrimary} />
-                  </PressableScale>
-                </View>
-              </>
-            ) : (
-              <>
-                <Txt variant="overline" tint={colors.onPrimaryContainer}>
-                  Xana Club
-                </Txt>
-                <Txt variant="headlineLg" tint={colors.onPrimary}>
-                  Rewards on every order
-                </Txt>
-                <Txt variant="bodySm" tint={colors.onPrimaryContainer}>
-                  Join free and earn points on groceries, pharmacy refills and wholesale cartons.
-                </Txt>
-                <PressableScale
-                  accessibilityRole="button"
-                  accessibilityLabel="Join Xana Club"
-                  onPress={() => router.push('/login')}
-                  hitSlop={8}
-                  style={styles.clubAction}
-                >
-                  <Txt variant="label" tint={colors.onPrimary}>
-                    Join the club
-                  </Txt>
-                  <Icon name="chevron-right" size={16} color={colors.onPrimary} />
-                </PressableScale>
-              </>
-            )}
-          </LinearGradient>
-        </View>
-
-        {/* 6a. Trending Deals (sample offers until marketing sets real ones) */}
-        {LAUNCH_SCOPE.homeOffers ? <View style={styles.section}>
-          <SectionHeader
-            title="Trending Deals"
-            icon="flame"
-            actionLabel="View All"
-            onAction={() => router.push('/(tabs)/categories')}
-          />
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.railBleed} contentContainerStyle={styles.rail}>
-            {trendingDeals.map(deal => (
-              <DealCard key={deal.id} deal={deal} onPress={() => router.push(DEAL_ROUTES[deal.tone])} />
-            ))}
-          </ScrollView>
-        </View> : null}
-
-        {/* 6b. Fresh Everyday rail */}
-        <View style={styles.section}>
-          <SectionHeader
-            title="Fresh Everyday"
-            actionLabel="See All"
-            onAction={() =>
-              router.push({ pathname: '/(tabs)/categories', params: { vertical: 'groceries', t: String(Date.now()) } })
-            }
-          />
-          {fresh.status !== 'ready' ? <LoadState status={fresh.status} placeholder="rail" onRetry={fresh.retry} /> : null}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.railBleed} contentContainerStyle={styles.rail}>
-            {freshEveryday.map(product => (
+            {picks.map(product => (
               <ProductCard
                 key={product.id}
                 product={product}
-                width={layout.productCardWidth}
+                width={(contentWidth - layout.gutter) / 2}
                 quantity={cart.quantityOf(product.id)}
                 onPress={() => router.push(`/product/${product.id}`)}
                 onAdd={() => cart.add(product.id)}
               />
             ))}
-          </ScrollView>
+          </View>
         </View>
 
-        {/* 7. M-Pesa micro-banner (M-Pesa is simulated until DPO is live) */}
-        {LAUNCH_SCOPE.homeOffers ? <View style={styles.section}>
-          <PressableScale
-            accessibilityRole="button"
-            accessibilityLabel="1-Tap M-Pesa Checkout"
-            onPress={() => router.push('/checkout')}
-            style={styles.mpesaBanner}
-          >
-            <View style={styles.mpesaGlyph}>
-              <Icon name="mpesa" size={20} color="primaryAccent" />
-            </View>
-            <View style={styles.mpesaCopy}>
-              <Txt variant="title">1-Tap M-Pesa Checkout</Txt>
-            </View>
-            <Icon name="chevron-right" size={18} color="onSurfaceVariant" />
-          </PressableScale>
-        </View> : null}
+        {/* Homepage ads from the admin app, the same ones the website shows. */}
+        <View style={styles.section}>
+          <HomeBanner width={contentWidth} />
+        </View>
+
+        <View style={[styles.section, styles.notice]}>
+          <Icon name="prescription" size={16} color="onSurfaceVariant" />
+          <Txt variant="caption" color="onSurfaceVariant" style={styles.flex}>
+            Medicine orders are subject to pharmacist review.
+          </Txt>
+        </View>
       </ScrollView>
 
       <StoreChooser visible={storeSheetOpen} onClose={() => setStoreSheetOpen(false)} />
-
-      <BottomSheet
-        visible={alertsOpen}
-        onClose={() => setAlertsOpen(false)}
-        title="Notifications"
-        footer={ALERTS.length === 0 ? undefined : (
-          <Button
-            label={alertsUnread ? 'Mark all as read' : 'All caught up'}
-            variant="tonal"
-            disabled={!alertsUnread}
-            onPress={() => {
-              setAlertsUnread(false);
-              setAlertsOpen(false);
-            }}
-          />
-        )}
-        scrollable
-      >
-        {ALERTS.length === 0 ? (
-          <EmptyState icon="bell" title="No notifications yet" description="Order updates come to your phone as notifications." />
-        ) : null}
-        {ALERTS.map(alert => (
-          <View key={alert.id} style={styles.alertRow}>
-            <View style={styles.alertIcon}>
-              <Icon name={alert.icon} size={18} color="primaryAccent" />
-            </View>
-            <View style={styles.alertBody}>
-              <Txt variant="title">{alert.title}</Txt>
-              <Txt variant="caption" color="onSurfaceVariant">
-                {alert.body}
-              </Txt>
-              <Txt variant="labelSm" color="outline">
-                {alert.time}
-              </Txt>
-            </View>
-          </View>
-        ))}
-      </BottomSheet>
     </Screen>
-  );
-}
-
-/** One Trending Deals card: offer badge, copy on the left, artwork on the right. */
-function DealCard({ deal, onPress }: { deal: Deal; onPress: () => void }) {
-  const { colors } = useTheme();
-  const styles = useThemeStyles(createStyles);
-  const art = figmaAsset(deal.image);
-  const surface = dealSurface(deal.tone, colors);
-  const badge = deal.eyebrow
-    ? { label: deal.eyebrow, tone: 'discount' as const }
-    : deal.tag
-      ? { label: deal.tag, tone: 'fresh' as const }
-      : null;
-
-  return (
-    <PressableScale
-      accessibilityRole="button"
-      accessibilityLabel={deal.title}
-      onPress={onPress}
-      style={[styles.deal, { backgroundColor: surface }]}
-    >
-      <View style={styles.dealArt}>
-        {art ? <Image source={art} style={styles.heroImage} contentFit="cover" transition={120} /> : null}
-        <LinearGradient
-          colors={[surface, colors.transparent]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.dealFade}
-        />
-      </View>
-      <View style={styles.dealBody}>
-        <View style={styles.dealCopy}>
-          {badge ? <Badge label={badge.label} tone={badge.tone} style={styles.dealBadge} /> : null}
-          <Txt variant="titleSm" numberOfLines={2}>
-            {deal.title}
-          </Txt>
-          <Txt variant="caption" color="onSurfaceVariant" numberOfLines={2}>
-            {deal.description}
-          </Txt>
-        </View>
-        <View style={styles.dealCta}>
-          <Txt variant="label" color="primaryAccent" numberOfLines={1}>
-            {deal.cta}
-          </Txt>
-          <Icon name="arrow-right" size={14} color="primaryAccent" />
-        </View>
-      </View>
-    </PressableScale>
   );
 }
 
@@ -501,46 +266,59 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   screenBody: { paddingTop: spacing.none, paddingBottom: spacing.none },
   scroll: { flex: 1 },
   page: { paddingBottom: spacing.colossal },
+  flex: { flex: 1 },
   inset: { paddingHorizontal: layout.screenMargin },
-  /** Every section sits 28pt under the one above it, per the frame. */
   section: { paddingHorizontal: layout.screenMargin, marginTop: spacing.xxxl },
 
-  locationPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    height: 32,
-    paddingHorizontal: spacing.sm,
-    borderRadius: radius.pill,
-    backgroundColor: colors.surfaceContainerLow,
+  masthead: {
+    paddingHorizontal: layout.screenMargin,
+    paddingBottom: spacing.lg,
+    gap: spacing.lg,
+    backgroundColor: colors.mintSurface,
+    borderBottomLeftRadius: radius.xxl,
+    borderBottomRightRadius: radius.xxl,
   },
-  bell: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
-  unreadDot: {
-    position: 'absolute',
-    top: spacing.xs,
-    right: spacing.xs,
-    width: 8,
-    height: 8,
-    borderRadius: radius.pill,
-    backgroundColor: colors.secondaryContainer,
-    borderWidth: 1.5,
-    borderColor: colors.surface,
-  },
-  account: {
-    width: 32,
-    height: 32,
+  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  wordmark: { width: 86, height: 32 },
+  topActions: { flexDirection: 'row', gap: spacing.sm },
+  roundButton: {
+    width: 44,
+    height: 44,
     borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.surfaceContainerHigh,
-    borderWidth: 1,
-    borderColor: colors.outlineSoft30,
+    backgroundColor: colors.surface,
+    ...elevation.hairline,
   },
-  accountSignedIn: { backgroundColor: colors.primaryContainer, borderColor: colors.primaryContainer },
+  roundButtonSignedIn: { backgroundColor: colors.primaryContainer },
+  cartBadge: {
+    position: 'absolute',
+    top: 4,
+    right: 2,
+    minWidth: 16,
+    height: 16,
+    paddingHorizontal: 3,
+    borderRadius: radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.secondaryContainer,
+  },
+  greeting: { gap: spacing.xs },
+  headline: { fontSize: 26, lineHeight: 32 },
+  where: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    alignSelf: 'flex-start',
+    maxWidth: '100%',
+    minHeight: 40,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.pill,
+    backgroundColor: colors.surface,
+  },
+  wherePlace: { flexShrink: 1 },
 
-  searchSection: { paddingTop: spacing.lg },
-  searchRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  searchField: { flex: 1 },
+  searchRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginTop: spacing.lg },
   scanButton: {
     width: 44,
     height: 44,
@@ -550,90 +328,30 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     backgroundColor: colors.surfaceContainerLow,
   },
 
-  heroImage: { width: '100%', height: '100%' },
-
-  grid: {
+  shopCard: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    rowGap: spacing.lg,
-    marginTop: spacing.sm,
-  },
-  tileWrap: { width: layout.categoryTileSize },
-  tilePlus: {
-    position: 'absolute',
-    top: -spacing.xs,
-    right: -spacing.xs,
-    width: 20,
-    height: 20,
-    borderRadius: radius.pill,
+    minHeight: 132,
+    borderRadius: radius.card,
+    overflow: 'hidden',
     backgroundColor: colors.primaryContainer,
-    borderWidth: 2,
-    borderColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...elevation.hairline,
+    ...elevation.card,
   },
+  shopCopy: { flex: 1, padding: spacing.lg, gap: spacing.xs, justifyContent: 'center' },
+  shopGo: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, marginTop: spacing.sm },
+  shopArt: { width: '38%' },
+  memberRow: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.md },
+  memberCard: { flex: 1, gap: spacing.xs, padding: spacing.lg, borderRadius: radius.card },
+  memberCardPlans: { backgroundColor: colors.amberTint15 },
+  memberCardBenefits: { backgroundColor: colors.mintSurface },
 
-  clubCard: { borderRadius: radius.card, padding: spacing.lg, gap: spacing.md },
-  clubHead: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: spacing.lg },
-  clubHeadText: { flex: 1, gap: spacing.xxs },
-  clubPoints: { alignItems: 'flex-end' },
-  clubFoot: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md },
-  clubFootText: { flexShrink: 1 },
-  clubAction: { flexDirection: 'row', alignItems: 'center', gap: spacing.xxs },
+  needs: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.sm },
+  need: { gap: spacing.sm },
+  needImage: { width: '100%', borderRadius: radius.card, backgroundColor: colors.surfaceContainerLow },
+  needLabel: { textAlign: 'center' },
 
   rail: { gap: spacing.md, paddingHorizontal: layout.screenMargin, paddingTop: spacing.sm },
-  buyAgainList: { gap: spacing.sm, paddingTop: spacing.sm },
-  /** Rails sit inside a padded section but scroll edge to edge. */
   railBleed: { marginHorizontal: -layout.screenMargin },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: layout.gutter, marginTop: spacing.sm },
 
-  deal: {
-    width: DEAL_CARD_WIDTH,
-    minHeight: DEAL_CARD_HEIGHT,
-    padding: spacing.lg,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    borderColor: colors.outlineSoft30,
-    overflow: 'hidden',
-    ...elevation.hairline,
-  },
-  dealArt: { position: 'absolute', top: 0, right: 0, bottom: 0, width: '40%' },
-  dealFade: { position: 'absolute', top: 0, bottom: 0, left: 0, width: 24 },
-  // Copy stops short of the art panel (40% wide) so titles never run under the picture.
-  dealBody: { flex: 1, justifyContent: 'space-between', gap: spacing.sm, paddingRight: '30%' },
-  dealCopy: { gap: spacing.xs },
-  dealBadge: { alignSelf: 'flex-start' },
-  dealCta: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-
-  mpesaBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.lg,
-    borderRadius: radius.card,
-    backgroundColor: colors.surfaceContainerLow,
-    borderWidth: 1,
-    borderColor: colors.outlineSoft30,
-  },
-  mpesaGlyph: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.pill,
-    backgroundColor: colors.mintSurface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  mpesaCopy: { flex: 1, gap: spacing.xxs },
-
-  alertRow: { flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start' },
-  alertIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: radius.pill,
-    backgroundColor: colors.mintSurface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  alertBody: { flex: 1, gap: spacing.xxs },
+  notice: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
 });

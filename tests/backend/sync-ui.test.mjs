@@ -41,10 +41,11 @@ vi.mock('@/store/orders', () => ({
 vi.mock('@/store/cart', () => ({
   useCart: () => ({ add: vi.fn(), summary: { wholesaleSavings: mocks.cartSavings } }), unitPrice: product => product.price,
 }));
+vi.mock('@/lib/app-version', () => ({ appVersionLabel: () => 'Version 1.0.0 · test' }));
 vi.mock('@/store/fulfilment', () => ({ useFulfilment: () => mocks.fulfilment }));
 
 import ProfileRoute from '@/app/(tabs)/profile';
-import OrderHistoryScreen from '@/app/orders/index';
+import OrderHistoryScreen from '@/app/(tabs)/orders';
 import SpendingScreen from '@/app/spending';
 
 let root;

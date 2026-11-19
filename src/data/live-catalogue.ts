@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { parsePersisted, persisted, save, STORAGE_KEYS } from '@/lib/storage';
 import { supabase } from '@/lib/supabase';
+import { parseOffers } from '@/lib/branch-offers';
 
 import type { Product } from './types';
 
@@ -27,9 +28,10 @@ type CatalogueRow = {
   age_restricted: boolean;
   photo_url: string | null;
   price_tiers: Product['priceTiers'];
+  offers_by_location?: unknown;
 };
 
-const COLUMNS = 'item_no,name,price,stock,stock_by_location,category,requires_rx,age_restricted,photo_url,price_tiers';
+const COLUMNS = 'item_no,name,price,stock,stock_by_location,category,requires_rx,age_restricted,photo_url,price_tiers,offers_by_location';
 
 /** App category slug for every BC inventory posting group (the `category` column). */
 export const BC_GROUP_CATEGORY: Record<string, string> = {
@@ -116,6 +118,7 @@ const toProduct = (row: CatalogueRow): Product => {
     pack: packFromName(name),
     price: Number(row.price),
     priceTiers: row.price_tiers ?? [],
+    offers: parseOffers(row.offers_by_location),
     image: photoOf(row) ?? '',
     category: isDeliItem(row.item_no) ? 'deli-cold-cuts' : BC_GROUP_CATEGORY[row.category ?? ''] ?? 'general-merchandise',
     rxRequired: row.requires_rx,
@@ -278,6 +281,28 @@ export function fetchShelf({ groups, nameHas, limit = 8, deli }: LiveQuery, opti
   const words = (nameHas ?? []).flatMap(safeWords);
   if (words.length > 0) request = request.or(words.map(word => `name.ilike.*${word}*`).join(','));
   return run(ordered(refine(request, options), options.sort).order('has_photo', { ascending: false }).order('stock', { ascending: false }).limit(limit));
+}
+
+/**
+ * Items on a POS offer at one branch (William, 18 Nov 2026), in stock there, never
+ * prescription or age-restricted. Ones with a photo first, then the deepest saving.
+ */
+export async function fetchBranchOffers(branch: string, limit = 12): Promise<Product[]> {
+  const code = branch.toUpperCase().replace(/[^A-Z]/g, '');
+  const products = await run(
+    supabase.from('catalogue').select(COLUMNS)
+      .not(`offers_by_location->${code}`, 'is', null)
+      .eq('requires_rx', false)
+      .eq('age_restricted', false)
+      .gt('stock', 0)
+      .order('has_photo', { ascending: false })
+      .limit(80),
+  );
+  const saving = (product: Product) => product.price - (product.offers?.[code]?.price ?? product.price);
+  return products
+    .filter(product => (product.stockByStore?.[code] ?? 0) > 0 && saving(product) > 0)
+    .sort((a, b) => Number(Boolean(b.image)) - Number(Boolean(a.image)) || saving(b) / b.price - saving(a) / a.price)
+    .slice(0, limit);
 }
 
 /** Free-text search: every word must appear in the name or the BC group. In-stock first, then ones with a photo. */

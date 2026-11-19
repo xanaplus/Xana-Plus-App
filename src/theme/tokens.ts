@@ -76,6 +76,8 @@ export const colors = {
   warningDeep: '#b45309',
 
   // ── App-specific tints ──────────────────────────────────────────────────
+  /** Water in the wellness check-in glass and its marks. */
+  water: '#8fd0ff',
   mintSurface: '#eaf4ee',
   mintSubtle: '#ecfdf5',
   mintPale: '#e8f5e9',
@@ -159,6 +161,7 @@ export const darkColors: Palette = {
   warning: '#ffc36b',
   warningStrong: '#f2a847',
   warningDeep: '#ffd08a',
+  water: '#7cc2f2',
   mintSurface: '#202020',
   mintSubtle: '#1c1c1c',
   mintPale: '#252525',

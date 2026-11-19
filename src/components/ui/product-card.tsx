@@ -13,6 +13,7 @@ import type { Product, ProductBadge } from '@/data/types';
 import { discountPercent, formatKes, nameWithoutPack } from '@/lib/format';
 import { useCart } from '@/store/cart';
 import { useStoreStock } from '@/store/fulfilment';
+import { useOffer } from '@/lib/use-offer';
 import { elevation, radius, spacing } from '@/theme';
 import { useTheme } from '@/theme/provider';
 
@@ -58,13 +59,21 @@ export function ProductCard({ product, width, quantity = 0, onPress, onAdd, styl
   const topBadge = product.badges?.[0];
   const press = usePressScale();
   const available = useStoreStock().inStock(product);
+  // The chosen store's POS offer wins over the sample "was" price.
+  const offer = useOffer(product);
+  const shownPrice = offer?.price ?? product.price;
+  const struck = offer ? product.price : product.wasPrice;
 
   return (
     <Animated.View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.outlineSoft30 }, width ? { width } : styles.flex, style, press.style]}>
       <View style={[styles.body, !available && styles.faded]}>
         <View style={[styles.imageWrap, { backgroundColor: colors.surface }]}>
           <ProductPhoto source={image} productId={product.id} accessibilityLabel={`${product.name} product photo`} variant="card" />
-          {topBadge ? (
+          {offer ? (
+            <View style={styles.badges}>
+              <Badge label={`SAVE ${discountPercent(offer.price, product.price)}%`} tone="discount" />
+            </View>
+          ) : topBadge ? (
             <View style={styles.badges}>
               <Badge
                 label={topBadge === 'discount' && product.wasPrice ? `SAVE ${discountPercent(product.price, product.wasPrice)}%` : badgeLabel[topBadge]}
@@ -76,11 +85,11 @@ export function ProductCard({ product, width, quantity = 0, onPress, onAdd, styl
 
         <View style={styles.priceRow}>
           <Txt variant="titleLg" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.68} style={styles.price}>
-            {formatKes(product.price)}
+            {formatKes(shownPrice)}
           </Txt>
-          {product.wasPrice ? (
+          {struck ? (
             <Txt variant="priceStrike" color="outline" numberOfLines={1} style={styles.strike}>
-              {formatKes(product.wasPrice)}
+              {formatKes(struck)}
             </Txt>
           ) : null}
         </View>
@@ -166,6 +175,8 @@ export function ProductRow({ product, eyebrow, description, quantity = 0, onPres
   const { colors } = useTheme();
   const image = figmaAsset(product.image);
   const available = useStoreStock().inStock(product);
+  const offer = useOffer(product);
+  const struck = offer ? product.price : product.wasPrice;
 
   return (
     <View style={[styles.row, { backgroundColor: colors.surface }, style]}>
@@ -185,10 +196,10 @@ export function ProductRow({ product, eyebrow, description, quantity = 0, onPres
           {description ?? product.pack}
         </Txt>
         <View style={styles.rowFooter}>
-          <Txt variant="title">{formatKes(product.price)}</Txt>
-          {product.wasPrice ? (
+          <Txt variant="title">{formatKes(offer?.price ?? product.price)}</Txt>
+          {struck ? (
             <Txt variant="priceStrike" color="outline">
-              {formatKes(product.wasPrice)}
+              {formatKes(struck)}
             </Txt>
           ) : null}
         </View>

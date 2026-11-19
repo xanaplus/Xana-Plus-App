@@ -21,14 +21,18 @@ type TabMeta = {
   fab?: boolean;
 };
 
-/** Matches the tab order used in Expo Router's `(tabs)` group. */
+/**
+ * The owner's five tabs (18 Nov 2026), in the `(tabs)` group's order. Pharmacy and
+ * Profile are routes without a tab: they are skipped here.
+ */
 const TAB_META: Record<string, TabMeta> = {
   index: { label: 'Home', icon: 'home', activeIcon: 'home-filled' },
-  categories: { label: 'Categories', icon: 'categories', activeIcon: 'categories-filled' },
-  pharmacy: { label: 'Pharmacy', icon: 'pharmacy', fab: true },
-  profile: { label: 'Profile', icon: 'profile', activeIcon: 'profile-filled' },
+  categories: { label: 'Shop', icon: 'categories', activeIcon: 'categories-filled' },
+  wellness: { label: 'Wellness', icon: 'heart', activeIcon: 'heart-filled' },
+  orders: { label: 'Orders', icon: 'receipt' },
   cart: { label: 'Cart', icon: 'cart', activeIcon: 'cart-filled' },
 };
+const TAB_COUNT = Object.keys(TAB_META).length;
 
 /** Fixed bottom navigation with the raised green Pharmacy action. */
 export function TabBar({ state, navigation }: BottomTabBarProps) {
@@ -53,7 +57,7 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
             navigation.navigate(route.name);
           }
         };
-        const position = `tab, ${index + 1} of ${state.routes.length}`;
+        const position = `tab, ${Object.keys(TAB_META).indexOf(route.name) + 1} of ${TAB_COUNT}`;
 
         if (meta.fab) {
           return (

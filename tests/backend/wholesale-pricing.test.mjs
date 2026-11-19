@@ -4,6 +4,7 @@ import { webcrypto } from 'node:crypto';
 import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 import { cleanKraPin } from '../../src/lib/kra-pin.ts';
+import { activeOffer, parseOffers } from '../../src/lib/branch-offers.ts';
 import { activePriceTiers, lineTotal, pricingDate, quantityUnitPrice } from '../../src/lib/quantity-pricing.ts';
 
 const tiers = [{ minQty: 6, unitPrice: 155 }, { minQty: 24, unitPrice: 145 }];
@@ -55,7 +56,7 @@ function checkout(rows) {
     },
   };
   const helpers={adminClient:()=>db,preflight:()=>null,reply:(status,body)=>Response.json(body,{status})};
-  const context={exports:{},Request,Response,Intl,Date,Math,Number,Map,Set,crypto:webcrypto,Deno:{serve:fn=>{handler=fn;}},require:path=>path.includes('quantity-pricing')?{lineTotal,quantityUnitPrice}:path.includes('kra-pin')?{cleanKraPin}:helpers};
+  const context={exports:{},Request,Response,Intl,Date,Math,Number,Map,Set,crypto:webcrypto,Deno:{serve:fn=>{handler=fn;}},require:path=>path.includes('quantity-pricing')?{lineTotal,quantityUnitPrice}:path.includes('kra-pin')?{cleanKraPin}:path.includes('branch-offers')?{activeOffer,parseOffers}:helpers};
   vm.runInNewContext(compile('supabase/functions/place-order/index.ts'),context);
   return {saved, async run(lines, extra={}) {
     const response=await handler(new Request('https://test.invalid',{method:'POST',headers:{Authorization:'Bearer synthetic'},body:JSON.stringify({

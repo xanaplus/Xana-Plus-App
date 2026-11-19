@@ -1,10 +1,11 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { deliverySlots, stores } from '@/data/catalog';
 import type { FulfilmentMode, PaymentMethodId, Product } from '@/data/types';
 import { parsePersisted, persisted, save, STORAGE_KEYS } from '@/lib/storage';
 import { supabase } from '@/lib/supabase';
 import { LAUNCH_SCOPE } from '@/lib/launch-scope';
+import { setPricingBranch } from '@/lib/branch-offers';
 import { useSession } from '@/store/session';
 
 export type Address = {
@@ -32,6 +33,8 @@ type PersistedFulfilment = {
   storeId: string;
   /** The customer picked the store themselves (absent in data saved before 15 Oct 2026). */
   storeChosen?: boolean;
+  /** The customer picked delivery or pickup themselves (absent before 19 Nov 2026, when pickup became the default). */
+  modeChosen?: boolean;
   addressId: string;
   addresses: Address[];
   slotId: string;
@@ -94,7 +97,8 @@ const hydrateFulfilment = (): PersistedFulfilment | null => parsePersisted(persi
  * cold start forgot the chosen store and then saved the defaults over it.
  */
 const storedFulfilment = (): PersistedFulfilment => hydrateFulfilment() ?? {
-  mode: 'delivery' as FulfilmentMode,
+  // Pickup by default (owner, 19 Nov 2026), as the website: "Collect from <shop>".
+  mode: 'pickup' as FulfilmentMode,
   storeId: stores[0].id,
   addressId: defaultAddress.id,
   addresses: [defaultAddress],
@@ -159,8 +163,19 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
   const { user, isDemo } = useSession();
   const userId = user?.id ?? null;
   const [stored] = useState(storedFulfilment);
-  const [mode, setMode] = useState<FulfilmentMode>(stored.mode);
-  const [storeId, setStoreIdState] = useState<string>(stored.storeId);
+  // Phones that never chose (all data saved before 19 Nov 2026) move to the new pickup default.
+  const [mode, setModeState] = useState<FulfilmentMode>(stored.modeChosen ? stored.mode : 'pickup');
+  const [modeChosen, setModeChosen] = useState(stored.modeChosen === true);
+  const setMode = useCallback((next: FulfilmentMode) => {
+    setModeState(next);
+    setModeChosen(true);
+  }, []);
+  const [storeId, setStoreIdState] = useState<string>(() => {
+    // Prices follow the chosen store's POS offers from the very first render.
+    setPricingBranch(stored.storeId);
+    return stored.storeId;
+  });
+  useLayoutEffect(() => setPricingBranch(storeId), [storeId]);
   const [storeChosen, setStoreChosen] = useState(stored.storeChosen === true);
   const setStoreId = useCallback((id: string) => {
     setStoreIdState(id);
@@ -274,6 +289,7 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     save(STORAGE_KEYS.fulfilment, {
       mode,
+      modeChosen,
       storeId,
       storeChosen,
       addressId,
@@ -282,7 +298,7 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
       paymentMethod,
       mpesaNumber: storedMpesaNumber,
     } satisfies PersistedFulfilment);
-  }, [mode, storeId, storeChosen, addressId, savedAddresses, slotId, paymentMethod, storedMpesaNumber]);
+  }, [mode, modeChosen, storeId, storeChosen, addressId, savedAddresses, slotId, paymentMethod, storedMpesaNumber]);
 
   const value = useMemo<FulfilmentContextValue>(
     () => ({
@@ -316,7 +332,7 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
       kraPinDraft,
       setKraPinDraft,
     }),
-    [mode, storeId, setStoreId, storeChosen, store, address, addresses, addAddress, removeAddress, hasAddress, slotId, slot, paymentMethod, mpesaNumber, pointsRedeemed, ageConfirmed, rxReference, promo, kraPinDraft],
+    [mode, setMode, storeId, setStoreId, storeChosen, store, address, addresses, addAddress, removeAddress, hasAddress, slotId, slot, paymentMethod, mpesaNumber, pointsRedeemed, ageConfirmed, rxReference, promo, kraPinDraft],
   );
 
   return <FulfilmentContext.Provider value={value}>{children}</FulfilmentContext.Provider>;

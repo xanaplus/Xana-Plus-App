@@ -27,6 +27,8 @@ import type { CategoryVertical, Product } from '@/data/types';
 import { discountPercent, formatKes } from '@/lib/format';
 import { PharmacistWhatsAppSheet } from '@/features/pharmacy/whatsapp-sheet';
 import { activePriceTiers, type PriceTier } from '@/lib/quantity-pricing';
+import { activeOffer, offerEndsLabel } from '@/lib/branch-offers';
+import { usePricingBranch } from '@/lib/use-offer';
 import { unitPrice, useCart } from '@/store/cart';
 import { useFulfilment, useStoreStock } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
@@ -247,6 +249,7 @@ function ProductDetail({ product }: { product: Product }) {
   const copy = PRODUCT_COPY[product.id];
   const eyebrow = aisle ? VERTICAL_EYEBROW[aisle.vertical] ?? aisle.label : undefined;
   const { inStock: inStockHere, storeShortName } = useStoreStock();
+  const pricingBranchNow = usePricingBranch();
   const inStock = inStockHere(product);
 
   /** "Home / Household / Cleaning" for grocery packs, "Pharmacy / Pain Relief / Paracetamol" for pharmacy. */
@@ -264,7 +267,9 @@ function ProductDetail({ product }: { product: Product }) {
       : product.wholesalePrice !== undefined && product.wholesaleMinQty !== undefined
         ? [{ minQty: product.wholesaleMinQty, unitPrice: product.wholesalePrice }]
         : [];
-  const tiers = activePriceTiers(sourceTiers).filter(priceTier => priceTier.unitPrice < product.price);
+  // An item on offer at the chosen store sells at the offer price for every quantity (no quantity prices).
+  const offer = activeOffer(product, pricingBranchNow);
+  const tiers = offer ? [] : activePriceTiers(sourceTiers).filter(priceTier => priceTier.unitPrice < product.price);
   const currentUnitPrice = unitPrice(product, quantity);
   const tierSaving = Math.max(0, product.price - currentUnitPrice);
   const saving = product.wasPrice !== undefined ? product.wasPrice - product.price : 0;
@@ -411,13 +416,25 @@ function ProductDetail({ product }: { product: Product }) {
                 </Txt>
               ) : null}
               {tierSaving > 0 ? (
-                <Badge label={`Save ${formatKes(tierSaving)}`} tone="brand" />
+                // A shop offer reads like the offer badge on product cards; a quantity price keeps the green.
+                <Badge
+                  label={offer ? `SAVE ${discountPercent(offer.price, product.price)}%` : `Save ${formatKes(tierSaving)}`}
+                  tone={offer ? 'discount' : 'brand'}
+                />
               ) : saving > 0 ? (
                 <Badge label={`Save ${formatKes(saving)}`} tone="warning" />
               ) : null}
             </View>
             {isPharmacy ? <NoticePill icon="check-circle" label="Licensed Pharmacy Stock" tone="info" /> : null}
           </View>
+          {offer ? (
+            <View style={styles.stockRow}>
+              <Icon name="tag" size={14} color="secondaryAccent" />
+              <Txt variant="label" color="secondaryAccent">
+                {[`Offer at ${storeShortName}`, offerEndsLabel(offer)].filter(Boolean).join(' · ')}
+              </Txt>
+            </View>
+          ) : null}
           {isPharmacy ? (
             <Txt variant="bodySm" color="onSurfaceVariant">
               {REGULATED_NOTE}

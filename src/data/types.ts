@@ -23,6 +23,8 @@ export type Product = {
   /** Wholesale price applied from `wholesaleMinQty` units upwards. */
   wholesalePrice?: number;
   wholesaleMinQty?: number;
+  /** POS offers per branch code; an item on offer at the chosen store sells at that price for every quantity. */
+  offers?: import('../lib/branch-offers').BranchOffers;
   /** General-customer BC quantity prices, in the item's base unit and inclusive of VAT. */
   priceTiers?: import('../lib/quantity-pricing').PriceTier[];
   image: string;
