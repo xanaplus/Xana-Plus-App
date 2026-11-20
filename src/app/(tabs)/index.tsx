@@ -10,6 +10,7 @@ import { PressableScale } from '@/components/ui/pressable-scale';
 import { verticalBySlug } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
 import { formatKes } from '@/lib/format';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { activePriceTiers } from '@/lib/quantity-pricing';
 import { fetchBestSellers, fetchBranchOffers, useLive, useShelves } from '@/data/live-catalogue';
 import type { Product } from '@/data/types';
@@ -162,7 +163,7 @@ export default function HomeRoute() {
 
   const openShop = (params?: Record<string, string>) => router.push({ pathname: '/(tabs)/categories', params: shopParams(params) });
   const openNeed = (key: (typeof NEEDS)[number]['key']) =>
-    key === 'pharmacy' ? router.push('/(tabs)/pharmacy') : key === 'wellness' ? router.push('/(tabs)/wellness') : openShop({ vertical: 'groceries', focus: 'fresh-produce' });
+    key === 'pharmacy' ? router.push('/(tabs)/pharmacy') : key === 'wellness' ? router.push('/(tabs)/wellness') : openShop({ vertical: 'retail', focus: 'fresh-produce' });
   const needWidth = (contentWidth - spacing.md * 2) / 3;
 
   return (
@@ -199,30 +200,32 @@ export default function HomeRoute() {
             </View>
             <Image source={figmaAsset('cheese-counter')} style={styles.shopArt} contentFit="cover" accessible={false} />
           </PressableScale>
-          <View style={styles.memberRow}>
-            <PressableScale
-              accessibilityRole="button"
-              accessibilityLabel="Sign up for Member Plans"
-              onPress={() => router.push({ pathname: '/membership', params: { section: 'plans' } })}
-              style={[styles.memberCard, styles.memberCardPlans]}
-            >
-              <Icon name="star" size={20} color="secondaryAccent" />
-              <Txt variant="titleSm">{user ? 'Become a Member' : 'Sign up for Member Plans'}</Txt>
-              <Txt variant="caption" color="onSurfaceVariant">
-                {user ? `Plans from ${formatKes(200)} a month.` : 'Start with your name and mobile number.'}
-              </Txt>
-            </PressableScale>
-            <PressableScale
-              accessibilityRole="button"
-              accessibilityLabel="Member Services and Benefits"
-              onPress={() => router.push('/membership')}
-              style={[styles.memberCard, styles.memberCardBenefits]}
-            >
-              <Icon name="gift" size={20} color="primaryAccent" />
-              <Txt variant="titleSm">Member Services and Benefits</Txt>
-              <Txt variant="caption" color="onSurfaceVariant">What comes with membership.</Txt>
-            </PressableScale>
-          </View>
+          {LAUNCH_SCOPE.memberPlans ? (
+            <View style={styles.memberRow}>
+              <PressableScale
+                accessibilityRole="button"
+                accessibilityLabel="Sign up for Member Plans"
+                onPress={() => router.push({ pathname: '/membership', params: { section: 'plans' } })}
+                style={[styles.memberCard, styles.memberCardPlans]}
+              >
+                <Icon name="star" size={20} color="secondaryAccent" />
+                <Txt variant="titleSm">{user ? 'Become a Member' : 'Sign up for Member Plans'}</Txt>
+                <Txt variant="caption" color="onSurfaceVariant">
+                  {user ? `Plans from ${formatKes(200)} a month.` : 'Start with your name and mobile number.'}
+                </Txt>
+              </PressableScale>
+              <PressableScale
+                accessibilityRole="button"
+                accessibilityLabel="Member Services and Benefits"
+                onPress={() => router.push('/membership')}
+                style={[styles.memberCard, styles.memberCardBenefits]}
+              >
+                <Icon name="gift" size={20} color="primaryAccent" />
+                <Txt variant="titleSm">Member Services and Benefits</Txt>
+                <Txt variant="caption" color="onSurfaceVariant">What comes with membership.</Txt>
+              </PressableScale>
+            </View>
+          ) : null}
         </View>
 
         <View style={styles.section}>

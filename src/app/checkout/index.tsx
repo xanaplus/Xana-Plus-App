@@ -155,6 +155,8 @@ export default function CheckoutRoute() {
   // Signed out, an address added now would be lost at sign-in, so they log in first (then add one).
   const payBlockedByAddress = needsAddress && session.user !== null;
   const empty = cart.items.length === 0;
+  // Leaving for the order page (pay now / Rx): the cart is cleared first, so don't flash "Your cart is empty".
+  const [leaving, setLeaving] = useState(false);
 
   const { promo, setPromo } = fulfilment;
   const totalAfterPromo = Math.max(0, cart.summary.total - (promo?.discount ?? 0));
@@ -289,6 +291,7 @@ export default function CheckoutRoute() {
       return;
     }
     const payNow = method.id === 'dpo' && !hasRx;
+    if (hasRx || payNow) setLeaving(true);
     if (!hasRx && !payNow) setPlaced({ method: method.id, total: amountDue, points: clubPoints, orderNo: result.id, pickup: fulfilment.mode === 'pickup' });
     cart.clear();
     session.spendPoints(pointsUsed);
@@ -304,8 +307,8 @@ export default function CheckoutRoute() {
       rx.reset();
       router.replace({ pathname: '/orders/[id]', params: { id: result.id } });
     }
-    // Paying online: the order page opens DPO's page straight away and then checks the payment.
-    if (payNow) router.replace({ pathname: '/orders/[id]', params: { id: result.id, pay: '1' } });
+    // Paying online: the order page sends the M-Pesa prompt straight away (or opens DPO's page) and checks the payment.
+    if (payNow) router.replace({ pathname: '/orders/[id]', params: { id: result.id, pay: 'mpesa' } });
   };
 
   const applyPromo = async () => {
@@ -394,7 +397,7 @@ export default function CheckoutRoute() {
       padded={false}
       contentStyle={styles.content}
       // An empty cart offers "Browse groceries" only, not a disabled "Place Order · KES 0".
-      footer={empty ? undefined : (
+      footer={empty || leaving ? undefined : (
         <View style={styles.footer}>
           <Button
             label={payLabel}
@@ -444,7 +447,7 @@ export default function CheckoutRoute() {
     >
       <TopBar title="Checkout" onBack={goBack} />
 
-      {empty ? (
+      {leaving ? null : empty ? (
         <View style={styles.inset}>
           <EmptyState icon="cart" title="Your cart is empty">
             <Button label="Browse groceries" onPress={() => router.replace('/(tabs)')} />
@@ -458,13 +461,13 @@ export default function CheckoutRoute() {
                 <View style={styles.headerIcon}>
                   <Icon name={fulfilment.mode === 'pickup' ? 'store' : 'map-pin'} size={18} color="primaryAccent" />
                 </View>
-                <Txt variant="titleLg">{fulfilment.mode === 'pickup' ? 'Pickup Address' : 'Delivery Address'}</Txt>
+                <Txt variant="titleLg">{fulfilment.mode === 'pickup' ? 'Pickup store' : 'Delivery Address'}</Txt>
               </View>
               <PressableScale
                 accessibilityRole="button"
-                accessibilityLabel="Change delivery address"
+                accessibilityLabel={LAUNCH_SCOPE.delivery ? 'Change delivery address' : 'Change pickup store'}
                 hitSlop={8}
-                onPress={() => setSheet('address')}
+                onPress={() => (LAUNCH_SCOPE.delivery ? setSheet('address') : setStoreSheetOpen(true))}
                 style={styles.changeLink}
               >
                 <Txt variant="label" color="primaryAccent">
@@ -525,6 +528,8 @@ export default function CheckoutRoute() {
             ) : null}
           </Card>
 
+          {/* Delivery slots were invented; pickup only while door delivery is off (LAUNCH_SCOPE.delivery). */}
+          {LAUNCH_SCOPE.delivery ? (
           <Card variant="outline" padding={spacing.lg} style={styles.inset}>
             <View style={styles.cardHeader}>
               <View style={styles.cardHeaderLeft}>
@@ -551,6 +556,7 @@ export default function CheckoutRoute() {
               <Chip label={fulfilment.slot.label} tone="mint" icon={fulfilment.slot.mode === 'pickup' ? 'pickup' : 'delivery'} />
             </View>
           </Card>
+          ) : null}
 
           <Card variant="outline" padding={spacing.lg} style={styles.inset}>
             <Txt variant="titleLg">Payment Method</Txt>
@@ -601,10 +607,27 @@ export default function CheckoutRoute() {
 
                     {selected && entry.id === 'dpo' ? (
                       <View style={styles.detailPanel}>
+                        <View style={styles.numberField}>
+                          <View style={styles.flex}>
+                            <Txt variant="overline" color="onSurfaceVariant">
+                              M-Pesa mobile number
+                            </Txt>
+                            <Txt variant="titleLg">{fulfilment.mpesaNumber ? formatPhoneDisplay(fulfilment.mpesaNumber) : 'Add a number'}</Txt>
+                          </View>
+                          <IconButton
+                            name="edit"
+                            accessibilityLabel="Change M-Pesa number"
+                            onPress={openNumberSheet}
+                            size={32}
+                            iconSize={16}
+                            background={colors.transparent}
+                            color="onSurfaceVariant"
+                          />
+                        </View>
                         <View style={styles.cashNote}>
                           <Icon name="lock" size={14} color="primaryAccent" />
                           <Txt variant="caption" color="primaryAccent" style={styles.flex}>
-                            Pay now with M-Pesa, Airtel Money or card on our payment partner DPO’s secure page. Pay within 30 minutes; we hold your items until then.
+                            We send an M-Pesa prompt to this number: enter your PIN to pay. Prefer card or Airtel Money? Choose it on the next screen. Pay within 30 minutes; we hold your items until then.
                           </Txt>
                         </View>
                       </View>
@@ -686,7 +709,7 @@ export default function CheckoutRoute() {
                   <View style={styles.numberNote}>
                     <Icon name="info" size={14} color="onSurfaceVariant" />
                     <Txt variant="caption" color="onSurfaceVariant">
-                      Points used are deducted after payment is confirmed
+                      Points you use come off when you place the order
                     </Txt>
                   </View>
                 </View>
@@ -1010,7 +1033,7 @@ export default function CheckoutRoute() {
               Fulfilment
             </Txt>
             <Txt variant="bodySm" color="onSurfaceVariant">
-              {`${fulfilment.store.name} · ${fulfilment.slot.window}`}
+              {LAUNCH_SCOPE.delivery ? `${fulfilment.store.name} · ${fulfilment.slot.window}` : `Pickup at ${fulfilment.store.name}`}
             </Txt>
           </View>
         </View>

@@ -28,6 +28,7 @@ import { fetchProducts } from '@/data/live-catalogue';
 import type { Product, SubstitutionPreference } from '@/data/types';
 import { useBuyAgain } from '@/features/orders/buy-again';
 import { formatCartCounts, formatKes } from '@/lib/format';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { useCart } from '@/store/cart';
 import { inStockAt, useFulfilment, useStoreStock } from '@/store/fulfilment';
 import { pointsEarned } from '@/store/orders';
@@ -39,18 +40,22 @@ import { PressableScale } from '@/components/ui/pressable-scale';
 
 const SUBSTITUTION_COPY: Record<SubstitutionPreference, { title: string; description: string }> = {
   similar: { title: 'Replace with similar', description: 'We’ll swap in the closest matching brand or size' },
-  refund: { title: 'Refund the item', description: 'Remove it from the order and refund to M-Pesa' },
+  refund: { title: 'Refund the item', description: 'Remove it from the order; you don’t pay for it' },
   call: { title: 'Call me first', description: 'A shopper calls you before changing anything' },
 };
 
 /** Screen 5 — Cart (Default State) and Screen 5a — Substitution Preference Sheet. */
+/** The Shop tab on one aisle of Retail (Groceries and Household live there since 20 Nov 2026), as Home's tiles do. */
+const shopFocus = (focus: string) => ({ pathname: '/(tabs)/categories' as const, params: { vertical: 'retail', focus, t: String(Date.now()) } });
+
 export default function CartRoute() {
   const scrollTop = useTabScrollTop();
   const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const cart = useCart();
-  const { slot, store, storeId, setStoreId } = useFulfilment();
+  const { slot, store, storeId, setStoreId, mode } = useFulfilment();
+  const openShop = (focus: string) => router.push(shopFocus(focus));
   const { inStock, storeShortName } = useStoreStock();
   const { user } = useSession();
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -87,7 +92,7 @@ export default function CartRoute() {
       footer={
         isEmpty ? undefined : (
           <Button
-            label={unavailable.length ? 'Remove sold-out items to continue' : `Checkout · ${formatKes(cart.summary.total)}.00`}
+            label={unavailable.length ? 'Remove sold-out items to continue' : `Checkout · ${formatKes(cart.summary.total)}`}
             icon="cart"
             iconPosition="leading"
             size="lg"
@@ -110,9 +115,9 @@ export default function CartRoute() {
             <Button label="Start Shopping" icon="arrow-right" iconPosition="trailing" onPress={() => router.push('/(tabs)')} />
           </EmptyState>
           <View style={styles.emptyChips}>
-            <Chip label="Fresh Produce" onPress={() => router.push('/(tabs)/categories')} />
+            <Chip label="Fresh Produce" onPress={() => openShop('fresh-produce')} />
             <Chip label="Pharmacy" onPress={() => router.push('/(tabs)/pharmacy')} />
-            <Chip label="Household" onPress={() => router.push('/(tabs)/categories')} />
+            <Chip label="Household" onPress={() => openShop('household')} />
           </View>
         </View>
       ) : (
@@ -181,6 +186,8 @@ export default function CartRoute() {
           </View>
         ) : null}
 
+        {/* Staff don't see this choice in the admin app yet (LAUNCH_SCOPE.orderFeedback); they call instead. */}
+        {LAUNCH_SCOPE.orderFeedback ? (
         <PressableScale accessibilityRole="button" onPress={() => setSheetOpen(true)} style={[styles.inset, styles.substitutionRow]}>
           <Icon name="refresh" size={20} color="primaryAccent" />
           <View style={styles.substitutionBody}>
@@ -191,6 +198,7 @@ export default function CartRoute() {
           </View>
           <Icon name="chevron-right" size={18} color="onSurfaceVariant" />
         </PressableScale>
+        ) : null}
         </>
       )}
 
@@ -223,10 +231,12 @@ export default function CartRoute() {
         {cart.summary.wholesaleSavings > 0 ? (
           <SummaryRow label="Savings already included" value={formatKes(cart.summary.wholesaleSavings)} tone="primary" />
         ) : null}
-        <SummaryRow
-          label={`Delivery Fee (${store.name.replace('Xana Plus ', '')})`}
-          value={cart.summary.deliveryFee === 0 ? 'Free' : formatKes(cart.summary.deliveryFee)}
-        />
+        {mode === 'delivery' ? (
+          <SummaryRow
+            label={`Delivery Fee (${store.name.replace('Xana Plus ', '')})`}
+            value={cart.summary.deliveryFee === 0 ? 'Free' : formatKes(cart.summary.deliveryFee)}
+          />
+        ) : null}
         {cart.summary.platformFee > 0 ? <SummaryRow label="Packaging fee" value={formatKes(cart.summary.platformFee)} /> : null}
         <Divider />
         <View style={styles.totalRow}>

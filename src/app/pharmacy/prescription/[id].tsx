@@ -18,6 +18,10 @@ import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { formatKes } from '@/lib/format';
 import { PressableScale } from '@/components/ui/pressable-scale';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
+
+/** The quote-and-order section belongs to the stand-alone upload flow, off for launch. */
+const SHOW_QUOTES = LAUNCH_SCOPE.rxUploadAlone;
 
 function formatDate(value: string | null | undefined) {
   if (!value) return 'Not specified';
@@ -395,7 +399,7 @@ export default function PrescriptionDetailScreen() {
         <Icon name="check-circle" size={20} color="primaryAccent" />
         <View style={styles.flex}>
           <Txt variant="label">Order recorded</Txt>
-          <Txt variant="caption" color="onSurfaceVariant">Order {record.order_no} is linked to this prescription. Payment remains test/simulated in this flow.</Txt>
+          <Txt variant="caption" color="onSurfaceVariant">Order {record.order_no} is linked to this prescription.</Txt>
         </View>
       </Card> : null}
 
@@ -469,7 +473,8 @@ export default function PrescriptionDetailScreen() {
         <Button label={busy ? 'Sending…' : 'Send response'} disabled={busy || !clarification.trim()} onPress={() => void sendClarification()} />
       </Card> : null}
 
-      {record.quote_lines?.length ? <Card variant="elevated" padding={spacing.lg} style={styles.section}>
+      {/* Pharmacists don't send priced quotes: prescriptions are approved inside a checkout order (LAUNCH_SCOPE.rxUploadAlone). */}
+      {SHOW_QUOTES && record.quote_lines?.length ? <Card variant="elevated" padding={spacing.lg} style={styles.section}>
         <Txt variant="title">Quoted medicines</Txt>
         {record.quote_lines.map((line, index) => <View key={`${line.item_no}-${index}`} style={styles.quoteLine}>
           <View style={styles.quoteName}>

@@ -9,7 +9,6 @@ import {
   Badge,
   BottomSheet,
   Button,
-  CategoryTile,
   Chip,
   EmptyState,
   Icon,
@@ -19,17 +18,16 @@ import {
   Screen,
   SearchBar,
   SectionHeader,
-  Segmented,
   SelectableOption,
   Txt,
 } from '@/components/ui';
 import { Masthead } from '@/components/nav/masthead';
 import { ProductAddButton } from '@/components/ui/product-add-button';
 import { ProductPhoto } from '@/components/ui/product-photo';
-import type { BadgeTone, IconName, SegmentedOption } from '@/components/ui';
+import type { BadgeTone, IconName } from '@/components/ui';
 import { verticalBySlug } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
-import { useShelves } from '@/data/live-catalogue';
+import { prefetchShelves, useShelves } from '@/data/live-catalogue';
 import type { CategoryVertical, Product, ProductBadge } from '@/data/types';
 import { discountPercent, formatKes } from '@/lib/format';
 import { activePriceTiers } from '@/lib/quantity-pricing';
@@ -40,6 +38,7 @@ import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { PressableScale } from '@/components/ui/pressable-scale';
 import { ShopCard } from '@/components/ui/shop-card';
+import { AisleTile, DepartmentPanel, DepartmentSwitcher, MoreAislesTile, type DepartmentOption } from '@/features/shop/department-look';
 import { StoreChooser } from '@/features/store/store-chooser';
 import { useOffer } from '@/lib/use-offer';
 
@@ -57,7 +56,17 @@ const RAIL_PEEK = 1.3;
 
 /** Products loaded per section: the grid frames show two rows, the rails a swipe's worth. */
 const GRID_SHELF_SIZE = 4;
+/** A long department shows this many aisle tiles, then "More aisles". */
+const AISLES_SHOWN = 8;
+/** Prescription aisles: their photos stay hidden, so the tile carries the pharmacist's Rx. */
+const RX_AISLES = ['medicines', 'chronic-care', 'controlled-medicines'];
 const RAIL_SHELF_SIZE = 8;
+/**
+ * A department switch paints its top rows at once and adds the rest a few rows per frame
+ * (20 Nov 2026: Retail's 144 cards took ~2 s to build, so the pill switch felt stuck).
+ */
+const FIRST_SECTIONS = 2;
+const SECTIONS_PER_FRAME = 3;
 
 /** Same sorts as Search. "Top picks" keeps the server's photo-first, in-stock order. */
 const SORT_CHIPS: SortChip[] = [
@@ -73,44 +82,23 @@ const PHARMACY_SCOPES: { key: PharmacyScope; label: string }[] = [
   { key: 'rx', label: 'Prescription Only' },
 ];
 
-/** Glyphs the frames print on the Wholesale and Pharmacy chips. */
-const VERTICAL_ICONS: Partial<Record<CategoryVertical, IconName>> = { wholesale: 'cart', pharmacy: 'pill' };
 
-/** Chip order from every frame, less Liquor (not sold online since 17 Oct 2026): Retail, Wholesale, Deli, Pharmacy, Groceries, Household. */
-const VERTICAL_ORDER: CategoryVertical[] = [
-  'retail',
-  'wholesale',
-  'deli',
-  'pharmacy',
-  'groceries',
-  'household',
-];
+/** Pharmacy first, then the Retail · Wholesale · Deli capsule (20 Nov 2026); Groceries and Household live in Retail. */
+const VERTICAL_ORDER: CategoryVertical[] = ['pharmacy', 'retail', 'wholesale', 'deli'];
+/** Old links (or a saved deep link) to a folded department open Retail. */
+const FOLDED_INTO_RETAIL: string[] = ['groceries', 'household'];
 
-const VERTICAL_OPTIONS: SegmentedOption<CategoryVertical>[] = VERTICAL_ORDER.map(slug => {
-  const icon = VERTICAL_ICONS[slug];
-  const label = verticalBySlug(slug).label;
-  return icon ? { value: slug, label, icon } : { value: slug, label };
-});
+// Words only, no clip-art glyphs on the pills (20 Nov 2026).
+const VERTICAL_OPTIONS: DepartmentOption[] = VERTICAL_ORDER.map(slug => ({ value: slug, label: verticalBySlug(slug).label }));
+/** Pharmacy stands alone, then Retail, Wholesale and Deli share one capsule (20 Nov 2026). */
+const GROUPED: CategoryVertical[] = ['retail', 'wholesale', 'deli'];
+const GROUPED_OPTIONS = VERTICAL_OPTIONS.filter(option => GROUPED.includes(option.value));
+const SEPARATE_OPTIONS = VERTICAL_OPTIONS.filter(option => !GROUPED.includes(option.value));
 
-/** Sub-category tiles run 3-up on the essentials aisles and 4-up on the specialty ones. */
-const SUBCATEGORY_COLUMNS: Record<CategoryVertical, number> = {
-  retail: 4,
-  // Six row shortcuts, two rows of three (19 Nov 2026).
-  wholesale: 3,
-  // Its three rows: Deli Kitchen, Cold Cuts & Sausages, Cheese.
-  deli: 3,
-  liquor: 4,
-  pharmacy: 3,
-  groceries: 3,
-  household: 3,
-  beauty: 3,
-};
 
 /** Frames that lay section products out as a two-column card grid. */
 // Wholesale (plus its quantity prices) and Deli joined the grid in Nov 2026: one card for the Shop.
-const GRID_VERTICALS: CategoryVertical[] = ['retail', 'groceries', 'household', 'wholesale', 'deli'];
-/** Aisles whose round shortcuts are their own rows, shown by a real photo, a tap jumping to the row. */
-const ROW_SHORTCUT_VERTICALS: CategoryVertical[] = ['wholesale', 'deli'];
+const GRID_VERTICALS: CategoryVertical[] = ['retail', 'wholesale', 'deli'];
 
 /** Wholesale's frame labels the section action "View all"; every other aisle says "See All". */
 const SECTION_ACTION: Partial<Record<CategoryVertical, string>> = { wholesale: 'View all' };
@@ -228,6 +216,8 @@ export default function CategoriesRoute() {
   const [storeSheetOpen, setStoreSheetOpen] = useState(false);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [priceCap, setPriceCap] = useState<number | null>(null);
+  /** Retail has 18 aisles: show 8 and a "More aisles" tile until it's tapped. */
+  const [allAisles, setAllAisles] = useState(false);
 
   const definition = verticalBySlug(vertical);
   const isPharmacy = vertical === 'pharmacy';
@@ -237,29 +227,74 @@ export default function CategoriesRoute() {
   const filtersActive = inStockOnly || priceCap !== null;
 
   const contentWidth = Math.min(width, layout.maxContentWidth) - layout.screenMargin * 2;
-  const tileColumns = SUBCATEGORY_COLUMNS[vertical];
-  const tileSize = Math.max(64, Math.floor((contentWidth - layout.gutter * (tileColumns - 1)) / tileColumns));
   const gridCardWidth = Math.floor((contentWidth - layout.gutter) / 2);
   const railCardWidth = Math.floor((contentWidth - layout.gutter) / RAIL_PEEK);
 
   // Only what the chosen shop has on hand (19 Nov 2026): BC's total stock includes other locations.
   const shelves = useShelves(definition.sections, showsGrid ? GRID_SHELF_SIZE : RAIL_SHELF_SIZE, { branch: storeId });
+  // Once this department is on screen, load the other pills' shelves behind it so they open full.
+  const shelvesReady = shelves.status === 'ready';
+  useEffect(() => {
+    if (!shelvesReady) return;
+    for (const option of VERTICAL_OPTIONS) {
+      if (option.value === vertical) continue;
+      const other = verticalBySlug(option.value);
+      prefetchShelves(other.sections, GRID_VERTICALS.includes(option.value) ? GRID_SHELF_SIZE : RAIL_SHELF_SIZE, { branch: storeId });
+    }
+  }, [shelvesReady, vertical, storeId]);
   const sections = definition.sections
     .map(section => ({ ...section, products: applyFilters(shelves.data[section.title] ?? [], filters, isPharmacy) }))
     .filter(section => section.products.length > 0);
+  // Rows below the first few are added after the switch has painted.
+  const [revealed, setRevealed] = useState(FIRST_SECTIONS);
+  const [revealedFor, setRevealedFor] = useState(vertical);
+  if (revealedFor !== vertical) {
+    setRevealedFor(vertical);
+    setRevealed(FIRST_SECTIONS);
+  }
+  const sectionCount = sections.length;
+  useEffect(() => {
+    if (revealed >= sectionCount) return;
+    const frame = requestAnimationFrame(() => setRevealed(count => count + SECTIONS_PER_FRAME));
+    return () => cancelAnimationFrame(frame);
+  }, [revealed, sectionCount]);
+  const shownSections = sections.slice(0, revealed);
   const visibleCount = sections.reduce((total, section) => total + section.products.length, 0);
-  // Wholesale's and Deli's shortcuts are their own rows, each shown by a real photo from
-  // that row, and a tap jumps to the row (Nov 2026). Other aisles keep their artwork tiles.
-  const tiles = ROW_SHORTCUT_VERTICALS.includes(vertical)
-    ? sections.map(section => {
-        // No photographed item in the row yet (e.g. Cheese): fall back to the aisle's artwork.
-        const photo = section.products.find(product => product.image)?.image;
-        const artwork = definition.subcategories.find(tile => tile.slug === section.categorySlug)?.image;
-        return { slug: section.categorySlug, name: section.title, image: photo ?? artwork ?? '', photo: Boolean(photo) };
-      })
-    : definition.subcategories.map(tile => ({ ...tile, photo: false }));
+  // Every department's shortcuts are its own rows, each shown by a real photo from that row,
+  // and a tap jumps to the row (Wholesale and Deli first, every department since 20 Nov 2026:
+  // no staged artwork, and the tiles name exactly the rows below). Until the shelves load,
+  // the tiles show the department's glyph.
+  const tiles = definition.sections
+    .filter(section => shelves.status !== 'ready' || (shelves.data[section.title]?.length ?? 0) > 0)
+    .map(section => ({
+      slug: section.categorySlug,
+      name: section.title,
+      photo: shelves.data[section.title]?.find(product => product.image)?.image,
+      mark: RX_AISLES.includes(section.categorySlug) ? 'Rx' : undefined,
+    }));
+  // The panel's fan: one photographed item from each of the first rows, then any others.
+  const panelPhotos = (() => {
+    const firsts = tiles.flatMap(tile => (tile.photo ? [tile.photo] : []));
+    const rest = Object.values(shelves.data).flat().flatMap(product => (product.image ? [product.image] : []));
+    return [...new Set([...firsts, ...rest])].slice(0, 3);
+  })();
+  const collapsed = tiles.length > AISLES_SHOWN + 1 && !allAisles;
+  const shownTiles = collapsed ? tiles.slice(0, AISLES_SHOWN) : tiles;
+  // Even grids only: 3-up for 3, 6 or 9 rows, 4-up for 4 or 8; any other count scrolls sideways.
+  const tileCount = shownTiles.length + (collapsed ? 1 : 0);
+  const tileColumns = tileCount % 3 === 0 ? 3 : tileCount % 4 === 0 ? 4 : 0;
+  const tileSize = tileColumns
+    ? Math.floor((contentWidth - layout.gutter * (tileColumns - 1)) / tileColumns)
+    : Math.floor((contentWidth - layout.gutter * 2.5) / 3.5);
   const openTile = (tile: { slug: string; name: string }) => {
-    if (!scrollToSection(tile.slug)) openSearch(tile.name);
+    if (scrollToSection(tile.slug)) return;
+    // Its row isn't drawn yet: draw every row and scroll once it has laid out.
+    if (sections.some(section => section.categorySlug === tile.slug)) {
+      pendingFocus.current = tile.slug;
+      setRevealed(Number.MAX_SAFE_INTEGER);
+      return;
+    }
+    openSearch(tile.name);
   };
   /** "View all": the whole row on its own page, never a search for the row's title. */
   const openAisle = (slug: string) => router.push({ pathname: '/aisle', params: { vertical, slug } });
@@ -280,6 +315,7 @@ export default function CategoriesRoute() {
     setScope('all');
     setInStockOnly(false);
     setPriceCap(null);
+    setAllAisles(false);
     pendingFocus.current = null;
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   };
@@ -288,7 +324,7 @@ export default function CategoriesRoute() {
   const [appliedOpen, setAppliedOpen] = useState<string | undefined>(undefined);
   if (openedAt !== appliedOpen) {
     setAppliedOpen(openedAt);
-    const next = VERTICAL_ORDER.find(slug => slug === verticalParam);
+    const next = FOLDED_INTO_RETAIL.includes(verticalParam ?? '') ? 'retail' : VERTICAL_ORDER.find(slug => slug === verticalParam);
     if (next && next !== vertical) {
       setVertical(next);
       setSort('top');
@@ -311,42 +347,41 @@ export default function CategoriesRoute() {
     if (!openedAt) return;
     pendingFocus.current = focus ?? null;
     if (focus && scrollToSection(focus)) pendingFocus.current = null;
-    else scrollRef.current?.scrollTo({ y: 0, animated: false });
+    else {
+      // A row further down may not be drawn yet: draw them all so it can be scrolled to.
+      if (focus) setRevealed(Number.MAX_SAFE_INTEGER);
+      scrollRef.current?.scrollTo({ y: 0, animated: false });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openedAt]);
 
   const openSearch = (query?: string) => router.push(query ? { pathname: '/search', params: { q: query } } : '/search');
 
-  const renderControls = () => (
-    <View style={styles.sortRow}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sortTrack}>
-        {isPharmacy
-          ? PHARMACY_SCOPES.map(entry => (
-              <Chip
-                key={entry.key}
-                label={entry.label}
-                selected={scope === entry.key}
-                onPress={() => setScope(entry.key)}
-              />
-            ))
-          : SORT_CHIPS.map(chip => (
-              <Chip
-                key={chip.key}
-                label={chip.label}
-                icon={chip.icon}
-                selected={sort === chip.key}
-                onPress={() => setSort(chip.key)}
-              />
-            ))}
+  const sortLabel = SORT_CHIPS.find(chip => chip.key === sort)?.label ?? 'Top picks';
+  /** Pharmacy keeps its All / OTC / Rx chips; other departments get one "Sort & filter" button. */
+  const renderControls = () =>
+    isPharmacy ? (
+      <View style={styles.sortRow}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sortTrack}>
+          {PHARMACY_SCOPES.map(entry => (
+            <Chip key={entry.key} label={entry.label} selected={scope === entry.key} onPress={() => setScope(entry.key)} />
+          ))}
+          <Chip label="Filters" icon="sliders" tone={filtersActive ? 'mint' : 'neutral'} onPress={() => setFiltersOpen(true)} />
+        </ScrollView>
+      </View>
+    ) : (
+      <View style={[styles.inset, styles.sortBar]}>
+        <Txt variant="bodySm" color="onSurfaceVariant" style={styles.flex} numberOfLines={1}>
+          {`Sorted by ${sortLabel.toLowerCase()}${filtersActive ? ' · filtered' : ''}`}
+        </Txt>
         <Chip
-          label="Filters"
+          label="Sort & filter"
           icon="sliders"
-          tone={filtersActive ? 'mint' : 'neutral'}
+          tone={filtersActive || sort !== 'top' ? 'mint' : 'neutral'}
           onPress={() => setFiltersOpen(true)}
         />
-      </ScrollView>
-    </View>
-  );
+      </View>
+    );
 
   return (
     <Screen scroll={false} padded={false} contentStyle={styles.screenBody} edgeToEdgeTop>
@@ -384,47 +419,55 @@ export default function CategoriesRoute() {
           }}
         >
           <View style={styles.chipBar}>
-            <Segmented options={VERTICAL_OPTIONS} value={vertical} onChange={selectVertical} scrollable style={styles.chipTrack} />
+            <DepartmentSwitcher grouped={GROUPED_OPTIONS} separate={SEPARATE_OPTIONS} value={vertical} onChange={selectVertical} style={styles.chipTrack} />
           </View>
         </View>
 
         <View style={[styles.inset, styles.bannerSection]}>
-          <InfoBanner
-            icon="pharmacy"
-            title={PHARMACY_ADVICE.title}
-            subtitle={PHARMACY_ADVICE.subtitle}
-            onPress={() => (isPharmacy ? router.push('/(tabs)/pharmacy') : selectVertical('pharmacy'))}
+          <DepartmentPanel
+            vertical={vertical}
+            title={definition.label}
+            photos={panelPhotos}
+            loading={shelves.status === 'loading'}
+            onBrowseAll={() => openSearch(definition.label)}
           />
         </View>
 
-        <View style={[styles.inset, styles.titleRow]}>
-          <View style={styles.titleLeft}>
-            <Txt variant="headlineLg">{definition.title}</Txt>
-          </View>
-          <PressableScale
-            accessibilityRole="button"
-            accessibilityLabel={`Browse all ${definition.label} products`}
-            onPress={() => openSearch(definition.label)}
-            hitSlop={8}
-          >
-            <Txt variant="label" color="primaryAccent">
-              Browse all
-            </Txt>
-          </PressableScale>
-        </View>
-
-        <View style={[styles.inset, styles.tiles]}>
-          {tiles.map(tile => (
-            <CategoryTile
-              key={`${tile.slug}-${tile.name}`}
-              name={tile.name}
-              image={tile.image}
-              fit={tile.photo ? 'contain' : 'cover'}
-              size={tileSize}
-              onPress={() => openTile(tile)}
+        {isPharmacy ? (
+          <View style={[styles.inset, styles.adviceSection]}>
+            <InfoBanner
+              icon="pharmacy"
+              title={PHARMACY_ADVICE.title}
+              subtitle={PHARMACY_ADVICE.subtitle}
+              onPress={() => router.push('/(tabs)/pharmacy')}
             />
-          ))}
-        </View>
+          </View>
+        ) : null}
+
+        {tileColumns ? (
+          <View style={[styles.inset, styles.tiles]}>
+            {shownTiles.map(tile => (
+              <AisleTile key={tile.slug + tile.name} vertical={vertical} name={tile.name} photo={tile.photo} mark={tile.mark} loading={shelves.status === 'loading'} size={tileSize} onPress={() => openTile(tile)} />
+            ))}
+            {collapsed ? (
+              <MoreAislesTile vertical={vertical} count={tiles.length - AISLES_SHOWN} size={tileSize} onPress={() => setAllAisles(true)} />
+            ) : null}
+          </View>
+        ) : (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tileTrack}>
+            {shownTiles.map(tile => (
+              <AisleTile key={tile.slug + tile.name} vertical={vertical} name={tile.name} photo={tile.photo} mark={tile.mark} loading={shelves.status === 'loading'} size={tileSize} onPress={() => openTile(tile)} />
+            ))}
+            {collapsed ? (
+              <MoreAislesTile vertical={vertical} count={tiles.length - AISLES_SHOWN} size={tileSize} onPress={() => setAllAisles(true)} />
+            ) : null}
+          </ScrollView>
+        )}
+        {allAisles && tiles.length > AISLES_SHOWN + 1 ? (
+          <View style={[styles.inset, styles.fewer]}>
+            <Button label="Show fewer aisles" variant="ghost" size="sm" onPress={() => setAllAisles(false)} />
+          </View>
+        ) : null}
 
         {renderControls()}
 
@@ -448,7 +491,7 @@ export default function CategoriesRoute() {
             </EmptyState>
           </View>
         ) : (
-          sections.map(section => (
+          shownSections.map(section => (
             <View
               key={section.title}
               style={styles.section}
@@ -512,7 +555,7 @@ export default function CategoriesRoute() {
       <BottomSheet
         visible={filtersOpen}
         onClose={() => setFiltersOpen(false)}
-        title="Filters"
+        title={isPharmacy ? "Filters" : "Sort & filter"}
         scrollable
         footer={
           <Button
@@ -521,6 +564,17 @@ export default function CategoriesRoute() {
           />
         }
       >
+        {isPharmacy ? null : (
+          <View style={styles.sheetGroup}>
+            <Txt variant="titleLg">Sort by</Txt>
+            <View style={styles.sheetChips}>
+              {SORT_CHIPS.map(chip => (
+                <Chip key={chip.key} label={chip.label} icon={chip.icon} selected={sort === chip.key} onPress={() => setSort(chip.key)} />
+              ))}
+            </View>
+          </View>
+        )}
+
         <View style={styles.sheetGroup}>
           <Txt variant="titleLg">Availability</Txt>
           <SelectableOption
@@ -547,13 +601,14 @@ export default function CategoriesRoute() {
           </View>
         </View>
 
-        {filtersActive ? (
+        {filtersActive || sort !== 'top' ? (
           <Button
-            label="Reset filters"
+            label="Reset"
             variant="ghost"
             onPress={() => {
               setInStockOnly(false);
               setPriceCap(null);
+              setSort('top');
             }}
           />
         ) : null}
@@ -831,22 +886,18 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   bannerSubtitle: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   bannerDot: { width: 3, height: 3, borderRadius: radius.pill, backgroundColor: colors.outline },
 
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.md,
-    marginTop: spacing.xxl,
-  },
-  titleLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexShrink: 1 },
-
   tiles: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     columnGap: layout.gutter,
     rowGap: spacing.lg,
-    marginTop: spacing.lg,
+    marginTop: spacing.xl,
   },
+  tileTrack: { paddingHorizontal: layout.screenMargin, gap: layout.gutter, marginTop: spacing.xl },
+  adviceSection: { marginTop: spacing.md },
+  fewer: { alignItems: 'center', marginTop: spacing.sm },
+  sortBar: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: spacing.xl },
+  flex: { flex: 1 },
 
   sortRow: { marginTop: spacing.xl },
   sortTrack: { paddingHorizontal: layout.screenMargin, gap: spacing.sm, alignItems: 'center' },

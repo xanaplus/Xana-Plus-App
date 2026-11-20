@@ -686,17 +686,28 @@ export const verticals: VerticalDefinition[] = [
       { slug: 'beauty-personal-care', name: 'Beauty & Hair', image: 'beauty-personal-care' },
       { slug: 'oral-care', name: 'Oral Care', image: 'sensodyne-rapid-relief' },
     ],
+    // Groceries and Household folded into Retail (Roystone, 20 Nov 2026): the Shop's pills are
+    // Pharmacy | Retail · Wholesale · Deli. Ordered as you walk a shop: food, then home, then you.
     sections: [
+      { title: 'Fresh Produce', subtitle: 'Fruit and vegetables', categorySlug: 'fresh-produce', query: shelf('fresh-produce') },
+      { title: 'Dairy & Eggs', subtitle: 'Milk, yoghurt, cheese & ice cream', categorySlug: 'dairy-eggs', query: shelf('dairy-eggs') },
+      { title: 'Meat & Poultry', subtitle: 'Chilled meat, sausages & bacon', categorySlug: 'meat-poultry', query: shelf('meat-poultry') },
+      { title: 'Bakery', subtitle: 'Bread and spreads', categorySlug: 'bakery', query: shelf('bakery') },
+      { title: 'Staples', subtitle: 'Flour, rice, sugar & breakfast', categorySlug: 'staples', query: shelf('staples') },
       { title: 'Cooking Oil', subtitle: 'Oils and fats', categorySlug: 'cooking-oil', query: shelf('cooking-oil') },
-      { title: 'Cleaning Products', subtitle: 'Soaps and detergents', categorySlug: 'cleaning-products', query: shelf('cleaning-products') },
+      { title: 'Spices & Flavours', subtitle: 'Seasoning, sauces & baking', categorySlug: 'spices', query: shelf('spices') },
+      { title: 'Snacks', subtitle: 'Biscuits, crisps & sweets', categorySlug: 'snacks', query: shelf('snacks') },
       { title: 'Soft Drinks & Water', subtitle: 'Juice, soda & bottled water', categorySlug: 'beverages', query: shelf('beverages') },
-      { title: 'Staples', subtitle: 'Flour, rice & sugar', categorySlug: 'staples', query: shelf('staples') },
-      { title: 'Books & Stationery', subtitle: 'School and office supplies', categorySlug: 'books-stationery', query: shelf('books-stationery') },
-      { title: 'Baby Products', subtitle: 'Feeding, bathing & care', categorySlug: 'baby-products', query: shelf('baby-products') },
-      { title: 'General Merchandise', subtitle: 'Accessories, bags & more', categorySlug: 'general-merchandise', query: shelf('general-merchandise') },
+      { title: 'Cleaning & Laundry', subtitle: 'Soaps and detergents', categorySlug: 'cleaning-products', query: shelf('cleaning-products') },
+      { title: 'Tissue & Sanitary', subtitle: 'Tissue, diapers & pads', categorySlug: 'tissue-sanitary', query: shelf('tissue-sanitary') },
+      { title: 'Kitchen & Household', subtitle: 'Cutlery, plastics & storage', categorySlug: 'household', query: shelf('household') },
+      { title: 'Air Fresheners & Pest Control', subtitle: 'Fresheners, insecticides & shoe care', categorySlug: 'home-care', query: shelf('home-care') },
       // RETBEAU is retail beauty (17 Oct 2026); COSMETICS & BEAUTY P stays with Pharmacy.
       { title: 'Beauty & Hair', subtitle: 'Lotions, hair care & fragrance', categorySlug: 'beauty-personal-care', query: shelf('beauty-personal-care') },
       { title: 'Oral Care', subtitle: 'Toothpaste, brushes & mouthwash', categorySlug: 'oral-care', query: shelf('oral-care') },
+      { title: 'Baby Products', subtitle: 'Feeding, bathing & care', categorySlug: 'baby-products', query: shelf('baby-products') },
+      { title: 'Books & Stationery', subtitle: 'School and office supplies', categorySlug: 'books-stationery', query: shelf('books-stationery') },
+      { title: 'General Merchandise', subtitle: 'Accessories, bags & more', categorySlug: 'general-merchandise', query: shelf('general-merchandise') },
     ],
   },
   {

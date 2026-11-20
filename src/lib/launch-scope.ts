@@ -24,4 +24,20 @@ export const LAUNCH_SCOPE = {
    * place-order refuses it for everyone else unless its APP_PAY_ONLINE secret is `all`.
    */
   payOnline: false,
+  /**
+   * Play release check, 20 Nov 2026 (owner: "fix each"). Each of these is off because
+   * nothing real stands behind it yet; switch back on when it does.
+   */
+  /** Paid Member plans (KSh 200 / 2,000): nothing can be bought, no member prices or health checks yet. */
+  memberPlans: false,
+  /** Door delivery: the website's distance fee is still off for customers; the app's slots were invented. Pickup only. */
+  delivery: false,
+  /** "Upload a prescription" on its own: no admin screen reads these. Prescriptions are attached at checkout. */
+  rxUploadAlone: false,
+  /** Wellness Community Groups and Family Health Records previews. */
+  wellnessPreviews: false,
+  /** Order ratings and the "if an item is unavailable" choice: the admin app shows neither. */
+  orderFeedback: false,
+  /** Club tiers (Silver, Gold…): nothing ever changes a customer's tier. Points only. */
+  clubTiers: false,
 } as const;

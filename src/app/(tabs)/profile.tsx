@@ -33,6 +33,7 @@ import { EmailSheet } from '@/features/account/email-sheet';
 import { PasswordSheet } from '@/features/account/password-sheet';
 import { KraPinSheet } from '@/features/account/kra-pin-sheet';
 import { NameSheet } from '@/features/account/name-sheet';
+import { usePrescriptionList } from '@/features/prescriptions/api';
 import { SignInDetails } from '@/features/account/sign-in-details';
 import { formatCartCounts, formatKes } from '@/lib/format';
 import { recordedSavings } from '@/lib/order-savings';
@@ -130,7 +131,9 @@ const DEFAULT_PRIVACY: Record<PrivacyKey, boolean> = {
 const PAYMENT_METHODS: { id: PaymentMethodId; icon: IconName; title: string; description: string }[] = [
   // M-Pesa and Card are hidden until DPO Pay is live, as at checkout.
   ...(LAUNCH_SCOPE.mpesa ? [{ id: 'mpesa' as PaymentMethodId, icon: 'mpesa' as IconName, title: 'M-Pesa', description: 'STK Push prompt will be sent to this line' }] : []),
-  { id: 'cod', icon: 'cash', title: 'Cash on Delivery', description: 'Pay the rider or in-store when your order arrives.' },
+  LAUNCH_SCOPE.delivery
+    ? { id: 'cod', icon: 'cash', title: 'Cash on Delivery', description: 'Pay the rider or in-store when your order arrives.' }
+    : { id: 'cod', icon: 'cash', title: 'Pay at pickup', description: 'Cash or M-Pesa at the counter when you collect.' },
 ];
 
 const MODE_OPTIONS: SegmentedOption<FulfilmentMode>[] = [
@@ -139,12 +142,15 @@ const MODE_OPTIONS: SegmentedOption<FulfilmentMode>[] = [
 ];
 
 const POINT_RULES: { icon: IconName; title: string; description: string }[] = [
-  { icon: 'cart', title: '1 point per KES 120 spent', description: 'Earned on every delivered Xana order' },
+  { icon: 'cart', title: '1 point per KES 120 spent', description: 'Earned on every completed Xana order' },
   { icon: 'prescription', title: 'Pharmacy orders count too', description: 'Rx items earn once the pharmacist releases them' },
   { icon: 'tag', title: 'Club Member Savings', description: 'Tiered wholesale savings from 6 units stack with your points' },
 ];
 
 /** The full policy Google Play requires a link to; the page itself is published on xanalife.com. */
+/** Points are spent at checkout at 10 points to KSh 1 (POINTS_PER_KES in checkout). */
+const POINTS_PER_KES = 10;
+
 const PRIVACY_POLICY_URL = 'https://www.xanalife.com/pages/xana-plus-privacy';
 /** The admin site (moved here from xana-admin.vercel.app on 17 Nov 2026). */
 const ADMIN_SITE_URL = 'https://admin.xanalife.com';
@@ -156,11 +162,11 @@ const PRIVACY_BLOCKS: { title: string; body: string }[] = [
   },
   {
     title: 'Prescriptions',
-    body: 'Rx items are dispensed only after a Xana Plus pharmacist verifies your prescription, and we call you before dispatch.',
+    body: 'Prescription items are released only after a Xana Plus pharmacist checks your prescription.',
   },
   {
     title: 'Payments',
-    body: 'M-Pesa requests are authorised by Safaricom on your handset. Xana Plus never sees or stores your PIN.',
+    body: 'You pay when you collect your order at the shop. The app never asks for or stores a PIN or card number.',
   },
   {
     title: 'Usage and crash reports',
@@ -271,6 +277,9 @@ export default function ProfileRoute() {
   const { address, addresses, setAddress, removeAddress, hasAddress, mode, setMode, mpesaNumber, paymentMethod, setPaymentMethod, setStoreId, slot, store, storeId } = useFulfilment();
 
   const [sheet, setSheet] = useState<SheetId | null>(null);
+  const prescriptions = usePrescriptionList();
+  /** The same list as My Prescriptions; a dash until it loads or when it can't be read. */
+  const prescriptionCount = isDemo ? String(REPEAT_SCRIPTS.length) : prescriptions.loading || prescriptions.error ? '–' : String(prescriptions.records.length);
   const [deleting, setDeleting] = useState(false);
   /** Address waiting for a second tap to delete, and one whose delete failed. */
   const [removingId, setRemovingId] = useState<string | null>(null);
@@ -347,7 +356,7 @@ export default function ProfileRoute() {
       key: 'payment',
       icon: 'wallet',
       title: 'Payment Methods',
-      description: `M-Pesa · ${mpesaNumber}`,
+      description: isStaff ? `M-Pesa · ${mpesaNumber}` : 'Pay at pickup',
       onPress: () => setSheet('payment'),
     },
     // Not on the demo number: anyone can sign in to it, so it must never hold a real email or a password.
@@ -406,7 +415,7 @@ export default function ProfileRoute() {
 
   const supportRows: RowSpec[] = [
     { key: 'help', icon: 'help', title: 'Help & Support', onPress: () => setSheet('help') },
-    { key: 'terms', icon: 'shield', title: 'Terms & Privacy', onPress: () => setSheet('terms') },
+    { key: 'terms', icon: 'shield', title: 'Privacy', onPress: () => setSheet('terms') },
   ];
 
   const helpRows: RowSpec[] = [
@@ -495,12 +504,14 @@ export default function ProfileRoute() {
               <Txt variant="bodySm" color="onSurfaceVariant">
                 {user.phone}
               </Txt>
-              <View style={styles.memberChip}>
-                <Icon name="star" size={14} color={colors.onTertiaryContainer} />
-                <Txt variant="label" tint={colors.onTertiaryContainer}>
-                  {user.clubTier} member
-                </Txt>
-              </View>
+              {LAUNCH_SCOPE.clubTiers ? (
+                <View style={styles.memberChip}>
+                  <Icon name="star" size={14} color={colors.onTertiaryContainer} />
+                  <Txt variant="label" tint={colors.onTertiaryContainer}>
+                    {user.clubTier} member
+                  </Txt>
+                </View>
+              ) : null}
             </View>
           </View>
         </Card>
@@ -527,7 +538,7 @@ export default function ProfileRoute() {
                   Xana Club
                 </Txt>
                 <Txt variant="headlineLg" tint={colors.onPrimary}>
-                  {user.clubTier} member
+                  {LAUNCH_SCOPE.clubTiers ? `${user.clubTier} member` : 'Your points'}
                 </Txt>
               </View>
               <View style={styles.clubPoints}>
@@ -539,10 +550,16 @@ export default function ProfileRoute() {
                 </Txt>
               </View>
             </View>
-            <ProgressBar value={clubProgress} height={6} trackColor={colors.white70} fillColor={colors.tertiaryFixed} />
+            {LAUNCH_SCOPE.clubTiers ? (
+              <ProgressBar value={clubProgress} height={6} trackColor={colors.white70} fillColor={colors.tertiaryFixed} />
+            ) : null}
             <View style={styles.clubFoot}>
               <Txt variant="caption" tint={colors.white70} style={styles.clubFootText}>
-                {nextTier ? `${pointsToNext.toLocaleString('en-KE')} points to ${nextTier.tier}` : 'Top tier unlocked. Earn on every order'}
+                {LAUNCH_SCOPE.clubTiers
+                  ? nextTier
+                    ? `${pointsToNext.toLocaleString('en-KE')} points to ${nextTier.tier}`
+                    : 'Top tier unlocked. Earn on every order'
+                  : `Worth ${formatKes(user.clubPoints / POINTS_PER_KES)} off your next order`}
               </Txt>
               <PressableScale accessibilityRole="button" accessibilityLabel="View Xana Club rewards" hitSlop={8} onPress={() => setSheet('rewards')} style={styles.clubAction}>
                 <Txt variant="label" tint={colors.onPrimary}>
@@ -580,7 +597,7 @@ export default function ProfileRoute() {
             <View style={styles.statDivider} />
             <Stat value={formatKes(recordedSavings(orders).totalSaved)} label="Savings" onPress={() => router.push('/spending')} />
             <View style={styles.statDivider} />
-            <Stat value={String(isDemo ? REPEAT_SCRIPTS.length : 0)} label="Prescriptions" onPress={() => router.push('/pharmacy/prescriptions')} />
+            <Stat value={prescriptionCount} label="Prescriptions" onPress={() => router.push('/pharmacy/prescriptions')} />
           </View>
         </Card>
       ) : null}
@@ -846,33 +863,39 @@ export default function ProfileRoute() {
                   </Txt>
                   <Txt variant="display">{user.clubPoints.toLocaleString('en-KE')}</Txt>
                 </View>
-                <Chip label={user.clubTier} tone="mint" icon="star" />
+                {LAUNCH_SCOPE.clubTiers ? <Chip label={user.clubTier} tone="mint" icon="star" /> : null}
               </View>
-              <ProgressBar value={clubProgress} height={6} />
+              {LAUNCH_SCOPE.clubTiers ? <ProgressBar value={clubProgress} height={6} /> : null}
               <Txt variant="caption" color="onSurfaceVariant">
-                {nextTier ? `${pointsToNext.toLocaleString('en-KE')} points to ${nextTier.tier}` : 'You are on the top tier'}
+                {LAUNCH_SCOPE.clubTiers
+                  ? nextTier
+                    ? `${pointsToNext.toLocaleString('en-KE')} points to ${nextTier.tier}`
+                    : 'You are on the top tier'
+                  : `Worth ${formatKes(user.clubPoints / POINTS_PER_KES)}. Use them at checkout, ${POINTS_PER_KES} points = ${formatKes(1)}.`}
               </Txt>
             </Card>
 
-            <Card variant="flat" padding={spacing.none}>
-              {CLUB_TIERS.map((entry, index) => (
-                <View key={entry.tier}>
-                  {index > 0 ? <Divider inset={spacing.lg} /> : null}
-                  <View style={styles.tierRow}>
-                    <View style={styles.rowIcon}>
-                      <Icon name="star" size={20} color={entry.tier === user.clubTier ? 'tertiaryAccent' : 'primaryAccent'} />
+            {LAUNCH_SCOPE.clubTiers ? (
+              <Card variant="flat" padding={spacing.none}>
+                {CLUB_TIERS.map((entry, index) => (
+                  <View key={entry.tier}>
+                    {index > 0 ? <Divider inset={spacing.lg} /> : null}
+                    <View style={styles.tierRow}>
+                      <View style={styles.rowIcon}>
+                        <Icon name="star" size={20} color={entry.tier === user.clubTier ? 'tertiaryAccent' : 'primaryAccent'} />
+                      </View>
+                      <View style={styles.rowBody}>
+                        <Txt variant="title">{entry.tier} tier</Txt>
+                        <Txt variant="caption" color="onSurfaceVariant">
+                          From {entry.from.toLocaleString('en-KE')} points
+                        </Txt>
+                      </View>
+                      {entry.tier === user.clubTier ? <Chip label="Your tier" tone="brand" /> : null}
                     </View>
-                    <View style={styles.rowBody}>
-                      <Txt variant="title">{entry.tier} tier</Txt>
-                      <Txt variant="caption" color="onSurfaceVariant">
-                        From {entry.from.toLocaleString('en-KE')} points
-                      </Txt>
-                    </View>
-                    {entry.tier === user.clubTier ? <Chip label="Your tier" tone="brand" /> : null}
                   </View>
-                </View>
-              ))}
-            </Card>
+                ))}
+              </Card>
+            ) : null}
 
             <Card variant="flat" padding={spacing.none}>
               {POINT_RULES.map((rule, index) => (
@@ -963,7 +986,7 @@ export default function ProfileRoute() {
       <BottomSheet
         visible={sheet === 'terms'}
         onClose={closeSheet}
-        title="Terms & Privacy"
+        title="Privacy"
         footer={<Button label="Back to Profile" variant="outline" icon="arrow-left" iconPosition="leading" onPress={closeSheet} />}
         scrollable
       >

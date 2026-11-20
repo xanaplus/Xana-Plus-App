@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import type { ImagePickerAsset } from 'expo-image-picker';
@@ -13,8 +13,14 @@ import { radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { PressableScale } from '@/components/ui/pressable-scale';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 
-export default function UploadPrescriptionScreen() {
+/** Hidden for launch (LAUNCH_SCOPE.rxUploadAlone): prescriptions are attached at checkout, so a typed-in link goes back to the Pharmacy tab. */
+export default function UploadPrescriptionRoute() {
+  return LAUNCH_SCOPE.rxUploadAlone ? <UploadPrescriptionScreen /> : <Redirect href="/(tabs)/pharmacy" />;
+}
+
+function UploadPrescriptionScreen() {
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
   const { isAuthenticated } = useSession();

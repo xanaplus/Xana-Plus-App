@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
 import { Txt } from '@/components/ui';
+import { verticalBySlug } from '@/data/catalog';
 import { figmaAsset } from '@/data/images';
 import { fetchHomeSlides, type ShownSlide, type SlideDivision, type SlideTone } from '@/data/home-slides';
 import { useLive } from '@/data/live-catalogue';
@@ -57,11 +58,26 @@ function useShownSlides(slides: ShownSlide[]): Slide[] {
   });
 }
 
-/** A product opens its page, an aisle its search shelf, a department the Categories tab. */
+const plain = (text: string) => text.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '');
+
+/** The department's aisle whose slug or name matches the banner's category, if any. */
+function aisleFor(division: SlideDivision, category: string): string | undefined {
+  const wanted = plain(category);
+  return verticalBySlug(DIVISION_VERTICAL[division]).sections.find(
+    section => plain(section.categorySlug) === wanted || plain(section.title) === wanted,
+  )?.categorySlug;
+}
+
+/** A product opens its page, an aisle its shelf (or its department when the aisle is unknown), a department the Categories tab. */
 function openSlide(router: ReturnType<typeof useRouter>, { link }: Slide) {
-  if (link.kind === 'product') router.push(`/product/${link.item}`);
-  else if (link.kind === 'category') router.push({ pathname: '/search', params: { q: link.category } });
-  else router.push({ pathname: '/(tabs)/categories', params: { vertical: DIVISION_VERTICAL[link.division], t: String(Date.now()) } });
+  if (link.kind === 'product') {
+    router.push(`/product/${link.item}`);
+    return;
+  }
+  const vertical = DIVISION_VERTICAL[link.division];
+  const slug = link.kind === 'category' ? aisleFor(link.division, link.category) : undefined;
+  if (slug) router.push({ pathname: '/aisle', params: { vertical, slug } });
+  else router.push({ pathname: '/(tabs)/categories', params: { vertical, t: String(Date.now()) } });
 }
 
 /**

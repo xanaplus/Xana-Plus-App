@@ -6,6 +6,7 @@ import { Masthead } from '@/components/nav/masthead';
 import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
 import { Badge, Button, Divider, Icon, Screen, Txt, type IconName } from '@/components/ui';
 import { PressableScale } from '@/components/ui/pressable-scale';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { PharmacistWhatsAppSheet } from '@/features/pharmacy/whatsapp-sheet';
 import { TodayCard } from '@/features/wellness/today-card';
 import { layout, radius, spacing } from '@/theme';
@@ -43,55 +44,61 @@ export default function WellnessRoute() {
           <Txt variant="headline">Diabetes and Hypertension Help</Txt>
           <View style={styles.helpCard}>
             <Txt variant="body" color="onSurfaceVariant">
-              Information, nutrition and everyday support, written by Xana pharmacists. Coming soon. Until then, our pharmacists are a message away.
+              {LAUNCH_SCOPE.wellnessPreviews
+                ? 'Information, nutrition and everyday support, written by Xana pharmacists. Coming soon. Until then, our pharmacists are a message away.'
+                : 'Questions about diabetes, blood pressure or your medicines? Our pharmacists are a message away.'}
             </Txt>
             <Button label="Ask a pharmacist" icon="whatsapp" iconPosition="leading" variant="tonal" onPress={() => setAskOpen(true)} />
           </View>
         </View>
 
-        <View style={styles.section}>
-          <View style={styles.headRow}>
-            <Txt variant="headline">Community Groups</Txt>
-            <Badge label="Preview" tone="neutral" />
-          </View>
-          <Txt variant="bodySm" color="onSurfaceVariant">
-            Support groups moderated by Xana pharmacists. Joining and discussions open once moderation is in place.
-          </Txt>
-          <View style={styles.list}>
-            {GROUPS.map((group, index) => (
-              <View key={group.title}>
-                {index > 0 ? <Divider /> : null}
-                <View style={styles.listRow}>
-                  <View style={styles.listIcon}>
-                    <Icon name={group.icon} size={18} color="primaryAccent" />
-                  </View>
-                  <View style={styles.flex}>
-                    <Txt variant="title">{group.title}</Txt>
-                    <Txt variant="caption" color="onSurfaceVariant">{group.description}</Txt>
+        {LAUNCH_SCOPE.wellnessPreviews ? (
+          <View style={styles.section}>
+            <View style={styles.headRow}>
+              <Txt variant="headline">Community Groups</Txt>
+              <Badge label="Preview" tone="neutral" />
+            </View>
+            <Txt variant="bodySm" color="onSurfaceVariant">
+              Support groups moderated by Xana pharmacists. Joining and discussions open once moderation is in place.
+            </Txt>
+            <View style={styles.list}>
+              {GROUPS.map((group, index) => (
+                <View key={group.title}>
+                  {index > 0 ? <Divider /> : null}
+                  <View style={styles.listRow}>
+                    <View style={styles.listIcon}>
+                      <Icon name={group.icon} size={18} color="primaryAccent" />
+                    </View>
+                    <View style={styles.flex}>
+                      <Txt variant="title">{group.title}</Txt>
+                      <Txt variant="caption" color="onSurfaceVariant">{group.description}</Txt>
+                    </View>
                   </View>
                 </View>
+              ))}
+              <Divider />
+              <View style={styles.listRow}>
+                <View style={styles.listIcon}>
+                  <Icon name="receipt" size={18} color="primaryAccent" />
+                </View>
+                <View style={styles.flex}>
+                  <Txt variant="title">Family Health Records</Txt>
+                  <Txt variant="caption" color="onSurfaceVariant">Keep your family’s health details in one place.</Txt>
+                </View>
+                <Badge label="Coming soon" tone="neutral" />
               </View>
-            ))}
-            <Divider />
-            <View style={styles.listRow}>
-              <View style={styles.listIcon}>
-                <Icon name="receipt" size={18} color="primaryAccent" />
-              </View>
-              <View style={styles.flex}>
-                <Txt variant="title">Family Health Records</Txt>
-                <Txt variant="caption" color="onSurfaceVariant">Keep your family’s health details in one place.</Txt>
-              </View>
-              <Badge label="Coming soon" tone="neutral" />
             </View>
           </View>
-        </View>
+        ) : null}
 
         <View style={styles.section}>
-          <PressableScale accessibilityRole="button" accessibilityLabel="See Member Services and Benefits" onPress={() => router.push('/membership')} style={styles.memberLink}>
-            <Icon name="star" size={18} color="primaryAccent" />
-            <Txt variant="label" color="primaryAccent" style={styles.flex}>Free health checks come with membership</Txt>
-            <Icon name="chevron-right" size={16} color="primaryAccent" />
-          </PressableScale>
+          {LAUNCH_SCOPE.memberPlans ? (
+            <PressableScale accessibilityRole="button" accessibilityLabel="See Member Services and Benefits" onPress={() => router.push('/membership')} style={styles.memberLink}>
+              <Icon name="star" size={18} color="primaryAccent" />
+              <Txt variant="label" color="primaryAccent" style={styles.flex}>Free health checks come with membership</Txt>
+              <Icon name="chevron-right" size={16} color="primaryAccent" />
+            </PressableScale>
+          ) : null}
           <Txt variant="caption" color="onSurfaceVariant" style={styles.disclaimer}>
             These are simple personal check-ins, not medical advice or a substitute for care from a qualified health professional.
           </Txt>

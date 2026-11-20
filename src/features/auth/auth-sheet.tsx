@@ -937,7 +937,7 @@ export function SignInBody({ flow }: { flow: SignInFlow }) {
         {flow.error ? <ErrorNote message={flow.error} /> : null}
 
         <Txt variant="caption" color="onSurfaceVariant" align="center" style={styles.terms}>
-          {"By creating an account you agree to Xana Life's terms and our "}
+          {"By creating an account you agree to Xana Life's "}
           <Txt variant="caption" color="primaryAccent" accessibilityRole="link" onPress={() => void Linking.openURL(PRIVACY_POLICY_URL)}>
             Privacy Policy
           </Txt>
@@ -1201,11 +1201,13 @@ function TermsNote() {
   return (
     <Txt variant="caption" color="onSurfaceVariant" align="center" style={styles.terms}>
       {"By continuing, you agree to Xana Life's"}{' '}
-      <Txt variant="caption" tint={colors.onSurface} style={styles.termsLink}>
-        Terms of Service
-      </Txt>
-      {' & '}
-      <Txt variant="caption" tint={colors.onSurface} style={styles.termsLink}>
+      <Txt
+        variant="caption"
+        tint={colors.onSurface}
+        style={styles.termsLink}
+        accessibilityRole="link"
+        onPress={() => void Linking.openURL(PRIVACY_POLICY_URL)}
+      >
         Privacy Policy
       </Txt>
       {'.'}

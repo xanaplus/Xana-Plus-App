@@ -26,7 +26,7 @@ export type DpoCheck = {
 
 type Reply<T> = { ok: true; data: T } | { ok: false; error: string };
 
-async function call<T>(route: 'start' | 'check', body: Record<string, unknown>): Promise<Reply<T>> {
+async function call<T>(route: 'start' | 'check' | 'mobile', body: Record<string, unknown>): Promise<Reply<T>> {
   const { data, error } = await supabase.functions.invoke<T>(`dpo/${route}`, { body });
   if (!error && data) return { ok: true, data };
   const context = (error as { context?: Response } | null)?.context;
@@ -36,6 +36,21 @@ async function call<T>(route: 'start' | 'check', body: Record<string, unknown>):
 
 /** Asks DPO, through the function, where the payment is. Safe to call often (the function asks DPO at most every 10 s). */
 export const checkPayment = (orderNo: string) => call<DpoCheck>('check', { orderNo });
+
+export type MobilePrompt = { sent?: boolean; paid?: boolean; instructions?: string | null; redirectUrl?: string | null; promptsLeft?: number };
+
+/**
+ * Sends the M-Pesa PIN prompt straight to the customer's phone, without DPO's page
+ * (§8a, `ChargeTokenMobile`, allowed for the app only). A sent prompt is NOT a payment:
+ * keep asking checkPayment() until it says paid.
+ */
+export async function sendMpesaPrompt(orderNo: string, phone: string): Promise<Reply<MobilePrompt>> {
+  const reply = await call<MobilePrompt>('mobile', { orderNo, phone: phone.replace(/[^\d+]/g, ''), operator: 'mpesa' });
+  // DPO sets no follow-up page for Kenya today; if it ever does, show it.
+  const next = reply.ok ? reply.data.redirectUrl : null;
+  if (next && next.startsWith('https://')) await WebBrowser.openBrowserAsync(next).catch(() => null);
+  return reply;
+}
 
 /**
  * Opens DPO's page for this order and waits until the customer comes back
@@ -79,6 +94,18 @@ export function payMessage(code: string): string {
       return 'We could not find this order.';
     case 'bad_pay_url':
       return 'The payment page could not be opened. Try again, or call the branch if this keeps happening.';
+    case 'invalid_phone':
+      return 'That phone number does not look right. Check it and try again.';
+    case 'prompt_too_soon':
+      return 'Wait 30 seconds before sending another M-Pesa prompt.';
+    case 'too_many_prompts':
+      return 'Too many M-Pesa prompts for now. Pay by card instead, or use the PayBill details above.';
+    case 'prompt_failed':
+      return 'We could not send the M-Pesa prompt. Try again, pay by card, or use the PayBill details if shown.';
+    case 'operator_unavailable':
+    case 'method_mismatch':
+    case 'app_only':
+      return 'M-Pesa prompts are not available for this order. Pay by card or Airtel Money instead.';
     case 'network':
       return 'We could not reach the server. Check your connection and try again.';
     case 'signed_out':

@@ -62,7 +62,7 @@ const isPersistedFulfilment = (value: unknown): value is PersistedFulfilment => 
     Array.isArray(stored.addresses) &&
     stored.addresses.every(isAddress) &&
     typeof stored.slotId === 'string' &&
-    (stored.paymentMethod === 'mpesa' || stored.paymentMethod === 'cod' || stored.paymentMethod === 'card') &&
+    (stored.paymentMethod === 'mpesa' || stored.paymentMethod === 'cod' || stored.paymentMethod === 'card' || stored.paymentMethod === 'dpo') &&
     typeof stored.mpesaNumber === 'string'
   );
 };
@@ -164,9 +164,13 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
   const userId = user?.id ?? null;
   const [stored] = useState(storedFulfilment);
   // Phones that never chose (all data saved before 19 Nov 2026) move to the new pickup default.
-  const [mode, setModeState] = useState<FulfilmentMode>(stored.modeChosen ? stored.mode : 'pickup');
+  const [chosenMode, setModeState] = useState<FulfilmentMode>(stored.modeChosen ? stored.mode : 'pickup');
   const [modeChosen, setModeChosen] = useState(stored.modeChosen === true);
+  // Pickup only while door delivery is off (LAUNCH_SCOPE.delivery, 20 Nov 2026); a saved
+  // "delivery" choice is kept for when it comes back.
+  const mode: FulfilmentMode = LAUNCH_SCOPE.delivery ? chosenMode : 'pickup';
   const setMode = useCallback((next: FulfilmentMode) => {
+    if (!LAUNCH_SCOPE.delivery && next === 'delivery') return;
     setModeState(next);
     setModeChosen(true);
   }, []);
@@ -252,7 +256,7 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
   const [slotId, setSlotId] = useState(stored.slotId);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodId>(
     // Card (and M-Pesa while LAUNCH_SCOPE.mpesa is off) wait for DPO Pay: a saved choice falls back to cash.
-    stored.paymentMethod === 'cod' || (stored.paymentMethod === 'mpesa' && LAUNCH_SCOPE.mpesa) ? stored.paymentMethod : LAUNCH_SCOPE.mpesa ? 'mpesa' : 'cod',
+    stored.paymentMethod === 'cod' || stored.paymentMethod === 'dpo' || (stored.paymentMethod === 'mpesa' && LAUNCH_SCOPE.mpesa) ? stored.paymentMethod : LAUNCH_SCOPE.mpesa ? 'mpesa' : 'cod',
   );
   const [storedMpesaNumber, setMpesaNumber] = useState(stored.mpesaNumber);
   // The sample M-Pesa line is Amina's; a real account defaults to its own number.
@@ -288,7 +292,7 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     save(STORAGE_KEYS.fulfilment, {
-      mode,
+      mode: chosenMode,
       modeChosen,
       storeId,
       storeChosen,

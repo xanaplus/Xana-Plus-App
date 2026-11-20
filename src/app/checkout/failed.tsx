@@ -1,9 +1,10 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Badge, Button, Card, Chip, Divider, Icon, Screen, TopBar, Txt } from '@/components/ui';
 import { formatKes } from '@/lib/format';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { useCart } from '@/store/cart';
 import { useFulfilment } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
@@ -46,7 +47,7 @@ const REASONS: { id: Reason; label: string; helper: string }[] = [
 /** Minutes the delivery slot is held while the shopper retries. */
 const SLOT_HOLD_SECONDS = 12 * 60;
 
-export default function PaymentFailedScreen() {
+function PaymentFailedScreen() {
   const { colors } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
@@ -267,3 +268,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
 
   footer: { gap: spacing.sm },
 });
+
+/** The simulated M-Pesa flow (LAUNCH_SCOPE.mpesa): a typed-in link goes back to checkout instead. */
+export default function GatedPaymentFailedRoute() {
+  return LAUNCH_SCOPE.mpesa ? <PaymentFailedScreen /> : <Redirect href="/checkout" />;
+}

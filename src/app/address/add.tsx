@@ -133,7 +133,7 @@ export default function AddAddressRoute() {
         {/* Contact first, then the address, as on Jumia (23 Oct). */}
         <Txt variant="overline" color="onSurfaceVariant">CONTACT PERSON</Txt>
         <Field label="Recipient Name" value={recipient} onChangeText={setRecipient} placeholder="Amina Mohamed" />
-        <Field label="M-Pesa Delivery Phone Number" value={phone} onChangeText={setPhone} placeholder="712 345 678" keyboardType="number-pad" />
+        <Field label="Phone number" value={phone} onChangeText={setPhone} placeholder="712 345 678" keyboardType="number-pad" />
         <Field label="Second Phone Number (optional)" value={secondPhone} onChangeText={setSecondPhone} placeholder="733 456 789" keyboardType="number-pad" />
 
         <Txt variant="overline" color="onSurfaceVariant" style={styles.sectionGap}>WHERE TO DELIVER</Txt>

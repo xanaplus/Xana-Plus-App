@@ -16,7 +16,7 @@ export function SignInDetails({ maskedPhone, onChangeNumber }: SignInDetailsProp
       <View style={styles.details}>
         <Txt variant="title">{maskedPhone}</Txt>
         <Txt variant="caption" color="onSurfaceVariant">
-          Used to sign in and receive the M-Pesa prompt
+          Used to sign in and for texts about your orders
         </Txt>
       </View>
       <Button label="Change number" size="sm" variant="outline" fullWidth={false} onPress={onChangeNumber} style={styles.action} />

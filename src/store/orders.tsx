@@ -206,7 +206,7 @@ export type PlaceOrderInput = {
   kraPin?: string;
   /** The draft prescription (photos attached) sent with prescription medicines, for the pharmacist. */
   prescriptionId?: string;
-  /** Pickup or delivery; the server keeps pickup only for orders paid online (`dpo`). */
+  /** Pickup or delivery; the server keeps pickup for orders paid online (`dpo`) or at pickup (cash, sent as `counter`). */
   fulfilment?: Fulfilment;
 };
 
@@ -223,6 +223,9 @@ export type PlaceOrderError =
   | 'price_changed'
   | 'not_available'
   | 'checkout_off'
+  | 'pay_at_pickup_off'
+  | 'pay_at_pickup_max'
+  | 'pay_at_pickup_limit'
   | PromoError
   | 'server_error'
   | 'network'
@@ -272,8 +275,15 @@ export const placeOrderErrorMessage = (error: PlaceOrderError): string => {
     case 'points_unavailable':
       return 'Those Xana Club points are no longer available. Adjust the points and try again.';
     case 'not_available':
-    case 'checkout_off':
       return 'Paying online is not available right now. Choose another way to pay. You have not been charged.';
+    case 'checkout_off':
+      return 'Ordering in the app is paused for now. Please try again later. You have not been charged.';
+    case 'pay_at_pickup_off':
+      return 'Paying at pickup is not available right now. Please try again later.';
+    case 'pay_at_pickup_max':
+      return 'This order is above the limit for paying at pickup. Remove some items and try again.';
+    case 'pay_at_pickup_limit':
+      return 'You already have orders waiting to be paid at pickup. Collect them first, then order again.';
     case 'price_changed':
       return 'A price or wholesale tier has changed. Refresh your basket and review the total before trying again. You have not been charged.';
     case 'network':
@@ -572,7 +582,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
           const product = productById(line.productId);
           return { itemNo: line.productId, quantity: line.quantity, expectedUnitPrice: product ? unitPrice(product, line.quantity) : undefined };
         }),
-        paymentMethod: input.paymentMethod,
+        // Cash at pickup is the shared order system's pay-at-pickup (`counter`), a real order the branch sees.
+        paymentMethod: input.paymentMethod === 'cod' && input.fulfilment === 'pickup' ? 'counter' : input.paymentMethod,
         contact: input.contact,
         addressLine: input.addressLine,
         slotLabel: input.slotLabel,
@@ -635,7 +646,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         itemCount: input.lines.length,
         unitCount: input.lines.reduce((sum, line) => sum + line.quantity, 0),
       },
-      paymentMethod: input.paymentMethod,
+      paymentMethod: input.paymentMethod === 'cod' && input.fulfilment === 'pickup' ? 'counter' : input.paymentMethod,
       contact: input.contact,
       addressLine: input.addressLine,
       slotLabel: input.slotLabel,

@@ -1,10 +1,11 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, Icon, MpesaLogo, ProgressBar, Screen, TopBar, Txt } from '@/components/ui';
 import { formatKes } from '@/lib/format';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { cleanKraPin } from '@/lib/kra-pin';
 import { placeOrderErrorMessage, useOrders } from '@/store/orders';
 import { useCart } from '@/store/cart';
@@ -31,7 +32,7 @@ const maskPhone = (phone: string): string => {
  * Screen 6b — Checkout (M-Pesa STK Push Pending). The prompt is live until the
  * shopper confirms, resends it or walks back to pick another payment method.
  */
-export default function MpesaPendingRoute() {
+function MpesaPendingRoute() {
   const { colors, gradients } = useTheme();
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
@@ -281,3 +282,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   linkRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   footer: { gap: spacing.sm },
 });
+
+/** The simulated M-Pesa flow (LAUNCH_SCOPE.mpesa): a typed-in link goes back to checkout instead. */
+export default function GatedMpesaRoute() {
+  return LAUNCH_SCOPE.mpesa ? <MpesaPendingRoute /> : <Redirect href="/checkout" />;
+}

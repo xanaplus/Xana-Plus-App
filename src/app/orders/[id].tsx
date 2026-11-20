@@ -16,7 +16,8 @@ import {
   TopBar,
   Txt,
 } from '@/components/ui';
-import { productById } from '@/data/catalog';
+import { productById, stores } from '@/data/catalog';
+import { PHARMACY_CONTACTS } from '@/data/pharmacy-contacts';
 import type { SubstitutionPreference } from '@/data/types';
 import { RateOrder } from '@/features/orders/rate-order';
 import { OrderPlaced } from '@/features/orders/order-placed';
@@ -28,7 +29,9 @@ import { radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { LAUNCH_SCOPE } from '@/lib/launch-scope';
-import { checkPayment, payMessage, payOnline } from '@/lib/dpo';
+import { checkPayment, payMessage, payOnline, sendMpesaPrompt } from '@/lib/dpo';
+import { formatPhoneDisplay } from '@/features/auth/auth-sheet';
+import { useFulfilment } from '@/store/fulfilment';
 
 /** After DPO's page: ask every 5 s for 3 minutes, then every 20 s (as the website's order page). */
 const FAST_CHECKS = 36;
@@ -73,6 +76,37 @@ export default function OrderStatusScreen() {
   const [checks, setChecks] = useState(0);
   const autoPaid = useRef(false);
 
+  // M-Pesa straight to the phone (no DPO page). Card and Airtel still use DPO's page.
+  const { mpesaNumber, store: chosenStore } = useFulfilment();
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [prompting, setPrompting] = useState(false);
+  const [promptSent, setPromptSent] = useState<{ instructions: string | null } | null>(null);
+  // DPO allows one prompt every 30 seconds: count down before "Send again".
+  const [resendIn, setResendIn] = useState(0);
+  useEffect(() => {
+    if (!resendIn) return;
+    const tick = setTimeout(() => setResendIn(left => left - 1), 1000);
+    return () => clearTimeout(tick);
+  }, [resendIn]);
+
+  const sendPrompt = async () => {
+    if (!order) return;
+    setPrompting(true);
+    setPayError(null);
+    const result = await sendMpesaPrompt(order.id, mpesaNumber);
+    setPrompting(false);
+    if (!result.ok) {
+      setPayError(payMessage(result.error));
+      return;
+    }
+    if (result.data.sent) {
+      setPromptSent({ instructions: result.data.instructions ?? null });
+      setResendIn(30);
+    }
+    setChecking(true);
+    setChecks(0);
+  };
+
   const startPayment = async () => {
     if (!order) return;
     setPaying(true);
@@ -88,9 +122,11 @@ export default function OrderStatusScreen() {
 
   // Straight from checkout: open DPO's page once.
   useEffect(() => {
-    if (pay === '1' && awaitingOnline && !autoPaid.current) {
+    if ((pay === '1' || pay === 'mpesa') && awaitingOnline && !autoPaid.current) {
       autoPaid.current = true;
-      void startPayment();
+      // From checkout with an M-Pesa number: send the prompt; otherwise open DPO's page.
+      const viaPrompt = pay === 'mpesa' && !!mpesaNumber;
+      void Promise.resolve().then(() => (viaPrompt ? sendPrompt() : startPayment()));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pay, awaitingOnline]);
@@ -135,6 +171,10 @@ export default function OrderStatusScreen() {
   const completed = isCompleted(order.status);
   const moneyNote = awaitingOnline ? null : paymentNote(order);
   const payAmount = amountDue ?? order.summary.total;
+  // The branch that has the order (saved as e.g. "RUIRU" or "Xana Plus Ruiru"); else the shopper's chosen store.
+  const orderStore = stores.find(entry => order.storeName.toLowerCase().includes(entry.id)) ?? chosenStore;
+  // Prescription orders go to that branch's pharmacy line, not the shop.
+  const pharmacyLine = PHARMACY_CONTACTS.find(contact => contact.storeId === orderStore.id) ?? PHARMACY_CONTACTS[0];
   // Saved orders (app or website) carry isTest; only the demo's sample baskets don't.
   const sample = order.isTest === undefined;
   const blockedProduct = order.substitutionNeeded ? productById(order.substitutionNeeded.productId) : undefined;
@@ -263,16 +303,48 @@ export default function OrderStatusScreen() {
           <Txt variant="caption" color="onSurfaceVariant">
             {`${order.paymentStatus === 'failed' ? 'Your last payment did not go through. ' : ''}Pay ${formatKesDecimal(payAmount)} online${order.expiresAt ? ` by ${formatDeadline(order.expiresAt)}` : ''} to confirm your order. We hold the items until then.`}
           </Txt>
+          {promptSent && order.paymentStatus === 'pending' ? (
+            <View style={styles.promptBox}>
+              <Txt variant="label">{`Check your phone: enter your M-Pesa PIN to pay ${formatKesDecimal(payAmount)}`}</Txt>
+              <Txt variant="caption" color="onSurfaceVariant">
+                {`Prompt sent to ${formatPhoneDisplay(mpesaNumber)}. This page updates by itself once you pay.`}
+              </Txt>
+              {promptSent.instructions ? (
+                <Txt variant="caption" color="onSurfaceVariant">
+                  {promptSent.instructions}
+                </Txt>
+              ) : null}
+            </View>
+          ) : null}
           {payError ? (
             <Txt variant="caption" color="error">
               {payError}
             </Txt>
           ) : null}
+          {mpesaNumber ? (
+            <Button
+              label={
+                promptSent
+                  ? resendIn
+                    ? `Send the M-Pesa prompt again (${resendIn}s)`
+                    : 'Send the M-Pesa prompt again'
+                  : `Pay ${formatKesDecimal(payAmount)} with M-Pesa`
+              }
+              icon="mpesa"
+              iconPosition="leading"
+              loading={prompting}
+              disabled={paying || resendIn > 0}
+              variant={promptSent ? 'secondary' : 'primary'}
+              onPress={() => void sendPrompt()}
+            />
+          ) : null}
           <Button
-            label={order.paymentStatus === 'failed' ? 'Pay again' : `Pay ${formatKesDecimal(payAmount)} now`}
+            label={mpesaNumber ? 'Pay by card or Airtel Money' : order.paymentStatus === 'failed' ? 'Pay again' : `Pay ${formatKesDecimal(payAmount)} now`}
             icon="lock"
             iconPosition="leading"
             loading={paying}
+            disabled={prompting}
+            variant={mpesaNumber ? 'ghost' : 'primary'}
             onPress={() => void startPayment()}
           />
         </Card>
@@ -334,7 +406,7 @@ export default function OrderStatusScreen() {
         <Row
           icon="mpesa"
           label="Payment"
-          value={ORDER_PAYMENT_LABEL[order.paymentMethod] ?? 'Card'}
+          value={order.paymentMethod === 'cod' && pickup ? ORDER_PAYMENT_LABEL.counter : ORDER_PAYMENT_LABEL[order.paymentMethod] ?? 'Card'}
           note={order.paymentReference ? `Ref: ${order.paymentReference}` : undefined}
         />
       </Card>
@@ -406,7 +478,8 @@ export default function OrderStatusScreen() {
         />
       ) : null}
 
-      {completed ? <RateOrder orderNo={order.id} pickup={pickup || order.slotLabel.startsWith('Pickup')} /> : null}
+      {/* Ratings reach no one until the admin app shows them (LAUNCH_SCOPE.orderFeedback). */}
+      {completed && LAUNCH_SCOPE.orderFeedback ? <RateOrder orderNo={order.id} pickup={pickup || order.slotLabel.startsWith('Pickup')} /> : null}
 
       {/* Returns wait for the admin site's Returns screen; until then customers return at the counter. */}
       {completed && LAUNCH_SCOPE.returns ? (
@@ -423,9 +496,43 @@ export default function OrderStatusScreen() {
       <Button
         label="Need help with this order?"
         variant="outline"
-        onPress={() => router.push('/(tabs)/profile')}
+        onPress={() => setHelpOpen(true)}
         style={styles.help}
       />
+
+      {/* Help goes to the branch that has the order (Amazon-style "Get help with order"), not the account page. */}
+      <BottomSheet
+        visible={helpOpen}
+        onClose={() => setHelpOpen(false)}
+        title="Help with this order"
+        description={`Have your order number ready: ${order.id}`}
+      >
+        <View style={styles.sheetBody}>
+          <Button
+            label={order.prescription ? `Call the ${pharmacyLine.name} pharmacy` : `Call ${orderStore.name}`}
+            icon="phone"
+            iconPosition="leading"
+            fullWidth
+            onPress={() => void Linking.openURL(`tel:${(order.prescription ? pharmacyLine.phone : orderStore.phone).replace(/\s+/g, '')}`)}
+          />
+          {order.prescription ? (
+            <Button
+              label="WhatsApp the pharmacist"
+              icon="whatsapp"
+              iconPosition="leading"
+              variant="outline"
+              fullWidth
+              onPress={() => {
+                const text = `Hello Xana Pharmacy, I need help with my order ${order.id}.`;
+                void Linking.openURL(`https://wa.me/${pharmacyLine.wa}?text=${encodeURIComponent(text)}`);
+              }}
+            />
+          ) : null}
+          <Txt variant="caption" color="onSurfaceVariant">
+            {order.prescription ? `Pharmacy: ${pharmacyLine.phone}` : `${orderStore.name} is open ${orderStore.hours}.`}
+          </Txt>
+        </View>
+      </BottomSheet>
 
       <BottomSheet
         visible={sheetOpen}
@@ -531,6 +638,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
 
   alertCard: { gap: spacing.sm, borderWidth: 1, borderColor: colors.mintEdge },
   alertHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  promptBox: { gap: spacing.xs, padding: spacing.md, borderRadius: radius.md, backgroundColor: colors.surfaceContainerHigh },
 
   detailRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md, paddingVertical: spacing.sm },
   detailIcon: {

@@ -1,9 +1,10 @@
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Badge, Button, Card, EmptyState, LoadState, Screen, SectionHeader, TopBar, Txt, type BadgeTone } from '@/components/ui';
 import { formatKes } from '@/lib/format';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { supabase } from '@/lib/supabase';
 import { useSession } from '@/store/session';
 import { spacing } from '@/theme';
@@ -70,7 +71,12 @@ async function fetchRequests(userId: string): Promise<Loaded> {
   return { returns: r.data as ReturnRow[], bookings: b.data as BookingRow[] };
 }
 
-export default function RequestsRoute() {
+/** Hidden for launch: with returns and clinic bookings off, a typed-in link goes to Profile instead. */
+export default function GatedRequestsRoute() {
+  return LAUNCH_SCOPE.returns || LAUNCH_SCOPE.clinicalServices ? <RequestsRoute /> : <Redirect href="/(tabs)/profile" />;
+}
+
+function RequestsRoute() {
   const router = useRouter();
   const { user } = useSession();
   const userId = user?.id ?? null;

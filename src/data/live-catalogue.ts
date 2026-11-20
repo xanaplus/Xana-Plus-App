@@ -414,7 +414,13 @@ export type LiveStatus = 'loading' | 'ready' | 'error';
  * Runs `load` whenever `key` changes and exposes its result. Stale responses
  * (the key moved on while a request was in flight) are dropped.
  */
-export function useLive<T>(key: string, load: () => Promise<T>, empty: T): { status: LiveStatus; data: T; retry: () => void } {
+export function useLive<T>(
+  key: string,
+  load: () => Promise<T>,
+  empty: T,
+  /** Last good result for this key, if any: shown straight away while the fresh copy loads behind it. */
+  cached?: T,
+): { status: LiveStatus; data: T; retry: () => void } {
   const [attempt, setAttempt] = useState(0);
   const request = `${attempt}:${key}`;
   // Holds the settled result of the latest request; anything older reads as loading.
@@ -434,20 +440,61 @@ export function useLive<T>(key: string, load: () => Promise<T>, empty: T): { sta
   }, [request]);
 
   const settled = state?.request === request ? state : null;
-  return { status: settled?.status ?? 'loading', data: settled?.data ?? empty, retry: () => setAttempt(n => n + 1) };
+  const retry = () => setAttempt(n => n + 1);
+  // A failed refresh keeps showing what was already on screen rather than an error.
+  if (cached !== undefined && (!settled || settled.status === 'error')) return { status: 'ready', data: cached, retry };
+  return { status: settled?.status ?? 'loading', data: settled?.data ?? empty, retry };
 }
 
 /** Loads each section's shelf in parallel, keyed by section title. */
-export function useShelves(sections: { title: string; query: LiveQuery }[], limit: number, options: ResultOptions = {}) {
-  const key = JSON.stringify([limit, options, sections.map(section => [section.title, section.query])]);
-  return useLive(
-    key,
-    async () =>
-      Object.fromEntries(
-        await Promise.all(sections.map(async section => [section.title, await fetchShelf({ ...section.query, limit }, options)] as const)),
-      ) as Record<string, Product[]>,
-    NO_SHELVES,
-  );
+export function useShelves(sections: ShelfSection[], limit: number, options: ResultOptions = {}) {
+  const key = shelvesKey(sections, limit, options);
+  return useLive(key, () => loadShelves(key, sections, limit, options), NO_SHELVES, shelfMemory.get(key));
+}
+
+/**
+ * Loads a department's shelves ahead of time, so its pill opens with products already there
+ * (20 Nov 2026: "there is a delay when I switch the pills"). Skips anything already loaded or loading.
+ */
+export function prefetchShelves(sections: ShelfSection[], limit: number, options: ResultOptions = {}) {
+  const key = shelvesKey(sections, limit, options);
+  if (shelfMemory.has(key) || shelvesInFlight.has(key)) return;
+  void loadShelves(key, sections, limit, options).catch(() => undefined);
+}
+
+type ShelfSection = { title: string; query: LiveQuery };
+
+const shelvesKey = (sections: ShelfSection[], limit: number, options: ResultOptions) =>
+  JSON.stringify([limit, options, sections.map(section => [section.title, section.query])]);
+
+/** One request per key at a time: a pill tapped while its shelves are prefetching joins that request. */
+const shelvesInFlight = new Map<string, Promise<Record<string, Product[]>>>();
+function loadShelves(key: string, sections: ShelfSection[], limit: number, options: ResultOptions) {
+  const running = shelvesInFlight.get(key);
+  if (running) return running;
+  const request = Promise.all(sections.map(async section => [section.title, await fetchShelf({ ...section.query, limit }, options)] as const))
+    .then(entries => {
+      const shelves = Object.fromEntries(entries) as Record<string, Product[]>;
+      rememberShelves(key, shelves);
+      return shelves;
+    })
+    .finally(() => shelvesInFlight.delete(key));
+  shelvesInFlight.set(key, request);
+  return request;
+}
+
+/**
+ * Shelves already loaded this session, by request (20 Nov 2026: switching Shop pills
+ * reloaded each department from nothing). Coming back shows them at once; the hook still
+ * fetches a fresh copy behind them, so prices and stock catch up without a skeleton.
+ */
+const shelfMemory = new Map<string, Record<string, Product[]>>();
+const SHELF_MEMORY_SIZE = 24;
+function rememberShelves(key: string, shelves: Record<string, Product[]>) {
+  shelfMemory.delete(key);
+  shelfMemory.set(key, shelves);
+  // Oldest out first, so a long browse doesn't hold the whole catalogue in memory.
+  while (shelfMemory.size > SHELF_MEMORY_SIZE) shelfMemory.delete(shelfMemory.keys().next().value!);
 }
 
 const NO_SHELVES: Record<string, Product[]> = {};

@@ -24,6 +24,7 @@ import { useRevealProgress } from '@/components/spending/use-reveal';
 import { ORDER_HISTORY, orderMonthLabel, parseOrderDate } from '@/data/orders';
 import type { CategoryVertical } from '@/data/types';
 import { formatKes } from '@/lib/format';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { recordedSavings } from '@/lib/order-savings';
 import { spendingBreakdown } from '@/lib/spending-breakdown';
 import { unitPrice, useCart } from '@/store/cart';
@@ -260,7 +261,7 @@ export default function SpendingScreen() {
     >
       <TopBar
         title="Savings & Spending"
-        subtitle={user ? `${user.name} · ${tier.tier} member` : undefined}
+        subtitle={user ? (LAUNCH_SCOPE.clubTiers ? `${user.name} · ${tier.tier} member` : user.name) : undefined}
         onBack={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/profile'))}
       />
 
@@ -313,7 +314,7 @@ export default function SpendingScreen() {
             <SavingRow
               icon="tag"
               label="Promotional pricing"
-              note="Member and flash-drop prices"
+              note="Offer prices at the time you bought"
               value={t.promoSavings}
             />
           </Card>
@@ -381,7 +382,7 @@ export default function SpendingScreen() {
                   <View>
                     <Txt variant="headlineLg">{user.clubPoints.toLocaleString('en-KE')}</Txt>
                     <Txt variant="caption" color="onSurfaceVariant">
-                      points · {tier.tier}
+                      {LAUNCH_SCOPE.clubTiers ? `points · ${tier.tier}` : 'points'}
                     </Txt>
                   </View>
                   <View style={styles.clubEarned}>
@@ -393,12 +394,16 @@ export default function SpendingScreen() {
                     </Txt>
                   </View>
                 </View>
-                <ProgressBar value={clubProgress} height={6} style={styles.clubBar} />
-                <Txt variant="caption" color="onSurfaceVariant">
-                  {nextTier
-                    ? `${pointsToNext.toLocaleString('en-KE')} points to ${nextTier.tier}`
-                    : 'Top tier reached'}
-                </Txt>
+                {LAUNCH_SCOPE.clubTiers ? (
+                  <>
+                    <ProgressBar value={clubProgress} height={6} style={styles.clubBar} />
+                    <Txt variant="caption" color="onSurfaceVariant">
+                      {nextTier
+                        ? `${pointsToNext.toLocaleString('en-KE')} points to ${nextTier.tier}`
+                        : 'Top tier reached'}
+                    </Txt>
+                  </>
+                ) : null}
               </Card>
             </>
           ) : null}

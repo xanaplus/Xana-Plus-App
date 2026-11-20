@@ -29,6 +29,13 @@ import { activeOffer, parseOffers } from '../../../src/lib/branch-offers.ts';
  * page through the shared `dpo` function. Real money: DPO is live. Only staff,
  * pharmacist and admin accounts may use it until the APP_PAY_ONLINE secret is `all`.
  * It is a test order only while the shop's online payment switch is off, as on the website.
+ *
+ * Pay at pickup (`counter`, Play release check 20 Nov 2026): the app is pickup only for
+ * now, and its cash orders go through create_order() as the website's pay-at-pickup
+ * orders do, so the branch sees them as real orders (the old direct save below marked
+ * every one a test order, which the admin app hides). Staff, pharmacist and admin
+ * accounts still place test orders. create_order() applies the shop's switches
+ * (checkout_enabled, pay_at_pickup_enabled) and its pay-at-pickup limits.
  */
 
 /** No packaging fee (owner, 15 Oct 2026); the field stays so past orders still show theirs. */
@@ -41,7 +48,8 @@ const KES_PER_POINT_EARNED = 120;
 const MAX_LINES = 100;
 const MAX_QUANTITY = 999;
 
-const PAYMENT_METHODS = ['mpesa', 'cod', 'card', 'dpo'];
+/** `mpesa` and `card` were the app's simulated payments; refused since 20 Nov 2026. `cod` stays for older app builds. */
+const PAYMENT_METHODS = ['cod', 'dpo', 'counter'];
 /** Accounts that may pay online before it is open to every customer (as the website's web-checkout). */
 const STAFF_ROLES = ['staff', 'pharmacist', 'admin'];
 const SUBSTITUTIONS = ['similar', 'refund', 'call'];
@@ -58,7 +66,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** create_order() refusals passed on to the app as they are; anything else is a server error. */
 const SHARED_ERRORS = [
   'unavailable', 'rx_missing', 'not_sold_online', 'age_unconfirmed', 'points_unavailable', 'invalid_branch', 'price_mismatch', 'invalid_order',
-  'checkout_off',
+  'checkout_off', 'pay_at_pickup_off', 'pay_at_pickup_max', 'pay_at_pickup_limit',
 ];
 
 const text = (value: unknown, max = 300): string | null =>
@@ -86,14 +94,15 @@ Deno.serve(async request => {
   const paymentMethod = text(body.paymentMethod);
   const substitution = text(body.substitution);
   const contact = text(body.contact);
-  const addressLine = text(body.addressLine);
-  const slotLabel = text(body.slotLabel);
   const storeName = text(body.storeName);
   const branchCode = branchFor(text(body.branchCode, 20), storeName);
+  // Only an order paid online or at pickup is saved as pickup; older app builds' cash orders stay delivery.
+  const pickup = body.fulfilment === 'pickup';
+  // A pickup order has no delivery address or slot: create_order() writes the branch and "Pickup".
+  const addressLine = text(body.addressLine) ?? (pickup ? storeName : null);
+  const slotLabel = text(body.slotLabel) ?? (pickup ? 'Pickup' : null);
   const pointsRedeemed = Number.isInteger(body.pointsRedeemed) && body.pointsRedeemed > 0 ? body.pointsRedeemed : 0;
   const promoCode = text(body.promoCode, 30)?.toUpperCase() ?? null;
-  // Only an order paid online is saved as pickup for now; every other app order stays delivery, as before.
-  const pickup = body.fulfilment === 'pickup';
 
   if (
     lines.length === 0 ||
@@ -102,7 +111,8 @@ Deno.serve(async request => {
     new Set(lines.map(line => line.itemNo)).size !== lines.length ||
     !paymentMethod || !PAYMENT_METHODS.includes(paymentMethod) ||
     !substitution || !SUBSTITUTIONS.includes(substitution) ||
-    !contact || !addressLine || !slotLabel || !storeName || !branchCode
+    !contact || !addressLine || !slotLabel || !storeName || !branchCode ||
+    (paymentMethod === 'counter' && !pickup)
   ) {
     return reply(400, { error: 'invalid_order' });
   }
@@ -179,6 +189,7 @@ Deno.serve(async request => {
   const { data: profile } = await db.from('profiles').select('club_points, role').eq('id', user.id).maybeSingle();
   const staff = STAFF_ROLES.includes(String(profile?.role ?? ''));
   const payOnline = paymentMethod === 'dpo';
+  const payAtPickup = paymentMethod === 'counter';
   if (payOnline && !staff && Deno.env.get('APP_PAY_ONLINE') !== 'all') return reply(403, { error: 'not_available' });
   const maxRedeemable = Math.min(profile?.club_points ?? 0, Math.floor(total * POINTS_PER_KES));
   if (pointsRedeemed > maxRedeemable) return reply(400, { error: 'points_unavailable' });
@@ -186,9 +197,11 @@ Deno.serve(async request => {
   const amountDue = Math.max(0, total - pointsRedeemed / POINTS_PER_KES);
   const pointsEarned = Math.floor(amountDue / KES_PER_POINT_EARNED);
 
-  if (hasRx || payOnline) {
-    // The shared order: stock held at the branch, points taken off, the pharmacy texted (rx_review).
+  if (hasRx || payOnline || payAtPickup) {
+    // The shared order: stock held at the branch, points taken off, the pharmacy texted (rx_review)
+    // or, paid at pickup, the branch told (branch_new_order).
     let isTest = true;
+    if (payAtPickup) isTest = staff;
     if (payOnline) {
       const { data: setting } = await db.from('settings').select('value').eq('key', 'online_payment_enabled').maybeSingle();
       isTest = staff && setting?.value !== true;
@@ -198,9 +211,9 @@ Deno.serve(async request => {
       p_channel: 'app',
       p_order: {
         idempotencyKey: crypto.randomUUID(),
-        // Cash orders stay test orders, like the ones saved below; paid online, see isTest above.
+        // Older builds' cash orders stay test orders, like the ones saved below; see isTest above.
         isTest,
-        fulfilment: payOnline && pickup ? 'pickup' : 'delivery',
+        fulfilment: (payOnline || payAtPickup) && pickup ? 'pickup' : 'delivery',
         branchCode,
         storeName,
         paymentMethod,

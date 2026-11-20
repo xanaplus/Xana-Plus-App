@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Icon } from '@/components/ui/icon';
+import { PulseBox } from '@/components/ui/skeleton';
 import { supabase } from '@/lib/supabase';
 import { spacing } from '@/theme';
 import { useTheme } from '@/theme/provider';
@@ -21,6 +22,17 @@ function reportBrokenPhoto(productId: string, source?: ProductPhotoSource) {
   reported.add(productId);
   void supabase.rpc('report_broken_photo', { p_item_no: productId }).then(() => undefined, () => undefined);
 }
+
+/**
+ * Photos that have already loaded once this session. Coming back to them (switching Shop
+ * pills, going back a screen) skips the pulsing placeholder and the fade: they're in the
+ * image cache, so they appear straight away.
+ */
+const shown = new Set<string>();
+export const photoShown = (key: string) => shown.has(key);
+export const markPhotoShown = (key: string) => {
+  shown.add(key);
+};
 
 type ProductPhotoProps = {
   source?: ProductPhotoSource;
@@ -50,7 +62,9 @@ export function ProductPhoto({ source, productId, accessibilityLabel, variant }:
 function ProductPhotoContent({ source, productId, accessibilityLabel, variant }: ProductPhotoProps) {
   const { colors } = useTheme();
   const [failed, setFailed] = useState(false);
-  const [loaded, setLoaded] = useState(false);
+  const sourceKey = typeof source === 'object' ? source.uri : undefined;
+  const [seen] = useState(() => (sourceKey ? photoShown(sourceKey) : false));
+  const [loaded, setLoaded] = useState(seen);
   const available = source !== undefined && !failed;
   const unavailableLabel = source === undefined ? 'Product photo unavailable' : 'Unable to load product photo';
 
@@ -68,16 +82,19 @@ function ProductPhotoContent({ source, productId, accessibilityLabel, variant }:
           contentFit="contain"
           contentPosition="center"
           cachePolicy="memory-disk"
-          transition={140}
-          onLoad={() => setLoaded(true)}
+          transition={seen ? 0 : 140}
+          onLoad={() => {
+            if (sourceKey) markPhotoShown(sourceKey);
+            setLoaded(true);
+          }}
           onError={() => {
             setFailed(true);
             reportBrokenPhoto(productId, source);
           }}
         />
       ) : null}
-      {/* A quiet tinted box while the photo loads; the photo fades in over it. */}
-      {available && !loaded ? <View pointerEvents="none" style={[styles.loading, { backgroundColor: colors.surfaceContainerLow }]} /> : null}
+      {/* A pulsing box while the photo loads, like the skeletons; the photo fades in over it. */}
+      {available && !loaded ? <PulseBox color={colors.surfaceContainerHigh} /> : null}
       {/* No photo (prescription medicines, items not yet photographed): a calm mark, no "unavailable" caption. */}
       {!available ? (
         <View style={styles.fallback}>
@@ -107,7 +124,6 @@ const styles = StyleSheet.create({
   },
   mark: { width: '56%', aspectRatio: 1, maxWidth: 96, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
   markRow: { width: '70%' },
-  loading: { ...StyleSheet.absoluteFill },
   // Thin margin so the pack fills the box, as on Jumia and Instacart.
   card: { padding: spacing.xxs },
   row: { padding: spacing.xxs },

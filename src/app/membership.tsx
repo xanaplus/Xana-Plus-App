@@ -4,6 +4,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { Badge, Button, Divider, Icon, Screen, TopBar, Txt, type IconName } from '@/components/ui';
 import { formatKes } from '@/lib/format';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { useSession } from '@/store/session';
 import { layout, radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
@@ -51,6 +52,18 @@ const BENEFITS: { icon: IconName; title: string; body: string; status?: 'live' |
 
 const COMING_SOON = ['Recipe suggestions', 'Family Health Records', 'Group Bulk Buy', 'Smart basket building'];
 
+/** With paid plans off (LAUNCH_SCOPE.memberPlans): only what every account gets today. */
+const FREE_PLANS = PLANS.filter(plan => plan.price === null).map(plan => ({ ...plan, detail: 'Every Xana Plus account. Earn 1 point per KES 120 and use them at checkout.' }));
+const FREE_BENEFITS: typeof BENEFITS = [
+  {
+    icon: 'star',
+    title: 'Points on every order',
+    body: '1 point for every KES 120 you spend. Use them at checkout: 10 points take KES 1 off.',
+    status: 'live',
+  },
+  ...BENEFITS.filter(benefit => benefit.status === 'live'),
+];
+
 export default function MembershipRoute() {
   const styles = useThemeStyles(createStyles);
   const { colors } = useTheme();
@@ -60,6 +73,10 @@ export default function MembershipRoute() {
   const scroll = useRef<ScrollView>(null);
   const plansY = useRef(0);
 
+  const paid = LAUNCH_SCOPE.memberPlans;
+  const plans = paid ? PLANS : FREE_PLANS;
+  const benefits = paid ? BENEFITS : FREE_BENEFITS;
+
   const goBack = () => (router.canGoBack() ? router.back() : router.replace('/(tabs)'));
 
   return (
@@ -67,18 +84,22 @@ export default function MembershipRoute() {
       <TopBar title="Member Services and Benefits" onBack={goBack} />
       <ScrollView ref={scroll} showsVerticalScrollIndicator={false} contentContainerStyle={styles.page}>
         <View style={styles.hero}>
-          <Txt variant="display" tint={colors.onPrimary}>Discover what comes with Membership</Txt>
+          <Txt variant="display" tint={colors.onPrimary}>{paid ? 'Discover what comes with Membership' : 'What your free account gives you'}</Txt>
           <Txt variant="body" tint={colors.onPrimaryContainer}>
-            Join Xana Plus for Member-only prices on supermarket and pharmacy products, plus health and wellness services for you and your family.
+            {paid
+              ? 'Join Xana Plus for Member-only prices on supermarket and pharmacy products, plus health and wellness services for you and your family.'
+              : 'Points on every order and daily wellness check-ins. Free, nothing to pay.'}
           </Txt>
-          <View style={styles.soonPill}>
-            <Icon name="clock" size={14} color={colors.onSecondaryContainer} />
-            <Txt variant="label" tint={colors.onSecondaryContainer}>Opens soon. Nothing is charged yet.</Txt>
-          </View>
+          {paid ? (
+            <View style={styles.soonPill}>
+              <Icon name="clock" size={14} color={colors.onSecondaryContainer} />
+              <Txt variant="label" tint={colors.onSecondaryContainer}>Opens soon. Nothing is charged yet.</Txt>
+            </View>
+          ) : null}
         </View>
 
         <View style={styles.section}>
-          {BENEFITS.map((benefit, index) => (
+          {benefits.map((benefit, index) => (
             <View key={benefit.title}>
               {index > 0 ? <Divider /> : null}
               <View style={styles.benefit}>
@@ -88,7 +109,7 @@ export default function MembershipRoute() {
                 <View style={styles.flex}>
                   <View style={styles.benefitHead}>
                     <Txt variant="titleLg" style={styles.flexShrink}>{benefit.title}</Txt>
-                    {benefit.status === 'live' ? <Badge label="Available now" tone="fresh" /> : null}
+                    {paid && benefit.status === 'live' ? <Badge label="Available now" tone="fresh" /> : null}
                   </View>
                   <Txt variant="bodySm" color="onSurfaceVariant">{benefit.body}</Txt>
                 </View>
@@ -97,16 +118,18 @@ export default function MembershipRoute() {
           ))}
         </View>
 
-        <View style={styles.section}>
-          <Txt variant="headline">Coming soon</Txt>
-          <View style={styles.soonList}>
-            {COMING_SOON.map(item => (
-              <View key={item} style={styles.soonChip}>
-                <Txt variant="label" color="onSurfaceVariant">{item}</Txt>
-              </View>
-            ))}
+        {paid ? (
+          <View style={styles.section}>
+            <Txt variant="headline">Coming soon</Txt>
+            <View style={styles.soonList}>
+              {COMING_SOON.map(item => (
+                <View key={item} style={styles.soonChip}>
+                  <Txt variant="label" color="onSurfaceVariant">{item}</Txt>
+                </View>
+              ))}
+            </View>
           </View>
-        </View>
+        ) : null}
 
         <View
           style={styles.section}
@@ -115,9 +138,9 @@ export default function MembershipRoute() {
             if (section === 'plans') scroll.current?.scrollTo({ y: plansY.current - spacing.lg, animated: false });
           }}
         >
-          <Txt variant="headline">Membership levels</Txt>
+          <Txt variant="headline">{paid ? 'Membership levels' : 'Your level'}</Txt>
           <View style={styles.plans}>
-            {PLANS.map(plan => {
+            {plans.map(plan => {
               const current = Boolean(user) && plan.id === 'associate';
               return (
                 <View key={plan.id} style={[styles.plan, plan.id === 'annual' ? styles.planFeatured : null]}>
@@ -135,15 +158,17 @@ export default function MembershipRoute() {
               );
             })}
           </View>
-          <Txt variant="caption" color="onSurfaceVariant">Prices include VAT.</Txt>
+          {paid ? <Txt variant="caption" color="onSurfaceVariant">Prices include VAT.</Txt> : null}
           {user ? (
-            <Button label="Member plans open soon" disabled icon="clock" iconPosition="leading" />
+            paid ? <Button label="Member plans open soon" disabled icon="clock" iconPosition="leading" /> : null
           ) : (
             <Button label="Create your free account" icon="user" iconPosition="leading" onPress={() => router.push('/login')} />
           )}
-          <Txt variant="caption" color="onSurfaceVariant" style={styles.center}>
-            {user ? 'We will let you know when you can become a Member.' : 'Start with your name and mobile number.'}
-          </Txt>
+          {user && !paid ? null : (
+            <Txt variant="caption" color="onSurfaceVariant" style={styles.center}>
+              {user ? 'We will let you know when you can become a Member.' : 'Start with your name and mobile number.'}
+            </Txt>
+          )}
         </View>
       </ScrollView>
     </Screen>

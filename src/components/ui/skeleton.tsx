@@ -34,6 +34,12 @@ function usePulse() {
   return pulse;
 }
 
+/** A block that pulses like the skeletons: behind a photo that is still downloading, or a placeholder tile. */
+export function PulseBox({ color, style }: { color: string; style?: StyleProp<ViewStyle> }) {
+  const pulse = usePulse();
+  return <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: color, opacity: pulse }, style]} />;
+}
+
 function Bar({ width, height = 12, round }: { width: DimensionValue; height?: number; round?: boolean }) {
   const styles = useThemeStyles(createStyles);
   return <View style={[styles.bar, { width, height }, round ? { borderRadius: radius.pill } : null]} />;

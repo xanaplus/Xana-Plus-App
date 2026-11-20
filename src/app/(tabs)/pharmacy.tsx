@@ -303,13 +303,20 @@ export default function PharmacyRoute() {
                 <Icon name="prescription" size={22} color="onPrimary" />
               </View>
               <View style={styles.rxHeroText}>
-                <Txt variant="headlineSm">Have a prescription?</Txt>
+                {/* Prescriptions are attached at checkout; a stand-alone upload reaches no one yet (LAUNCH_SCOPE.rxUploadAlone). */}
+                <Txt variant="headlineSm">{LAUNCH_SCOPE.rxUploadAlone ? 'Have a prescription?' : 'Order prescription medicine'}</Txt>
                 <Txt variant="bodySm" color="onSurfaceVariant">
-                  Send a photo. A pharmacist checks it before your order is packed.
+                  {LAUNCH_SCOPE.rxUploadAlone
+                    ? 'Send a photo. A pharmacist checks it before your order is packed.'
+                    : 'Add the medicine to your basket, then attach a photo of your prescription at checkout. A pharmacist checks it before your order is packed.'}
                 </Txt>
               </View>
             </View>
-            <Button label="Upload prescription" icon="scan" iconPosition="leading" onPress={() => runAction('upload-rx')} />
+            {LAUNCH_SCOPE.rxUploadAlone ? (
+              <Button label="Upload prescription" icon="scan" iconPosition="leading" onPress={() => runAction('upload-rx')} />
+            ) : (
+              <Button label="Find prescription medicine" onPress={() => openAisle('medicines')} />
+            )}
           </Card>
 
           <View style={styles.helperRow}>
@@ -427,17 +434,7 @@ export default function PharmacyRoute() {
           </Pressable>
         </LinearGradient> : null}
 
-        <View style={styles.licence}>
-          <View style={styles.licenceOverline}>
-            <Icon name="shield" size={14} color="outline" />
-            <Txt variant="overline" color="outline">
-              OFFICIAL PHARMACY LICENSE
-            </Txt>
-          </View>
-          <Txt variant="bodySm" color="outline" align="center">
-            Licensed by the Kenya Pharmacy & Poisons Board (PPB) · Xana Plus Syokimau & Xana Plus Ruiru
-          </Txt>
-        </View>
+        {/* No PPB licence line until there is a licence number to show (Play release check, 20 Nov 2026). */}
       </View>
 
       <BottomSheet
@@ -730,7 +727,5 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   },
   promoBody: { flex: 1 },
   promoLink: { flexDirection: 'row', alignItems: 'center', gap: spacing.xxs, paddingVertical: spacing.sm },
-  licence: { alignItems: 'center', gap: spacing.xs, marginTop: spacing.md },
-  licenceOverline: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   confirmation: { gap: spacing.sm, alignItems: 'flex-start' },
 });

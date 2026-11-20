@@ -9,6 +9,7 @@ import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { PressableScale } from '@/components/ui/pressable-scale';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 
 const tone = (status: Prescription['status']): 'neutral' | 'info' | 'fresh' | 'warning' => ({
   draft: 'neutral', submitted: 'info', quoted: 'fresh', rejected: 'warning', ordered: 'fresh', cancelled: 'neutral',
@@ -24,18 +25,19 @@ export default function PrescriptionsScreen() {
   useFocusEffect(useCallback(() => { void refresh(); }, [refresh]));
   return <Screen padded contentStyle={styles.content}>
     <TopBar title="My prescriptions" onBack={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/pharmacy')} />
-    <View style={styles.actions}><Button label="Upload a prescription" icon="prescription" iconPosition="leading" fullWidth onPress={() => router.push('/pharmacy/upload')} /></View>
-    <Card variant="tinted" padding={spacing.lg} style={styles.explainer}><Icon name="shield" size={18} color="primaryAccent" /><Txt variant="bodySm" color="onSurfaceVariant" style={styles.explainerText}>A pharmacist reviews your prescription and sends an exact priced list. Nothing is ordered until you confirm that quote.</Txt></Card>
+    {/* A stand-alone upload reaches no one yet: prescriptions are attached at checkout (LAUNCH_SCOPE.rxUploadAlone). */}
+    {LAUNCH_SCOPE.rxUploadAlone ? <View style={styles.actions}><Button label="Upload a prescription" icon="prescription" iconPosition="leading" fullWidth onPress={() => router.push('/pharmacy/upload')} /></View> : null}
+    <Card variant="tinted" padding={spacing.lg} style={styles.explainer}><Icon name="shield" size={18} color="primaryAccent" /><Txt variant="bodySm" color="onSurfaceVariant" style={styles.explainerText}>{LAUNCH_SCOPE.rxUploadAlone ? 'A pharmacist reviews your prescription and sends an exact priced list. Nothing is ordered until you confirm that quote.' : 'Add prescription medicine to your basket and attach a photo of the prescription at checkout. A pharmacist checks it before your order is packed.'}</Txt></Card>
     <View style={styles.listHead}><Txt variant="titleLg">Your requests</Txt><PressableScale accessibilityRole="button" onPress={() => void refresh()}><Txt variant="label" color="primaryAccent">Refresh</Txt></PressableScale></View>
     {!isAuthenticated ? <Card variant="elevated" padding={spacing.lg} style={styles.empty}><Txt variant="title">Sign in to view your prescriptions</Txt><Txt variant="bodySm" color="onSurfaceVariant">Prescription records are private to your account.</Txt><Button label="Sign in" onPress={() => router.push('/login')} /></Card> :
       loading && records.length === 0 ? <View style={styles.loading}><ActivityIndicator color={colors.primaryAccent} /><Txt variant="bodySm" color="onSurfaceVariant">Loading your requests…</Txt></View> :
       error ? <ErrorNotice message={error} onRetry={() => void refresh()} /> :
-      records.length === 0 ? <Card variant="elevated" padding={spacing.lg} style={styles.empty}><View style={styles.emptyGlyph}><Icon name="prescription" size={23} color="primaryAccent" /></View><Txt variant="title">No prescription requests yet</Txt><Button label="Upload prescription" onPress={() => router.push('/pharmacy/upload')} /></Card> :
+      records.length === 0 ? <Card variant="elevated" padding={spacing.lg} style={styles.empty}><View style={styles.emptyGlyph}><Icon name="prescription" size={23} color="primaryAccent" /></View><Txt variant="title">No prescription requests yet</Txt>{LAUNCH_SCOPE.rxUploadAlone ? <Button label="Upload prescription" onPress={() => router.push('/pharmacy/upload')} /> : <Txt variant="bodySm" color="onSurfaceVariant">Prescriptions are attached at checkout when you order prescription medicine.</Txt>}</Card> :
       <View style={styles.list}>{records.map(record => <PressableScale key={record.id} accessibilityRole="button" onPress={() => router.push(`/pharmacy/prescription/${record.id}`)}>
         <Card variant="elevated" padding={spacing.lg} style={styles.record}>
           <View style={styles.recordHead}><View style={styles.recordTitle}><Txt variant="title">{record.patient_name}</Txt><Txt variant="caption" color="onSurfaceVariant">{new Date(record.created_at).toLocaleDateString('en-KE')} · {record.files.length} {record.files.length === 1 ? 'photo' : 'photos'}</Txt></View><Badge label={STATUS_LABELS[record.status]} tone={tone(record.status)} /></View>
           {record.doctor ? <Txt variant="caption" color="onSurfaceVariant" numberOfLines={1}>Prescriber: {record.doctor}</Txt> : null}
-          {record.status === 'quoted' ? <Txt variant="label" color="primaryAccent">Quote ready · review and confirm</Txt> : null}
+          {LAUNCH_SCOPE.rxUploadAlone && record.status === 'quoted' ? <Txt variant="label" color="primaryAccent">Quote ready · review and confirm</Txt> : null}
           {record.status === 'draft' ? <Txt variant="label" color="secondaryAccent">Continue adding photos and submit</Txt> : null}
           <View style={styles.openRow}><Txt variant="label" color="primaryAccent">View request</Txt><Icon name="arrow-right" size={16} color="primaryAccent" /></View>
         </Card>

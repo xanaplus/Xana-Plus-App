@@ -36,6 +36,7 @@ import { layout, radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { PressableScale } from '@/components/ui/pressable-scale';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 
 /**
  * Screen 4 — Product Detail (grocery) and Screen 4b — Product Detail (Pharmacy).
@@ -123,17 +124,19 @@ const RETURN_NOTE =
 
 
 const PHARMACIST_SERVICE = {
-  title: 'Collection or delivery after pharmacist approval',
+  // Pickup only while door delivery is off (LAUNCH_SCOPE.delivery, 20 Nov 2026).
+  title: LAUNCH_SCOPE.delivery ? 'Collection or delivery after pharmacist approval' : 'Collection after pharmacist approval',
   description:
     'A pharmacist checks your prescription before your order is packed.',
 };
 
-/** Patient-leaflet wording for the collapsed safety row (the frame never prints its body). */
-const PHARMACY_SAFETY = [
-  'Check with our pharmacist before use if pregnant, breastfeeding or taking prescription medicine.',
-  'Keep out of reach of children.',
-  'Stop use and speak to our pharmacist if symptoms continue beyond 3 days.',
-];
+/**
+ * The safety row sends customers to a pharmacist instead of printing generic leaflet
+ * lines: the same advice doesn't fit every medicine (Play release check, 20 Nov 2026).
+ */
+const ASK_HOW_TO_USE = 'Ask our pharmacist how to use this medicine';
+/** Prescription items go in once; the pharmacist sets the real quantity. */
+const RX_QUANTITY_NOTE = '1 per order; the pharmacist confirms the quantity';
 
 const ASK_PHARMACIST = {
   title: 'Ask a Pharmacist about this',
@@ -143,11 +146,11 @@ const ASK_PHARMACIST = {
 const SECTION = {
   description: 'Description',
   specifications: 'Product Specifications & Usage',
-  delivery: 'Delivery & Returns',
+  delivery: LAUNCH_SCOPE.delivery ? 'Delivery & Returns' : 'Pickup & Returns',
   leaflet: 'DESCRIPTION, USAGE & DOSAGE',
   ingredients: 'ACTIVE INGREDIENTS & COMPOSITION',
   safety: 'SAFETY & CONTRAINDICATIONS',
-  dispatch: 'PHARMACY DISPATCH & REGULATION',
+  dispatch: LAUNCH_SCOPE.delivery ? 'PHARMACY DISPATCH & REGULATION' : 'PHARMACY PICKUP',
 };
 
 const RELATED = {
@@ -292,6 +295,15 @@ function ProductDetail({ product }: { product: Product }) {
     ...(product.specifications ?? [{ label: 'Pack size', value: product.pack }]),
   ];
 
+  // Pickup only for launch: one row naming the chosen store, no invented delivery slots.
+  const slotRows = LAUNCH_SCOPE.delivery
+    ? deliverySlots.map(slot => ({
+        key: slot.id,
+        label: `${slot.mode === 'pickup' ? `Pickup · ${store.name}` : slot.label} · ${slot.window}`,
+        note: slot.free ? 'Free' : undefined,
+      }))
+    : [{ key: 'pickup', label: `Pickup at ${store.name}`, note: undefined }];
+
   const toggle = (key: string) => setOpenSection(current => (current === key ? '' : key));
 
   const { isAuthenticated } = useSession();
@@ -312,6 +324,22 @@ function ProductDetail({ product }: { product: Product }) {
             <Button label={`Out of stock at ${storeShortName}`} icon="cart" iconPosition="leading" disabled onPress={onAdd} />
           ) : inCart === 0 ? (
             <Button label={`Add to Cart · ${formatKes(currentUnitPrice)}`} icon="cart" iconPosition="leading" onPress={onAdd} />
+          ) : product.rxRequired ? (
+            // The cart holds one of each prescription item, so no − n + here.
+            <View style={styles.footer}>
+              <Txt variant="bodySm" color="onSurfaceVariant">
+                {RX_QUANTITY_NOTE}
+              </Txt>
+              <View style={styles.footerRow}>
+                <Button label="Remove" variant="tonal" fullWidth={false} onPress={() => cart.setQuantity(product.id, 0)} />
+                <Button
+                  label={`Cart · ${formatKes(lineTotal)}`}
+                  fullWidth={false}
+                  style={styles.cta}
+                  onPress={() => router.push('/(tabs)/cart')}
+                />
+              </View>
+            </View>
           ) : (
             <View style={styles.footerRow}>
               <QuantityStepper
@@ -425,7 +453,6 @@ function ProductDetail({ product }: { product: Product }) {
                 <Badge label={`Save ${formatKes(saving)}`} tone="warning" />
               ) : null}
             </View>
-            {isPharmacy ? <NoticePill icon="check-circle" label="Licensed Pharmacy Stock" tone="info" /> : null}
           </View>
           {offer ? (
             <View style={styles.stockRow}>
@@ -561,17 +588,20 @@ function ProductDetail({ product }: { product: Product }) {
             </AccordionCard>
 
             <AccordionCard title={SECTION.safety} expanded={openSection === SECTION.safety} onToggle={() => toggle(SECTION.safety)}>
-              {PHARMACY_SAFETY.map(line => (
-                <Bullet key={line} text={line} />
-              ))}
+              <PressableScale accessibilityRole="button" onPress={() => setAskOpen(true)} style={styles.askLink}>
+                <Txt variant="label" color="primaryAccent" style={styles.askLinkText}>
+                  {ASK_HOW_TO_USE}
+                </Txt>
+                <Icon name="arrow-right" size={16} color="primaryAccent" />
+              </PressableScale>
             </AccordionCard>
 
             <AccordionCard title={SECTION.dispatch} expanded={openSection === SECTION.dispatch} onToggle={() => toggle(SECTION.dispatch)}>
               <Txt variant="body" color="onSurfaceVariant">
                 {PHARMACIST_SERVICE.description}
               </Txt>
-              {deliverySlots.map(slot => (
-                <SlotRow key={slot.id} label={`${slot.label} · ${slot.window}`} note={slot.free ? 'Free' : undefined} />
+              {slotRows.map(row => (
+                <SlotRow key={row.key} label={row.label} note={row.note} />
               ))}
             </AccordionCard>
           </View>
@@ -607,12 +637,8 @@ function ProductDetail({ product }: { product: Product }) {
                 <Txt variant="bodySm" color="onSurfaceVariant">
                   {RETURN_NOTE}
                 </Txt>
-                {deliverySlots.map(slot => (
-                  <SlotRow
-                    key={slot.id}
-                    label={`${slot.mode === 'pickup' ? `Pickup · ${store.name}` : slot.label} · ${slot.window}`}
-                    note={slot.free ? 'Free' : undefined}
-                  />
+                {slotRows.map(row => (
+                  <SlotRow key={row.key} label={row.label} note={row.note} />
                 ))}
               </AccordionRow>
               <Divider />
@@ -865,6 +891,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     backgroundColor: colors.mintSubtle,
   },
   askPressed: { opacity: 0.9 },
+  askLink: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, minHeight: layout.touchTarget },
+  askLinkText: { flexShrink: 1 },
   askIcon: { width: 40, height: 40, borderRadius: radius.pill, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
   askBody: { flex: 1, gap: spacing.xxs },
   footer: { gap: spacing.md },
