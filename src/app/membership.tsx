@@ -103,9 +103,6 @@ export default function MembershipRoute() {
             <View key={benefit.title}>
               {index > 0 ? <Divider /> : null}
               <View style={styles.benefit}>
-                <View style={styles.benefitIcon}>
-                  <Icon name={benefit.icon} size={20} color="primaryAccent" />
-                </View>
                 <View style={styles.flex}>
                   <View style={styles.benefitHead}>
                     <Txt variant="titleLg" style={styles.flexShrink}>{benefit.title}</Txt>

@@ -637,9 +637,6 @@ function InfoBanner({
   const styles = useThemeStyles(createStyles);
   const body = (
     <>
-      <View style={styles.bannerGlyph}>
-        <Icon name={icon} size={18} color="onPrimary" />
-      </View>
       <View style={styles.bannerCopy}>
         <Txt variant="titleSm">{title}</Txt>
         <View style={styles.bannerSubtitle}>

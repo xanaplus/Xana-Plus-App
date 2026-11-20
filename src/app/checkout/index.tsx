@@ -458,9 +458,6 @@ export default function CheckoutRoute() {
           <Card variant="outline" padding={spacing.lg} style={styles.inset}>
             <View style={styles.cardHeader}>
               <View style={styles.cardHeaderLeft}>
-                <View style={styles.headerIcon}>
-                  <Icon name={fulfilment.mode === 'pickup' ? 'store' : 'map-pin'} size={18} color="primaryAccent" />
-                </View>
                 <Txt variant="titleLg">{fulfilment.mode === 'pickup' ? 'Pickup store' : 'Delivery Address'}</Txt>
               </View>
               <PressableScale
@@ -533,9 +530,6 @@ export default function CheckoutRoute() {
           <Card variant="outline" padding={spacing.lg} style={styles.inset}>
             <View style={styles.cardHeader}>
               <View style={styles.cardHeaderLeft}>
-                <View style={styles.headerIcon}>
-                  <Icon name="clock" size={18} color="primaryAccent" />
-                </View>
                 <Txt variant="titleLg">Delivery Slot</Txt>
               </View>
               <PressableScale
@@ -659,9 +653,6 @@ export default function CheckoutRoute() {
                 onPress={() => setPointsExpanded(previous => !previous)}
                 style={styles.pointsHeader}
               >
-                <View style={styles.headerIcon}>
-                  <Icon name="star" size={18} color="primaryAccent" />
-                </View>
                 <View style={styles.flex}>
                   <Txt variant="titleLg">Use Xana Club points</Txt>
                   <Txt variant="bodySm" color="onSurfaceVariant">
@@ -721,9 +712,6 @@ export default function CheckoutRoute() {
           {session.user && LAUNCH_SCOPE.promoCodes ? (
             <Card variant="outline" padding={spacing.lg} style={[styles.inset, styles.promoCard]}>
               <View style={styles.pointsHeader}>
-                <View style={styles.headerIcon}>
-                  <Icon name="tag" size={18} color="primaryAccent" />
-                </View>
                 <View style={styles.flex}>
                   <Txt variant="titleLg">Promo code</Txt>
                   {promo ? (
@@ -790,9 +778,6 @@ export default function CheckoutRoute() {
           {session.user ? (
             <Card variant="outline" padding={spacing.lg} style={[styles.inset, styles.promoCard]}>
               <View style={styles.pointsHeader}>
-                <View style={styles.headerIcon}>
-                  <Icon name="bank" size={18} color="primaryAccent" />
-                </View>
                 <View style={styles.flex}>
                   <Txt variant="titleLg">KRA PIN (optional)</Txt>
                   <Txt variant="bodySm" color="onSurfaceVariant">

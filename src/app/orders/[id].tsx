@@ -574,9 +574,7 @@ function Row({ icon, label, value, note }: { icon: 'store' | 'delivery' | 'mpesa
   const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.detailRow}>
-      <View style={styles.detailIcon}>
-        <Icon name={icon} size={16} color="primaryAccent" />
-      </View>
+      <Icon name={icon} size={16} color="primaryAccent" />
       <View style={styles.detailText}>
         <Txt variant="caption" color="onSurfaceVariant">
           {label}

@@ -124,9 +124,6 @@ export default function CartRoute() {
         <>
         <Card variant="elevated" padding={spacing.lg} style={styles.inset}>
           <View style={styles.slotRow}>
-            <View style={styles.slotIcon}>
-              <Icon name="delivery" size={20} color="primaryAccent" />
-            </View>
             <View style={styles.slotBody}>
               <Txt variant="title">{slot.window}</Txt>
               <Txt variant="caption" color="onSurfaceVariant">

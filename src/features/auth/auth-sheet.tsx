@@ -748,9 +748,6 @@ function OffersSwitch({ value, onChange }: { value: boolean; onChange: (next: bo
   const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.offers}>
-      <View style={styles.offersIcon}>
-        <Icon name="tag" size={18} color="primaryAccent" />
-      </View>
       <View style={styles.offersBody}>
         <Txt variant="title">Offers and news</Txt>
         <Txt variant="caption" color="onSurfaceVariant">

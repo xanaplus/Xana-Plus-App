@@ -553,9 +553,6 @@ function ProductDetail({ product }: { product: Product }) {
         {product.rxRequired ? (
           <Card variant="outline" padding={spacing.md}>
             <View style={styles.serviceRow}>
-              <View style={styles.serviceIcon}>
-                <Icon name="pharmacy" size={20} color="primaryAccent" />
-              </View>
               <View style={styles.serviceBody}>
                 <Txt variant="title">{PHARMACIST_SERVICE.title}</Txt>
                 <Txt variant="bodySm" color="onSurfaceVariant">
@@ -567,9 +564,6 @@ function ProductDetail({ product }: { product: Product }) {
         ) : (
           <View style={styles.express}>
             <View style={styles.serviceRow}>
-              <View style={styles.serviceIcon}>
-                <Icon name="delivery" size={20} color="primaryAccent" />
-              </View>
               <View style={styles.serviceBody}>
                 <Txt variant="title">{`Packed at ${store.name}`}</Txt>
               </View>

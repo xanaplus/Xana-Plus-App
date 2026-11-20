@@ -604,9 +604,6 @@ export default function ProfileRoute() {
 
       <Card variant="elevated" padding={spacing.lg} style={styles.inset}>
         <View style={styles.fulfilmentHead}>
-          <View style={styles.fulfilmentIcon}>
-            <Icon name={mode === 'delivery' ? 'delivery' : 'pickup'} size={20} color="primaryAccent" />
-          </View>
           <View style={styles.fulfilmentText}>
             <Txt variant="title">{LAUNCH_SCOPE.delivery ? 'Delivery or pickup' : 'Pickup store'}</Txt>
             <Txt variant="caption" color="onSurfaceVariant" numberOfLines={2}>

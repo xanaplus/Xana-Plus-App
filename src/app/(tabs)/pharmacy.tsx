@@ -299,9 +299,6 @@ export default function PharmacyRoute() {
         <View style={[styles.inset, styles.rxBlock]}>
           <Card variant="flat" padding={spacing.lg} radiusSize={radius.xl} style={styles.rxHero}>
             <View style={styles.rxHeroHead}>
-              <View style={styles.rxHeroGlyph}>
-                <Icon name="prescription" size={22} color="onPrimary" />
-              </View>
               <View style={styles.rxHeroText}>
                 {/* Prescriptions are attached at checkout; a stand-alone upload reaches no one yet (LAUNCH_SCOPE.rxUploadAlone). */}
                 <Txt variant="headlineSm">{LAUNCH_SCOPE.rxUploadAlone ? 'Have a prescription?' : 'Order prescription medicine'}</Txt>

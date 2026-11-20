@@ -450,9 +450,7 @@ function SavingRow({ icon, label, note, value }: { icon: IconName; label: string
   const styles = useThemeStyles(createStyles);
   return (
     <View style={styles.savingRow}>
-      <View style={styles.savingIcon}>
-        <Icon name={icon} size={16} color="primaryAccent" />
-      </View>
+      <Icon name={icon} size={16} color="primaryAccent" />
       <View style={styles.savingText}>
         <Txt variant="label" numberOfLines={1}>
           {label}

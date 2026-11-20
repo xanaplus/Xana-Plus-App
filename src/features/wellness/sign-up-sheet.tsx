@@ -61,9 +61,7 @@ export function SignUpSheet({ visible, onClose }: SignUpSheetProps) {
       <View style={styles.benefits}>
         {BENEFITS.map(benefit => (
           <View key={benefit.text} style={styles.benefit}>
-            <View style={styles.benefitIcon}>
-              <Icon name={benefit.icon} size={16} color="primaryAccent" />
-            </View>
+            <Icon name={benefit.icon} size={16} color="primaryAccent" />
             <Txt variant="body" style={styles.flex}>{benefit.text}</Txt>
           </View>
         ))}
