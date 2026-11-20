@@ -48,6 +48,7 @@ import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { PressableScale } from '@/components/ui/pressable-scale';
 import { LAUNCH_SCOPE } from '@/lib/launch-scope';
+import { quoteIsFresh } from '@/lib/delivery-locate';
 
 /** Payment rows in the order Screen 6 stacks them. */
 type PaymentMethodCopy = { id: PaymentMethodId; title: string; icon: IconName; showsTotal: boolean };
@@ -174,6 +175,8 @@ export default function CheckoutRoute() {
   const payDisabled = empty || rxBlocked || payBlockedByAddress;
   const payLabel = hasRx ? 'Send to pharmacist' : method.showsTotal ? `Place Order · ${formatKes(amountDue)}` : 'Place Order';
   const storeArea = fulfilment.store.name.replace('Xana Plus ', '');
+  // The delivery place set on the map (address/map), while its 30-minute quote holds.
+  const deliveryQuote = quoteIsFresh(fulfilment.deliveryQuote) ? fulfilment.deliveryQuote : null;
   const phoneError = phoneDraft.digits.length === 9 && !isValidPhone(phoneDraft) ? PHONE_INVALID_MESSAGE : null;
 
   const placedCopy = placed
@@ -267,6 +270,9 @@ export default function CheckoutRoute() {
       kraPin: cleanKraPin(kraPinValue) ?? undefined,
       prescriptionId,
       fulfilment: fulfilment.mode,
+      // TODO(delivery): send `deliveryQuoteId: deliveryQuote?.id` for delivery orders once
+      // William lets create_order() take the fee from the quote on app orders (his note,
+      // 17 Nov 2026). Until then an app order with a quote id is refused, so none is sent.
     });
     setPlacing(false);
     if (!result.ok) {
@@ -520,6 +526,26 @@ export default function CheckoutRoute() {
                 </Txt>
                 <Txt variant="label" color="primaryAccent">
                   Change store
+                </Txt>
+              </PressableScale>
+            ) : null}
+            {/* Only reachable with door delivery on: mode is always 'pickup' while LAUNCH_SCOPE.delivery is off. */}
+            {LAUNCH_SCOPE.delivery && fulfilment.mode === 'delivery' && session.user ? (
+              <PressableScale
+                accessibilityRole="button"
+                accessibilityLabel={deliveryQuote ? 'Change the delivery place on the map' : 'Set the delivery place on the map'}
+                hitSlop={6}
+                onPress={() => router.push('/address/map')}
+                style={styles.packedAt}
+              >
+                <Icon name="map-pin" size={14} color="onSurfaceVariant" />
+                <Txt variant="caption" color="onSurfaceVariant" style={styles.flex}>
+                  {deliveryQuote
+                    ? `${deliveryQuote.distanceKm.toLocaleString('en-KE', { maximumFractionDigits: 1 })} km · Delivery ${formatKes(deliveryQuote.deliveryFee)} · paid online`
+                    : 'Set your gate on the map to see the delivery fee'}
+                </Txt>
+                <Txt variant="label" color="primaryAccent">
+                  {deliveryQuote ? 'Move pin' : 'Open map'}
                 </Txt>
               </PressableScale>
             ) : null}

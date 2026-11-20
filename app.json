@@ -2,7 +2,7 @@
   "expo": {
     "name": "Xana Plus",
     "slug": "xanaplus",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/brand/icon.png",
     "scheme": "xanaplus",
@@ -64,6 +64,12 @@
           "photosPermission": "Xana Plus opens your photos so you can choose a picture of your prescription for our pharmacist to review.",
           "cameraPermission": "Xana Plus uses the camera to scan product barcodes and to photograph your prescription for our pharmacist.",
           "microphonePermission": false
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Xana Plus uses your location to find your delivery address."
         }
       ]
     ],

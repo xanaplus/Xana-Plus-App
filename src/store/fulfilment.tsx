@@ -6,6 +6,7 @@ import { parsePersisted, persisted, save, STORAGE_KEYS } from '@/lib/storage';
 import { supabase } from '@/lib/supabase';
 import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { setPricingBranch } from '@/lib/branch-offers';
+import type { DeliveryQuote } from '@/lib/delivery-locate';
 import { useSession } from '@/store/session';
 
 export type Address = {
@@ -153,6 +154,14 @@ type FulfilmentContextValue = {
   /** KRA PIN typed at checkout; null until edited, so the field shows the account's saved PIN. */
   kraPinDraft: string | null;
   setKraPinDraft: (pin: string | null) => void;
+  /**
+   * Where the door delivery goes and what it costs, from the map (address/map), as
+   * web-checkout measured it. Lasts 30 minutes (quote.expiresAt). Kept in memory only.
+   * Orders don't send it yet: create_order() refuses a quote id on app orders until
+   * William lets it take the fee from the quote (his note, 17 Nov 2026).
+   */
+  deliveryQuote: DeliveryQuote | null;
+  setDeliveryQuote: (quote: DeliveryQuote | null) => void;
 };
 
 export type AppliedPromo = { code: string; description: string; discount: number };
@@ -268,6 +277,7 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
   const [rxReference, setRxReference] = useState('');
   const [promo, setPromo] = useState<AppliedPromo | null>(null);
   const [kraPinDraft, setKraPinDraft] = useState<string | null>(null);
+  const [deliveryQuote, setDeliveryQuote] = useState<DeliveryQuote | null>(null);
 
   const store = useMemo(() => stores.find(s => s.id === storeId) ?? stores[0], [storeId]);
   // The slot always agrees with delivery / pickup, and pickup names the chosen store (7 Nov 2026).
@@ -335,8 +345,10 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
       setPromo,
       kraPinDraft,
       setKraPinDraft,
+      deliveryQuote,
+      setDeliveryQuote,
     }),
-    [mode, setMode, storeId, setStoreId, storeChosen, store, address, addresses, addAddress, removeAddress, hasAddress, slotId, slot, paymentMethod, mpesaNumber, pointsRedeemed, ageConfirmed, rxReference, promo, kraPinDraft],
+    [mode, setMode, storeId, setStoreId, storeChosen, store, address, addresses, addAddress, removeAddress, hasAddress, slotId, slot, paymentMethod, mpesaNumber, pointsRedeemed, ageConfirmed, rxReference, promo, kraPinDraft, deliveryQuote],
   );
 
   return <FulfilmentContext.Provider value={value}>{children}</FulfilmentContext.Provider>;
