@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
-import Animated, { useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTabScrollTop } from '@/components/nav/use-tab-scroll-top';
@@ -202,8 +202,18 @@ export default function CategoriesRoute() {
   const statusBar = useSafeAreaInsets().top;
   const scrollY = useSharedValue(0);
   const stickyY = useSharedValue(Number.MAX_SAFE_INTEGER);
+  // Android drops taps on React Native's sticky headers once they've moved (Roystone's phone,
+  // 20 Nov 2026: pills did nothing after scrolling). So past the chips a pinned copy sits
+  // above the list, outside the scroll view, where taps always land.
+  const [stuck, setStuck] = useState(false);
+  const stuckNow = useSharedValue(false);
   const onScroll = useAnimatedScrollHandler(event => {
     scrollY.value = event.contentOffset.y;
+    const next = event.contentOffset.y >= stickyY.value;
+    if (next !== stuckNow.value) {
+      stuckNow.value = next;
+      runOnJS(setStuck)(next);
+    }
   });
   const scrim = useAnimatedStyle(() => ({ opacity: scrollY.value >= stickyY.value ? 1 : 0 }));
   const sectionOffsets = useRef<Record<string, number>>({});
@@ -391,7 +401,6 @@ export default function CategoriesRoute() {
         scrollEventThrottle={16}
         style={styles.scroll}
         showsVerticalScrollIndicator={false}
-        stickyHeaderIndices={[2]}
         contentContainerStyle={styles.page}
       >
         <Masthead title="Shop" subtitle="Pharmacy, food and everyday essentials." onChangeStore={() => setStoreSheetOpen(true)} />
@@ -405,13 +414,9 @@ export default function CategoriesRoute() {
           />
         </View>
 
-        {/* Sticky vertical switcher: the body below always changes under it. */}
-        {/* Plain Views only: React Native's sticky header moves this View's style onto its own
-            wrapper, which can't take an animated style (that crashed on the phone, 19 Nov).
-            */}
+        {/* The department switcher in the page; past it, the pinned copy below the list takes over. */}
         <View
-          // As a style, not a prop: the sticky wrapper takes this View's style, so taps on the
-          // see-through top still reach the search bar underneath.
+          // Starts a status bar's height above the chips, so the pinned copy lines up exactly.
           style={{ marginTop: -statusBar, paddingTop: statusBar, pointerEvents: 'box-none' }}
           onLayout={event => {
             chipBarHeight.current = event.nativeEvent.layout.height;
@@ -551,6 +556,13 @@ export default function CategoriesRoute() {
 
       </Animated.ScrollView>
       <Animated.View pointerEvents="none" style={[styles.statusScrim, { height: statusBar }, scrim]} />
+      {stuck ? (
+        <View style={[styles.pinnedBar, { paddingTop: statusBar }]}>
+          <View style={styles.chipBar}>
+            <DepartmentSwitcher grouped={GROUPED_OPTIONS} separate={SEPARATE_OPTIONS} value={vertical} onChange={selectVertical} style={styles.chipTrack} />
+          </View>
+        </View>
+      ) : null}
 
       <BottomSheet
         visible={filtersOpen}
@@ -859,6 +871,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
 
   searchSection: { paddingTop: spacing.lg },
   chipBar: { backgroundColor: colors.background, paddingVertical: spacing.md },
+  /** The pinned copy of the chips once the list scrolls past them (covers the status bar too). */
+  pinnedBar: { position: 'absolute', top: 0, left: 0, right: 0, backgroundColor: colors.background },
   statusScrim: { position: 'absolute', top: 0, left: 0, right: 0, backgroundColor: colors.background },
   chipTrack: { paddingHorizontal: layout.screenMargin, gap: spacing.sm },
 
