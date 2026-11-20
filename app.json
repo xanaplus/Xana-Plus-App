@@ -30,7 +30,7 @@
         "android.permission.CAMERA"
       ],
       "googleServicesFile": "./google-services.json",
-      "versionCode": 3
+      "versionCode": 4
     },
     "plugins": [
       "expo-router",
