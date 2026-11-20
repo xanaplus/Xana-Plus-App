@@ -597,9 +597,12 @@ function ProductDetail({ product }: { product: Product }) {
             </AccordionCard>
 
             <AccordionCard title={SECTION.dispatch} expanded={openSection === SECTION.dispatch} onToggle={() => toggle(SECTION.dispatch)}>
-              <Txt variant="body" color="onSurfaceVariant">
-                {PHARMACIST_SERVICE.description}
-              </Txt>
+              {/* Only prescription medicines wait for a pharmacist; over-the-counter items are packed straight away. */}
+              {product.rxRequired ? (
+                <Txt variant="body" color="onSurfaceVariant">
+                  {PHARMACIST_SERVICE.description}
+                </Txt>
+              ) : null}
               {slotRows.map(row => (
                 <SlotRow key={row.key} label={row.label} note={row.note} />
               ))}

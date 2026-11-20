@@ -884,11 +884,13 @@ export default function CheckoutRoute() {
               {cart.summary.wholesaleSavings > 0 ? (
                 <SummaryLine label="Offer and wholesale savings" value={`-${formatKes(cart.summary.wholesaleSavings)}`} tone="primary" />
               ) : null}
-              <SummaryLine
-                label={`Delivery Fee (${storeArea} / Ruiru)`}
-                value={cart.summary.deliveryFee === 0 ? 'Free' : formatKes(cart.summary.deliveryFee)}
-                tone={cart.summary.deliveryFee === 0 ? 'primary' : 'default'}
-              />
+              {fulfilment.mode === 'delivery' ? (
+                <SummaryLine
+                  label={`Delivery Fee (${storeArea})`}
+                  value={cart.summary.deliveryFee === 0 ? 'Free' : formatKes(cart.summary.deliveryFee)}
+                  tone={cart.summary.deliveryFee === 0 ? 'primary' : 'default'}
+                />
+              ) : null}
               {promo ? <SummaryLine label={`Promo Code (${promo.code})`} value={`-${formatKes(promo.discount)}`} tone="primary" /> : null}
               {pointsUsed > 0 ? (
                 <SummaryLine label={`Points Redeemed (${pointsUsed.toLocaleString('en-KE')} pts)`} value={`-${formatKes(pointsValue)}`} tone="primary" />

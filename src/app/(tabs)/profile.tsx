@@ -608,13 +608,14 @@ export default function ProfileRoute() {
             <Icon name={mode === 'delivery' ? 'delivery' : 'pickup'} size={20} color="primaryAccent" />
           </View>
           <View style={styles.fulfilmentText}>
-            <Txt variant="title">Delivery or pickup</Txt>
+            <Txt variant="title">{LAUNCH_SCOPE.delivery ? 'Delivery or pickup' : 'Pickup store'}</Txt>
             <Txt variant="caption" color="onSurfaceVariant" numberOfLines={2}>
-              {mode === 'delivery' ? `${activeSlot.label} · ${activeSlot.window}` : `Collect from ${store.name} · ${activeSlot.window}`}
+              {mode === 'delivery' ? `${activeSlot.label} · ${activeSlot.window}` : `Collect your order at ${store.name}`}
             </Txt>
           </View>
         </View>
-        <Segmented options={MODE_OPTIONS} value={mode} onChange={setMode} />
+        {/* Pickup only while door delivery is off (LAUNCH_SCOPE.delivery). */}
+        {LAUNCH_SCOPE.delivery ? <Segmented options={MODE_OPTIONS} value={mode} onChange={setMode} /> : null}
         <PressableScale accessibilityRole="button" accessibilityLabel="Change fulfilment store" onPress={() => setSheet('settings')} style={styles.storeRow}>
           <Icon name="store" size={18} color="primaryAccent" />
           <View style={styles.storeText}>
