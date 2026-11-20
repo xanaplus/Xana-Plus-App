@@ -11,7 +11,6 @@ import {
   Icon,
   LoadState,
   NoticePill,
-  ProductCard,
   QuantityStepper,
   Screen,
   SectionHeader,
@@ -36,6 +35,7 @@ import { layout, radius, spacing } from '@/theme';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { PressableScale } from '@/components/ui/pressable-scale';
+import { ShopCard } from '@/components/ui/shop-card';
 import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 
 /**
@@ -154,9 +154,24 @@ const SECTION = {
 };
 
 const RELATED = {
-  grocery: { title: 'You may also like', action: 'See All' },
-  pharmacy: { title: 'Related Health Essentials', action: 'View All' },
+  grocery: { title: 'You may also like', action: 'See all' },
+  pharmacy: { title: 'Related health essentials', action: 'See all' },
 };
+/** How many neighbours the rail shows: enough to scroll, few enough to load at once. */
+const RELATED_LIMIT = 8;
+
+/**
+ * The Shop aisle this product belongs to, so "See all" opens that shelf rather than a
+ * whole tab (pharmacy items under Pharmacy, everything else under Retail first).
+ */
+function shelfFor(product: Product, pharmacy: boolean): { vertical: CategoryVertical; slug: string } | null {
+  const order: CategoryVertical[] = pharmacy ? ['pharmacy', 'retail'] : ['retail', 'wholesale', 'deli', 'pharmacy'];
+  for (const slug of order) {
+    const vertical = verticals.find(entry => entry.slug === slug);
+    if (vertical?.sections?.some(section => section.categorySlug === product.category)) return { vertical: slug, slug: product.category };
+  }
+  return null;
+}
 
 /** Title-cases a category slug for crumbs and rows the verticals do not cover. */
 const humanize = (slug: string): string =>
@@ -165,7 +180,7 @@ const humanize = (slug: string): string =>
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
-/** The frame's cross-aisle picks first, then same-aisle neighbours — three cards, never the pack itself. */
+/** The frame's cross-aisle picks first, then same-aisle neighbours, never the pack itself. */
 function relatedProducts(product: Product): Product[] {
   // Business Central items show real neighbours only: no sample picks, no sample products from the same aisle.
   const fromBc = liveProductById(product.id) !== undefined;
@@ -179,7 +194,7 @@ function relatedProducts(product: Product): Product[] {
     if (seen.has(candidate.id)) continue;
     seen.add(candidate.id);
     picked.push(candidate);
-    if (picked.length === 3) break;
+    if (picked.length === RELATED_LIMIT * 3) break;
   }
   return picked;
 }
@@ -280,7 +295,12 @@ function ProductDetail({ product }: { product: Product }) {
   const lineTotal = currentUnitPrice * quantity;
 
   const highlights = product.highlights ?? [];
-  const related = relatedProducts(product);
+  // In stock at this shop first, photos before placeholders, as the Shop's shelves (20 Nov 2026).
+  const related = relatedProducts(product)
+    .filter(item => inStockHere(item))
+    .sort((a, b) => Number(Boolean(b.image)) - Number(Boolean(a.image)))
+    .slice(0, RELATED_LIMIT);
+  const relatedShelf = shelfFor(product, isPharmacy);
   const relatedCopy = isPharmacy ? RELATED.pharmacy : RELATED.grocery;
 
   const specificationRows =
@@ -655,19 +675,23 @@ function ProductDetail({ product }: { product: Product }) {
           <SectionHeader
             title={relatedCopy.title}
             actionLabel={relatedCopy.action}
-            onAction={() => router.push(isPharmacy ? '/(tabs)/pharmacy' : '/(tabs)/categories')}
+            onAction={() =>
+              relatedShelf
+                ? router.push({ pathname: '/aisle', params: relatedShelf })
+                : router.push(isPharmacy ? '/(tabs)/pharmacy' : '/(tabs)/categories')
+            }
             style={styles.railHead}
           />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.rail}>
             {related.map(item => (
-              <ProductCard
-                key={item.id}
-                product={item}
-                width={layout.productCardWidth}
-                quantity={cart.quantityOf(item.id)}
-                onPress={() => router.push(`/product/${item.id}`)}
-                onAdd={() => cart.add(item.id)}
-              />
+              <View key={item.id} style={styles.railCard}>
+                <ShopCard
+                  product={item}
+                  quantity={cart.quantityOf(item.id)}
+                  onPress={() => router.push(`/product/${item.id}`)}
+                  onAdd={() => cart.add(item.id)}
+                />
+              </View>
             ))}
           </ScrollView>
         </View>
@@ -882,6 +906,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   railSection: { gap: spacing.md },
   railHead: { marginHorizontal: layout.screenMargin },
   rail: { gap: layout.gutter, paddingHorizontal: layout.screenMargin, paddingRight: layout.screenMargin + spacing.xl },
+  /** The Shop card at rail width: two and a bit show, so the row reads as scrollable. */
+  railCard: { width: 148 },
   ask: {
     flexDirection: 'row',
     alignItems: 'center',
