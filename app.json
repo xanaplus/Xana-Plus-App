@@ -65,6 +65,12 @@
           "cameraPermission": "Xana Plus uses the camera to scan product barcodes and to photograph your prescription for our pharmacist.",
           "microphonePermission": false
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Xana Plus uses your location to find your delivery address."
+        }
       ]
     ],
     "experiments": {

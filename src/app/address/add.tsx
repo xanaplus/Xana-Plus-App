@@ -5,6 +5,9 @@ import { StyleSheet, Switch, TextInput, View } from 'react-native';
 import { Button, Card, Chip, Icon, Screen, TopBar, Txt } from '@/components/ui';
 import type { Address } from '@/store/fulfilment';
 import { useFulfilment } from '@/store/fulfilment';
+import { quoteIsFresh } from '@/lib/delivery-locate';
+import { formatKes } from '@/lib/format';
+import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
@@ -23,7 +26,8 @@ const withCountryCode = (number: string) => (number.trim().startsWith('+254') ? 
 export default function AddAddressRoute() {
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
-  const { addAddress, store } = useFulfilment();
+  const { addAddress, store, deliveryQuote: savedQuote } = useFulfilment();
+  const deliveryQuote = quoteIsFresh(savedQuote) ? savedQuote : null;
 
   const [area, setArea] = useState('');
   const [estate, setEstate] = useState('');
@@ -129,6 +133,26 @@ export default function AddAddressRoute() {
         </View>
       </View>
 
+      {/* The map step (address/map) only with door delivery on. */}
+      {LAUNCH_SCOPE.delivery ? (
+        <View style={[styles.inset, styles.mapStep]}>
+          <Txt variant="bodySm" color="onSurfaceVariant">
+            {deliveryQuote
+              ? `Pin set: ${deliveryQuote.locationLabel || 'Pinned place'} · ${deliveryQuote.distanceKm.toLocaleString('en-KE', { maximumFractionDigits: 1 })} km · Delivery ${formatKes(deliveryQuote.deliveryFee)}`
+              : 'Show us your gate on the map to see the delivery fee.'}
+          </Txt>
+          <Button
+            label={deliveryQuote ? 'Move the pin' : 'Set your gate on the map'}
+            icon="map-pin"
+            iconPosition="leading"
+            variant="tonal"
+            size="sm"
+            fullWidth={false}
+            onPress={() => router.push('/address/map')}
+          />
+        </View>
+      ) : null}
+
       <View style={[styles.inset, styles.form]}>
         {/* Contact first, then the address, as on Jumia (23 Oct). */}
         <Txt variant="overline" color="onSurfaceVariant">CONTACT PERSON</Txt>
@@ -201,6 +225,7 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   storeNote: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, backgroundColor: colors.mintSubtle },
 
   form: { gap: spacing.md },
+  mapStep: { gap: spacing.sm, alignItems: 'flex-start' },
   sectionGap: { marginTop: spacing.md },
   field: { gap: spacing.xs },
   input: { height: 44, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.outlineSoft30, backgroundColor: colors.surface, color: colors.onSurface, fontSize: 14 },
