@@ -13,8 +13,14 @@ import { supabase } from '@/lib/supabase';
 export type Mood = 'great' | 'okay' | 'low';
 /** The answer to this week's theme question; "not today" is as fine as "yes". */
 export type WeeklyAnswer = 'yes' | 'notToday';
-/** `at` = when this day last changed on this phone (ms), so the newer copy wins when syncing. */
-export type DayCheckIn = { water: number; mood?: Mood; moved?: boolean; weekly?: WeeklyAnswer; at?: number };
+/**
+ * `at` = when this day last changed on this phone (ms), so the newer copy wins when syncing.
+ * `lastGlassAt` = when the last glass was logged on this phone (ms), for "Last glass at 11:40".
+ * Phone only: it isn't saved to the account, so a day pulled from the account has none.
+ */
+export type DayCheckIn = { water: number; mood?: Mood; moved?: boolean; weekly?: WeeklyAnswer; at?: number; lastGlassAt?: number };
+/** One day of this week's water strip, Monday first. */
+export type WeekDay = { key: string; water: number; isToday: boolean; future: boolean };
 /** `nudgeHiddenUntil`: "Not now" on the sign-in note hides it until this day (YYYY-MM-DD, Nairobi). */
 type WellnessState = {
   goal: number;
@@ -159,7 +165,9 @@ async function pullAndMerge(userId: string) {
       dirty.add(row.day);
       continue;
     }
-    days[row.day] = { water: row.water, mood: row.mood ?? undefined, moved: row.moved ?? undefined, weekly: row.weekly ?? undefined, at };
+    // Keep this phone's last-glass time when the water count is the same.
+    const lastGlassAt = local && local.water === row.water ? local.lastGlassAt : undefined;
+    days[row.day] = { water: row.water, mood: row.mood ?? undefined, moved: row.moved ?? undefined, weekly: row.weekly ?? undefined, at, lastGlassAt };
   }
   // Days only on this phone go up too.
   Object.keys(days).forEach(day => { if (!remote.has(day)) dirty.add(day); });
@@ -234,7 +242,7 @@ async function stopSaving(): Promise<boolean> {
 }
 
 export const wellness = {
-  addGlass: () => updateToday(day => ({ ...day, water: Math.min(MAX_GLASSES, day.water + 1) })),
+  addGlass: () => updateToday(day => ({ ...day, water: Math.min(MAX_GLASSES, day.water + 1), lastGlassAt: Date.now() })),
   removeGlass: () => updateToday(day => ({ ...day, water: Math.max(0, day.water - 1) })),
   setMood: (mood: Mood) => updateToday(day => ({ ...day, mood: day.mood === mood ? undefined : mood })),
   toggleMoved: () => updateToday(day => ({ ...day, moved: !day.moved })),
@@ -269,6 +277,18 @@ export const wellness = {
   hideSignInNudge: () => commit({ ...state, nudgeHiddenUntil: todayKey(new Date(Date.now() + NUDGE_SNOOZE_DAYS * 86_400_000)) }),
 };
 
+/** Monday to Sunday of this week in Nairobi, with each day's glasses (days to come have none). */
+function thisWeek(days: Record<string, DayCheckIn>, now = new Date()): WeekDay[] {
+  const today = todayKey(now);
+  const [y, m, d] = today.split('-').map(Number);
+  const noon = Date.UTC(y, m - 1, d, 12);
+  const sinceMonday = (new Date(noon).getUTCDay() + 6) % 7;
+  return Array.from({ length: 7 }, (_, index) => {
+    const key = new Date(noon + (index - sinceMonday) * 86_400_000).toISOString().slice(0, 10);
+    return { key, water: days[key]?.water ?? 0, isToday: key === today, future: key > today };
+  });
+}
+
 const hasAnything = (day: DayCheckIn) => day.water > 0 || Boolean(day.mood) || Boolean(day.moved) || Boolean(day.weekly);
 
 /** Today's check-in and the water goal, shared by Home and the Wellness tab. */
@@ -279,7 +299,7 @@ export function useWellness() {
   /** Days with any check-in on this phone (the last month). */
   const daysLogged = Object.values(current.days).filter(hasAnything).length;
   const nudgeHidden = typeof current.nudgeHiddenUntil === 'string' && current.nudgeHiddenUntil > todayKey();
-  return { today, goal: current.goal, daysLogged, nudgeHidden };
+  return { today, goal: current.goal, daysLogged, nudgeHidden, week: thisWeek(current.days) };
 }
 
 /** Whether check-ins are saved to the account, for the Today card. */

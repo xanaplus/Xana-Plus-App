@@ -15,6 +15,7 @@ import { useOffer } from '@/lib/use-offer';
 import { useCart } from '@/store/cart';
 import { useStoreStock } from '@/store/fulfilment';
 import { elevation, radius, spacing } from '@/theme';
+import { fonts } from '@/theme/typography';
 import { useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
@@ -42,6 +43,7 @@ export function ShopCard({ product, quantity, showQuantityPrices = false, onPres
   const available = useStoreStock().inStock(product);
   const offer = useOffer(product);
   const price = offer?.price ?? product.price;
+  const fromOurKitchen = /^DEL/i.test(product.id);
   const struck = offer ? product.price : product.wasPrice;
   // The quantity price never shows beside a branch offer: the two would disagree.
   const steps = showQuantityPrices && !offer
@@ -71,6 +73,10 @@ export function ShopCard({ product, quantity, showQuantityPrices = false, onPres
         </View>
         <Txt variant="titleSm" numberOfLines={2}>{nameWithoutPack(product.name, product.pack)}</Txt>
         <Txt variant="caption" color="outline" numberOfLines={1}>
+          {/* DEL items are made in Xana's own deli kitchen: say so, quietly, before the size. */}
+          {available && fromOurKitchen ? (
+            <Txt variant="caption" color="primaryAccent" style={styles.kitchen}>{product.pack ? 'Our kitchen · ' : 'Our kitchen'}</Txt>
+          ) : null}
           {available ? product.pack : 'Out of stock'}
         </Txt>
 
@@ -160,6 +166,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: 3 },
   currency: { letterSpacing: 0.4 },
   amount: { flexShrink: 1 },
+  /** Custom fonts need the family, not fontWeight, to show bold on Android. */
+  kitchen: { fontFamily: fonts.semibold },
   strike: { marginLeft: spacing.xs, textDecorationLine: 'line-through' },
   ladder: {
     marginTop: spacing.sm - 2,

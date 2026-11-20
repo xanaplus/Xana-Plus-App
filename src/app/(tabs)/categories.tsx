@@ -95,8 +95,10 @@ const VERTICAL_OPTIONS: SegmentedOption<CategoryVertical>[] = VERTICAL_ORDER.map
 /** Sub-category tiles run 3-up on the essentials aisles and 4-up on the specialty ones. */
 const SUBCATEGORY_COLUMNS: Record<CategoryVertical, number> = {
   retail: 4,
-  wholesale: 4,
-  deli: 4,
+  // Six row shortcuts, two rows of three (19 Nov 2026).
+  wholesale: 3,
+  // Its three rows: Deli Kitchen, Cold Cuts & Sausages, Cheese.
+  deli: 3,
   liquor: 4,
   pharmacy: 3,
   groceries: 3,
@@ -105,8 +107,10 @@ const SUBCATEGORY_COLUMNS: Record<CategoryVertical, number> = {
 };
 
 /** Frames that lay section products out as a two-column card grid. */
-// Wholesale joined the grid on 19 Nov 2026: the same card as Retail, plus its quantity prices.
-const GRID_VERTICALS: CategoryVertical[] = ['retail', 'groceries', 'household', 'wholesale'];
+// Wholesale (plus its quantity prices) and Deli joined the grid in Nov 2026: one card for the Shop.
+const GRID_VERTICALS: CategoryVertical[] = ['retail', 'groceries', 'household', 'wholesale', 'deli'];
+/** Aisles whose round shortcuts are their own rows, shown by a real photo, a tap jumping to the row. */
+const ROW_SHORTCUT_VERTICALS: CategoryVertical[] = ['wholesale', 'deli'];
 
 /** Wholesale's frame labels the section action "View all"; every other aisle says "See All". */
 const SECTION_ACTION: Partial<Record<CategoryVertical, string>> = { wholesale: 'View all' };
@@ -244,6 +248,21 @@ export default function CategoriesRoute() {
     .map(section => ({ ...section, products: applyFilters(shelves.data[section.title] ?? [], filters, isPharmacy) }))
     .filter(section => section.products.length > 0);
   const visibleCount = sections.reduce((total, section) => total + section.products.length, 0);
+  // Wholesale's and Deli's shortcuts are their own rows, each shown by a real photo from
+  // that row, and a tap jumps to the row (Nov 2026). Other aisles keep their artwork tiles.
+  const tiles = ROW_SHORTCUT_VERTICALS.includes(vertical)
+    ? sections.map(section => {
+        // No photographed item in the row yet (e.g. Cheese): fall back to the aisle's artwork.
+        const photo = section.products.find(product => product.image)?.image;
+        const artwork = definition.subcategories.find(tile => tile.slug === section.categorySlug)?.image;
+        return { slug: section.categorySlug, name: section.title, image: photo ?? artwork ?? '', photo: Boolean(photo) };
+      })
+    : definition.subcategories.map(tile => ({ ...tile, photo: false }));
+  const openTile = (tile: { slug: string; name: string }) => {
+    if (!scrollToSection(tile.slug)) openSearch(tile.name);
+  };
+  /** "View all": the whole row on its own page, never a search for the row's title. */
+  const openAisle = (slug: string) => router.push({ pathname: '/aisle', params: { vertical, slug } });
 
   const priceCaps = (() => {
     const top = Object.values(shelves.data)
@@ -395,13 +414,14 @@ export default function CategoriesRoute() {
         </View>
 
         <View style={[styles.inset, styles.tiles]}>
-          {definition.subcategories.map(tile => (
+          {tiles.map(tile => (
             <CategoryTile
               key={`${tile.slug}-${tile.name}`}
               name={tile.name}
               image={tile.image}
+              fit={tile.photo ? 'contain' : 'cover'}
               size={tileSize}
-              onPress={() => openSearch(tile.name)}
+              onPress={() => openTile(tile)}
             />
           ))}
         </View>
@@ -443,7 +463,7 @@ export default function CategoriesRoute() {
                 <SectionHeader
                   title={section.title}
                   actionLabel={SECTION_ACTION[vertical] ?? 'See All'}
-                  onAction={() => openSearch(section.title)}
+                  onAction={() => openAisle(section.categorySlug)}
                 />
               </View>
 

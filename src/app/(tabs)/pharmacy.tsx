@@ -56,9 +56,6 @@ const RX_PREVIEW_ROWS = 6;
 const PHOTO_SLUGS: readonly string[] = ['skin-care', 'otc-medicines', 'vitamins-supplements'];
 const PHOTO_SECTIONS = PHOTO_SLUGS.flatMap(slug => verticalBySlug('pharmacy').sections.filter(section => section.categorySlug === slug));
 
-/** Shop-tab params for a Pharmacy aisle row; `t` makes a repeat tap re-open it (as Home does). */
-const aisleParams = (focus: string) => ({ vertical: 'pharmacy', focus, t: String(Date.now()) });
-
 /** The first rail's "you can swipe me" hint plays once per app launch. */
 let railHintShown = false;
 /** How far the hint slides the first rail, and when. */
@@ -233,9 +230,8 @@ export default function PharmacyRoute() {
     }
     return filter.categorySlugs ? merged : merged.slice(0, RX_PREVIEW_ROWS);
   })();
-  /** "See all" opens that group's row in the Shop tab's Pharmacy aisle, never a search. */
-  const openAisle = (focus: string) =>
-    router.push({ pathname: '/(tabs)/categories', params: aisleParams(focus) });
+  /** "See all" opens that group in full on its own page, never a search. */
+  const openAisle = (slug: string) => router.push({ pathname: '/aisle', params: { vertical: 'pharmacy', slug } });
   const intake = INTAKE_ACTIONS.find(action => action.id === openIntake) ?? null;
 
   /** Quick actions and the promo link: gate account-bound flows, then open the sheet. */

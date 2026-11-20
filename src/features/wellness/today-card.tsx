@@ -6,6 +6,7 @@ import { Badge, Button, Divider, Icon, IconButton, Txt } from '@/components/ui';
 import { PressableScale } from '@/components/ui/pressable-scale';
 import { selectFeedback } from '@/lib/haptics';
 import { radius, spacing } from '@/theme';
+import { fonts } from '@/theme/typography';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 
@@ -23,9 +24,13 @@ const MOODS: { id: Mood; label: string; english: string; note: string }[] = [
   { id: 'low', label: 'Si poa', english: 'Low', note: 'Be gentle with yourself today. If it keeps up, a pharmacist or doctor can help.' },
 ];
 
-const WEEKLY: { id: WeeklyAnswer; label: string }[] = [
-  { id: 'yes', label: 'Yes' },
-  { id: 'notToday', label: 'Not today' },
+/**
+ * The reply after an answer does the warm work (Finch, Daylio; research 20 Nov 2026):
+ * a short word back, and "Not today" costs nothing: no red, no "you missed".
+ */
+const WEEKLY: { id: WeeklyAnswer; label: string; reply: string }[] = [
+  { id: 'yes', label: 'Yes', reply: 'Nzuri sana. Small steps add up.' },
+  { id: 'notToday', label: 'Not today', reply: 'Sawa. There’s always tomorrow.' },
 ];
 
 const dateLine = () =>
@@ -122,21 +127,22 @@ export function TodayCard({ onAskPharmacist }: TodayCardProps) {
 
       <Divider />
 
-      {/* This month's health theme: its own amber panel, so it reads as the month's focus. */}
+      {/* This month's health theme: its own amber panel, so it reads as the month's focus.
+          Plain and printed, like a pharmacy's monthly notice: no icon badge, no sparkle
+          (20 Nov 2026, "looks AI"); the week shows as four marks. */}
       <View style={styles.themePanel}>
         <View style={styles.themeHead}>
-          <View style={styles.themeIcon}>
-            <Icon name="heartPulse" size={20} color="secondaryAccent" />
-          </View>
-          <View style={styles.flex}>
-            <Txt variant="headline" accessibilityRole="header">{theme.name}</Txt>
-            <Txt variant="caption" color="secondaryAccent">{`Week ${theme.week + 1} of 4`}</Txt>
-          </View>
+          <Txt variant="headline" accessibilityRole="header" style={styles.flex}>{theme.name}</Txt>
           {THEMES_ARE_SAMPLE ? <Badge label="Sample" tone="neutral" /> : null}
+          <View style={styles.weekMarks} accessible accessibilityLabel={`Week ${theme.week + 1} of 4`}>
+            {[0, 1, 2, 3].map(index => (
+              <View key={index} style={[styles.weekMark, index <= theme.week ? styles.weekMarkOn : null]} />
+            ))}
+          </View>
         </View>
         <Txt variant="bodySm" color="onSurfaceVariant">{theme.intro}</Txt>
 
-        <Txt variant="title" style={styles.themeQuestion}>{theme.question}</Txt>
+        <Txt variant="headlineSm" style={styles.themeQuestion}>{theme.question}</Txt>
         <View style={styles.answers} accessibilityRole="radiogroup">
           {WEEKLY.map(entry => {
             const selected = today.weekly === entry.id;
@@ -157,20 +163,25 @@ export function TodayCard({ onAskPharmacist }: TodayCardProps) {
             );
           })}
         </View>
-        <View style={styles.tip}>
-          <Icon name="sparkle" size={16} color="secondaryAccent" />
-          <Txt variant="bodySm" style={styles.flex}>{theme.tip}</Txt>
-        </View>
-        <Button
-          label="Tips and shop picks"
-          icon="chevron-right"
-          iconPosition="trailing"
-          variant="outline"
-          size="sm"
+        {today.weekly ? (
+          <Txt variant="label" color="onSurfaceVariant" accessibilityLiveRegion="polite" style={styles.reply}>
+            {WEEKLY.find(entry => entry.id === today.weekly)?.reply}
+          </Txt>
+        ) : null}
+        <Txt variant="bodySm" style={styles.tip}>
+          <Txt variant="bodySm" style={styles.tipLead}>Try this: </Txt>
+          {theme.tip}
+        </Txt>
+        <PressableScale
+          accessibilityRole="link"
           accessibilityLabel={`${theme.name}: all tips and shop picks`}
           onPress={() => router.push('/health-theme')}
-          style={styles.themeButton}
-        />
+          hitSlop={8}
+          style={styles.themeLink}
+        >
+          <Txt variant="label" color="secondaryAccent">All of this month’s tips and shop picks</Txt>
+          <Icon name="chevron-right" size={14} color="secondaryAccent" />
+        </PressableScale>
       </View>
 
       <SavePlace />
@@ -362,16 +373,18 @@ const createStyles = (colors: Palette) => StyleSheet.create({
 
   themePanel: { gap: spacing.sm, padding: spacing.lg, borderRadius: radius.xl, backgroundColor: colors.amberTint15 },
   themeHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  themeIcon: {
-    width: 40,
-    height: 40,
+  /** Week 1 to 4 of the month as four short marks; this week and earlier are filled. */
+  weekMarks: { flexDirection: 'row', gap: 3 },
+  weekMark: {
+    width: 14,
+    height: 4,
     borderRadius: radius.pill,
-    backgroundColor: colors.amberTint15,
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.secondaryAccent,
   },
-  themeQuestion: { marginTop: spacing.sm },
-  themeButton: { alignSelf: 'flex-start', marginTop: spacing.xs },
+  weekMarkOn: { backgroundColor: colors.secondaryAccent },
+  themeQuestion: { marginTop: spacing.md },
+  themeLink: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', gap: 2, paddingVertical: spacing.xs, marginTop: spacing.xs },
   answers: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xs },
   answer: {
     flex: 1,
@@ -384,15 +397,9 @@ const createStyles = (colors: Palette) => StyleSheet.create({
     borderColor: colors.outlineSoft30,
   },
   answerOn: { backgroundColor: colors.primaryContainer, borderColor: colors.primaryContainer },
-  tip: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-    marginTop: spacing.xs,
-    padding: spacing.md,
-    borderRadius: radius.lg,
-    backgroundColor: colors.surface,
-  },
+  reply: { marginTop: spacing.xs },
+  tip: { marginTop: spacing.sm },
+  tipLead: { fontFamily: fonts.semibold, color: colors.secondaryAccent },
   privacy: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.xs },
   footer: { gap: spacing.sm },
   ask: { gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, backgroundColor: colors.surfaceContainerLow },

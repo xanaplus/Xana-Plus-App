@@ -152,6 +152,23 @@ describe('settings screen sync feedback', () => {
   });
 });
 
+describe('staff link to the admin site', () => {
+  it('shows "Open admin site" to staff and opens admin.xanalife.com', async () => {
+    const { Linking } = await import('react-native');
+    mocks.session.isStaff = true;
+    await render(ProfileRoute);
+    expect(text()).toContain('Xana staff');
+    expect(text()).toContain('Open admin site');
+    await openSheet('Open admin site');
+    expect(Linking.openURL).toHaveBeenCalledWith('https://admin.xanalife.com');
+  });
+  it('never shows it to customers', async () => {
+    await render(ProfileRoute);
+    expect(text()).not.toContain('Open admin site');
+    expect(text()).not.toContain('Xana staff');
+  });
+});
+
 describe('order history screen sync feedback', () => {
   it('does not mistake loading or offline history for an empty history and recovers through Retry', async () => {
     mocks.orders.historyLoading = true;

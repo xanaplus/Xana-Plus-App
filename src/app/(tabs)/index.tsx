@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { Masthead } from '@/components/nav/masthead';
@@ -14,6 +14,7 @@ import { activePriceTiers } from '@/lib/quantity-pricing';
 import { fetchBestSellers, fetchBranchOffers, useLive, useShelves } from '@/data/live-catalogue';
 import type { Product } from '@/data/types';
 import { HomeBanner } from '@/features/home/home-banner';
+import { useHomeGreeting } from '@/features/home/use-home-greeting';
 import { useBuyAgain } from '@/features/orders/buy-again';
 import { StoreChooser } from '@/features/store/store-chooser';
 import { WaterCheckIn } from '@/features/wellness/water-check-in';
@@ -109,6 +110,18 @@ export default function HomeRoute() {
   const branch = storeId.toUpperCase();
 
   const offers = useLive(`offers:${branch}`, () => fetchBranchOffers(branch), [] as Product[]);
+
+  // The heading greets the person for the time of day, and the line under it says the most
+  // useful true thing today; first-day visitors see the brand line (20 Nov 2026).
+  const greeting = useHomeGreeting({ offerCount: offers.data.length, shopName });
+  const line = greeting.line;
+  const offersY = useRef(0);
+  const openLine = () => {
+    if (!line) return;
+    if (line.target === 'order' && line.orderId) router.push(`/orders/${line.orderId}`);
+    else if (line.target === 'offers') scrollTop.current?.scrollTo({ y: Math.max(0, offersY.current - spacing.lg), animated: true });
+    else if (line.target === 'wellness') router.push('/(tabs)/wellness');
+  };
   const bestSellers = useLive(`best:${branch}`, () => fetchBestSellers(branch, 200), [] as Product[]);
   const fallback = useShelves(FALLBACK_SHELVES, 12);
   const picks = useMemo(() => {
@@ -157,8 +170,9 @@ export default function HomeRoute() {
         {/* Who we are, and where you shop. */}
         <Masthead
           wordmark
-          title={'Good for you,\ngood for home.'}
-          subtitle="Everyday health and fresh groceries, together."
+          title={greeting.title}
+          subtitle={greeting.subtitle}
+          onSubtitlePress={line ? openLine : undefined}
           onChangeStore={() => setStoreSheetOpen(true)}
         />
 
@@ -222,7 +236,7 @@ export default function HomeRoute() {
 
         {/* This shop's offers, straight from the till: real prices, real end dates. */}
         {offers.status !== 'ready' || offers.data.length > 0 ? (
-          <View style={styles.section}>
+          <View style={styles.section} onLayout={event => { offersY.current = event.nativeEvent.layout.y; }}>
             <SectionHeader title={`Offers at ${shopName}`} />
             <Txt variant="caption" color="onSurfaceVariant">The same offer prices as the till in the shop.</Txt>
             {offers.status !== 'ready' ? <LoadState status={offers.status} placeholder="rail" onRetry={offers.retry} /> : null}

@@ -146,6 +146,8 @@ const POINT_RULES: { icon: IconName; title: string; description: string }[] = [
 
 /** The full policy Google Play requires a link to; the page itself is published on xanalife.com. */
 const PRIVACY_POLICY_URL = 'https://www.xanalife.com/pages/xana-plus-privacy';
+/** The admin site (moved here from xana-admin.vercel.app on 17 Nov 2026). */
+const ADMIN_SITE_URL = 'https://admin.xanalife.com';
 
 const PRIVACY_BLOCKS: { title: string; body: string }[] = [
   {
@@ -264,6 +266,7 @@ export default function ProfileRoute() {
     kraPin,
     email,
     hasPassword,
+    isStaff,
   } = useSession();
   const { address, addresses, setAddress, removeAddress, hasAddress, mode, setMode, mpesaNumber, paymentMethod, setPaymentMethod, setStoreId, slot, store, storeId } = useFulfilment();
 
@@ -383,6 +386,21 @@ export default function ProfileRoute() {
       title: 'Notifications',
       value: alertsOn === 0 ? 'Off' : alertsOn === ALERT_ROWS.length ? 'On' : `${alertsOn} of ${ALERT_ROWS.length} on`,
       onPress: () => setSheet('notifications'),
+    },
+  ];
+
+  /**
+   * Staff, pharmacists and admins: staff tools live on the admin site, not in the app
+   * (20 Nov 2026). It already shows each person only what their role allows, works on a
+   * phone, and the database checks every action. The browser keeps them signed in there.
+   */
+  const staffRows: RowSpec[] = [
+    {
+      key: 'admin-site',
+      icon: 'lock',
+      title: 'Open admin site',
+      description: 'Orders, counter look-up and prescriptions',
+      onPress: () => void Linking.openURL(ADMIN_SITE_URL),
     },
   ];
 
@@ -608,6 +626,14 @@ export default function ProfileRoute() {
             <SectionHeader title="Rewards & alerts" icon="sparkle" style={styles.inset} />
             <RowGroup rows={rewardRows} />
           </View>
+
+          {/* Only internal roles (staff, pharmacist, admin); customers never see it. */}
+          {isStaff ? (
+            <View style={styles.section}>
+              <SectionHeader title="Xana staff" style={styles.inset} />
+              <RowGroup rows={staffRows} />
+            </View>
+          ) : null}
         </>
       ) : null}
 

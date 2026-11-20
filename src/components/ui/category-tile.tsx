@@ -13,6 +13,8 @@ export type CategoryTileProps = {
   onPress?: () => void;
   /** Tile edge length; the Home grid uses 76pt. */
   size?: number;
+  /** `contain` for product photos (whole pack on white); `cover` for artwork. */
+  fit?: 'cover' | 'contain';
   style?: StyleProp<ViewStyle>;
 };
 
@@ -20,7 +22,7 @@ export type CategoryTileProps = {
  * Square artwork tile with a wrapped caption underneath — the Home
  * "Top Categories" grid and the Categories-tab sub-category grids.
  */
-export function CategoryTile({ name, image, selected, onPress, size = layout.categoryTileSize, style }: CategoryTileProps) {
+export function CategoryTile({ name, image, selected, onPress, size = layout.categoryTileSize, fit = 'cover', style }: CategoryTileProps) {
   const { colors } = useTheme();
   const source = figmaAsset(image);
 
@@ -36,11 +38,12 @@ export function CategoryTile({ name, image, selected, onPress, size = layout.cat
         style={[
           styles.frame,
           { width: size, height: size },
-          { backgroundColor: colors.surfaceContainerLow },
+          { backgroundColor: fit === 'contain' ? '#ffffff' : colors.surfaceContainerLow },
+          fit === 'contain' ? styles.inset : null,
           selected ? { borderColor: colors.primaryAccent, borderWidth: 2 } : null,
         ]}
       >
-        {source ? <Image source={source} style={styles.image} contentFit="cover" transition={120} /> : null}
+        {source ? <Image source={source} style={styles.image} contentFit={fit} transition={120} /> : null}
       </View>
       <Txt variant="caption" align="center" numberOfLines={3} tint={colors.onSurface} style={styles.label}>
         {name}
@@ -57,5 +60,7 @@ const styles = StyleSheet.create({
     ...elevation.hairline,
   },
   image: { width: '100%', height: '100%' },
+  /** Product photos keep a white margin, like the Shop cards. */
+  inset: { padding: spacing.sm },
   label: {},
 });

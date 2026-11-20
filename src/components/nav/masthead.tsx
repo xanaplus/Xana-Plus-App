@@ -19,6 +19,8 @@ type MastheadProps = {
   /** Big heading; Home's is two lines. */
   title: string;
   subtitle?: string;
+  /** Makes the subtitle a link with a chevron (Home's line about today: an order, offers, Wellness). */
+  onSubtitlePress?: () => void;
   /** Home leads with the xana wordmark; other tabs with their own name. */
   wordmark?: boolean;
   /** Opens the store chooser; without it the "Collect from" row is left out. */
@@ -37,7 +39,7 @@ type MastheadProps = {
  * wordmark or tab name, account and cart buttons, a big heading, and where the
  * customer's order comes from ("Collect from Syokimau").
  */
-export function Masthead({ title, subtitle, wordmark = false, onChangeStore, onBack, actions, hideCart = false, children }: MastheadProps) {
+export function Masthead({ title, subtitle, onSubtitlePress, wordmark = false, onChangeStore, onBack, actions, hideCart = false, children }: MastheadProps) {
   const styles = useThemeStyles(createStyles);
   const { colors, resolved } = useTheme();
   const router = useRouter();
@@ -106,7 +108,12 @@ export function Masthead({ title, subtitle, wordmark = false, onChangeStore, onB
           {wordmark ? (
             <Txt variant="display" accessibilityRole="header" accessibilityLabel={title.replace(/\n/g, ' ')} style={styles.heading}>{title}</Txt>
           ) : null}
-          {subtitle ? <Txt variant="body" color="onSurfaceVariant">{subtitle}</Txt> : null}
+          {subtitle && onSubtitlePress ? (
+            <PressableScale accessibilityRole="link" accessibilityLabel={subtitle} onPress={onSubtitlePress} hitSlop={6} style={styles.subtitleLink}>
+              <Txt variant="body" color="onSurface" style={styles.flexShrink}>{subtitle}</Txt>
+              <Icon name="chevron-right" size={16} color="primaryAccent" />
+            </PressableScale>
+          ) : subtitle ? <Txt variant="body" color="onSurfaceVariant">{subtitle}</Txt> : null}
         </View>
       ) : null}
 
@@ -137,6 +144,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   },
   topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md },
   flex: { flex: 1 },
+  flexShrink: { flexShrink: 1 },
+  subtitleLink: { flexDirection: 'row', alignItems: 'center', gap: spacing.xxs, alignSelf: 'flex-start' },
   wordmark: { width: 86, height: 32, marginRight: 'auto' },
   heading: { fontSize: 26, lineHeight: 32, flexShrink: 1 },
   actions: { flexDirection: 'row', gap: spacing.sm },

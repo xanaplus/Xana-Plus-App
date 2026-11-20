@@ -15,7 +15,7 @@ import {
   SearchBar,
   Txt,
 } from '@/components/ui';
-import { ProductCard } from '@/components/ui/product-card';
+import { ShopCard } from '@/components/ui/shop-card';
 import { popularSearches, shelfForTerm, stores, verticalForProduct } from '@/data/catalog';
 import { fetchShelf, searchCatalogue, useLive } from '@/data/live-catalogue';
 import type { PriceBand, ResultOptions, ResultSort } from '@/data/live-catalogue';
@@ -108,10 +108,14 @@ const CATEGORY_META: Record<string, CategoryMeta> = {
   'controlled-medicines': { label: 'Controlled Medicines', aisle: 'Pharmacist counter', department: 'pharmacy' },
 };
 
-/** The two search departments, in the order the frame stacks them. */
+/**
+ * The two search departments. "Supermarket" covers everything outside the pharmacy
+ * (detergent was showing under "Groceries & Dairy"); the frame's aisle numbers are not
+ * our shops' aisles, so they are no longer shown (20 Nov 2026).
+ */
 const DEPARTMENTS: { id: Department; title: string; subLabel?: string }[] = [
-  { id: 'grocery', title: 'GROCERIES & DAIRY' },
-  { id: 'pharmacy', title: 'PHARMACY & WELLNESS', subLabel: 'Dispatched from Licensed Pharmacist counter' },
+  { id: 'grocery', title: 'SUPERMARKET' },
+  { id: 'pharmacy', title: 'PHARMACY', subLabel: 'Prescription items are checked by our pharmacist.' },
 ];
 
 
@@ -127,9 +131,6 @@ const humanise = (slug: string): string =>
 const categoryMeta = (slug: string): CategoryMeta =>
   CATEGORY_META[slug] ?? { label: humanise(slug), aisle: 'In-store aisles', department: 'grocery' };
 
-/** Unique values, keeping first-seen order. */
-const distinct = (values: string[]): string[] => values.filter((value, index) => values.indexOf(value) === index);
-
 /** Groups hits by department, matching the frame. */
 const buildGroups = (items: Product[]): ResultGroup[] => {
   return DEPARTMENTS.flatMap(department => {
@@ -138,8 +139,8 @@ const buildGroups = (items: Product[]): ResultGroup[] => {
     return [
       {
         id: department.id,
-        title: `${department.title} (${group.length})`,
-        subLabel: department.subLabel ?? distinct(group.map(product => categoryMeta(product.category).aisle)).join(', '),
+        title: `${department.title} · ${group.length}`,
+        subLabel: department.subLabel ?? '',
         pharmacy: department.id === 'pharmacy',
         items: group,
       },
@@ -405,26 +406,20 @@ export default function SearchRoute() {
                   <Txt variant="overline" color="primaryAccent" numberOfLines={2} style={styles.groupTitle}>
                     {group.title}
                   </Txt>
-                  <View style={styles.aislePill}>
-                    <Txt variant="labelSm" color="onSuccessContainer" numberOfLines={1}>
-                      {group.subLabel}
-                    </Txt>
-                  </View>
                 </View>
               )}
 
               <View style={styles.grid}>
                 {group.items.map((product, index) => (
                   // Results rise into place one after another; capped so long lists don't lag.
-                  <Reanimated.View key={product.id} entering={FadeInDown.duration(260).delay(Math.min(index, 8) * 40)}>
-                  <ProductCard
-                    product={product}
-                    width={tileWidth}
-                    quantity={cart.quantityOf(product.id)}
-                    onPress={() => router.push(`/product/${product.id}`)}
-                    onAdd={() => cart.add(product.id)}
-                    style={styles.tileFill}
-                  />
+                  // The Shop's card (20 Nov 2026), so search looks like the aisles it searches.
+                  <Reanimated.View key={product.id} entering={FadeInDown.duration(260).delay(Math.min(index, 8) * 40)} style={{ width: tileWidth }}>
+                    <ShopCard
+                      product={product}
+                      quantity={cart.quantityOf(product.id)}
+                      onPress={() => router.push(`/product/${product.id}`)}
+                      onAdd={() => cart.add(product.id)}
+                    />
                   </Reanimated.View>
                 ))}
               </View>
@@ -534,7 +529,6 @@ function ResultsSkeleton({ tileWidth }: { tileWidth: number }) {
     >
       <View style={styles.groupHead}>
         <View style={[styles.skeletonBar, { width: '45%', height: 14 }]} />
-        <View style={[styles.skeletonBar, { width: 72, height: 20, borderRadius: radius.pill }]} />
       </View>
       <View style={styles.grid}>
         {Array.from({ length: SKELETON_TILES }, (_, index) => (
@@ -735,16 +729,6 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   groupHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md },
   groupTitle: { flexShrink: 1 },
   // A group spanning several aisles makes a long label; cap it so it truncates instead of running off screen.
-  aislePill: {
-    flexShrink: 1,
-    maxWidth: '55%',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xxs,
-    borderRadius: radius.pill,
-    backgroundColor: colors.mintSubtle,
-    borderWidth: 1,
-    borderColor: colors.mintEdge,
-  },
   rxPanel: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -764,9 +748,8 @@ const createStyles = (colors: Palette) => StyleSheet.create({
   },
   rxCopy: { flex: 1, gap: spacing.xxs },
 
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: layout.gutter },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', columnGap: layout.gutter, rowGap: spacing.xl },
   /** Fills its row, so both cards in a row are the same height. */
-  tileFill: { flexGrow: 1 },
   tileArt: {
     aspectRatio: 1,
     borderRadius: radius.lg,
