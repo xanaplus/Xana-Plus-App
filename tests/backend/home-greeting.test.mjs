@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { BRAND_LINE, dayLine, greetingTitle, greetingWords } from '@/features/home/greeting';
+import { activeAnnouncement, BRAND_LINE, dayLine, greetingTitle, greetingWords } from '@/features/home/greeting';
 
 /** A moment in Nairobi (UTC+3), e.g. at('2026-11-20', 9) is 9 am in Nairobi. */
 const at = (day, hour) => new Date(`${day}T${String(hour).padStart(2, '0')}:30:00+03:00`);
@@ -48,5 +48,21 @@ describe('Home line about today', () => {
   });
   it('falls back to the brand line, with nothing to open', () => {
     expect(dayLine({ ...base, themeAnswered: true })).toEqual({ text: BRAND_LINE, target: null });
+  });
+});
+
+describe('Shop announcement', () => {
+  const now = new Date('2026-11-20T09:00:00+03:00');
+  it('shows active text until its end time', () => {
+    expect(activeAnnouncement({ text: ' Open Sunday ', active: true, until: null }, now)).toBe('Open Sunday');
+    expect(activeAnnouncement({ text: 'Open Sunday', active: true, until: '2026-11-22T18:00:00Z' }, now)).toBe('Open Sunday');
+  });
+  it('is off when inactive, empty, past its end or unreadable', () => {
+    expect(activeAnnouncement({ text: 'Open Sunday', active: false, until: null }, now)).toBeNull();
+    expect(activeAnnouncement({ text: '  ', active: true, until: null }, now)).toBeNull();
+    expect(activeAnnouncement({ text: 'Open Sunday', active: true, until: '2026-11-19T18:00:00Z' }, now)).toBeNull();
+    expect(activeAnnouncement({ text: 'Open Sunday', active: true, until: 'soon' }, now)).toBeNull();
+    expect(activeAnnouncement(null, now)).toBeNull();
+    expect(activeAnnouncement('Open Sunday', now)).toBeNull();
   });
 });

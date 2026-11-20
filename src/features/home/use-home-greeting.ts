@@ -5,10 +5,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { todayKey, useWellness } from '@/features/wellness/store';
 import { themeOfTheWeek } from '@/features/wellness/weekly-themes';
 import { isActiveOrder } from '@/lib/order-status';
+import { supabase } from '@/lib/supabase';
 import { useOrders } from '@/store/orders';
 import { useSession } from '@/store/session';
 
-import { BRAND_LINE, BRAND_TITLE, dayLine, greetingTitle, type DayLine } from './greeting';
+import { activeAnnouncement, BRAND_LINE, BRAND_TITLE, dayLine, greetingTitle, type DayLine } from './greeting';
 
 /** The day this phone first opened Home (Nairobi, YYYY-MM-DD): the brand line shows on that day. */
 const FIRST_DAY_KEY = 'xanaplus.home.firstDay.v1';
@@ -27,7 +28,20 @@ export function useHomeGreeting({ offerCount, shopName }: { offerCount: number; 
   const { orders } = useOrders();
   const { today, goal, daysLogged } = useWellness();
   const [now, setNow] = useState(() => new Date());
-  useFocusEffect(useCallback(() => setNow(new Date()), []));
+  const [announcementValue, setAnnouncementValue] = useState<unknown>(null);
+  useFocusEffect(useCallback(() => {
+    setNow(new Date());
+    // The admin "Shop announcement", re-read each time Home comes into view; ignored if unreadable.
+    let live = true;
+    try {
+      void Promise.resolve(supabase.from('public_settings').select('value').eq('key', 'site_announcement'))
+        .then(({ data }) => { if (live) setAnnouncementValue((data as { value?: unknown }[] | null)?.[0]?.value ?? null); })
+        .catch(() => undefined);
+    } catch {
+      // Keep the greeting's own line.
+    }
+    return () => { live = false; };
+  }, []));
 
   const [firstDay, setFirstDay] = useState(false);
   useEffect(() => {
@@ -41,9 +55,12 @@ export function useHomeGreeting({ offerCount, shopName }: { offerCount: number; 
   // Signed in, or with orders or check-ins on this phone: not new, whatever the first-day record
   // says (it only started on 20 Nov 2026, so existing customers have none).
   const known = Boolean(user) || orders.length > 0 || daysLogged > 0;
-  if (firstDay && !known) return { title: BRAND_TITLE, subtitle: BRAND_LINE, line: null };
+  const announcement = activeAnnouncement(announcementValue, now);
+  if (firstDay && !known) return { title: BRAND_TITLE, subtitle: announcement ?? BRAND_LINE, line: null };
 
   const firstName = user && !needsName ? user.name.split(' ')[0] : null;
+  if (announcement) return { title: greetingTitle(now, firstName), subtitle: announcement, line: null };
+
   const theme = themeOfTheWeek(now);
   const line = dayLine({
     orders: orders.filter(order => isActiveOrder(order.status)),

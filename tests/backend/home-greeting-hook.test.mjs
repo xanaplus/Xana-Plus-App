@@ -2,11 +2,17 @@ import React from 'react';
 import { act, create } from 'react-test-renderer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const mocks = vi.hoisted(() => ({ session: {}, orders: [], wellness: {}, saved: null }));
+const mocks = vi.hoisted(() => ({ session: {}, orders: [], wellness: {}, saved: null, announcement: null }));
 vi.mock('@react-native-async-storage/async-storage', () => ({
   default: { getItem: vi.fn(async () => mocks.saved), setItem: vi.fn(async () => undefined) },
 }));
-vi.mock('expo-router', () => ({ useFocusEffect: () => undefined }));
+vi.mock('expo-router', async () => {
+  const { useEffect } = await import('react');
+  return { useFocusEffect: callback => useEffect(callback, [callback]) };
+});
+vi.mock('@/lib/supabase', () => ({
+  supabase: { from: () => ({ select: () => ({ eq: async () => ({ data: mocks.announcement ? [{ value: mocks.announcement }] : [] }) }) }) },
+}));
 vi.mock('@/store/session', () => ({ useSession: () => mocks.session }));
 vi.mock('@/store/orders', () => ({ useOrders: () => ({ orders: mocks.orders }) }));
 vi.mock('@/features/wellness/store', () => ({ useWellness: () => mocks.wellness, todayKey: () => '2026-11-20' }));
@@ -28,6 +34,7 @@ beforeEach(() => {
   mocks.session = { user: null, needsName: false };
   mocks.orders = [];
   mocks.wellness = { today: { water: 0 }, goal: 8, daysLogged: 0 };
+  mocks.announcement = null;
   mocks.saved = null; // no first-day record yet, as on every phone on 20 Nov 2026
 });
 
@@ -51,5 +58,28 @@ describe('Home greeting: who sees the brand line', () => {
     mocks.saved = '2026-11-01';
     await render();
     expect(result.title).not.toContain('Good for you');
+  });
+});
+
+describe('Home greeting: the admin Shop announcement', () => {
+  it('replaces the line under the greeting while it is on', async () => {
+    mocks.session = { user: { name: 'Amina Odhiambo' }, needsName: false };
+    mocks.announcement = { text: 'Open on Sunday 10 am to 4 pm', active: true, until: null };
+    await render();
+    expect(result.title).toContain('Amina');
+    expect(result.subtitle).toBe('Open on Sunday 10 am to 4 pm');
+    expect(result.line).toBeNull();
+  });
+  it('also replaces the brand line for a first-day visitor', async () => {
+    mocks.announcement = { text: 'Open on Sunday', active: true, until: null };
+    await render();
+    expect(result.title).toContain('Good for you');
+    expect(result.subtitle).toBe('Open on Sunday');
+  });
+  it('is ignored when switched off', async () => {
+    mocks.session = { user: { name: 'Amina Odhiambo' }, needsName: false };
+    mocks.announcement = { text: 'Open on Sunday', active: false, until: null };
+    await render();
+    expect(result.subtitle).toBe('12 offers at Syokimau today');
   });
 });

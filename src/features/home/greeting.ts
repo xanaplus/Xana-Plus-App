@@ -89,3 +89,20 @@ export function dayLine(input: DayLineInput): DayLine {
   }
   return { text: BRAND_LINE, target: null };
 }
+
+/**
+ * The admin site's "Shop announcement" (`site_announcement` in public_settings:
+ * { text ≤ 160, active, until | null }). While it is on, Home shows its text in place of the
+ * line under the greeting, for everyone (20 Nov 2026). Returns the text, or null when off,
+ * empty, past its end time or unreadable.
+ */
+export function activeAnnouncement(value: unknown, now: Date): string | null {
+  if (!value || typeof value !== 'object') return null;
+  const { text, active, until } = value as { text?: unknown; active?: unknown; until?: unknown };
+  if (active !== true || typeof text !== 'string' || !text.trim()) return null;
+  if (until != null) {
+    const end = typeof until === 'string' ? Date.parse(until) : NaN;
+    if (!Number.isFinite(end) || end <= now.getTime()) return null;
+  }
+  return text.trim();
+}
