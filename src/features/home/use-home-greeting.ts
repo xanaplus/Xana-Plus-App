@@ -23,6 +23,8 @@ export function useHomeGreeting({ offerCount, shopName }: { offerCount: number; 
   title: string;
   subtitle: string;
   line: DayLine | null;
+  /** The admin "Shop announcement" while it is on: Home shows it as its own banner. */
+  announcement: string | null;
 } {
   const { user, needsName } = useSession();
   const { orders } = useOrders();
@@ -56,10 +58,9 @@ export function useHomeGreeting({ offerCount, shopName }: { offerCount: number; 
   // says (it only started on 20 Nov 2026, so existing customers have none).
   const known = Boolean(user) || orders.length > 0 || daysLogged > 0;
   const announcement = activeAnnouncement(announcementValue, now);
-  if (firstDay && !known) return { title: BRAND_TITLE, subtitle: announcement ?? BRAND_LINE, line: null };
+  if (firstDay && !known) return { title: BRAND_TITLE, subtitle: BRAND_LINE, line: null, announcement };
 
   const firstName = user && !needsName ? user.name.split(' ')[0] : null;
-  if (announcement) return { title: greetingTitle(now, firstName), subtitle: announcement, line: null };
 
   const theme = themeOfTheWeek(now);
   const line = dayLine({
@@ -72,5 +73,5 @@ export function useHomeGreeting({ offerCount, shopName }: { offerCount: number; 
     themeQuestion: theme.question,
     themeAnswered: Boolean(today.weekly),
   });
-  return { title: greetingTitle(now, firstName), subtitle: line.text, line: line.target ? line : null };
+  return { title: greetingTitle(now, firstName), subtitle: line.text, line: line.target ? line : null, announcement };
 }

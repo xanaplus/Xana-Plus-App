@@ -92,8 +92,8 @@ export function dayLine(input: DayLineInput): DayLine {
 
 /**
  * The admin site's "Shop announcement" (`site_announcement` in public_settings:
- * { text ≤ 160, active, until | null }). While it is on, Home shows its text in place of the
- * line under the greeting, for everyone (20 Nov 2026). Returns the text, or null when off,
+ * { text ≤ 160, active, until | null }), set by Marketing. While it is on, Home shows it as an
+ * amber banner under the greeting, for everyone (20 Nov 2026). Returns the text, or null when off,
  * empty, past its end time or unreadable.
  */
 export function activeAnnouncement(value: unknown, now: Date): string | null {

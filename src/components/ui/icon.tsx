@@ -51,6 +51,7 @@ const glyphs = {
   'map-pin': ['ion', 'location-outline'],
   'map-pin-filled': ['ion', 'location'],
   bell: ['ion', 'notifications-outline'],
+  announce: ['mci', 'bullhorn-outline'],
   clock: ['ion', 'time-outline'],
   calendar: ['ion', 'calendar-outline'],
   delivery: ['mci', 'truck-fast-outline'],

@@ -62,24 +62,24 @@ describe('Home greeting: who sees the brand line', () => {
 });
 
 describe('Home greeting: the admin Shop announcement', () => {
-  it('replaces the line under the greeting while it is on', async () => {
+  it('comes back as its own banner text, keeping the line under the greeting', async () => {
     mocks.session = { user: { name: 'Amina Odhiambo' }, needsName: false };
     mocks.announcement = { text: 'Open on Sunday 10 am to 4 pm', active: true, until: null };
     await render();
     expect(result.title).toContain('Amina');
-    expect(result.subtitle).toBe('Open on Sunday 10 am to 4 pm');
-    expect(result.line).toBeNull();
+    expect(result.announcement).toBe('Open on Sunday 10 am to 4 pm');
+    expect(result.subtitle).toBe('12 offers at Syokimau today');
   });
-  it('also replaces the brand line for a first-day visitor', async () => {
+  it('shows for a first-day visitor too', async () => {
     mocks.announcement = { text: 'Open on Sunday', active: true, until: null };
     await render();
     expect(result.title).toContain('Good for you');
-    expect(result.subtitle).toBe('Open on Sunday');
+    expect(result.announcement).toBe('Open on Sunday');
   });
   it('is ignored when switched off', async () => {
     mocks.session = { user: { name: 'Amina Odhiambo' }, needsName: false };
     mocks.announcement = { text: 'Open on Sunday', active: false, until: null };
     await render();
-    expect(result.subtitle).toBe('12 offers at Syokimau today');
+    expect(result.announcement).toBeNull();
   });
 });

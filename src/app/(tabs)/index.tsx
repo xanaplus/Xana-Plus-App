@@ -14,6 +14,7 @@ import { activePriceTiers } from '@/lib/quantity-pricing';
 import { fetchBestSellers, fetchBranchOffers, useLive, useShelves } from '@/data/live-catalogue';
 import type { Product } from '@/data/types';
 import { HomeBanner } from '@/features/home/home-banner';
+import { AnnouncementBanner } from '@/features/home/announcement-banner';
 import { useHomeGreeting } from '@/features/home/use-home-greeting';
 import { useBuyAgain } from '@/features/orders/buy-again';
 import { StoreChooser } from '@/features/store/store-chooser';
@@ -174,7 +175,9 @@ export default function HomeRoute() {
           subtitle={greeting.subtitle}
           onSubtitlePress={line ? openLine : undefined}
           onChangeStore={() => setStoreSheetOpen(true)}
-        />
+        >
+          {greeting.announcement ? <AnnouncementBanner text={greeting.announcement} /> : null}
+        </Masthead>
 
         <View style={[styles.inset, styles.searchRow]}>
           <SearchBar placeholder="Search medicines, food and more" onPress={() => router.push('/search')} style={styles.flex} />
