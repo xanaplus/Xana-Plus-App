@@ -48,7 +48,8 @@ import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
 import { PressableScale } from '@/components/ui/pressable-scale';
 import { LAUNCH_SCOPE } from '@/lib/launch-scope';
-import { quoteIsFresh } from '@/lib/delivery-locate';
+import { deliveryFeeShown, locateMessage, quoteIsFresh } from '@/lib/delivery-locate';
+import { useDeliveryQuote } from '@/features/checkout/use-delivery-quote';
 
 /** Payment rows in the order Screen 6 stacks them. */
 type PaymentMethodCopy = { id: PaymentMethodId; title: string; icon: IconName; showsTotal: boolean };
@@ -135,8 +136,12 @@ export default function CheckoutRoute() {
   /** Items sold out at the chosen store, and another store that has them all. */
   const [otherStore, setOtherStore] = useState<(typeof stores)[number] | null>(null);
 
-  const paymentMethods = LAUNCH_SCOPE.payOnline || session.isStaff ? [PAY_ONLINE, ...PAYMENT_METHODS] : PAYMENT_METHODS;
-  const method = paymentMethods.find(entry => entry.id === fulfilment.paymentMethod) ?? PAYMENT_METHODS[0];
+  // Door delivery (LAUNCH_SCOPE.delivery, or staff testing) is paid online, as on the website.
+  const doorDelivery = fulfilment.deliveryOn && fulfilment.mode === 'delivery' && session.user !== null && fulfilment.hasAddress;
+  const paymentMethods = doorDelivery
+    ? [PAY_ONLINE]
+    : LAUNCH_SCOPE.payOnline || session.isStaff ? [PAY_ONLINE, ...PAYMENT_METHODS] : PAYMENT_METHODS;
+  const method = paymentMethods.find(entry => entry.id === fulfilment.paymentMethod) ?? paymentMethods[0];
   const blockedItems = cart.items.filter(item => item.product.rxRequired);
   // Prescription medicines go to the pharmacist with the prescription attached here (owner, 29 Oct 2026).
   const hasRx = blockedItems.length > 0;
@@ -160,7 +165,18 @@ export default function CheckoutRoute() {
   const [leaving, setLeaving] = useState(false);
 
   const { promo, setPromo } = fulfilment;
-  const totalAfterPromo = Math.max(0, cart.summary.total - (promo?.discount ?? 0));
+  // The delivery fee by distance for the chosen address (typed, or pinned on the map).
+  const delivery = useDeliveryQuote({
+    enabled: doorDelivery,
+    address: fulfilment.address,
+    branchCode: fulfilment.store.id.toUpperCase(),
+    quote: fulfilment.deliveryQuote,
+    setQuote: fulfilment.setDeliveryQuote,
+  });
+  const deliveryQuote = delivery.quote;
+  const productsAfterPromo = Math.max(0, cart.summary.itemsSubtotal - (promo?.discount ?? 0));
+  const deliveryFee = doorDelivery && deliveryQuote ? deliveryFeeShown(deliveryQuote, productsAfterPromo, delivery.freeOver) : 0;
+  const totalAfterPromo = Math.max(0, cart.summary.total - (promo?.discount ?? 0)) + deliveryFee;
   const availablePoints = session.user?.clubPoints ?? 0;
   const maxRedeemable = Math.min(availablePoints, Math.floor(totalAfterPromo * POINTS_PER_KES));
   const pointsUsed = Math.min(fulfilment.pointsRedeemed, maxRedeemable);
@@ -172,11 +188,9 @@ export default function CheckoutRoute() {
   const setPoints = (next: number) => fulfilment.setPointsRedeemed(Math.max(0, Math.min(next, maxRedeemable)));
 
   // Alcohol doesn't disable the button: tapping it asks for the 18+ confirmation (the 'age' sheet).
-  const payDisabled = empty || rxBlocked || payBlockedByAddress;
+  const payDisabled = empty || rxBlocked || payBlockedByAddress || (doorDelivery && (!deliveryQuote || delivery.busy));
   const payLabel = hasRx ? 'Send to pharmacist' : method.showsTotal ? `Place Order · ${formatKes(amountDue)}` : 'Place Order';
   const storeArea = fulfilment.store.name.replace('Xana Plus ', '');
-  // The delivery place set on the map (address/map), while its 30-minute quote holds.
-  const deliveryQuote = quoteIsFresh(fulfilment.deliveryQuote) ? fulfilment.deliveryQuote : null;
   const phoneError = phoneDraft.digits.length === 9 && !isValidPhone(phoneDraft) ? PHONE_INVALID_MESSAGE : null;
 
   const placedCopy = placed
@@ -244,6 +258,22 @@ export default function CheckoutRoute() {
     setPlacing(true);
     setPlaceError(null);
     setOtherStore(null);
+    // A quote lasts 30 minutes: renew it first, and stop if the fee changed so the total is seen.
+    let quoteId: string | undefined;
+    if (doorDelivery) {
+      let current = quoteIsFresh(deliveryQuote) ? deliveryQuote : null;
+      if (!current) {
+        current = await delivery.measure();
+        if (!current || (deliveryQuote && current.deliveryFee !== deliveryQuote.deliveryFee)) {
+          setPlacing(false);
+          setPlaceError(current
+            ? `The delivery fee is now ${formatKes(current.deliveryFee)}. Check the total and place your order again.`
+            : locateMessage(delivery.problem ?? 'not_found'));
+          return;
+        }
+      }
+      quoteId = current.id;
+    }
     let prescriptionId: string | undefined;
     if (hasRx) {
       try {
@@ -270,12 +300,12 @@ export default function CheckoutRoute() {
       kraPin: cleanKraPin(kraPinValue) ?? undefined,
       prescriptionId,
       fulfilment: fulfilment.mode,
-      // TODO(delivery): send `deliveryQuoteId: deliveryQuote?.id` for delivery orders once
-      // William lets create_order() take the fee from the quote on app orders (his note,
-      // 17 Nov 2026). Until then an app order with a quote id is refused, so none is sent.
+      // place-order charges the fee from this quote's distance (web_order_fees()).
+      deliveryQuoteId: quoteId,
     });
     setPlacing(false);
     if (!result.ok) {
+      if (result.error === 'quote_expired' || result.error === 'quote_missing') void delivery.measure();
       if (result.error.startsWith('promo_')) {
         // The code stopped working after it was applied: take it off so the new total shows.
         setPromo(null);
@@ -468,9 +498,9 @@ export default function CheckoutRoute() {
               </View>
               <PressableScale
                 accessibilityRole="button"
-                accessibilityLabel={LAUNCH_SCOPE.delivery ? 'Change delivery address' : 'Change pickup store'}
+                accessibilityLabel={fulfilment.mode === 'delivery' ? 'Change delivery address' : 'Change pickup store'}
                 hitSlop={8}
-                onPress={() => (LAUNCH_SCOPE.delivery ? setSheet('address') : setStoreSheetOpen(true))}
+                onPress={() => (fulfilment.mode === 'delivery' ? setSheet('address') : setStoreSheetOpen(true))}
                 style={styles.changeLink}
               >
                 <Txt variant="label" color="primaryAccent">
@@ -530,7 +560,7 @@ export default function CheckoutRoute() {
               </PressableScale>
             ) : null}
             {/* Only reachable with door delivery on: mode is always 'pickup' while LAUNCH_SCOPE.delivery is off. */}
-            {LAUNCH_SCOPE.delivery && fulfilment.mode === 'delivery' && session.user ? (
+            {fulfilment.mode === 'delivery' && session.user ? (
               <PressableScale
                 accessibilityRole="button"
                 accessibilityLabel={deliveryQuote ? 'Change the delivery place on the map' : 'Set the delivery place on the map'}
@@ -541,11 +571,15 @@ export default function CheckoutRoute() {
                 <Icon name="map-pin" size={14} color="onSurfaceVariant" />
                 <Txt variant="caption" color="onSurfaceVariant" style={styles.flex}>
                   {deliveryQuote
-                    ? `${deliveryQuote.distanceKm.toLocaleString('en-KE', { maximumFractionDigits: 1 })} km · Delivery ${formatKes(deliveryQuote.deliveryFee)} · paid online`
-                    : 'Set your gate on the map to see the delivery fee'}
+                    ? `${deliveryQuote.distanceKm.toLocaleString('en-KE', { maximumFractionDigits: 1 })} km · Delivery ${deliveryFee === 0 ? 'free' : formatKes(deliveryFee)} · paid online${delivery.areaOnly ? `. Priced from the middle of ${fulfilment.address.area || 'your area'}: set your gate for the exact fee` : ''}`
+                    : delivery.busy
+                      ? 'Working out the delivery fee…'
+                      : delivery.problem
+                        ? locateMessage(delivery.problem)
+                        : 'Add an address to see the delivery fee'}
                 </Txt>
                 <Txt variant="label" color="primaryAccent">
-                  {deliveryQuote ? 'Move pin' : 'Open map'}
+                  {deliveryQuote && !delivery.areaOnly ? 'Change' : 'Set on map'}
                 </Txt>
               </PressableScale>
             ) : null}
@@ -898,8 +932,8 @@ export default function CheckoutRoute() {
               {fulfilment.mode === 'delivery' ? (
                 <SummaryLine
                   label={`Delivery Fee (${storeArea})`}
-                  value={cart.summary.deliveryFee === 0 ? 'Free' : formatKes(cart.summary.deliveryFee)}
-                  tone={cart.summary.deliveryFee === 0 ? 'primary' : 'default'}
+                  value={!deliveryQuote ? (delivery.busy ? 'Checking…' : '—') : deliveryFee === 0 ? 'Free' : formatKes(deliveryFee)}
+                  tone={deliveryQuote && deliveryFee === 0 ? 'primary' : 'default'}
                 />
               ) : null}
               {promo ? <SummaryLine label={`Promo Code (${promo.code})`} value={`-${formatKes(promo.discount)}`} tone="primary" /> : null}

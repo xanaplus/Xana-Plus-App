@@ -208,11 +208,15 @@ export type PlaceOrderInput = {
   prescriptionId?: string;
   /** Pickup or delivery; the server keeps pickup for orders paid online (`dpo`) or at pickup (cash, sent as `counter`). */
   fulfilment?: Fulfilment;
+  /** Door delivery: the web-checkout quote for the place. The server charges the fee from its distance. */
+  deliveryQuoteId?: string;
 };
 
 /** Error codes `place-order` returns, plus `network` for no reply and `timeout` for a reply that never came. */
 export type PlaceOrderError =
   | 'signed_out'
+  | 'quote_missing'
+  | 'quote_expired'
   | 'invalid_order'
   | 'unavailable'
   | 'age_unconfirmed'
@@ -262,6 +266,10 @@ export const placeOrderErrorMessage = (error: PlaceOrderError): string => {
   switch (error) {
     case 'signed_out':
       return 'Please sign in again to place your order.';
+    case 'quote_missing':
+      return 'Add where to deliver so we can work out the delivery fee. You have not been charged.';
+    case 'quote_expired':
+      return 'The delivery fee needed checking again. Review the total and place your order again. You have not been charged.';
     case 'unavailable':
       return 'Some items have just sold out at your chosen store. Remove them, or pick another store, and try again.';
     case 'age_unconfirmed':
@@ -598,6 +606,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         kraPin: input.kraPin,
         prescriptionId: input.prescriptionId,
         fulfilment: input.fulfilment,
+        deliveryQuoteId: input.deliveryQuoteId,
       },
     });
     let timer: ReturnType<typeof setTimeout> | undefined;

@@ -231,7 +231,8 @@ export default function CartRoute() {
         {mode === 'delivery' ? (
           <SummaryRow
             label={`Delivery Fee (${store.name.replace('Xana Plus ', '')})`}
-            value={cart.summary.deliveryFee === 0 ? 'Free' : formatKes(cart.summary.deliveryFee)}
+            // By distance, worked out at checkout from the address (owner, 17 Nov 2026).
+            value="At checkout"
           />
         ) : null}
         {cart.summary.platformFee > 0 ? <SummaryRow label="Packaging fee" value={formatKes(cart.summary.platformFee)} /> : null}

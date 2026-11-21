@@ -7,7 +7,6 @@ import { stores } from '@/data/catalog';
 import { DeliveryMap, deliveryMapAvailable, type DeliveryMapHandle, type LatLng } from '@/features/delivery/delivery-map';
 import { locateDelivery, locateMessage, quoteIsFresh, type DeliveryQuote, type LocateRequest } from '@/lib/delivery-locate';
 import { formatKes } from '@/lib/format';
-import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { useFulfilment } from '@/store/fulfilment';
 import { useSession } from '@/store/session';
 import { elevation, radius, spacing, type Palette } from '@/theme';
@@ -263,7 +262,7 @@ function DeliveryMapScreen() {
 }
 
 export default function DeliveryMapRoute() {
-  return LAUNCH_SCOPE.delivery ? <DeliveryMapScreen /> : <Redirect href="/checkout" />;
+  return useFulfilment().deliveryOn ? <DeliveryMapScreen /> : <Redirect href="/checkout" />;
 }
 
 const PIN = 28;

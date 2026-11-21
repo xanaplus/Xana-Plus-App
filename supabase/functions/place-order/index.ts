@@ -36,6 +36,14 @@ import { activeOffer, parseOffers } from '../../../src/lib/branch-offers.ts';
  * every one a test order, which the admin app hides). Staff, pharmacist and admin
  * accounts still place test orders. create_order() applies the shop's switches
  * (checkout_enabled, pay_at_pickup_enabled) and its pay-at-pickup limits.
+ *
+ * Door delivery by distance (owner, 17 Nov 2026; the app's version 21 Nov): an order
+ * sent with fulfilment 'delivery' needs `deliveryQuoteId`, a quote the shared
+ * web-checkout function saved for this customer and branch (action 'locate', from a
+ * typed address or a point). The fee is worked out here from that quote's road
+ * distance by web_order_fees(), as the website's, never taken from the app. Delivery
+ * is paid online, as on the website. create_order() does not read quotes on app
+ * orders, so it gets the fee, and the place is written on the order afterwards.
  */
 
 /** No packaging fee (owner, 15 Oct 2026); the field stays so past orders still show theirs. */
@@ -65,7 +73,7 @@ type Line = { itemNo: string; quantity: number; expectedUnitPrice?: number };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** create_order() refusals passed on to the app as they are; anything else is a server error. */
 const SHARED_ERRORS = [
-  'unavailable', 'rx_missing', 'not_sold_online', 'age_unconfirmed', 'points_unavailable', 'invalid_branch', 'price_mismatch', 'invalid_order',
+  'quote_expired', 'unavailable', 'rx_missing', 'not_sold_online', 'age_unconfirmed', 'points_unavailable', 'invalid_branch', 'price_mismatch', 'invalid_order',
   'checkout_off', 'pay_at_pickup_off', 'pay_at_pickup_max', 'pay_at_pickup_limit',
 ];
 
@@ -103,6 +111,9 @@ Deno.serve(async request => {
   const slotLabel = text(body.slotLabel) ?? (pickup ? 'Pickup' : null);
   const pointsRedeemed = Number.isInteger(body.pointsRedeemed) && body.pointsRedeemed > 0 ? body.pointsRedeemed : 0;
   const promoCode = text(body.promoCode, 30)?.toUpperCase() ?? null;
+  // Only builds with delivery by distance send fulfilment 'delivery'; older ones send none.
+  const doorDelivery = body.fulfilment === 'delivery';
+  const deliveryQuoteId = typeof body.deliveryQuoteId === 'string' && UUID.test(body.deliveryQuoteId) ? body.deliveryQuoteId : null;
 
   if (
     lines.length === 0 ||
@@ -112,10 +123,12 @@ Deno.serve(async request => {
     !paymentMethod || !PAYMENT_METHODS.includes(paymentMethod) ||
     !substitution || !SUBSTITUTIONS.includes(substitution) ||
     !contact || !addressLine || !slotLabel || !storeName || !branchCode ||
-    (paymentMethod === 'counter' && !pickup)
+    (paymentMethod === 'counter' && !pickup) ||
+    (doorDelivery && paymentMethod !== 'dpo')
   ) {
     return reply(400, { error: 'invalid_order' });
   }
+  if (doorDelivery && !deliveryQuoteId) return reply(400, { error: 'quote_missing' });
 
   // Price and check every line against the catalogue as it is now, with stock at the
   // chosen branch (the total across branches until that branch's first stock sync).
@@ -182,7 +195,29 @@ Deno.serve(async request => {
     promoDiscount = Number(quote.discount);
   }
 
-  const total = itemsSubtotal - promoDiscount + DELIVERY_FEE + PLATFORM_FEE;
+  // The delivery fee from the quote's distance, after any free-delivery threshold (web_order_fees()).
+  let deliveryFee = DELIVERY_FEE;
+  let quote: { id: string; lat: number; lng: number; location_source: string; location_label: string | null; distance_m: number; distance_source: string } | null = null;
+  if (doorDelivery) {
+    const { data: row, error: quoteError } = await db
+      .from('delivery_quotes')
+      .select('id, branch_code, lat, lng, location_source, location_label, distance_m, distance_source, expires_at')
+      .eq('id', deliveryQuoteId)
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (quoteError) return reply(500, { error: 'server_error' });
+    if (!row || row.branch_code !== branchCode) return reply(400, { error: 'quote_missing' });
+    if (new Date(row.expires_at).getTime() <= Date.now()) return reply(400, { error: 'quote_expired' });
+    const { data: fees, error: feeError } = await db.rpc('web_order_fees', {
+      p_fulfilment: 'delivery', p_fee_method: null, p_products: itemsSubtotal - promoDiscount, p_rate: null, p_distance_m: row.distance_m,
+    });
+    const fee = Number(fees?.deliveryFee);
+    if (feeError || !Number.isFinite(fee) || fee < 0) return reply(500, { error: 'server_error' });
+    deliveryFee = fee;
+    quote = row;
+  }
+
+  const total = itemsSubtotal - promoDiscount + deliveryFee + PLATFORM_FEE;
   // Optional buyer's KRA PIN for the receipt. A malformed one is dropped, never refused (as the POS and create_order() do).
   const kraPin = cleanKraPin(body.kraPin);
 
@@ -226,7 +261,7 @@ Deno.serve(async request => {
         promoDiscount,
         pointsRedeemed,
         pointsEarned,
-        deliveryFee: DELIVERY_FEE,
+        deliveryFee,
         platformFee: PLATFORM_FEE,
         ageConfirmed: body.ageConfirmed === true,
         buyerKraPin: kraPin,
@@ -240,6 +275,16 @@ Deno.serve(async request => {
         error: code,
         items: code === 'unavailable' && createError.details ? createError.details.split(',') : undefined,
       });
+    }
+    // Where the rider goes, as the website's delivery orders keep it (create_order() leaves
+    // these empty on app orders). The order stands either way.
+    if (quote) {
+      const { error: placeError } = await db.from('orders').update({
+        delivery_lat: quote.lat, delivery_lng: quote.lng, delivery_location_source: quote.location_source,
+        delivery_location_label: quote.location_label, delivery_distance_m: quote.distance_m,
+        delivery_distance_source: quote.distance_source, delivery_quote_id: quote.id,
+      }).eq('order_no', created.orderNo);
+      if (placeError) console.error('delivery place not saved', created.orderNo, placeError.message);
     }
     // Tell the customer it arrived, as for other app orders: the "order received" SMS
     // (outbox-send owns the wording) and an app notification, which the status trigger
@@ -277,7 +322,7 @@ Deno.serve(async request => {
       wholesaleSavings,
       items: items.map(item => ({ itemNo: item.item_no, quantity: item.quantity, unitPrice: item.unit_price, lineTotal: item.line_total })),
       promoDiscount,
-      deliveryFee: DELIVERY_FEE,
+      deliveryFee,
       platformFee: PLATFORM_FEE,
       total: Number(created.total),
       amountDue: Number(created.amountDue),
@@ -310,7 +355,7 @@ Deno.serve(async request => {
         wholesale_savings: wholesaleSavings,
         promo_code: promoCode,
         promo_discount: promoDiscount,
-        delivery_fee: DELIVERY_FEE,
+        delivery_fee: deliveryFee,
         platform_fee: PLATFORM_FEE,
         total,
         points_redeemed: pointsRedeemed,
@@ -367,7 +412,7 @@ Deno.serve(async request => {
     wholesaleSavings,
     items: items.map(item => ({ itemNo: item.item_no, quantity: item.quantity, unitPrice: item.unit_price, lineTotal: item.line_total })),
     promoDiscount,
-    deliveryFee: DELIVERY_FEE,
+    deliveryFee,
     platformFee: PLATFORM_FEE,
     total,
     amountDue,

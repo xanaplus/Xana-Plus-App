@@ -157,11 +157,12 @@ type FulfilmentContextValue = {
   /**
    * Where the door delivery goes and what it costs, from the map (address/map), as
    * web-checkout measured it. Lasts 30 minutes (quote.expiresAt). Kept in memory only.
-   * Orders don't send it yet: create_order() refuses a quote id on app orders until
-   * William lets it take the fee from the quote (his note, 17 Nov 2026).
+   * Checkout sends its id; place-order charges the fee from its distance (21 Nov 2026).
    */
   deliveryQuote: DeliveryQuote | null;
   setDeliveryQuote: (quote: DeliveryQuote | null) => void;
+  /** Door delivery can be chosen: LAUNCH_SCOPE.delivery, or a staff account testing it. */
+  deliveryOn: boolean;
 };
 
 export type AppliedPromo = { code: string; description: string; discount: number };
@@ -169,7 +170,10 @@ export type AppliedPromo = { code: string; description: string; discount: number
 const FulfilmentContext = createContext<FulfilmentContextValue | null>(null);
 
 export function FulfilmentProvider({ children }: { children: ReactNode }) {
-  const { user, isDemo } = useSession();
+  const { user, isDemo, isStaff } = useSession();
+  // Door delivery: on for everyone with LAUNCH_SCOPE.delivery; before that, staff,
+  // pharmacist and admin accounts see it to test (as the website lets staff test).
+  const deliveryOn = LAUNCH_SCOPE.delivery || isStaff;
   const userId = user?.id ?? null;
   const [stored] = useState(storedFulfilment);
   // Phones that never chose (all data saved before 19 Nov 2026) move to the new pickup default.
@@ -177,12 +181,12 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
   const [modeChosen, setModeChosen] = useState(stored.modeChosen === true);
   // Pickup only while door delivery is off (LAUNCH_SCOPE.delivery, 20 Nov 2026); a saved
   // "delivery" choice is kept for when it comes back.
-  const mode: FulfilmentMode = LAUNCH_SCOPE.delivery ? chosenMode : 'pickup';
+  const mode: FulfilmentMode = deliveryOn ? chosenMode : 'pickup';
   const setMode = useCallback((next: FulfilmentMode) => {
-    if (!LAUNCH_SCOPE.delivery && next === 'delivery') return;
+    if (!deliveryOn && next === 'delivery') return;
     setModeState(next);
     setModeChosen(true);
-  }, []);
+  }, [deliveryOn]);
   const [storeId, setStoreIdState] = useState<string>(() => {
     // Prices follow the chosen store's POS offers from the very first render.
     setPricingBranch(stored.storeId);
@@ -347,8 +351,9 @@ export function FulfilmentProvider({ children }: { children: ReactNode }) {
       setKraPinDraft,
       deliveryQuote,
       setDeliveryQuote,
+      deliveryOn,
     }),
-    [mode, setMode, storeId, setStoreId, storeChosen, store, address, addresses, addAddress, removeAddress, hasAddress, slotId, slot, paymentMethod, mpesaNumber, pointsRedeemed, ageConfirmed, rxReference, promo, kraPinDraft, deliveryQuote],
+    [deliveryOn, mode, setMode, storeId, setStoreId, storeChosen, store, address, addresses, addAddress, removeAddress, hasAddress, slotId, slot, paymentMethod, mpesaNumber, pointsRedeemed, ageConfirmed, rxReference, promo, kraPinDraft, deliveryQuote],
   );
 
   return <FulfilmentContext.Provider value={value}>{children}</FulfilmentContext.Provider>;

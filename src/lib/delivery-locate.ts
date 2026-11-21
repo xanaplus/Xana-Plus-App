@@ -1,4 +1,7 @@
 import { supabase } from '@/lib/supabase';
+import type { DeliveryQuote, LocateRequest, LocateResult } from '@/lib/delivery-quote';
+
+export * from '@/lib/delivery-quote';
 
 /**
  * Where a door delivery goes, measured by the shared `web-checkout` function
@@ -8,31 +11,6 @@ import { supabase } from '@/lib/supabase';
  * quote for 30 minutes. Fee rule (owner, 17 Nov): KSh 200 for the first 3 km, then
  * KSh 100 per further km, distance rounded. The app never works the fee out itself.
  */
-
-export type PointSource = 'device' | 'pin' | 'search';
-
-export type DeliveryQuote = {
-  id: string;
-  branchCode: string;
-  branchName: string;
-  lat: number;
-  lng: number;
-  locationSource: string;
-  locationLabel: string;
-  distanceKm: number;
-  /** The fee before any free-delivery threshold. */
-  deliveryFee: number;
-  /** ISO time; the quote is refused after this (30 minutes). */
-  expiresAt: string;
-};
-
-export type LocateRequest =
-  | { address: { line: string; area: string } }
-  | { point: { lat: number; lng: number; source: PointSource; label?: string } };
-
-export type LocateResult =
-  | { ok: true; precision: 'exact' | 'area'; quote: DeliveryQuote }
-  | { ok: false; error: string };
 
 export async function locateDelivery(where: LocateRequest, branchCode?: string): Promise<LocateResult> {
   const body = { action: 'locate', ...where, ...(branchCode ? { branchCode: branchCode.toUpperCase() } : {}) };
@@ -72,6 +50,3 @@ export function locateMessage(code: string): string {
   }
 }
 
-/** A quote still good for an order (with a minute to spare for checkout). */
-export const quoteIsFresh = (quote: DeliveryQuote | null, now = Date.now()): quote is DeliveryQuote =>
-  quote != null && new Date(quote.expiresAt).getTime() - 60_000 > now;

@@ -7,7 +7,6 @@ import type { Address } from '@/store/fulfilment';
 import { useFulfilment } from '@/store/fulfilment';
 import { quoteIsFresh } from '@/lib/delivery-locate';
 import { formatKes } from '@/lib/format';
-import { LAUNCH_SCOPE } from '@/lib/launch-scope';
 import { radius, spacing } from '@/theme';
 import { useTheme, useThemeStyles } from '@/theme/provider';
 import type { Palette } from '@/theme';
@@ -26,7 +25,7 @@ const withCountryCode = (number: string) => (number.trim().startsWith('+254') ? 
 export default function AddAddressRoute() {
   const styles = useThemeStyles(createStyles);
   const router = useRouter();
-  const { addAddress, store, deliveryQuote: savedQuote } = useFulfilment();
+  const { addAddress, store, deliveryQuote: savedQuote, deliveryOn } = useFulfilment();
   const deliveryQuote = quoteIsFresh(savedQuote) ? savedQuote : null;
 
   const [area, setArea] = useState('');
@@ -134,7 +133,7 @@ export default function AddAddressRoute() {
       </View>
 
       {/* The map step (address/map) only with door delivery on. */}
-      {LAUNCH_SCOPE.delivery ? (
+      {deliveryOn ? (
         <View style={[styles.inset, styles.mapStep]}>
           <Txt variant="bodySm" color="onSurfaceVariant">
             {deliveryQuote
