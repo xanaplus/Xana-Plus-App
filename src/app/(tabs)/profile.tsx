@@ -152,6 +152,7 @@ const POINT_RULES: { icon: IconName; title: string; description: string }[] = [
 const POINTS_PER_KES = 10;
 
 const PRIVACY_POLICY_URL = 'https://www.xanalife.com/pages/xana-plus-privacy';
+const TERMS_URL = 'https://www.xanalife.com/pages/xana-plus-terms';
 /** The admin site (moved here from xana-admin.vercel.app on 17 Nov 2026). */
 const ADMIN_SITE_URL = 'https://admin.xanalife.com';
 
@@ -274,7 +275,7 @@ export default function ProfileRoute() {
     hasPassword,
     isStaff,
   } = useSession();
-  const { address, addresses, setAddress, removeAddress, hasAddress, mode, setMode, mpesaNumber, paymentMethod, setPaymentMethod, setStoreId, slot, store, storeId } = useFulfilment();
+  const { address, addresses, setAddress, removeAddress, hasAddress, mode, setMode, mpesaNumber, paymentMethod, setPaymentMethod, setStoreId, slot, store, storeId, deliveryOn } = useFulfilment();
 
   const [sheet, setSheet] = useState<SheetId | null>(null);
   const prescriptions = usePrescriptionList();
@@ -415,7 +416,7 @@ export default function ProfileRoute() {
 
   const supportRows: RowSpec[] = [
     { key: 'help', icon: 'help', title: 'Help & Support', onPress: () => setSheet('help') },
-    { key: 'terms', icon: 'shield', title: 'Privacy', onPress: () => setSheet('terms') },
+    { key: 'terms', icon: 'shield', title: 'Terms & Privacy', onPress: () => setSheet('terms') },
   ];
 
   const helpRows: RowSpec[] = [
@@ -605,14 +606,14 @@ export default function ProfileRoute() {
       <Card variant="elevated" padding={spacing.lg} style={styles.inset}>
         <View style={styles.fulfilmentHead}>
           <View style={styles.fulfilmentText}>
-            <Txt variant="title">{LAUNCH_SCOPE.delivery ? 'Delivery or pickup' : 'Pickup store'}</Txt>
+            <Txt variant="title">{deliveryOn ? 'Delivery or pickup' : 'Pickup store'}</Txt>
             <Txt variant="caption" color="onSurfaceVariant" numberOfLines={2}>
               {mode === 'delivery' ? `${activeSlot.label} · ${activeSlot.window}` : `Collect your order at ${store.name}`}
             </Txt>
           </View>
         </View>
         {/* Pickup only while door delivery is off (LAUNCH_SCOPE.delivery). */}
-        {LAUNCH_SCOPE.delivery ? <Segmented options={MODE_OPTIONS} value={mode} onChange={setMode} /> : null}
+        {deliveryOn ? <Segmented options={MODE_OPTIONS} value={mode} onChange={setMode} /> : null}
         <PressableScale accessibilityRole="button" accessibilityLabel="Change fulfilment store" onPress={() => setSheet('settings')} style={styles.storeRow}>
           <Icon name="store" size={18} color="primaryAccent" />
           <View style={styles.storeText}>
@@ -984,7 +985,7 @@ export default function ProfileRoute() {
       <BottomSheet
         visible={sheet === 'terms'}
         onClose={closeSheet}
-        title="Privacy"
+        title="Terms & Privacy"
         footer={<Button label="Back to Profile" variant="outline" icon="arrow-left" iconPosition="leading" onPress={closeSheet} />}
         scrollable
       >
@@ -1040,6 +1041,15 @@ export default function ProfileRoute() {
             icon="shield"
             iconPosition="leading"
             onPress={() => void Linking.openURL(PRIVACY_POLICY_URL)}
+          />
+        </View>
+        <View style={styles.cardStack}>
+          <Button
+            label="Read the terms of service"
+            variant="outline"
+            icon="receipt"
+            iconPosition="leading"
+            onPress={() => void Linking.openURL(TERMS_URL)}
           />
         </View>
 

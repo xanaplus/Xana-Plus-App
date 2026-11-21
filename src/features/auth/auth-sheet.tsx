@@ -25,6 +25,8 @@ import { PressableScale } from '@/components/ui/pressable-scale';
 export const OTP_LENGTH = 6;
 /** The full privacy policy on xanalife.com, as linked from Profile. */
 const PRIVACY_POLICY_URL = 'https://www.xanalife.com/pages/xana-plus-privacy';
+/** Live on the website since 21 Nov 2026. */
+const TERMS_URL = 'https://www.xanalife.com/pages/xana-plus-terms';
 /** The website's password rule. */
 export const PASSWORD_MIN = 8;
 export const PASSWORD_MAX = 72;
@@ -1198,6 +1200,16 @@ function TermsNote() {
   return (
     <Txt variant="caption" color="onSurfaceVariant" align="center" style={styles.terms}>
       {"By continuing, you agree to Xana Life's"}{' '}
+      <Txt
+        variant="caption"
+        tint={colors.onSurface}
+        style={styles.termsLink}
+        accessibilityRole="link"
+        onPress={() => void Linking.openURL(TERMS_URL)}
+      >
+        Terms of Service
+      </Txt>
+      {' and '}
       <Txt
         variant="caption"
         tint={colors.onSurface}
